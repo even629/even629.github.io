@@ -67,22 +67,22 @@
 
   <url>
     <loc>https://even629.com/</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
-    <loc>https://even629.com/tags/UEFI/</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://even629.com/tags/emacs/</loc>
+    <lastmod>2025-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://even629.com/tags/emacs/</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://even629.com/tags/UEFI/</loc>
+    <lastmod>2025-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -90,22 +90,22 @@
 
   
   <url>
-    <loc>https://even629.com/categories/UEFI/</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://even629.com/categories/useful-tools/</loc>
+    <lastmod>2025-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://even629.com/categories/useful-tools/</loc>
-    <lastmod>2025-01-13</lastmod>
+    <loc>https://even629.com/categories/UEFI/</loc>
+    <lastmod>2025-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://even629.com/categories/emacs/</loc>
-    <lastmod>2025-01-13</lastmod>
+    <lastmod>2025-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
