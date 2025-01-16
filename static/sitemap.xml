@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://even629.com/equipment/index.html</loc>
+    <loc>https://even629.com/charts/index.html</loc>
     
     <lastmod>2025-01-15</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/charts/index.html</loc>
+    <loc>https://even629.com/equipment/index.html</loc>
     
     <lastmod>2025-01-15</lastmod>
     
@@ -99,7 +99,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/Emacs/</loc>
+    <loc>https://even629.com/tags/emacs/</loc>
     <lastmod>2025-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -115,7 +115,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/Emacs/</loc>
+    <loc>https://even629.com/categories/emacs/</loc>
     <lastmod>2025-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
