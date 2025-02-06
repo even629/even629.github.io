@@ -4,31 +4,6 @@
   
     
     <entry>
-      <title>EDK2获取Protocol总结</title>
-      <link href="/posts/42855/"/>
-      <url>/posts/42855/</url>
-      
-        <content type="html"><![CDATA[<h1 id="HandleProtocol"><a href="#HandleProtocol" class="headerlink" title="HandleProtocol"></a>HandleProtocol</h1><p>UEFI_Spec_2.8</p><p><img src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250201214538747.png" alt="HandleProtocol的原型"></p><h1 id="ProtocolsPerHandle"><a href="#ProtocolsPerHandle" class="headerlink" title="ProtocolsPerHandle"></a>ProtocolsPerHandle</h1><p>UEFI_Spec_2.8</p><p><img src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250202231208653.png" alt="image-20250202231208653"></p>]]></content>
-      
-      
-      <categories>
-          
-          <category> UEFI </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> UEFI </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>Keil安装</title>
       <link href="/posts/28522/"/>
       <url>/posts/28522/</url>
