@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://even629.com/posts/42853/</loc>
+    
+    <lastmod>2025-02-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://even629.com/link/index.html</loc>
     
     <lastmod>2025-02-06</lastmod>
@@ -12,15 +21,6 @@
   
   <url>
     <loc>https://even629.com/charts/index.html</loc>
-    
-    <lastmod>2025-02-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/posts/42853/</loc>
     
     <lastmod>2025-02-01</lastmod>
     
@@ -101,14 +101,14 @@
 
   
   <url>
-    <loc>https://even629.com/tags/UEFI/</loc>
+    <loc>https://even629.com/tags/Embedded/</loc>
     <lastmod>2025-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://even629.com/tags/Embedded/</loc>
+    <loc>https://even629.com/tags/UEFI/</loc>
     <lastmod>2025-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -124,14 +124,14 @@
 
   
   <url>
-    <loc>https://even629.com/categories/UEFI/</loc>
+    <loc>https://even629.com/categories/Embedded/</loc>
     <lastmod>2025-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://even629.com/categories/Embedded/</loc>
+    <loc>https://even629.com/categories/UEFI/</loc>
     <lastmod>2025-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
