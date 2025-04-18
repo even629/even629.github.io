@@ -1,0 +1,1 @@
+(()=>{const e=e=>e.includes("/en/");window.loadFullPage=e=>{window.location.href=e};const o=e(window.location.href),l=o?document.querySelectorAll('a[href^="https://even629.com/"]'):document.querySelectorAll('a[href^="/en/"]');var r;r=o,l.forEach((o=>{r&&e(o.href)||(o.href=`javascript:loadFullPage('${o.href}');`)}))})();
