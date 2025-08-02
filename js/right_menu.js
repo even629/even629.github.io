@@ -1,1 +1,337 @@
-function setMask(){return null!=document.getElementsByClassName("rmMask")[0]?document.getElementsByClassName("rmMask")[0]:(mask=document.createElement("div"),mask.className="rmMask",mask.style.width=window.innerWidth+"px",mask.style.height=window.innerHeight+"px",mask.style.background="#fff",mask.style.opacity=".0",mask.style.position="fixed",mask.style.top="0",mask.style.left="0",mask.style.zIndex=998,document.body.appendChild(mask),document.getElementById("rightMenu").style.zIndex=19198,mask)}function insertAtCursor(e,t){if(document.selection)e.focus(),sel=document.selection.createRange(),sel.text=t,sel.select();else if(e.selectionStart||"0"==e.selectionStart){var n=e.selectionStart,o=e.selectionEnd,i=e.scrollTop;e.value=e.value.substring(0,n)+t+e.value.substring(o,e.value.length),i>0&&(e.scrollTop=i),e.focus(),e.selectionStart=n+t.length,e.selectionEnd=n+t.length}else e.value+=t,e.focus()}let rmf={};function popupMenu(){window.oncontextmenu=function(e){$(".rightMenu-group.hide").hide(),document.getSelection().toString()&&$("#menu-text").show(),(document.getElementById("post")||document.getElementById("page"))&&$("#menu-post").show();var t=window.document.body;t=e.target;/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\*\+,;=.]+$/.test(window.getSelection().toString())&&"A"!=t.tagName&&$("#menu-too").show(),"A"==t.tagName?($("#menu-to").show(),rmf.open=function(){-1==t.href.indexOf("http://")&&-1==t.href.indexOf("https://")||-1!=t.href.indexOf("yisous.xyz")?pjax.loadUrl(t.href):location.href=t.href},rmf.openWithNewTab=function(){window.open(t.href)},rmf.copyLink=function(){let e=t.href,n=document.createElement("textarea");n.value=e,document.body.appendChild(n),n.select(),document.execCommand("Copy"),document.body.removeChild(n)}):"IMG"==t.tagName?($("#menu-img").show(),rmf.openWithNewTab=function(){window.open(t.src)},rmf.click=function(){t.click()},rmf.copyLink=function(){let e=t.src,n=document.createElement("textarea");n.value=e,document.body.appendChild(n),n.select(),document.execCommand("Copy"),document.body.removeChild(n)},rmf.saveAs=function(){var e=document.createElement("a"),n=t.src,o=n.split("/")[-1];e.href=n,e.download=o,e.click(),window.URL.revokeObjectURL(n)}):"TEXTAREA"!=t.tagName&&"INPUT"!=t.tagName||($("#menu-paste").show(),rmf.paste=function(){navigator.permissions.query({name:"clipboard-read"}).then((e=>{"granted"==e.state||"prompt"==e.state?navigator.clipboard.readText().then((e=>{console.log(e),insertAtCursor(t,e)})):Snackbar.show({text:"请允许读取剪贴板！",pos:"top-center",showAction:!1})}))});let n=e.clientX+10,o=e.clientY,i=$("#rightMenu").width(),s=$("#rightMenu").height();return n+i>window.innerWidth&&(n-=i+10),o+s>window.innerHeight&&(o-=o+s-window.innerHeight),mask=setMask(),$(".rightMenu-item").click((()=>{$(".rmMask").attr("style","display: none")})),$(window).resize((()=>{rmf.showRightMenu(!1),$(".rmMask").attr("style","display: none")})),mask.onclick=()=>{$(".rmMask").attr("style","display: none")},rmf.showRightMenu(!0,o,n),$(".rmMask").attr("style","display: flex"),!1},window.addEventListener("click",(function(){rmf.showRightMenu(!1)}))}function addLongtabListener(e,t){let n=0;e.ontouchstart=()=>{n=0,n=setTimeout((()=>{t(),n=0}),380)},e.ontouchmove=()=>{clearTimeout(n),n=0},e.ontouchend=()=>{n&&clearTimeout(n)}}rmf.showRightMenu=function(e,t=0,n=0){let o=$("#rightMenu");o.css("top",t+"px").css("left",n+"px"),e?o.show():o.hide()},rmf.copyWordsLink=function(){let e=window.location.href,t=document.createElement("textarea");t.value=e,document.body.appendChild(t),t.select(),document.execCommand("Copy"),document.body.removeChild(t)},rmf.switchReadMode=function(){document.getElementById("readmode").click()},rmf.switchDarkmode=function(){document.getElementById("darkmode").click()},rmf.switchLanguageMode=function(){document.getElementById("translateLink").click()},rmf.copySelect=function(){document.execCommand("Copy",!1,null),kms.pushInfo("复制成功",null)},rmf.scrollToTop=function(){window.scrollTo({top:0,behavior:"smooth"})},rmf.fullScreen=function(){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()};const translateInitialization=function(){null==localStorage.getItem("mouse")&&localStorage.setItem("mouse","on"),document.body.addEventListener("touchmove",(function(){}),{passive:!1}),navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)||popupMenu(),addLongtabListener(document.documentElement,popupMenu)};translateInitialization(),document.addEventListener("pjax:complete",translateInitialization);
+function setMask() {
+  //设置遮罩
+  if (document.getElementsByClassName("rmMask")[0] != undefined)
+    return document.getElementsByClassName("rmMask")[0];
+  mask = document.createElement("div");
+  mask.className = "rmMask";
+  mask.style.width = window.innerWidth + "px";
+  mask.style.height = window.innerHeight + "px";
+  mask.style.background = "#fff";
+  mask.style.opacity = ".0";
+  mask.style.position = "fixed";
+  mask.style.top = "0";
+  mask.style.left = "0";
+  mask.style.zIndex = 998;
+  document.body.appendChild(mask);
+  document.getElementById("rightMenu").style.zIndex = 19198;
+  return mask;
+}
+
+function insertAtCursor(myField, myValue) {
+  //IE 浏览器
+  if (document.selection) {
+    myField.focus();
+    sel = document.selection.createRange();
+    sel.text = myValue;
+    sel.select();
+  }
+
+  //FireFox、Chrome等
+  else if (myField.selectionStart || myField.selectionStart == "0") {
+    var startPos = myField.selectionStart;
+    var endPos = myField.selectionEnd;
+
+    // 保存滚动条
+    var restoreTop = myField.scrollTop;
+    myField.value =
+      myField.value.substring(0, startPos) +
+      myValue +
+      myField.value.substring(endPos, myField.value.length);
+
+    if (restoreTop > 0) {
+      myField.scrollTop = restoreTop;
+    }
+
+    myField.focus();
+    myField.selectionStart = startPos + myValue.length;
+    myField.selectionEnd = startPos + myValue.length;
+  } else {
+    myField.value += myValue;
+    myField.focus();
+  }
+}
+
+let rmf = {};
+rmf.showRightMenu = function (isTrue, x = 0, y = 0) {
+  let $rightMenu = $("#rightMenu");
+  $rightMenu.css("top", x + "px").css("left", y + "px");
+
+  if (isTrue) {
+    $rightMenu.show();
+  } else {
+    $rightMenu.hide();
+  }
+};
+rmf.copyWordsLink = function () {
+  let url = window.location.href;
+  let txa = document.createElement("textarea");
+  txa.value = url;
+  document.body.appendChild(txa);
+  txa.select();
+  document.execCommand("Copy");
+  document.body.removeChild(txa);
+};
+rmf.switchReadMode = function () {
+  const button = document.getElementById("readmode");
+  // 模拟点击事件
+  button.click();
+};
+rmf.switchDarkmode = function () {
+  const button = document.getElementById("darkmode");
+  // 模拟点击事件
+  button.click();
+};
+// rmf.changeLive2dVisibility = function () {
+//   const live2dContainer = document.getElementById("oml2d-stage");
+//   live2dContainer.style.display = "none"; // 隐藏Live2D模型
+//   const element = document.getElementById("remove-live2d");
+//   element.remove();
+// };
+rmf.switchLanguageMode = function () {
+  const button = document.getElementById("translateLink");
+  // 模拟点击事件
+  button.click();
+};
+//复制选中文字
+rmf.copySelect = function () {
+  document.execCommand("Copy", false, null);
+  kms.pushInfo("复制成功", null);
+};
+//回到顶部
+rmf.scrollToTop = function () {
+  // document.getElementsByClassName("menus_items")[1].setAttribute("style", "");
+  // document.getElementById("name-container").setAttribute("style", "display:none");
+  // btf.scrollToDest(0, 500);
+  window.scrollTo({
+    top: 0, // 滚动到顶部
+    behavior: "smooth", // 平滑滚动（如果需要瞬间到达，可以省略此行或设为 'auto'）
+  });
+};
+
+function popupMenu() {
+  window.oncontextmenu = function (event) {
+    // if (event.ctrlKey) return true;
+
+    // 当关掉自定义右键时候直接返回
+    // if (mouseMode == "off") return true;
+
+    $(".rightMenu-group.hide").hide();
+    if (document.getSelection().toString()) {
+      $("#menu-text").show();
+    }
+    if (document.getElementById("post")) {
+      $("#menu-post").show();
+    } else {
+      if (document.getElementById("page")) {
+        $("#menu-post").show();
+      }
+    }
+    var el = window.document.body;
+    el = event.target;
+    var a =
+      /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\*\+,;=.]+$/;
+    if (a.test(window.getSelection().toString()) && el.tagName != "A") {
+      $("#menu-too").show();
+    }
+    if (el.tagName == "A") {
+      $("#menu-to").show();
+      rmf.open = function () {
+        if (
+          (el.href.indexOf("http://") == -1 &&
+            el.href.indexOf("https://") == -1) ||
+          el.href.indexOf("yisous.xyz") != -1
+        ) {
+          pjax.loadUrl(el.href);
+        } else {
+          location.href = el.href;
+        }
+      };
+      rmf.openWithNewTab = function () {
+        window.open(el.href);
+        // window.location.reload();
+      };
+      rmf.copyLink = function () {
+        let url = el.href;
+        let txa = document.createElement("textarea");
+        txa.value = url;
+        document.body.appendChild(txa);
+        txa.select();
+        document.execCommand("Copy");
+        document.body.removeChild(txa);
+      };
+    } else if (el.tagName == "IMG") {
+      $("#menu-img").show();
+      rmf.openWithNewTab = function () {
+        window.open(el.src);
+        // window.location.reload();
+      };
+      rmf.click = function () {
+        el.click();
+      };
+      rmf.copyLink = function () {
+        let url = el.src;
+        let txa = document.createElement("textarea");
+        txa.value = url;
+        document.body.appendChild(txa);
+        txa.select();
+        document.execCommand("Copy");
+        document.body.removeChild(txa);
+      };
+      rmf.saveAs = function () {
+        var a = document.createElement("a");
+        var url = el.src;
+        var filename = url.split("/")[-1];
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      };
+    } else if (el.tagName == "TEXTAREA" || el.tagName == "INPUT") {
+      $("#menu-paste").show();
+      rmf.paste = function () {
+        navigator.permissions
+          .query({
+            name: "clipboard-read",
+          })
+          .then((result) => {
+            if (result.state == "granted" || result.state == "prompt") {
+              //读取剪贴板
+              navigator.clipboard.readText().then((text) => {
+                console.log(text);
+                insertAtCursor(el, text);
+              });
+            } else {
+              Snackbar.show({
+                text: "请允许读取剪贴板！",
+                pos: "top-center",
+                showAction: false,
+              });
+            }
+          });
+      };
+    }
+    let pageX = event.clientX + 10;
+    let pageY = event.clientY;
+    let rmWidth = $("#rightMenu").width();
+    let rmHeight = $("#rightMenu").height();
+    if (pageX + rmWidth > window.innerWidth) {
+      pageX -= rmWidth + 10;
+    }
+    if (pageY + rmHeight > window.innerHeight) {
+      pageY -= pageY + rmHeight - window.innerHeight;
+    }
+    mask = setMask();
+    // 滚动消失的代码和阅读进度有冲突，因此放到readPercent.js里面了
+    $(".rightMenu-item").click(() => {
+      $(".rmMask").attr("style", "display: none");
+    });
+    $(window).resize(() => {
+      rmf.showRightMenu(false);
+      $(".rmMask").attr("style", "display: none");
+    });
+    mask.onclick = () => {
+      $(".rmMask").attr("style", "display: none");
+    };
+    rmf.showRightMenu(true, pageY, pageX);
+    $(".rmMask").attr("style", "display: flex");
+    return false;
+  };
+
+  window.addEventListener("click", function () {
+    rmf.showRightMenu(false);
+  });
+}
+
+function addLongtabListener(target, callback) {
+  let timer = 0; // 初始化timer
+
+  target.ontouchstart = () => {
+    timer = 0; // 重置timer
+    timer = setTimeout(() => {
+      callback();
+      timer = 0;
+    }, 380); // 超时器能成功执行，说明是长按
+  };
+
+  target.ontouchmove = () => {
+    clearTimeout(timer); // 如果来到这里，说明是滑动
+    timer = 0;
+  };
+
+  target.ontouchend = () => {
+    // 到这里如果timer有值，说明此触摸时间不足380ms，是点击
+    if (timer) {
+      clearTimeout(timer);
+    }
+  };
+}
+
+// 全屏
+rmf.fullScreen = function () {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen();
+};
+
+// function changeMouseMode() {
+//   if (localStorage.getItem("mouse") == "on") {
+//     mouseMode = "off";
+//     localStorage.setItem("mouse", "off");
+//     debounce(function () {
+//       new Vue({
+//         data: function () {
+//           this.$notify({
+//             title: "切换右键模式成功🍔",
+//             message: "当前鼠标右键已恢复为系统默认！",
+//             position: "top-left",
+//             offset: 50,
+//             showClose: true,
+//             type: "success",
+//             duration: 5000,
+//           });
+//         },
+//       });
+//     }, 300);
+//   } else {
+//     mouseMode = "on";
+//     localStorage.setItem("mouse", "on");
+//     debounce(function () {
+//       new Vue({
+//         data: function () {
+//           this.$notify({
+//             title: "切换右键模式成功🍔",
+//             message: "当前鼠标右键已更换为网站指定样式！",
+//             position: "top-left",
+//             offset: 50,
+//             showClose: true,
+//             type: "success",
+//             duration: 5000,
+//           });
+//         },
+//       });
+//     }, 300);
+//   }
+// }
+
+const translateInitialization = function () {
+  // 右键开关
+  if (localStorage.getItem("mouse") == undefined) {
+    localStorage.setItem("mouse", "on");
+  }
+  //   var mouseMode = localStorage.getItem("mouse");
+  document.body.addEventListener("touchmove", function () {}, {
+    passive: false,
+  });
+
+  if (
+    !navigator.userAgent.match(
+      /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+    )
+  ) {
+    popupMenu();
+  }
+  addLongtabListener(document.documentElement, popupMenu);
+};
+
+translateInitialization();
+
+document.addEventListener("pjax:complete", translateInitialization);
