@@ -1,1 +1,270 @@
-::-webkit-scrollbar{width:10px;height:8px}::-webkit-scrollbar-thumb{background-color:rgba(62,184,190,.5);border-radius:10px}::-webkit-scrollbar-thumb:hover{background-color:rgba(41,138,228,.8)}::-webkit-scrollbar-track{background-color:transparent}::-webkit-scrollbar-corner{background-color:transparent}.main-hero-waves-area{width:100%;position:absolute;left:0;bottom:-11px;z-index:5}.waves-area .waves-svg{width:100%;height:5rem}.parallax>use{animation:move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite}.parallax>use:nth-child(1){animation-delay:-2s;animation-duration:7s;fill:#f7f9febd}.parallax>use:nth-child(2){animation-delay:-3s;animation-duration:10s;fill:#f7f9fe82}.parallax>use:nth-child(3){animation-delay:-4s;animation-duration:13s;fill:#f7f9fe36}.parallax>use:nth-child(4){animation-delay:-5s;animation-duration:20s;fill:#f7f9fe}[data-theme=dark] .parallax>use:nth-child(1){animation-delay:-2s;animation-duration:7s;fill:#18171dc8}[data-theme=dark] .parallax>use:nth-child(2){animation-delay:-3s;animation-duration:10s;fill:#18171d80}[data-theme=dark] .parallax>use:nth-child(3){animation-delay:-4s;animation-duration:13s;fill:#18171d3e}[data-theme=dark] .parallax>use:nth-child(4){animation-delay:-5s;animation-duration:20s;fill:#18171d}@keyframes move-forever{0%{transform:translate3d(-90px,0,0)}100%{transform:translate3d(85px,0,0)}}@media (max-width:768px){.waves-area .waves-svg{height:40px;min-height:40px}}#fps{position:fixed;right:10px;bottom:10px;z-index:1919810}[data-theme=light] #fps{background-color:rgba(255,255,255,.85);backdrop-filter:var(--backdrop-filter);padding:4px;border-radius:4px}[data-theme=dark] #fps{background-color:rgba(0,0,0,.72);backdrop-filter:var(--backdrop-filter);padding:4px;border-radius:4px}[current-language=en] .loading-img{background:url(/en/img/avatar.webp) no-repeat center center!important;background-size:cover!important}[current-language=zh] .loading-img{background:url(/img/avatar.webp) no-repeat center center!important;background-size:cover!important}#recent-posts>.recent-post-item{position:relative}[data-theme=dark] #nav .menus_items .menus_item .menus_item_child li a,[data-theme=dark] #nav .site-page{text-shadow:0 0 2px var(--theme-color)!important}[data-theme=dark] #sidebar #sidebar-menus .menus_items .site-page{text-shadow:0 0 2px var(--theme-color)!important}#aside-content>.card-widget.card-info{position:relative;z-index:1;background:linear-gradient(-45deg,rgba(255,255,255,.7),rgba(255,255,255,.8),rgba(255,255,255,.8),rgba(255,255,255,.7))}#card-info-btn:hover,#card-info-btn:hover .icon,#card-info-btn:hover span{transform:scale(1.1)}[data-theme=dark] #aside-content>.card-widget.card-info{background:linear-gradient(-45deg,rgba(24,40,72,.6),rgba(35,37,58,.5),rgba(35,37,58,.5),rgba(24,40,72,.6))}#aside-content>.card-widget.card-announcement{background:linear-gradient(-45deg,rgba(255,255,255,.7),rgba(255,255,255,.8),rgba(255,255,255,.8),rgba(255,255,255,.7))}[data-theme=dark] #aside-content>.card-widget.card-announcement{background:linear-gradient(-45deg,rgba(24,40,72,.7),rgba(35,37,58,.8),rgba(35,37,58,.8),rgba(24,40,72,.7))}#aside-content>.sticky_layout>.card-widget{background:linear-gradient(-45deg,rgba(255,255,255,.7),rgba(255,255,255,.8),rgba(255,255,255,.8),rgba(255,255,255,.7))}[data-theme=dark] #aside-content>.sticky_layout>.card-widget{background:linear-gradient(-45deg,rgba(24,40,72,.7),rgba(35,37,58,.8),rgba(35,37,58,.8),rgba(24,40,72,.7))}[data-theme=dark] #aside-content>.card-widget.welcomeBoxClass{background:linear-gradient(-45deg,rgba(24,40,72,.7),rgba(35,37,58,.8),rgba(35,37,58,.8),rgba(24,40,72,.7))}#recent-posts>#noticeList{background:linear-gradient(-45deg,rgba(255,255,255,.7),rgba(255,255,255,.8),rgba(255,255,255,.8),rgba(255,255,255,.7))}[data-theme=dark] #recent-posts>#noticeList{background:linear-gradient(-45deg,rgba(24,40,72,.7),rgba(35,37,58,.8),rgba(35,37,58,.8),rgba(24,40,72,.7))}#aside-content>.card-widget.card-info>#card-info-btn{background-color:#3eb8be;border-radius:10px}
+/* 滚动条 */
+
+::-webkit-scrollbar {
+  width: 10px; /* 滚动条宽度 */
+  height: 8px; /* 滚动条高度 */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(62, 184, 190, 0.5); /* 滚动条颜色 */
+  border-radius: 10px; /* 圆角边框 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(41, 138, 228, 0.8); /* 鼠标悬浮时的颜色 */
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent; /* 滚动条轨道透明 */
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent; /* 滚动条角落透明 */
+}
+
+/* 波浪css */
+.main-hero-waves-area {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: -11px;
+  z-index: 5;
+}
+.waves-area .waves-svg {
+  width: 100%;
+  height: 5rem;
+}
+/* Animation */
+
+.parallax > use {
+  animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+}
+.parallax > use:nth-child(1) {
+  animation-delay: -2s;
+  animation-duration: 7s;
+  fill: #f7f9febd;
+}
+.parallax > use:nth-child(2) {
+  animation-delay: -3s;
+  animation-duration: 10s;
+  fill: #f7f9fe82;
+}
+.parallax > use:nth-child(3) {
+  animation-delay: -4s;
+  animation-duration: 13s;
+  fill: #f7f9fe36;
+}
+.parallax > use:nth-child(4) {
+  animation-delay: -5s;
+  animation-duration: 20s;
+  fill: #f7f9fe;
+}
+/* 黑色模式背景 */
+[data-theme="dark"] .parallax > use:nth-child(1) {
+  animation-delay: -2s;
+  animation-duration: 7s;
+  fill: #18171dc8;
+}
+[data-theme="dark"] .parallax > use:nth-child(2) {
+  animation-delay: -3s;
+  animation-duration: 10s;
+  fill: #18171d80;
+}
+[data-theme="dark"] .parallax > use:nth-child(3) {
+  animation-delay: -4s;
+  animation-duration: 13s;
+  fill: #18171d3e;
+}
+[data-theme="dark"] .parallax > use:nth-child(4) {
+  animation-delay: -5s;
+  animation-duration: 20s;
+  fill: #18171d;
+}
+
+@keyframes move-forever {
+  0% {
+    transform: translate3d(-90px, 0, 0);
+  }
+  100% {
+    transform: translate3d(85px, 0, 0);
+  }
+}
+/*Shrinking for mobile*/
+@media (max-width: 768px) {
+  .waves-area .waves-svg {
+    height: 40px;
+    min-height: 40px;
+  }
+}
+
+/* 帧率检测 */
+#fps {
+  position: fixed;
+  /* 指定位置 */
+  right: 10px;
+  bottom: 10px;
+  z-index: 1919810;
+}
+[data-theme="light"] #fps {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--backdrop-filter);
+  padding: 4px;
+  border-radius: 4px;
+}
+[data-theme="dark"] #fps {
+  background-color: rgba(0, 0, 0, 0.72);
+  backdrop-filter: var(--backdrop-filter);
+  padding: 4px;
+  border-radius: 4px;
+}
+
+/* #my-custom-card-author {
+  background-image: url("/img/mewo1.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+} */
+/* [data-theme="light"] #my-custom-card-author {
+  background-image: url("/img/mewo1.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+} */
+/* [data-theme="dark"] #my-custom-card-author {
+  background-image: url("/img/black-rock-shotter.gif") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+} */
+ 
+
+[current-language="en"] .loading-img {
+  background: url(/en/img/avatar.webp) no-repeat center center !important;
+  background-size: cover !important;
+}
+[current-language="zh"] .loading-img {
+  background: url(/img/avatar.webp) no-repeat center center !important;
+  background-size: cover !important;
+}
+
+
+#recent-posts > .recent-post-item {
+  position: relative;
+}
+
+
+/* 夜间模式菜单栏发光字 */
+[data-theme="dark"] #nav .site-page,
+[data-theme="dark"] #nav .menus_items .menus_item .menus_item_child li a {
+  text-shadow: 0 0 2px var(--theme-color) !important;
+}
+
+/* 手机端适配 */
+[data-theme="dark"] #sidebar #sidebar-menus .menus_items .site-page {
+  text-shadow: 0 0 2px var(--theme-color) !important;
+}
+
+
+
+
+
+
+
+/* 侧边栏个人信息卡片动态渐变色 */
+#aside-content>.card-widget.card-info {
+  position: relative;
+  z-index: 1; /* 确保原内容在上层显示 */
+  background: linear-gradient(-45deg, rgba(255, 255, 255, .7),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+#card-info-btn:hover, #card-info-btn:hover .icon, #card-info-btn:hover span {
+transform: scale(1.1); /* 鼠标悬停时放大到110% */
+}
+
+[data-theme=dark] #aside-content>.card-widget.card-info {
+  background: linear-gradient(-45deg, rgba(24, 40, 72, .6),
+          rgba(35, 37, 58, .5),
+          rgba(35, 37, 58, .5),
+          rgba(24, 40, 72, .6));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+/* 侧边栏公告栏卡片渐变色 */
+#aside-content>.card-widget.card-announcement {
+  background: linear-gradient(-45deg, rgba(255, 255, 255, .7),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+[data-theme=dark] #aside-content>.card-widget.card-announcement {
+  background: linear-gradient(-45deg, rgba(24, 40, 72, .7),
+          rgba(35, 37, 58, .8),
+          rgba(35, 37, 58, .8),
+          rgba(24, 40, 72, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+/* 侧边栏目录最新文章卡片渐变色 */
+#aside-content>.sticky_layout>.card-widget {
+  background: linear-gradient(-45deg, rgba(255, 255, 255, .7),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+[data-theme=dark] #aside-content>.sticky_layout>.card-widget {
+  background: linear-gradient(-45deg, rgba(24, 40, 72, .7),
+          rgba(35, 37, 58, .8),
+          rgba(35, 37, 58, .8),
+          rgba(24, 40, 72, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+[data-theme=dark] #aside-content>.card-widget.welcomeBoxClass {
+  background: linear-gradient(-45deg, rgba(24, 40, 72, .7),
+          rgba(35, 37, 58, .8),
+          rgba(35, 37, 58, .8),
+          rgba(24, 40, 72, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+/* 公告卡片渐变色 */
+#recent-posts>#noticeList {
+  background: linear-gradient(-45deg, rgba(255, 255, 255, .7),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .8),
+          rgba(255, 255, 255, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+[data-theme=dark] #recent-posts>#noticeList {
+  background: linear-gradient(-45deg, rgba(24, 40, 72, .7),
+          rgba(35, 37, 58, .8),
+          rgba(35, 37, 58, .8),
+          rgba(24, 40, 72, .7));
+  /* backdrop-filter: blur(10px); 应用高斯模糊效果，可以根据需要调整模糊程度 */
+   /* -webkit-backdrop-filter: blur(10px);兼容性前缀，适用于一些旧版本的浏览器 */
+}
+
+/* 个人信息Follow me按钮 */
+#aside-content>.card-widget.card-info>#card-info-btn {
+  background-color: #3eb8be;
+  border-radius: 10px;
+}
+
+
