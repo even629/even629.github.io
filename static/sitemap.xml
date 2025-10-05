@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://even629.com/posts/134/</loc>
+    
+    <lastmod>2025-10-05</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://even629.com/posts/238/</loc>
     
     <lastmod>2025-10-05</lastmod>
@@ -155,7 +164,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/charts/index.html</loc>
+    <loc>https://even629.com/categories/index.html</loc>
     
     <lastmod>2025-09-29</lastmod>
     
@@ -164,7 +173,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/index.html</loc>
+    <loc>https://even629.com/charts/index.html</loc>
     
     <lastmod>2025-09-29</lastmod>
     
@@ -601,14 +610,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/UEFI/</loc>
-    <lastmod>2025-10-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/emacs/</loc>
+    <loc>https://even629.com/tags/Linux/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -622,7 +624,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/Linux/</loc>
+    <loc>https://even629.com/tags/emacs/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -636,7 +638,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/virtualization/</loc>
+    <loc>https://even629.com/tags/UEFI/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -651,6 +653,13 @@
   
   <url>
     <loc>https://even629.com/tags/WSL/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/virtualization/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -678,21 +687,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E6%A8%A1%E6%8B%9F/</loc>
-    <lastmod>2025-10-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/</loc>
-    <lastmod>2025-10-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/%E9%AB%98%E7%B2%BE%E5%BA%A6/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -707,6 +702,20 @@
   
   <url>
     <loc>https://even629.com/tags/%E8%AE%BE%E8%AE%A1%E9%A2%98/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E9%AB%98%E7%B2%BE%E5%BA%A6/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E6%A8%A1%E6%8B%9F/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -748,14 +757,14 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/BFS/</loc>
+    <loc>https://even629.com/tags/DFS/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://even629.com/tags/DFS/</loc>
+    <loc>https://even629.com/tags/BFS/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -783,14 +792,14 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E5%89%8D%E7%BC%80%E5%92%8C/</loc>
+    <loc>https://even629.com/tags/%E8%B4%AA%E5%BF%83/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E8%B4%AA%E5%BF%83/</loc>
+    <loc>https://even629.com/tags/%E5%89%8D%E7%BC%80%E5%92%8C/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -820,7 +829,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/UEFI/</loc>
+    <loc>https://even629.com/categories/Linux/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -834,13 +843,6 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/Linux/</loc>
-    <lastmod>2025-10-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/categories/programming/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -848,7 +850,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/virtualization/</loc>
+    <loc>https://even629.com/categories/UEFI/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -856,6 +858,13 @@
   
   <url>
     <loc>https://even629.com/categories/tools/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/categories/virtualization/</loc>
     <lastmod>2025-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
