@@ -1,0 +1,604 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Qemu地址空间抽象 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Qemu的地址空间抽象">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Qemu地址空间抽象">
+<meta property="og:url" content="https://even629.com/posts/2511211/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Qemu的地址空间抽象">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/qemu_cover.png">
+<meta property="article:published_time" content="2025-11-21T10:13:13.000Z">
+<meta property="article:modified_time" content="2025-11-21T10:13:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="virtualization">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/qemu_cover.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2511211/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Qemu地址空间抽象',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/qemu_top_img.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Qemu地址空间抽象</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-21T10:13:13.000Z" title="发表于 2025-11-21 18:13:13">2025-11-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-21T10:13:13.000Z" title="更新于 2025-11-21 18:13:13">2025-11-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/virtualization/">virtualization</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2511211/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-21</p>
+</div></div><div class='timeline-item-content'><ol>
+<li>init</li>
+</ol>
+</div></div></div>
+
+
+
+<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wget https://download.qemu.org/qemu-10.1.2.tar.xz</span><br><span class="line">tar xvJf qemu-10.1.2.tar.xz</span><br><span class="line"><span class="built_in">cd</span> qemu-10.1.2</span><br><span class="line"><span class="built_in">mkdir</span> -p output</span><br><span class="line">./configure --prefix=<span class="variable">$PWD</span>/output --target-list=aarch64-softmmu,riscv64-softmmu --enable-debug</span><br><span class="line">bear -- make -j$(<span class="built_in">nproc</span>)</span><br></pre></td></tr></table></figure>
+
+<p>创建.clangd</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">CompileFlags:</span></span><br><span class="line"><span class="symbol">  Add:</span> -Wno-unknown-warning-option</span><br><span class="line"><span class="symbol">  Remove:</span> [-m*, -f*]</span><br></pre></td></tr></table></figure>
+
+<h2 id="gdb"><a href="#gdb" class="headerlink" title="gdb"></a>gdb</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb -args ./build/qemu-system-riscv64 -M virt -device edu,<span class="built_in">id</span>=edu1 -nographic</span><br></pre></td></tr></table></figure>
+
+<h1 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h1><p>从 CPU 的角度来说，一切访存行为都是对地址进行操作的（load&#x2F;store），CPU 并不关心这个地址背后对应的是什么设备，只要能读写到正确结果即可。</p>
+<h2 id="CPU访存流程"><a href="#CPU访存流程" class="headerlink" title="CPU访存流程"></a>CPU访存流程</h2><ol>
+<li>CPU 在计算（通过算术逻辑单元 ALU）出目标地址以后，将其发送到地址总线上，同时 CPU 还会给出读写的控制信号；</li>
+<li>**地址对应的设备，可能是一块普通内存，也可能是一个 I&#x2F;O 设备（**这里特指外设），会对地址总线的信号进行响应；</li>
+<li>如果是读操作，则将该地址对应的数据，按照 CPU 指定的位宽大小，通过总线传输回去，一般是存放到 CPU 访存指令给出的寄存器内；</li>
+<li>如果是写操作，则会把总线传递过来的数据，按照 CPU 指定的位宽大小，写入指定地址里面，如果是 I&#x2F;O 设备，一般是更新了这个地址对应的寄存器，并可能产生副作用。</li>
+</ol>
+<h2 id="Qemu模拟内存外设"><a href="#Qemu模拟内存外设" class="headerlink" title="Qemu模拟内存外设"></a>Qemu模拟内存外设</h2><p>为了能够模拟内存&#x2F;外设的行为，QEMU 至少要实现以下机制：</p>
+<ol>
+<li>基本的地址空间管理，<strong>能够根据 CPU 投递过来的地址，区分是什么设备</strong>；</li>
+<li><strong>实现地址的离散映射，有些外设的地址不一定是连续的</strong>；</li>
+<li><strong>实现地址的重映射</strong>，比如 MCS-51 的 RAM、XRAM 都是从 0 地址开始的；</li>
+</ol>
+<p>为此，QEMU 提供了两个概念，<strong>address-space</strong> 和 <strong>memory-region</strong>（下文简称为 mr），前者用于描述整个地址空间的映射关系（不同部件看到的地址空间可能不同），后者用于描述地址空间中某个地址范围内的映射规则。</p>
+<h1 id="地址空间布局"><a href="#地址空间布局" class="headerlink" title="地址空间布局"></a>地址空间布局</h1><p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./build/qemu-system-riscv64 -M virt -monitor stdio -s -S -display none</span><br></pre></td></tr></table></figure>
+
+<p>然后我们输入 <code>info mtree</code> 命令可以看到地址空间的布局：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">(qemu) info mtree</span><br><span class="line">address-space: cpu-memory-0</span><br><span class="line">address-space: memory</span><br><span class="line">  0000000000000000-ffffffffffffffff (prio 0, i/o): system</span><br><span class="line">    0000000000001000-000000000000ffff (prio 0, rom): riscv_virt_board.mrom</span><br><span class="line">    0000000000100000-0000000000100fff (prio 0, i/o): riscv.sifive.test</span><br><span class="line">    0000000000101000-0000000000101023 (prio 0, i/o): goldfish_rtc</span><br><span class="line">    0000000002000000-0000000002003fff (prio 0, i/o): riscv.aclint.swi</span><br><span class="line">    0000000002004000-000000000200bfff (prio 0, i/o): riscv.aclint.mtimer</span><br><span class="line">    0000000003000000-000000000300ffff (prio 0, i/o): gpex_ioport_window</span><br><span class="line">      0000000003000000-000000000300ffff (prio 0, i/o): gpex_ioport</span><br><span class="line">    0000000004000000-0000000005ffffff (prio 0, i/o): platform bus</span><br><span class="line">    000000000c000000-000000000c5fffff (prio 0, i/o): riscv.sifive.plic</span><br><span class="line">    0000000010000000-0000000010000007 (prio 0, i/o): serial</span><br><span class="line">    0000000010001000-00000000100011ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010002000-00000000100021ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010003000-00000000100031ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010004000-00000000100041ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010005000-00000000100051ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010006000-00000000100061ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010007000-00000000100071ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010008000-00000000100081ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010100000-0000000010100007 (prio 0, i/o): fwcfg.data</span><br><span class="line">    0000000010100008-0000000010100009 (prio 0, i/o): fwcfg.ctl</span><br><span class="line">    0000000010100010-0000000010100017 (prio 0, i/o): fwcfg.dma</span><br><span class="line">    0000000020000000-0000000021ffffff (prio 0, romd): virt.flash0</span><br><span class="line">    0000000022000000-0000000023ffffff (prio 0, romd): virt.flash1</span><br><span class="line">    0000000030000000-000000003fffffff (prio 0, i/o): <span class="built_in">alias</span> pcie-ecam @pcie-mmcfg-mmio 0000000000000000-000000000fffffff</span><br><span class="line">    0000000040000000-000000007fffffff (prio 0, i/o): <span class="built_in">alias</span> pcie-mmio @gpex_mmio_window 0000000040000000-000000007fffffff</span><br><span class="line">    0000000080000000-0000000087ffffff (prio 0, ram): riscv_virt_board.ram</span><br><span class="line">    0000000400000000-00000007ffffffff (prio 0, i/o): <span class="built_in">alias</span> pcie-mmio-high @gpex_mmio_window 0000000400000000-00000007ffffffff</span><br><span class="line"></span><br><span class="line">address-space: gpex-root</span><br><span class="line">  0000000000000000-ffffffffffffffff (prio 0, i/o): bus master container</span><br><span class="line"></span><br><span class="line">address-space: I/O</span><br><span class="line">  0000000000000000-000000000000ffff (prio 0, i/o): io</span><br><span class="line"></span><br><span class="line">memory-region: pcie-mmcfg-mmio</span><br><span class="line">  0000000000000000-000000000fffffff (prio 0, i/o): pcie-mmcfg-mmio</span><br><span class="line"></span><br><span class="line">memory-region: gpex_mmio_window</span><br><span class="line">  0000000000000000-ffffffffffffffff (prio 0, i/o): gpex_mmio_window</span><br><span class="line">    0000000000000000-ffffffffffffffff (prio 0, i/o): gpex_mmio</span><br><span class="line"></span><br><span class="line">memory-region: system</span><br><span class="line">  0000000000000000-ffffffffffffffff (prio 0, i/o): system</span><br><span class="line">    0000000000001000-000000000000ffff (prio 0, rom): riscv_virt_board.mrom</span><br><span class="line">    0000000000100000-0000000000100fff (prio 0, i/o): riscv.sifive.test</span><br><span class="line">    0000000000101000-0000000000101023 (prio 0, i/o): goldfish_rtc</span><br><span class="line">    0000000002000000-0000000002003fff (prio 0, i/o): riscv.aclint.swi</span><br><span class="line">    0000000002004000-000000000200bfff (prio 0, i/o): riscv.aclint.mtimer</span><br><span class="line">    0000000003000000-000000000300ffff (prio 0, i/o): gpex_ioport_window</span><br><span class="line">      0000000003000000-000000000300ffff (prio 0, i/o): gpex_ioport</span><br><span class="line">    0000000004000000-0000000005ffffff (prio 0, i/o): platform bus</span><br><span class="line">    000000000c000000-000000000c5fffff (prio 0, i/o): riscv.sifive.plic</span><br><span class="line">    0000000010000000-0000000010000007 (prio 0, i/o): serial</span><br><span class="line">    0000000010001000-00000000100011ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010002000-00000000100021ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010003000-00000000100031ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010004000-00000000100041ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010005000-00000000100051ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010006000-00000000100061ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010007000-00000000100071ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010008000-00000000100081ff (prio 0, i/o): virtio-mmio</span><br><span class="line">    0000000010100000-0000000010100007 (prio 0, i/o): fwcfg.data</span><br><span class="line">    0000000010100008-0000000010100009 (prio 0, i/o): fwcfg.ctl</span><br><span class="line">    0000000010100010-0000000010100017 (prio 0, i/o): fwcfg.dma</span><br><span class="line">    0000000020000000-0000000021ffffff (prio 0, romd): virt.flash0</span><br><span class="line">    0000000022000000-0000000023ffffff (prio 0, romd): virt.flash1</span><br><span class="line">    0000000030000000-000000003fffffff (prio 0, i/o): <span class="built_in">alias</span> pcie-ecam @pcie-mmcfg-mmio 0000000000000000-000000000fffffff</span><br><span class="line">    0000000040000000-000000007fffffff (prio 0, i/o): <span class="built_in">alias</span> pcie-mmio @gpex_mmio_window 0000000040000000-000000007fffffff</span><br><span class="line">    0000000080000000-0000000087ffffff (prio 0, ram): riscv_virt_board.ram</span><br><span class="line">    0000000400000000-00000007ffffffff (prio 0, i/o): <span class="built_in">alias</span> pcie-mmio-high @gpex_mmio_window 0000000400000000-00000007ffffffff</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可以看出：</p>
+<table>
+<thead>
+<tr>
+<th>地址范围</th>
+<th>类型</th>
+<th>对应设备</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0x00001000~0xFFFF</td>
+<td>ROM</td>
+<td>板载固件</td>
+</tr>
+<tr>
+<td>0x00100000~0x00101023</td>
+<td>I&#x2F;O</td>
+<td>测试设备 + RTC</td>
+</tr>
+<tr>
+<td>0x02000000~0x020BFFFF</td>
+<td>I&#x2F;O</td>
+<td>CLINT（软件&#x2F;时钟中断）</td>
+</tr>
+<tr>
+<td>0x03000000~0x030FFFFF</td>
+<td>I&#x2F;O</td>
+<td>PCI I&#x2F;O window</td>
+</tr>
+<tr>
+<td>0x04000000~0x05FFFFFF</td>
+<td>I&#x2F;O</td>
+<td>Platform Bus 设备</td>
+</tr>
+<tr>
+<td>0x0C000000~0x0C5FFFFF</td>
+<td>I&#x2F;O</td>
+<td>PLIC</td>
+</tr>
+<tr>
+<td>0x10000000~0x100081FF</td>
+<td>I&#x2F;O</td>
+<td>UART + Virtio-MMIO</td>
+</tr>
+<tr>
+<td>0x20000000~0x23FFFFFF</td>
+<td>ROMD</td>
+<td>flash0 &#x2F; flash1</td>
+</tr>
+<tr>
+<td>0x80000000~0x87FFFFFF</td>
+<td>RAM</td>
+<td>Guest 内存</td>
+</tr>
+<tr>
+<td>0x300000000~0x7FFFFFFFF</td>
+<td>I&#x2F;O</td>
+<td>PCI MMIO alias</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>一个 Guest（表示被模拟的对象，这里指 virt machine）可以有多个 address-space</strong>，<strong>每个 address-space 描述的地址映射关系不一定相同</strong>，典型的是 <strong>I&#x2F;O</strong> 和 <strong>memory</strong>。</li>
+<li><strong>每个 address-space 对应一个 mr 树</strong>，比如 address-space: memory 对应的 mr 的根节点是 system，子节点按照地址大小顺序排列。</li>
+</ul>
+<blockquote>
+<p>由于 <strong>mr 描述的是某个具体地址范围内的映射规则</strong>，因此可以很方便地实现设备的离散映射。</p>
+</blockquote>
+<p><strong>举例：</strong></p>
+<figure class="highlight nestedtext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">address-space</span><span class="punctuation">:</span> <span class="string">cpu-memory-0</span></span><br><span class="line">  <span class="attribute">0000000000000000-ffffffffffffffff (prio 0, i/o)</span><span class="punctuation">:</span> <span class="string">system</span></span><br><span class="line">    <span class="attribute">0000000000001000-000000000000ffff (prio 0, rom)</span><span class="punctuation">:</span> <span class="string">riscv_virt_board.mrom</span></span><br><span class="line">    <span class="attribute">0000000000100000-0000000000100fff (prio 0, i/o)</span><span class="punctuation">:</span> <span class="string">riscv.sifive.test</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>cpu-memory-0</code> 是 address-space</li>
+<li><code>system</code> 是顶层 memory-region（整个虚拟系统的容器）</li>
+<li><code>riscv_virt_board.mrom</code>、<code>sifive.test</code> 等都是 <strong>子 memory-region</strong></li>
+</ul>
+<p>每个 memory-region 都挂在 address-space 下，并提供访问 handler</p>
+<h2 id="memory-region地址重叠"><a href="#memory-region地址重叠" class="headerlink" title="memory_region地址重叠"></a>memory_region地址重叠</h2><p><strong>mr 支持同一级之间地址范围重叠</strong>，重叠的部分按照优先级呈现，高优先级的重叠部分作为访问目标。(prio 0, type) 中的 prio 后跟着的是优先级，virt 的外设之间没有地址重叠，因此优先级都是 0。</p>
+<p>这里举例说明：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">0x8000   0x70000  0x60000  0x50000  0x40000  0x30000  0x20000  0x10000    0</span></span><br><span class="line">  <span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span><span class="literal">--------</span><span class="comment">|</span></span><br><span class="line"><span class="comment">A:</span><span class="title">[</span><span class="literal">-----------------------------------------------------------------------</span><span class="title">]</span> <span class="comment">prio:0</span></span><br><span class="line"><span class="comment">B:</span><span class="title">[</span><span class="literal">-----------------------------------------------------</span><span class="title">]</span> <span class="comment">prio:1</span></span><br><span class="line"><span class="comment">C:</span><span class="title">[</span><span class="literal">-----------------------------------</span><span class="title">]</span> <span class="comment">prio:2</span></span><br><span class="line"><span class="comment">D:</span><span class="title">[</span><span class="literal">-----------------</span><span class="title">]</span> <span class="comment">prio:3</span></span><br></pre></td></tr></table></figure>
+
+<p>对于 mr A 来说，它的地址范围可以看成：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0x8000   0x70000  0x60000  0x50000  0x40000  0x30000  0x20000  0x10000    0</span><br><span class="line">  |<span class="string">--------</span>|<span class="string">--------</span>|<span class="string">--------</span>|<span class="string">--------</span>|<span class="string">--------</span>|<span class="string">--------</span>|<span class="string">--------</span>|<span class="string">--------</span>|</span><br><span class="line">A:[DDDDDDDDDDDDDDDDD|<span class="string">CCCCCCCCCCCCCCCCC</span>|<span class="string">BBBBBBBBBBBBBBBBB</span>|<span class="string">AAAAAAAAAAAAAAAAA]</span></span><br></pre></td></tr></table></figure>
+
+<p>为了实现以上机制，<strong>QEMU 使用 alias 来描述 mr 中重叠的部分，使用 alias 可以将一个 mr 的一部分放到另外一个 mr 上，以此来简化内存模拟的复杂度（可以类比 mmap）</strong>。</p>
+<h2 id="alias-示例"><a href="#alias-示例" class="headerlink" title="alias 示例"></a>alias 示例</h2><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">0000000030000000</span>-<span class="number">000000003</span>fffffff (prio <span class="number">0</span>, i/o): alias pcie-ecam @pcie-mmcfg-mmio <span class="number">0000000000000000</span>-<span class="number">000000000</span>fffffff</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>alias memory-region 将一个 region 映射到 address-space 的另一个地址范围</li>
+<li>方便不同总线访问同一物理设备</li>
+<li>alias 也是 memory-region，只是内部引用了另一个 region</li>
+</ul>
+<h2 id="AddressSpace"><a href="#AddressSpace" class="headerlink" title="AddressSpace"></a>AddressSpace</h2><ul>
+<li>表示 <strong>CPU 或总线看到的完整地址空间</strong></li>
+<li>包括：<ul>
+<li>所有被映射的 <strong>memory-region</strong></li>
+<li>每个 region 的优先级（prio）</li>
+<li>类型（RAM &#x2F; ROM &#x2F; I&#x2F;O &#x2F; alias）</li>
+</ul>
+</li>
+<li>可以理解为 <strong>虚拟机的“物理地址空间视图”</strong></li>
+</ul>
+<blockquote>
+<p>一个 CPU 可以有多个 address-space（比如 risc-v CPU 有 <code>cpu-memory-0</code>，还有其他 I&#x2F;O space 或 PCI 总线 space）。</p>
+</blockquote>
+<p><strong>include&#x2F;system&#x2F;memory.h</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * struct AddressSpace: describes a mapping of addresses to #MemoryRegion objects</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AddressSpace</span> &#123;</span></span><br><span class="line">    <span class="comment">/* private: */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span> <span class="title">rcu</span>;</span></span><br><span class="line">    <span class="type">char</span> *name;</span><br><span class="line">    MemoryRegion *root;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Accessed via RCU.  */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">FlatView</span> *<span class="title">current_map</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> ioeventfd_nb;</span><br><span class="line">    <span class="type">int</span> ioeventfd_notifiers;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">MemoryRegionIoeventfd</span> *<span class="title">ioeventfds</span>;</span></span><br><span class="line">    QTAILQ_HEAD(, MemoryListener) listeners;</span><br><span class="line">    QTAILQ_ENTRY(AddressSpace) address_spaces_link;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Maximum DMA bounce buffer size used for indirect memory map requests.</span></span><br><span class="line"><span class="comment">     * This limits the total size of bounce buffer allocations made for</span></span><br><span class="line"><span class="comment">     * DMA requests to indirect memory regions within this AddressSpace. DMA</span></span><br><span class="line"><span class="comment">     * requests that exceed the limit (e.g. due to overly large requested size</span></span><br><span class="line"><span class="comment">     * or concurrent DMA requests having claimed too much buffer space) will be</span></span><br><span class="line"><span class="comment">     * rejected and left to the caller to handle.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">size_t</span> max_bounce_buffer_size;</span><br><span class="line">    <span class="comment">/* Total size of bounce buffers currently allocated, atomically accessed */</span></span><br><span class="line">    <span class="type">size_t</span> bounce_buffer_size;</span><br><span class="line">    <span class="comment">/* List of callbacks to invoke when buffers free up */</span></span><br><span class="line">    QemuMutex map_client_list_lock;</span><br><span class="line">    QLIST_HEAD(, AddressSpaceMapClient) map_client_list;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="MemoryRegion"><a href="#MemoryRegion" class="headerlink" title="MemoryRegion"></a>MemoryRegion</h2><ul>
+<li>内存或 I&#x2F;O 的 <strong>具体块</strong></li>
+<li>包括：<ul>
+<li>起始地址范围（相对 address-space 的偏移）</li>
+<li>大小</li>
+<li>类型（RAM &#x2F; ROM &#x2F; I&#x2F;O&#x2F; alias &#x2F; container）</li>
+<li>子 memory-region（支持嵌套）</li>
+<li>对应的 read&#x2F;write handler 或对象指针</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>可以理解为 <strong>address-space 中的“单个区块”</strong>，它可以是物理内存、设备寄存器、PCI BAR 等。</p>
+</blockquote>
+<p><strong>include&#x2F;system&#x2F;memory.h</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** MemoryRegion:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * A struct representing a memory region.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MemoryRegion</span> &#123;</span></span><br><span class="line">    Object parent_obj;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* private: */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* The following fields should fit in a cache line */</span></span><br><span class="line">    <span class="type">bool</span> romd_mode;</span><br><span class="line">    <span class="type">bool</span> ram;</span><br><span class="line">    <span class="type">bool</span> subpage;</span><br><span class="line">    <span class="type">bool</span> readonly; <span class="comment">/* For RAM regions */</span></span><br><span class="line">    <span class="type">bool</span> nonvolatile;</span><br><span class="line">    <span class="type">bool</span> rom_device;</span><br><span class="line">    <span class="type">bool</span> flush_coalesced_mmio;</span><br><span class="line">    <span class="type">bool</span> unmergeable;</span><br><span class="line">    <span class="type">uint8_t</span> dirty_log_mask;</span><br><span class="line">    <span class="type">bool</span> is_iommu;</span><br><span class="line">    RAMBlock *ram_block;</span><br><span class="line">    Object *owner;</span><br><span class="line">    <span class="comment">/* owner as TYPE_DEVICE. Used for re-entrancy checks in MR access hotpath */</span></span><br><span class="line">    DeviceState *dev;</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> MemoryRegionOps *ops;</span><br><span class="line">    <span class="type">void</span> *opaque;</span><br><span class="line">    MemoryRegion *container;</span><br><span class="line">    <span class="type">int</span> mapped_via_alias; <span class="comment">/* Mapped via an alias, container might be NULL */</span></span><br><span class="line">    Int128 size;</span><br><span class="line">    hwaddr addr;</span><br><span class="line">    <span class="type">void</span> (*destructor)(MemoryRegion *mr);</span><br><span class="line">    <span class="type">uint64_t</span> align;</span><br><span class="line">    <span class="type">bool</span> terminates;</span><br><span class="line">    <span class="type">bool</span> ram_device;</span><br><span class="line">    <span class="type">bool</span> enabled;</span><br><span class="line">    <span class="type">uint8_t</span> vga_logging_count;</span><br><span class="line">    MemoryRegion *alias;</span><br><span class="line">    hwaddr alias_offset;</span><br><span class="line">    <span class="type">int32_t</span> priority;</span><br><span class="line">    QTAILQ_HEAD(, MemoryRegion) subregions;</span><br><span class="line">    QTAILQ_ENTRY(MemoryRegion) subregions_link;</span><br><span class="line">    QTAILQ_HEAD(, CoalescedMemoryRange) coalesced;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *name;</span><br><span class="line">    <span class="type">unsigned</span> ioeventfd_nb;</span><br><span class="line">    MemoryRegionIoeventfd *ioeventfds;</span><br><span class="line">    RamDiscardManager *rdm; <span class="comment">/* Only for RAM */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* For devices designed to perform re-entrant IO into their own IO MRs */</span></span><br><span class="line">    <span class="type">bool</span> disable_reentrancy_guard;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="初始化流程"><a href="#初始化流程" class="headerlink" title="初始化流程"></a>初始化流程</h1><p>我们从 QEMU 初始化过程，来理解 mr 和 address-space 的关系：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">main() // system/main.c</span><br><span class="line">|<span class="string">--qemu_init(argc, argv) // system/vlc.c</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">--cpu_exec_init_all() // system/physmem.c</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">--io_mem_init()</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">--memory_region_init_io(&amp;io_mem_unassigned, NULL, &amp;unassigned_mem_ops, NULL, NULL, UINT64_MAX)</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">--memory_map_init()</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">--memory_region_init(system_memory, NULL, &quot;system&quot;, UINT64_MAX)</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">--address_space_init(&amp;address_space_memory, system_memory, &quot;memory&quot;)</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">--memory_region_init_io(system_io, NULL, &amp;unassigned_io_ops, NULL, &quot;io&quot;, 65536)</span></span><br><span class="line"><span class="string"></span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">--address_space_init(&amp;address_space_io, system_io, &quot;I/O&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="memory-map-init"><a href="#memory-map-init" class="headerlink" title="memory_map_init"></a>memory_map_init</h2><p><strong>system&#x2F;physmem.c</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">memory_map_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    system_memory = g_malloc(<span class="keyword">sizeof</span>(*system_memory));</span><br><span class="line"></span><br><span class="line">    memory_region_init(system_memory, <span class="literal">NULL</span>, <span class="string">&quot;system&quot;</span>, UINT64_MAX);</span><br><span class="line">    address_space_init(&amp;address_space_memory, system_memory, <span class="string">&quot;memory&quot;</span>);</span><br><span class="line"></span><br><span class="line">    system_io = g_malloc(<span class="keyword">sizeof</span>(*system_io));</span><br><span class="line">    memory_region_init_io(system_io, <span class="literal">NULL</span>, &amp;unassigned_io_ops, <span class="literal">NULL</span>, <span class="string">&quot;io&quot;</span>,</span><br><span class="line">                          <span class="number">65536</span>);</span><br><span class="line">    address_space_init(&amp;address_space_io, system_io, <span class="string">&quot;I/O&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于 <code>memory_region_init()</code> ，最终调用到 <code>memory_region_do_init()</code> ：</p>
+<p><strong>system&#x2F;memory.c</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">memory_region_init</span><span class="params">(MemoryRegion *mr,</span></span><br><span class="line"><span class="params">                        Object *owner,</span></span><br><span class="line"><span class="params">                        <span class="type">const</span> <span class="type">char</span> *name,</span></span><br><span class="line"><span class="params">                        <span class="type">uint64_t</span> size)</span></span><br><span class="line">&#123;</span><br><span class="line">    object_initialize(mr, <span class="keyword">sizeof</span>(*mr), TYPE_MEMORY_REGION);</span><br><span class="line">    memory_region_do_init(mr, owner, name, size);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">memory_region_do_init</span><span class="params">(MemoryRegion *mr,</span></span><br><span class="line"><span class="params">                                  Object *owner,</span></span><br><span class="line"><span class="params">                                  <span class="type">const</span> <span class="type">char</span> *name,</span></span><br><span class="line"><span class="params">                                  <span class="type">uint64_t</span> size)</span></span><br><span class="line">&#123;</span><br><span class="line">    mr-&gt;size = int128_make64(size);</span><br><span class="line">    <span class="keyword">if</span> (size == UINT64_MAX) &#123;</span><br><span class="line">        mr-&gt;size = int128_2_64();</span><br><span class="line">    &#125;</span><br><span class="line">    mr-&gt;name = g_strdup(name);</span><br><span class="line">    mr-&gt;owner = owner;</span><br><span class="line">    mr-&gt;dev = (DeviceState *) object_dynamic_cast(mr-&gt;owner, TYPE_DEVICE);</span><br><span class="line">    mr-&gt;ram_block = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (name) &#123;</span><br><span class="line">        <span class="type">char</span> *escaped_name = memory_region_escape_name(name);</span><br><span class="line">        <span class="type">char</span> *name_array = g_strdup_printf(<span class="string">&quot;%s[*]&quot;</span>, escaped_name);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!owner) &#123;</span><br><span class="line">            owner = machine_get_container(<span class="string">&quot;unattached&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        object_property_add_child(owner, name_array, OBJECT(mr));</span><br><span class="line">        object_unref(OBJECT(mr));</span><br><span class="line">        g_free(name_array);</span><br><span class="line">        g_free(escaped_name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这段代码会完成 mr 一些关键字段的初始化。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** MemoryRegion:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * A struct representing a memory region.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MemoryRegion</span> &#123;</span></span><br><span class="line">    Object parent_obj;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* private: */</span></span><br><span class="line">    Object *owner;</span><br><span class="line">    <span class="type">const</span> MemoryRegionOps *ops;</span><br><span class="line">    Int128 size;</span><br><span class="line">    QTAILQ_HEAD(, MemoryRegion) subregions;</span><br><span class="line">    QTAILQ_ENTRY(MemoryRegion) subregions_link;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>ops 指向 mr 访存的实际接口；</strong></li>
+<li><strong>subregions 指向其他 mr</strong>，通过 subregions，可以将所有关联的 mr 串起来。</li>
+</ul>
+<p>这部分初始化代码，有一些是注册的函数回调，静态 review 代码不太方便理清中间的逻辑，可以借助 gdb 来操作。</p>
+<p><strong>system_memory 是一个全局变量指针</strong>，<strong>指向 mr 的根节点</strong>，我们可以对 system_memory-&gt;ops 和 system_memory-&gt;subregions 进行监视，看看是在哪个函数内被初始化的。</p>
+<p>首先观察 system_memory-&gt;ops，命令和流程如下:</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251121185833788.png" alt="watch system_memory-&gt;ops" loading="lazy"></p>
+<p>第一次和第二次命中监视点，是对 ops 进行 reset 操作，第三次命中，是真正初始化的地方，我们可以观察一下调用栈：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251121185936668.png" alt="ops初始化" loading="lazy"></p>
+<p>可以看到 <code>memory_region_initfn() </code>是在 <code>object_init_with_type() </code>中被调用，这是 QEMU 的 QOM 模块，可<strong>以简单理解为是对 mr 对象的初始化</strong>，这个<strong>初始化方法是注册的一个函数指针</strong>。</p>
+<p>以此类推，我们可以得到 system_memory-&gt;subregions 是在哪里被初始化的：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251121190242161.png" alt="system_memory-&gt;subregions" loading="lazy"></p>
+<h1 id="结点关系"><a href="#结点关系" class="headerlink" title="结点关系"></a>结点关系</h1><p>进一步watch <code>system_memory-&gt;subregions</code></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251121191446008.png" alt="其他subregions是如何被添加进来的" loading="lazy"></p>
+<p><code>memory_region_update_container_subregions()</code> 的过程很简单，最终执行的结果如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">                      struct MemoryRegion</span><br><span class="line">                    +------------------------+</span><br><span class="line">                    |<span class="string">subregions              </span>|</span><br><span class="line">                    |<span class="string">    QTAILQ_HEAD()       </span>|</span><br><span class="line">                    +------------------------+</span><br><span class="line">                                |<span class="string"></span></span><br><span class="line"><span class="string">            +-------------------+---------------------+</span></span><br><span class="line"><span class="string">            </span>|<span class="string">                                         </span>|</span><br><span class="line">            |<span class="string">                                         </span>|</span><br><span class="line">    struct MemoryRegion                      struct MemoryRegion</span><br><span class="line">+------------------------+                +------------------------+</span><br><span class="line">|<span class="string">subregions              </span>|<span class="string">                </span>|<span class="string">subregions              </span>|</span><br><span class="line">|<span class="string">    QTAILQ_HEAD()       </span>|<span class="string">                </span>|<span class="string">    QTAILQ_HEAD()       </span>|</span><br><span class="line">+------------------------+                +------------------------+</span><br><span class="line">      ...                                            ...</span><br></pre></td></tr></table></figure>
+
+<p>是不是很像一个树形结构？其实这就是<strong>红黑树</strong>。</p>
+<p><strong>address-space 内有一个 root 字段，指向 memory-region 的根节点，这样就实现了一个 address-space 对应一个 memory-region 树</strong>，如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">     AddressSpace</span><br><span class="line">+-------------------------+</span><br><span class="line">|<span class="string">name                     </span>|</span><br><span class="line">|<span class="string">   (char *)              </span>|</span><br><span class="line">|<span class="string">                         </span>|<span class="string">     MemoryRegion(system_memory/system_io)</span></span><br><span class="line"><span class="string">+-------------------------+          +------------------------+</span></span><br><span class="line"><span class="string"></span>|<span class="string">root                     </span>|<span class="string">          </span>|<span class="string">subregions              </span>|</span><br><span class="line">|<span class="string">   (MemoryRegion *)      </span>|<span class="string"> --------&gt;</span>|<span class="string">    QTAILQ_HEAD()       </span>|</span><br><span class="line">+-------------------------+          +------------------------+</span><br><span class="line">                                                  |<span class="string"></span></span><br><span class="line"><span class="string">                                                  </span>|</span><br><span class="line">                              +-------------------+---------------------+</span><br><span class="line">                              |<span class="string">                                         </span>|</span><br><span class="line">                   struct MemoryRegion                         struct MemoryRegion</span><br><span class="line">                   +------------------------+                  +------------------------+</span><br><span class="line">                   |<span class="string">subregions              </span>|<span class="string">                  </span>|<span class="string">subregions              </span>|</span><br><span class="line">                   |<span class="string">    QTAILQ_HEAD()       </span>|<span class="string">                  </span>|<span class="string">    QTAILQ_HEAD()       </span>|</span><br><span class="line">                   +------------------------+                  +------------------------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>每个 mr 会对应到具体的内存块 RAMBlock</strong>，<strong>这个内存块从 Host 申请</strong>，作为 Guest 外围设备的存储。</p>
+<p>mr 提供了一些类型，用于描述存储设备，常见的有 RAM、ROM、IOMMU、container。</p>
+<p>回到 QEMU 的交互终端，使用如下命令，我们可以打印 virt 的 memory-region 分布和对应的外设：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251121192041634.png" alt="qom-tree" loading="lazy"></p>
+<p> <strong>memory-region (mr)</strong> 都表示一个可访问的地址块，比如：</p>
+<ul>
+<li>RAM&#x2F;ROM → 存储内容</li>
+<li>I&#x2F;O → 设备寄存器</li>
+<li>alias → 地址映射</li>
+<li>container → “容器”，管理子 region</li>
+</ul>
+<p>每个 mr 都有 <strong>起始偏移</strong>（相对于父 region）和 <strong>大小</strong>。</p>
+<p>对于 <strong>memory-region container</strong> 类型，它包含了其他的 mr，记录每个 mr 的 offset。</p>
+<blockquote>
+<p><strong>container 是一种特殊类型的 memory-region</strong></p>
+<p>它自身 <strong>不存储数据</strong>，也没有直接的读写 handler</p>
+<p>作用：</p>
+<ol>
+<li><strong>管理子 memory-region</strong></li>
+<li><strong>提供地址偏移映射</strong></li>
+<li><strong>建立层级化结构</strong></li>
+</ol>
+</blockquote>
+<p>在实际应用场景，我们<strong>可以利用 mr container 创建不同的地址层级关系</strong>，可以在地址空间层面，清晰的描述不同子系统的关系，对于实现模块化有很好的帮助。</p>
+<p>参考：</p>
+<div class="tag link"><a class="link-card" title="Learning Qemu Docs" target="_blank" rel="noopener" href="https://gevico.github.io/learning-qemu-docs/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://gevico.github.io/learning-qemu-docs/assets/images/favicon.png"/></div><div class="right"><p class="text">Learning Qemu Docs</p><p class="url">https://gevico.github.io/learning-qemu-docs/</p></div></a></div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2511211/">https://even629.com/posts/2511211/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/virtualization/">virtualization</a></div><div class="post-share"><div class="social-share" data-image="/images/qemu_cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%90%E7%A0%81"><span class="toc-number">1.1.</span> <span class="toc-text">源码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gdb"><span class="toc-number">1.2.</span> <span class="toc-text">gdb</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.</span> <span class="toc-text">基本介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E8%AE%BF%E5%AD%98%E6%B5%81%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">CPU访存流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Qemu%E6%A8%A1%E6%8B%9F%E5%86%85%E5%AD%98%E5%A4%96%E8%AE%BE"><span class="toc-number">2.2.</span> <span class="toc-text">Qemu模拟内存外设</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E5%B8%83%E5%B1%80"><span class="toc-number">3.</span> <span class="toc-text">地址空间布局</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#memory-region%E5%9C%B0%E5%9D%80%E9%87%8D%E5%8F%A0"><span class="toc-number">3.1.</span> <span class="toc-text">memory_region地址重叠</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#alias-%E7%A4%BA%E4%BE%8B"><span class="toc-number">3.2.</span> <span class="toc-text">alias 示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AddressSpace"><span class="toc-number">3.3.</span> <span class="toc-text">AddressSpace</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MemoryRegion"><span class="toc-number">3.4.</span> <span class="toc-text">MemoryRegion</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">4.</span> <span class="toc-text">初始化流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#memory-map-init"><span class="toc-number">4.1.</span> <span class="toc-text">memory_map_init</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E7%82%B9%E5%85%B3%E7%B3%BB"><span class="toc-number">5.</span> <span class="toc-text">结点关系</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '9f0433815023e7b45e7dd77087f19b30'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

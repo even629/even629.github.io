@@ -1,0 +1,894 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM Exception Model | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="arm64 异常模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM Exception Model">
+<meta property="og:url" content="https://even629.com/posts/2510160/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="arm64 异常模型">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-10-16T07:25:13.000Z">
+<meta property="article:modified_time" content="2025-10-16T07:25:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2510160/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARM Exception Model',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">ARM Exception Model</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-16T07:25:13.000Z" title="发表于 2025-10-16 15:25:13">2025-10-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-16T07:25:13.000Z" title="更新于 2025-10-16 15:25:13">2025-10-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/arm64/">arm64</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>21分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2510160/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-16</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+
+<h1 id="ARM64-的异常处理（Exception-Model）"><a href="#ARM64-的异常处理（Exception-Model）" class="headerlink" title="ARM64 的异常处理（Exception Model）"></a>ARM64 的异常处理（Exception Model）</h1><p>参考文档：</p>
+<div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>
+
+<h2 id="ARM64-的异常等级（Exception-Level）"><a href="#ARM64-的异常等级（Exception-Level）" class="headerlink" title="ARM64 的异常等级（Exception Level）"></a>ARM64 的异常等级（Exception Level）</h2><ul>
+<li><strong>EL0</strong> 非特权模式，例如应用程序</li>
+<li><strong>EL1</strong> 特权模式，例如 OS 内核</li>
+<li><strong>EL2</strong> 虚拟化监控程序，例如 hypervisor</li>
+<li><strong>EL3</strong> 安全模式，例如 secure monitor</li>
+</ul>
+<h2 id="术语（Exception-terminology）"><a href="#术语（Exception-terminology）" class="headerlink" title="术语（Exception terminology）"></a>术语（Exception terminology）</h2><ul>
+<li><strong>Taking an exception</strong>: 正在处理一个异常</li>
+<li><strong>Returning from an exception</strong>: 从一个异常中返回</li>
+<li><strong>Exception levels</strong>: 异常等级</li>
+<li><strong>Precise exception</strong>: 精准异常</li>
+<li><strong>Synchronous and asynchronous exception</strong>: 同步异常与异步异常<ul>
+<li><strong>同步异常</strong><ul>
+<li><strong>系统调用, svc, hvc, SMC 等</strong></li>
+<li><strong>MMU 引发的异常</strong></li>
+<li><strong>SP 和 PC 对齐检查</strong></li>
+<li><strong>未分配的指令</strong><ul>
+<li>未分配的指令操作码</li>
+<li>需要比当前异常级别更高级别特权的指令。</li>
+<li>已禁用的指令。</li>
+<li>PSTATE.IL 域被设置时的任何指令</li>
+</ul>
+</li>
+<li><strong>调试异常</strong></li>
+</ul>
+</li>
+<li><strong>异步异常</strong><ul>
+<li><strong>IRQ 中断</strong></li>
+<li><strong>FIQ 中断</strong></li>
+<li><strong>SError</strong>（系统错误）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="异常入口（Exception-Entry）"><a href="#异常入口（Exception-Entry）" class="headerlink" title="异常入口（Exception Entry）"></a>异常入口（Exception Entry）</h2><blockquote>
+<p>Process state or PSTATE is an abstraction of process state information</p>
+</blockquote>
+<ul>
+<li>当异常发生时，<strong>CPU 硬件</strong>都做了哪些事情<ul>
+<li><strong>PSTATE 保存到 SPSR_ELx（The Saved Program Status Register）</strong></li>
+<li><strong>返回地址保存 ELR_ELx</strong></li>
+<li><strong>PSTATE 寄存器的 DAIF 域都设置为 1，相当于把调试异常，系统错误（SError），IRQ 中断以及 FIQ 中断都关闭了</strong></li>
+<li><strong>更新了 ESR_ELx（Exception Syndrome Register）寄存器，里面包含了同步异常或SError发生的原因</strong></li>
+<li><strong>SP 执行 SP_ELx</strong></li>
+<li><strong>切换到对应的 EL，然后跳转到异常向量表里执行</strong></li>
+</ul>
+</li>
+<li>当异常发生后，操作系统需要做哪些事情</li>
+</ul>
+<blockquote>
+<p>操作系统需要设置异常向量表，这样CPU根据异常发生的类型，会跳转到合适的异常向量表的表项</p>
+<p>异常向量表的每个表项会保存一个异常处理的跳转函数，然后跳转到恰当的异常处理函数并处理异常</p>
+</blockquote>
+<p>异常状态寄存器（Exception Syndrome Register, ESR_ELn）包含允许异常处理程序确定异常原因的信息。它只<br>对针对同步异常和 SError 做更新，不为 IRQ 或 FIQ 更新，因为这些中断处理程序通常从通用中断控制<br>器 (GIC) 的寄存器中获取状态信息。</p>
+<h2 id="异常的返回"><a href="#异常的返回" class="headerlink" title="异常的返回"></a>异常的返回</h2><ul>
+<li>操作系统执行一条<strong>eret</strong>语句<ul>
+<li><strong>从 ELR_ELx（Exception Link Register）寄存器中恢复 PC 指针</strong></li>
+<li><strong>从 SPSR_ELx（The Saved Program Status Register）寄存器恢复处理器的状态</strong></li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161436060.png" alt="异常处理的流程" loading="lazy"></p>
+<h3 id="异常返回地址"><a href="#异常返回地址" class="headerlink" title="异常返回地址"></a>异常返回地址</h3><ul>
+<li>返回地址两个寄存器<ul>
+<li><strong>x30：子函数的返回地址。使用 ret 指令来返回</strong></li>
+<li><strong>ELR_ELx：异常返回地址。使用 eret 指令来返回</strong></li>
+</ul>
+</li>
+<li><strong>ELR_ELx</strong>寄存器保存了异常返回地址<ul>
+<li><strong>对于异步异常，它的返回地址是中断发生时的下一条指令，或者没有执行的第一条指令</strong></li>
+<li><strong>对于不是 system call 的同步异常，返回的是触发同步异常的那一条指令</strong></li>
+<li><strong>对于 system call，它返回的是 svc&#x2F;hvc 指令的下一条指令</strong></li>
+</ul>
+</li>
+</ul>
+<p><strong>异步异常（中断）</strong></p>
+<blockquote>
+<p>硬件已经把 ELR 设置为 <em>下一条要执行的指令</em>，<code>eret</code> 就直接回去继续执行，不用额外改</p>
+</blockquote>
+<p><strong>同步异常（非 system call）</strong></p>
+<blockquote>
+<p>硬件把 ELR 设置为 <em>触发异常的那条指令</em><br>如果你修复了异常原因（比如缺页异常），直接 <code> eret</code> 就会重新执行这条指令<br>如果你想跳过它（不重试），就要手动 <code>ELR_ELx += 4</code></p>
+</blockquote>
+<p><strong>system call（svc）</strong></p>
+<blockquote>
+<p>硬件把 ELR 设置为 <em>svc 的下一条指令</em>，所以 <code>eret</code> 会直接返回到下一条</p>
+</blockquote>
+<h2 id="异常处理的路由"><a href="#异常处理的路由" class="headerlink" title="异常处理的路由"></a>异常处理的路由</h2><blockquote>
+<p>当在一个特定的“异常等级（Exception Level, EL）”发生异常时，CPU 应该跳转到哪个异常等级去处理它</p>
+</blockquote>
+<ul>
+<li>异常发生时，可以在<strong>当前 EL 处理也可以在更高 EL 处理</strong><ul>
+<li><strong>EL0 不能用来处理异常</strong></li>
+<li><strong>同步异常是可以在当前 EL 里处理的</strong>，比如在 EL1 发生了同步异常</li>
+<li>对于<strong>异步异常，可以路由到 EL1,EL2,EL3 处理</strong>，需要配置<strong>HCR</strong>（Hypervisor Configuration Register）以及<strong>SCR</strong>（Secure Configuration Register）相关寄存器</li>
+<li>如果异常是由于在 EL0 处取指令而产生的，则将其视为 EL1 的异常，除非 HCR_EL2.TGE 位设置为非安全状态，在这种情况下将其视为 EL2。</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161443573.png" alt="异常发生时要路由到哪一级" loading="lazy"></p>
+<p>参考 armv8.6 的 tableD1-10</p>
+<ul>
+<li>SCR_EL3: Secure Configuration Register</li>
+<li>HCR_EL2: Hyervisor Cofiguration Register</li>
+</ul>
+<p>该图片中的表格（Table D1-10）是<strong>ARM 架构下 EL3（安全监控模式）与 EL2（虚拟化监控模式）同时实现时的中断 &#x2F; 异常路由规则表</strong>，核心用于定义不同系统状态（寄存器配置）下，中断（IRQ&#x2F;FIQ）或异常（如 Abt 中止异常）触发后，处理器最终跳转的目标特权级别（EL0~EL3）。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161444608.png" alt="Routing when both EL3 and EL2 are implemented" loading="lazy"></p>
+<ol>
+<li>第 1 行：SCR&#x3D;0，NS EEL2a&#x3D;0，EA IRQ FIQ&#x3D;0，RW&#x3D;0</li>
+</ol>
+<ul>
+<li><strong>输入条件</strong>：安全配置为默认（SCR&#x3D;0）、非安全 EL2 异常入口关闭（NS EEL2a&#x3D;0）、无活跃中断 &#x2F; 异常（EA IRQ FIQ&#x3D;0）、读写权限为 0；HCR TGE、E2H 为任意值（X）。</li>
+<li><strong>路由结果</strong>：<ul>
+<li>从 EL0 触发：跳转到 “FIQ IRQ Abt”（即触发对应中断 &#x2F; 异常的原生处理入口，未被高 EL 拦截）；</li>
+<li>从 EL1 触发：同 EL0，跳转到 “FIQ IRQ Abt”；</li>
+<li>从 EL2 触发：<code>n/a</code>（不适用，因 NS EEL2a&#x3D;0 时 EL2 未使能该场景）；</li>
+<li>从 EL3 触发：跳转到 “C”（通常指 “安全态下的异常处理入口”，ARM 架构中 “C” 常代表安全相关的默认目标）。</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>第 2 行：SCR&#x3D;0，NS EEL2a&#x3D;0，EA IRQ FIQ&#x3D;0，RW&#x3D;1</li>
+</ol>
+<ul>
+<li><strong>输入条件</strong>：仅 RW（读写权限）从 0 改为 1，其他与第 1 行一致。</li>
+<li><strong>路由结果</strong>：<ul>
+<li>从 EL0&#x2F;EL1 触发：跳转到 “EL1”（即异常被 EL1（内核态）拦截处理，而非原生中断入口，因 RW&#x3D;1 对应更高权限的内核处理逻辑）；</li>
+<li>从 EL2 触发：<code>n/a</code>（同第 1 行，EL2 未使能）；</li>
+<li>从 EL3 触发：跳转到 “C”（安全态入口不变）。</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>第 3 行：SCR&#x3D;0，NS EEL2a&#x3D;0，EA IRQ FIQ&#x3D;1</li>
+</ol>
+<ul>
+<li><strong>输入条件</strong>：EA IRQ FIQ&#x3D;1（有活跃的中断 &#x2F; 异常触发），其他配置同前两行；HCR TGE、E2H 为任意值。</li>
+<li><strong>路由结果</strong>：<ul>
+<li>从 EL0&#x2F;EL1 触发：跳转到 “EL3”（活跃中断 &#x2F; 异常被最高安全级 EL3 拦截，符合 ARM 安全架构中 “高优先级异常由 EL3 处理” 的逻辑）；</li>
+<li>从 EL2 触发：<code>n/a</code>（EL2 未使能）；</li>
+<li>从 EL3 触发：跳转到 “EL3”（EL3 自身触发的异常，在 EL3 内部处理，不跳转其他级别）。</li>
+</ul>
+</li>
+</ul>
+<ol start="4">
+<li>第 4 行：SCR&#x3D;0，NS EEL2a&#x3D;1，EA IRQ FIQ&#x3D;0，HCR TGE&#x3D;0，E2H&#x3D;0，RW&#x3D;0</li>
+</ol>
+<ul>
+<li><strong>输入条件</strong>：NS EEL2a&#x3D;1（非安全 EL2 异常入口开启）、无活跃中断 &#x2F; 异常（EA IRQ FIQ&#x3D;0）、虚拟化模式关闭（HCR TGE&#x3D;0）、EL2 不拦截 EL1 异常（E2H&#x3D;0）。</li>
+<li><strong>路由结果</strong>：<ul>
+<li>从 EL0 触发：跳转到 “FIQ IRQ Abt”（原生中断入口）；</li>
+<li>从 EL1 触发：跳转到 “FIQ IRQ Abt”（EL2 未拦截，因 E2H&#x3D;0）；</li>
+<li>从 EL2 触发：跳转到 “C”（非安全 EL2 触发的异常，路由到安全态入口 “C”）；</li>
+<li>从 EL3 触发：跳转到 “C”（安全态内部处理，目标不变）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="栈的选择"><a href="#栈的选择" class="headerlink" title="栈的选择"></a>栈的选择</h2><ul>
+<li>每个异常等级 EL 都有对应栈指针寄存器 SP_ELx<ul>
+<li>SP_EL0, SP_EL1, SP_EL2, SP_EL3</li>
+</ul>
+</li>
+<li><strong>栈必须 16 字节对齐</strong>。硬件可以检测栈指针是否对齐</li>
+<li><strong>当异常发生时，并跳转到目标异常等级时，硬件会自动选择 SP_ELx</strong></li>
+<li><strong>操作系统负责和分配</strong>保证每个异常等级 EL 对应的栈，是可用的</li>
+</ul>
+<h2 id="执行模式"><a href="#执行模式" class="headerlink" title="执行模式"></a>执行模式</h2><h3 id="异常处理的执行模式"><a href="#异常处理的执行模式" class="headerlink" title="异常处理的执行模式"></a>异常处理的执行模式</h3><ul>
+<li>当异常发生时，切换到高级别的 EL，这个 EL 运行在哪个模式？AArch64 or AArch32<ul>
+<li>**HCR_EL2.RW（Hypervisor Configuration Register）**记录了 EL1 要运行在哪个模式<ul>
+<li>1 表示 aarch64</li>
+<li>0 表示 aarch32</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161444227.png" alt="Execution state control for lower Exception levels" loading="lazy"></p>
+<ul>
+<li><strong>当异常发生后，执行模式可以发生改变</strong><ul>
+<li>一个 aarch32 的应用程序正在运行，这时候来了一个中断，它可能会跑到 aarch64 执行状态下的 EL1 里处理这个中断</li>
+</ul>
+</li>
+</ul>
+<h3 id="异常返回的执行模式"><a href="#异常返回的执行模式" class="headerlink" title="异常返回的执行模式"></a>异常返回的执行模式</h3><ul>
+<li>从一个异常返回，SPSR 寄存器(Saved Program Status Register)记录了：<ul>
+<li>返回到哪个 EL? <strong>SPSR.M[3:0]</strong></li>
+<li>返回目标 EL 的执行模式？<strong>SPSR.M[4]</strong><ul>
+<li>0 表示 aarch64</li>
+<li>1 表示 aarch32</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161445722.png" alt="Exceptions taken from AArch64 state" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>M[3:0]</th>
+<th>目标模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0000</code></td>
+<td>EL0t</td>
+<td>EL0，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>0100</code></td>
+<td>EL1t</td>
+<td>EL1，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>0101</code></td>
+<td>EL1h</td>
+<td>EL1，使用 SP_EL1</td>
+</tr>
+<tr>
+<td><code>1000</code></td>
+<td>EL2t</td>
+<td>EL2，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>1001</code></td>
+<td>EL2h</td>
+<td>EL2，使用 SP_EL2</td>
+</tr>
+<tr>
+<td><code>1100</code></td>
+<td>EL3t</td>
+<td>EL3，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>1101</code></td>
+<td>EL3h</td>
+<td>EL3，使用 SP_EL3</td>
+</tr>
+</tbody></table>
+<h2 id="实验-1：切换到-EL1-中运行"><a href="#实验-1：切换到-EL1-中运行" class="headerlink" title="实验 1：切换到 EL1 中运行"></a>实验 1：切换到 EL1 中运行</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161446370.png" alt="实验一" loading="lazy"></p>
+<p><strong>提示</strong></p>
+<p>从 EL2 切换到 EL1，需要做如下几件事情</p>
+<ol>
+<li><p><strong>设置 HCR_EL2（Hypervisor Configuration Register）寄存器，最重要的是 Bit 31 的 RW 域，表示 EL1 要运行在哪个执行环境里，aarch32 或 aarch64</strong>（相似地对于EL2的执行状态由SCR_EL3决定）</p>
+<ul>
+<li>HCR_EL2 属于 General System Control Register</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161446047.png" alt="HCR_EL2" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161446427.png" alt="HCR_EL2.RW" loading="lazy"></p>
+</li>
+<li><p><strong>设置 SCTLR_EL1（System Control Register），要设置大小端和关闭 MMU</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161446790.png" alt="SCTLR_EL1.EE" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161447667.png" alt="SCTLR_EL1.E0E" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161447770.png" alt="SCTELR_EL1.M" loading="lazy"></p>
+</li>
+<li><p><strong>设置 SPSR_EL2（Saved Program Status Register）寄存器，设置模式 M 域为 EL1h，另外需要关闭所有 PSTATE 的 DAIF</strong></p>
+<ul>
+<li><strong>SPSR_ELx</strong>属于<strong>Special-purpose Register</strong></li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161448334.png" alt="SPSR_EL2" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161448924.png" alt="SPSR_EL2.M" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161449361.png" alt="PSTATE.DAIF at EL2" loading="lazy"></p>
+<hr>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161449139.png" alt="SPSR_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161451860.png" alt="SPSR_EL.M" loading="lazy"></p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>M[3:0]</th>
+<th>目标模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0000</code></td>
+<td>EL0t</td>
+<td>EL0，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>0100</code></td>
+<td>EL1t</td>
+<td>EL1，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>0101</code></td>
+<td>EL1h</td>
+<td>EL1，使用 SP_EL1</td>
+</tr>
+<tr>
+<td><code>1000</code></td>
+<td>EL2t</td>
+<td>EL2，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>1001</code></td>
+<td>EL2h</td>
+<td>EL2，使用 SP_EL2</td>
+</tr>
+<tr>
+<td><code>1100</code></td>
+<td>EL3t</td>
+<td>EL3，使用 SP_EL0</td>
+</tr>
+<tr>
+<td><code>1101</code></td>
+<td>EL3h</td>
+<td>EL3，使用 SP_EL3</td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161528528.png" alt="PSTATE.DAIF at EL1" loading="lazy"></p>
+<ol start="4">
+<li><p><strong>设置异常返回寄存器 elr_el2，让其返回到 el1_entry 汇编函数里</strong></p>
+</li>
+<li><p>执行<strong>eret</strong></p>
+</li>
+</ol>
+<p>（3,4 其实是一个异常返回的经典步骤，从 EL2 返回到 EL1）</p>
+<p><strong>首先根据当前异常等级判断要跳到哪个异常等级</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161453031.png" alt="判断当前异常等级" loading="lazy"></p>
+<p>注意执行 eret 前要设置 elr_el2 寄存器</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161458740.png" alt="跳到EL1" loading="lazy"></p>
+<h2 id="异常向量表（Exception-vectors）"><a href="#异常向量表（Exception-vectors）" class="headerlink" title="异常向量表（Exception vectors）"></a>异常向量表（Exception vectors）</h2><ul>
+<li><p><strong>每个异常等级 EL 都有自己的异常向量表，EL0 除外</strong></p>
+</li>
+<li><p>异常向量表的基地址需要设置到**VBAR_ELx（Vector Base Address Register）**寄存器中</p>
+</li>
+<li><p>VBAR_EL1 寄存器：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161458499.png" alt="VBAR_ELx" loading="lazy"></p>
+<p>0~10 是 reserve，因此<strong>地址是 2k 对齐</strong></p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161459864.png" alt="异常向量表结构" loading="lazy"></p>
+<ol>
+<li><p>行（Exception taken from）</p>
+<blockquote>
+<p>定义异常触发时的 “当前执行状态”，分 4 类场景：</p>
+</blockquote>
+<ul>
+<li><strong>Current Exception level with SP_EL0</strong>：当前异常级别使用 <code>SP_EL0</code> 栈指针（如在 EL1 下用用户级栈指针时触发异常 ）。</li>
+<li><strong>Current Exception level with SP_ELx, x&gt;0</strong>：当前异常级别使用 <code>SP_ELx</code>（x≥1，如 EL1 用 <code>SP_EL1</code>、EL2 用 <code>SP_EL2</code> 等内核级栈指针）时触发异常。</li>
+<li><strong>Lower Exception level（AArch64）</strong>：从更低异常级别触发，且 “更低级别” 处于 AArch64 执行状态（如从 EL0&#x2F;EL1 切换到更高 EL 时，且原级别是 64 位模式 ）。</li>
+<li><strong>Lower Exception level（AArch32）</strong>：从更低异常级别触发，且 “更低级别” 处于 AArch32 执行状态（如从 32 位模式的 EL0&#x2F;EL1 切换到更高 EL ）。</li>
+</ul>
+</li>
+<li><p>列（Offset for exception type）</p>
+<blockquote>
+<p>按异常类型分类，对应不同偏移：</p>
+</blockquote>
+<ul>
+<li><strong>Synchronous</strong>：同步异常（如指令执行错误、软件触发异常等，与指令流同步发生 ）。</li>
+<li><strong>IRQ or vIRQ</strong>：普通中断（IRQ）或虚拟中断（vIRQ，虚拟化场景下）。</li>
+<li><strong>FIQ or vFIQ</strong>：快速中断（FIQ，优先级通常更高）或虚拟快速中断（vFIQ，虚拟化场景 ）。</li>
+<li><strong>SError or vSError</strong>：系统错误（SError，如总线错误等严重错误）或虚拟系统错误（vSError，虚拟化场景 ）。</li>
+</ul>
+</li>
+<li><p><strong>偏移值（如 0x000、0x080 等）</strong>：基于行（触发状态）和列（异常类型）的组合，给出相对于向量表基地址的偏移，处理器通过基地址 + 偏移，就能找到异常处理程序的入口地址 。</p>
+</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161459444.png" alt="异常向量表结构" loading="lazy"></p>
+<ul>
+<li><strong>异常向量表的整体结构</strong></li>
+</ul>
+<p>在 <strong>AArch64 EL1</strong> 及以上的执行级别中，异常向量表（Vector Table）存放在 <strong><code>VBAR_ELx</code></strong>（Vector Base Address Register）寄存器指向的地址。</p>
+<p>这个表里一共包含 <strong>4 个“区块” (blocks)</strong>，分别对应不同的异常来源：</p>
+<ol>
+<li><strong>从当前的 SP (SP0)</strong> 触发的异常</li>
+<li><strong>从当前的 SP (SPx)</strong> 触发的异常（x≠0，比如 SP_EL1）</li>
+<li><strong>来自下一个更低特权级（比如 EL0）</strong> 的异常</li>
+<li><strong>来自当前特权级（比如 EL1 内部）</strong> 的异常</li>
+</ol>
+<p>每个区块又包含 <strong>4 种异常类型</strong>：</p>
+<ul>
+<li><strong>Synchronous exception</strong> （同步异常，比如 SVC 指令、数据访问异常）</li>
+<li><strong>IRQ</strong> （普通中断）</li>
+<li><strong>FIQ</strong> （快速中断）</li>
+<li><strong>SError</strong> （系统错误，通常是硬件异常）</li>
+</ul>
+<p>所以总共：<br><strong>4 个区块 × 4 种异常 &#x3D; 16 个表项</strong></p>
+<hr>
+<p><strong>每个表项的大小</strong></p>
+<p>ARMv8-A 规定：</p>
+<ul>
+<li><strong>每个表项的大小固定为 128 字节</strong>（0x80）（32条指令大小）。</li>
+<li><strong>16 个表项 × 128 字节 &#x3D; 2048 字节 &#x3D; 2KB</strong>。</li>
+<li>所以整个向量表的大小是 <strong>2KB</strong>。</li>
+</ul>
+<p>也就是说，异常向量表必须是 <strong>2KB 对齐</strong>的区域。</p>
+<p>异常向量表表实际上由 4 组 4 项组成</p>
+<h2 id="Linux5-0-内核的异常处理"><a href="#Linux5-0-内核的异常处理" class="headerlink" title="Linux5.0 内核的异常处理"></a>Linux5.0 内核的异常处理</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161500753.png" alt="Linux5.0的异常向量表" loading="lazy"></p>
+<ul>
+<li><p>.align 11 就是让异常向量表按<strong>2k 大小对齐</strong></p>
+</li>
+<li><p>kernel_ventry 是一个宏，简化代码如下</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161501900.png" alt="kernel_ventry" loading="lazy"></p>
+<blockquote>
+<p>align 7 表示按 2 的 7 次方大小来对齐，2 的 7 次方是 128 个字节</p>
+<p>sub 指令是让栈指针 sp 减去一个 S_FRAME_SIZE，其中 S_FRAME_SIZE 称为寄存器框架大小，也就是 struct pt_regs 数据结构的大小</p>
+<p>“\()”表示连接</p>
+<p>举例：在发生 EL1 的 IRQ 中断时，这条语句变成了”b el1_irq”</p>
+</blockquote>
+<p><code>kernel_entry</code> 是异常向量表跳转到的第一级入口，它的职责是：</p>
+<ol>
+<li><strong>保存上下文</strong>：把 CPU 现场（通用寄存器）保存到栈上。</li>
+<li><strong>建立栈帧</strong>：为异常处理函数（C 代码）准备好栈空间。</li>
+<li><strong>切换栈</strong>（如果需要）：例如从用户态进入内核态时，栈要换成内核栈。</li>
+<li><strong>调用 C 层的异常分发函数</strong>。</li>
+</ol>
+<p><strong>以发生在 EL1 的 FIQ 为例</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161502048.png" alt="发生在EL1的FIQ" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161502412.png" alt="bad_mode" loading="lazy"></p>
+<p><strong>保存异常上下文</strong></p>
+<ul>
+<li><strong>栈框</strong>：Linux 内核中定义了一个<strong>struct pt_regs</strong>的数据结构来描述内核栈上保存寄存器的排列信息，通常用于保存中断上下文等信息</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161502433.png" alt="栈框" loading="lazy"></p>
+<blockquote>
+<p>orig_x0, syscallno, orig_addr_limit, unused, stackfram[0], stackframe[1]都是软件定义保存的东西</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161503209.png" alt="保存异常上下文的处理流程" loading="lazy"></p>
+<h2 id="实验-2：建立一个异常向量表并创造一个同步异常"><a href="#实验-2：建立一个异常向量表并创造一个同步异常" class="headerlink" title="实验 2：建立一个异常向量表并创造一个同步异常"></a>实验 2：建立一个异常向量表并创造一个同步异常</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161503661.png" alt="实验2" loading="lazy"></p>
+<p><strong>FAR Fault Address Register (at EL1)</strong></p>
+<p>它的作用是：</p>
+<ul>
+<li>当 <strong>发生同步异常（Synchronous Exception）</strong> 时，处理器会把导致异常的 <strong>虚拟地址</strong>写入到 <code>FAR_ELx</code> 对应寄存器中。</li>
+<li><code>EL1</code> 就对应内核态（操作系统层），所以 <code>FAR_EL1</code> 保存的是 <strong>EL1 下异常发生时的虚拟地址</strong>。</li>
+</ul>
+<hr>
+<p><strong>常见场景</strong></p>
+<ol>
+<li><strong>Page Fault（缺页异常）</strong><br>如果 CPU 在访问一个不存在或非法的虚拟地址时触发异常，<code>FAR_EL1</code> 会保存这个地址，内核就可以根据它决定是否分配新页、还是杀掉进程。</li>
+<li><strong>Alignment Fault（未对齐访问异常）</strong><br>如果访问地址不符合对齐规则，<code>FAR_EL1</code> 也会保存那个地址。</li>
+<li><strong>Watchpoint&#x2F;Breakpoint 异常</strong><br><code>FAR_EL1</code> 也可能被用来存储触发异常的地址。</li>
+</ol>
+<hr>
+<p><strong>相关寄存器</strong></p>
+<ul>
+<li><code>ESR_EL1</code> (<strong>Exception Syndrome Register</strong>)<br>保存异常的 <strong>原因码</strong>（比如是缺页、权限错误、未对齐等）。</li>
+<li><code>FAR_EL1</code><br>保存导致异常的 <strong>具体虚拟地址</strong>。</li>
+</ul>
+<p>entry.S</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line">#define BAD_SYNC  0</span><br><span class="line">#define BAD_IRQ   1</span><br><span class="line">#define BAD_FIQ   2</span><br><span class="line">#define BAD_ERROR 3</span><br><span class="line"></span><br><span class="line">    .macro inv_entry el, reason</span><br><span class="line">    // 保存异常现场，暂未实现</span><br><span class="line">    // kernel_entry el</span><br><span class="line">    mov x0, sp</span><br><span class="line">    mov x1, #\reason</span><br><span class="line">    mrs x2, esr_el1</span><br><span class="line">    b bad_mode</span><br><span class="line">    .endm</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    // 异常向量表</span><br><span class="line">    .macro vtentry label</span><br><span class="line">    .align 7</span><br><span class="line">    b \label</span><br><span class="line">    .endm</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line">* ARM64的异常向量表一共占用2048个字节，分成四组，每个表项占用128字节</span><br><span class="line">* .align 11表示按2048对齐</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.align 11</span><br><span class="line">.global vectors</span><br><span class="line"></span><br><span class="line">vectors:</span><br><span class="line">/* Current EL with SP0</span><br><span class="line">*  当前系统运行在EL1时使用EL0的栈指针SP</span><br><span class="line">* 这是一种异常的错误类型</span><br><span class="line">*/</span><br><span class="line">  vtentry el1_sync_invalid</span><br><span class="line">  vtentry el1_irq_invalid</span><br><span class="line">  vtentry el1_fiq_invalid</span><br><span class="line">  vtentry el1_error_invalid</span><br><span class="line"></span><br><span class="line">/* Current EL with SPx</span><br><span class="line">* 当前系统运行在EL1时使用EL1的栈指针SP</span><br><span class="line">* 说明系统内核态发生了异常</span><br><span class="line">* 暂时只实现IRQ中断</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">  vtentry el1_sync_invalid</span><br><span class="line">  vtentry el1_irq_invalid</span><br><span class="line">  vtentry el1_fiq_invalid</span><br><span class="line">  vtentry el1_error_invalid</span><br><span class="line"></span><br><span class="line">/* Lower EL using AArch64</span><br><span class="line">* 用户态的aarch64程序发生异常</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">  vtentry el0_sync_invalid</span><br><span class="line">  vtentry el0_irq_invalid</span><br><span class="line">  vtentry el0_fiq_invalid</span><br><span class="line">  vtentry el0_error_invalid</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/* Lower EL using AArch32</span><br><span class="line">* 在用户态的aarch32程序发生异常</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">  vtentry el0_sync_invalid</span><br><span class="line">  vtentry el0_irq_invalid</span><br><span class="line">  vtentry el0_fiq_invalid</span><br><span class="line">  vtentry el0_error_invalid</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">el1_sync_invalid:</span><br><span class="line">  inv_entry 1, BAD_SYNC</span><br><span class="line">el1_irq_invalid:</span><br><span class="line">  inv_entry 1, BAD_IRQ</span><br><span class="line">el1_fiq_invalid:</span><br><span class="line">  inv_entry 1, BAD_FIQ</span><br><span class="line">el1_error_invalid:</span><br><span class="line">  inv_entry 1, BAD_ERROR</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">el0_sync_invalid:</span><br><span class="line">  inv_entry 0, BAD_SYNC</span><br><span class="line">el0_irq_invalid:</span><br><span class="line">  inv_entry 0, BAD_IRQ</span><br><span class="line">el0_fiq_invalid:</span><br><span class="line">  inv_entry 0, BAD_FIQ</span><br><span class="line">el0_error_invalid:</span><br><span class="line">  inv_entry 0, BAD_ERROR</span><br><span class="line"></span><br><span class="line">// 占用两个字节</span><br><span class="line">string_test:</span><br><span class="line">  .string &quot;t&quot;</span><br><span class="line">// 因为string_test导致不是4个字节对齐了</span><br><span class="line">.global trigger_alignment</span><br><span class="line"></span><br><span class="line">trigger_alignment:</span><br><span class="line">  ldr x0, =0x80002</span><br><span class="line">  ldr x1, [x0]</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
+
+<p><strong>kernel.c</strong>中定义</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161504351.png" alt="bad_mode" loading="lazy"></p>
+<p>在<strong>kernel_main</strong>中触发<strong>trigger_alignment</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161504441.png" alt="trigger_alignment" loading="lazy"></p>
+<p>在<strong>boot.S</strong>中设置异常向量表</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161504951.png" alt="设置异常向量表" loading="lazy"></p>
+<h2 id="实验-3：解-bug：寻找树莓派-4-上触发异常的指令"><a href="#实验-3：解-bug：寻找树莓派-4-上触发异常的指令" class="headerlink" title="实验 3：解 bug：寻找树莓派 4 上触发异常的指令"></a>实验 3：解 bug：寻找树莓派 4 上触发异常的指令</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161505564.png" alt="实验3" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161528897.png" alt="ldr一个hong" loading="lazy"></p>
+<p>这条指令会加载当前 PC+MY_LABEL 为地址取值到 x6</p>
+<p>相当于：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">x6</span> = *(PC-relative 地址 + MY_LABEL)</span><br></pre></td></tr></table></figure>
+
+<p>对于 LDR Xt 来说<strong>目标地址必须是 8 字节对齐的（因为 Xt 是 64 位寄存器）</strong></p>
+<p>可以改成 w6，只需要四个字节对齐，因为 MY_LABEL 定义为 0x20</p>
+<h2 id="异常的解析"><a href="#异常的解析" class="headerlink" title="异常的解析"></a>异常的解析</h2><h3 id="ESR-ELx-异常综合信息寄存器-Excepion-Syndrome-Register"><a href="#ESR-ELx-异常综合信息寄存器-Excepion-Syndrome-Register" class="headerlink" title="ESR_ELx(异常综合信息寄存器 Excepion Syndrome Register)"></a>ESR_ELx(异常综合信息寄存器 Excepion Syndrome Register)</h3><blockquote>
+<p>ESR_ELx它只对针对同步异常和 SError 做更新，不为 IRQ 或 FIQ 更新，因为这些中断处理程序通常从通用中断控制器 (GIC) 的寄存器中获取状态信息。</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161505049.png" alt="ESR_ELx" loading="lazy"></p>
+<ul>
+<li>ESR 寄存器一共包含四个字段（域）<ul>
+<li>Bit 32~63 保留比特位</li>
+<li>Bit 26~31，是<strong>异常类型（Exception Class，简称 EC）</strong>,这个字段<strong>指示发生异常的类型</strong>，同时用来<strong>索引 ISS 域</strong></li>
+<li>Bit 25，IL，表示同步异常指令的指令长度，Instruction Length</li>
+<li>Bit 0~24，<strong>ISS（Instruction Specific Syndrome）具体的异常指令编码</strong>。这个异常指令编码表依赖不同的异常类型，<strong>不同的异常类型有不同的编码格式</strong></li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161505572.png" alt="ESR寄存器中的异常类型" loading="lazy"></p>
+<p><strong>常见的异常类型对应编码</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161505469.png" alt="Instruction Abort" loading="lazy"></p>
+<p>第一个表示从低级异常等级的指令异常，第二个表示当前异常等级的指令异常</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161505993.png" alt="Data Abort" loading="lazy"></p>
+<p><strong>ISS 字段的编码方式</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161507725.png" alt="ISS encoding for Instruction Abort" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161508098.png" alt="ISS encoding for Data Abort" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161508220.png" alt="ISS编码格式 Data Abort" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161509051.png" alt="Data Abort DFSC" loading="lazy"></p>
+<h3 id="FAR-失效地址寄存器"><a href="#FAR-失效地址寄存器" class="headerlink" title="FAR(失效地址寄存器)"></a>FAR(失效地址寄存器)</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161509372.png" alt="FAR" loading="lazy"></p>
+<p>FAR 寄存器保<strong>存了发生异常时刻的虚拟地址</strong></p>
+<h2 id="实验四：解析数据异常的信息"><a href="#实验四：解析数据异常的信息" class="headerlink" title="实验四：解析数据异常的信息"></a>实验四：解析数据异常的信息</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161509422.png" alt="实验四" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161510757.png" alt="实验四结果" loading="lazy"></p>
+<p><strong>esr.h</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __ESR_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __ESR_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> UL(x) x</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_UNKNOWN	(0x00)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_WFx		(0x01)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x02 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_CP15_32	(0x03)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_CP15_64	(0x04)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_CP14_MR	(0x05)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_CP14_LS	(0x06)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_FP_ASIMD	(0x07)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_CP10_ID	(0x08)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x09 - 0x0B */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_CP14_64	(0x0C)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x0d */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_ILL		(0x0E)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x0F - 0x10 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SVC32	(0x11)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_HVC32	(0x12)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SMC32	(0x13)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x14 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SVC64	(0x15)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_HVC64	(0x16)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SMC64	(0x17)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SYS64	(0x18)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x19 - 0x1E */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_IMP_DEF	(0x1f)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_IABT_LOW	(0x20)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_IABT_CUR	(0x21)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_PC_ALIGN	(0x22)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x23 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_DABT_LOW	(0x24)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_DABT_CUR	(0x25)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SP_ALIGN	(0x26)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x27 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_FP_EXC32	(0x28)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x29 - 0x2B */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_FP_EXC64	(0x2C)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x2D - 0x2E */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SERROR	(0x2F)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_BREAKPT_LOW	(0x30)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_BREAKPT_CUR	(0x31)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SOFTSTP_LOW	(0x32)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SOFTSTP_CUR	(0x33)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_WATCHPT_LOW	(0x34)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_WATCHPT_CUR	(0x35)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x36 - 0x37 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_BKPT32	(0x38)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x39 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_VECTOR32	(0x3A)</span></span><br><span class="line"><span class="comment">/* Unallocted EC: 0x3B */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_BRK64	(0x3C)</span></span><br><span class="line"><span class="comment">/* Unallocated EC: 0x3D - 0x3F */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_MAX		(0x3F)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SET_SHIFT	(11)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_FnV_SHIFT	(10)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EA_SHIFT	(9)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_CM_SHIFT	(8)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_S1PTW_SHIFT	(7)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_WNR_SHIFT	(6)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_SHIFT	(26)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC_MASK		(UL(0x3F) &lt;&lt; ESR_ELx_EC_SHIFT)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EC(esr)		(((esr) &amp; ESR_ELx_EC_MASK) &gt;&gt; ESR_ELx_EC_SHIFT)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_IL		(UL(1) &lt;&lt; 25)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_ISS_MASK	(ESR_ELx_IL - 1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_ISV		(UL(1) &lt;&lt; 24)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SAS_SHIFT	(22)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SAS		(UL(3) &lt;&lt; ESR_ELx_SAS_SHIFT)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SSE_SHIFT	(21)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SSE		(UL(1) &lt;&lt; 21)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SRT_SHIFT	(16)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SRT_MASK	(UL(0x1F) &lt;&lt; ESR_ELx_SRT_SHIFT)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SF_SHIFT	(15)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_SF 		(UL(1) &lt;&lt; 15)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_AR_SHIFT	(14)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_AR 		(UL(1) &lt;&lt; 14)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_EA 		(UL(1) &lt;&lt; 9)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_CM 		(UL(1) &lt;&lt; 8)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_S1PTW 		(UL(1) &lt;&lt; 7)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_WNR		(UL(1) &lt;&lt; 6)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_FSC		(0x3F)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_FSC_TYPE	(0x3C)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_FSC_EXTABT	(0x10)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_FSC_FAULT	(0x04)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_FSC_PERM	(0x0C)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_CV		(UL(1) &lt;&lt; 24)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_COND_SHIFT	(20)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_COND_MASK	(UL(0xF) &lt;&lt; ESR_ELx_COND_SHIFT)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_WFx_ISS_WFE	(UL(1) &lt;&lt; 0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ESR_ELx_xVC_IMM_MASK	((1UL &lt;&lt; 16) - 1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>作用</strong>：解析 ESR_ELx 寄存器的值，方便异常处理。</p>
+<p><strong>结构</strong>：</p>
+<ul>
+<li>高 6 位 → <strong>EC（Exception Class）</strong></li>
+<li>IL、ISV → 指令长度&#x2F;有效性</li>
+<li><strong>ISS → Instruction Specific Syndrome</strong></li>
+<li>FSC → 数据访问异常代码</li>
+<li>WNR、EA、CM → 访问属性</li>
+</ul>
+<p><strong>kernel.c</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span> *<span class="type">const</span> bad_mode_handler[] = &#123;<span class="string">&quot;Sync Abort&quot;</span>, <span class="string">&quot;IRQ&quot;</span>, <span class="string">&quot;FIQ&quot;</span>,</span><br><span class="line">                                               <span class="string">&quot;SError&quot;</span>&#125;;</span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span> *data_fault_code[] = &#123;</span><br><span class="line">    [<span class="number">0</span>] = <span class="string">&quot;Address size fault, level0&quot;</span>,</span><br><span class="line">    [<span class="number">1</span>] = <span class="string">&quot;Address size fault, level1&quot;</span>,</span><br><span class="line">    [<span class="number">2</span>] = <span class="string">&quot;Address size fault, level2&quot;</span>,</span><br><span class="line">    [<span class="number">3</span>] = <span class="string">&quot;Address size fault, level3&quot;</span>,</span><br><span class="line">    [<span class="number">4</span>] = <span class="string">&quot;Translation fault, level0&quot;</span>,</span><br><span class="line">    [<span class="number">5</span>] = <span class="string">&quot;Translation fault, level1&quot;</span>,</span><br><span class="line">    [<span class="number">6</span>] = <span class="string">&quot;Translation fault, level2&quot;</span>,</span><br><span class="line">    [<span class="number">7</span>] = <span class="string">&quot;Translation fault, level3&quot;</span>,</span><br><span class="line">    [<span class="number">9</span>] = <span class="string">&quot;Access flag fault, level1&quot;</span>,</span><br><span class="line">    [<span class="number">10</span>] = <span class="string">&quot;Access flag fault, level2&quot;</span>,</span><br><span class="line">    [<span class="number">11</span>] = <span class="string">&quot;Access flag fault, level3&quot;</span>,</span><br><span class="line">    [<span class="number">13</span>] = <span class="string">&quot;Permission fault, level1&quot;</span>,</span><br><span class="line">    [<span class="number">14</span>] = <span class="string">&quot;Permission fault, level2&quot;</span>,</span><br><span class="line">    [<span class="number">15</span>] = <span class="string">&quot;Permission fault, level3&quot;</span>,</span><br><span class="line">    [<span class="number">0x21</span>] = <span class="string">&quot;Alignment fault&quot;</span>,</span><br><span class="line">    [<span class="number">0x35</span>] = <span class="string">&quot;Unsupported Exclusive or Atomic access&quot;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span> *<span class="title function_">esr_get_dfsc_string</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> esr)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> data_fault_code[esr &amp; <span class="number">0x3f</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span> *esr_class_str[] = &#123;</span><br><span class="line">    <span class="comment">// GCC 扩展，表示把数组下标从 0 到 ESR_ELx_EC_MAX 全部初始化为 &quot;UNRECOGNIZED</span></span><br><span class="line">    <span class="comment">// EC&quot;。</span></span><br><span class="line">    [<span class="number">0</span> ... ESR_ELx_EC_MAX] = <span class="string">&quot;UNRECOGNIZED EC&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_UNKNOWN] = <span class="string">&quot;Unknown/Uncategorized&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_WFx] = <span class="string">&quot;WFI/WFE&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_CP15_32] = <span class="string">&quot;CP15 MCR/MRC&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_CP15_64] = <span class="string">&quot;CP15 MCRR/MRRC&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_CP14_MR] = <span class="string">&quot;CP14 MCR/MRC&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_CP14_LS] = <span class="string">&quot;CP14 LDC/STC&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_FP_ASIMD] = <span class="string">&quot;ASIMD&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_CP10_ID] = <span class="string">&quot;CP10 MRC/VMRS&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_CP14_64] = <span class="string">&quot;CP14 MCRR/MRRC&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_ILL] = <span class="string">&quot;PSTATE.IL&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SVC32] = <span class="string">&quot;SVC (AArch32)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_HVC32] = <span class="string">&quot;HVC (AArch32)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SMC32] = <span class="string">&quot;SMC (AArch32)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SVC64] = <span class="string">&quot;SVC (AArch64)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_HVC64] = <span class="string">&quot;HVC (AArch64)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SMC64] = <span class="string">&quot;SMC (AArch64)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SYS64] = <span class="string">&quot;MSR/MRS (AArch64)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_IMP_DEF] = <span class="string">&quot;EL3 IMP DEF&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_IABT_LOW] = <span class="string">&quot;IABT (lower EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_IABT_CUR] = <span class="string">&quot;IABT (current EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_PC_ALIGN] = <span class="string">&quot;PC Alignment&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_DABT_LOW] = <span class="string">&quot;DABT (lower EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_DABT_CUR] = <span class="string">&quot;DABT (current EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SP_ALIGN] = <span class="string">&quot;SP Alignment&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_FP_EXC32] = <span class="string">&quot;FP (AArch32)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_FP_EXC64] = <span class="string">&quot;FP (AArch64)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SERROR] = <span class="string">&quot;SError&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_BREAKPT_LOW] = <span class="string">&quot;Breakpoint (lower EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_BREAKPT_CUR] = <span class="string">&quot;Breakpoint (current EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SOFTSTP_LOW] = <span class="string">&quot;Software Step (lower EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_SOFTSTP_CUR] = <span class="string">&quot;Software Step (current EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_WATCHPT_LOW] = <span class="string">&quot;Watchpoint (lower EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_WATCHPT_CUR] = <span class="string">&quot;Watchpoint (current EL)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_BKPT32] = <span class="string">&quot;BKPT (AArch32)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_VECTOR32] = <span class="string">&quot;Vector catch (AArch32)&quot;</span>,</span><br><span class="line">    [ESR_ELx_EC_BRK64] = <span class="string">&quot;BRK (AArch64)&quot;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span> *<span class="title function_">esr_get_class_string</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> esr)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> esr_class_str[esr &gt;&gt; ESR_ELx_EC_SHIFT];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">parse_esr</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> esr)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> ec = ESR_ELx_EC(esr);</span><br><span class="line"></span><br><span class="line">  printk(<span class="string">&quot;ESR info:\n&quot;</span>);</span><br><span class="line">  printk(<span class="string">&quot;  ESR = 0x%08x\n&quot;</span>, esr);</span><br><span class="line">  printk(<span class="string">&quot;  Exception class = %s, IL = %u bits\n&quot;</span>, esr_get_class_string(esr),</span><br><span class="line">         (esr &amp; ESR_ELx_IL) ? <span class="number">32</span> : <span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (ec == ESR_ELx_EC_DABT_LOW || ec == ESR_ELx_EC_DABT_CUR) &#123;</span><br><span class="line">    printk(<span class="string">&quot;  Data abort:\n&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> ((esr &amp; ESR_ELx_ISV)) &#123;</span><br><span class="line">      printk(<span class="string">&quot;  Access size = %u byte(s)\n&quot;</span>,</span><br><span class="line">             <span class="number">1U</span> &lt;&lt; ((esr &amp; ESR_ELx_SAS) &gt;&gt; ESR_ELx_SAS_SHIFT));</span><br><span class="line">      printk(<span class="string">&quot;  SSE = %lu, SRT = %lu\n&quot;</span>,</span><br><span class="line">             (esr &amp; ESR_ELx_SSE) &gt;&gt; ESR_ELx_SSE_SHIFT,</span><br><span class="line">             (esr &amp; ESR_ELx_SRT_MASK) &gt;&gt; ESR_ELx_SRT_SHIFT);</span><br><span class="line">      printk(<span class="string">&quot;  SF = %lu, AR = %lu\n&quot;</span>, (esr &amp; ESR_ELx_SF) &gt;&gt; ESR_ELx_SF_SHIFT,</span><br><span class="line">             (esr &amp; ESR_ELx_AR) &gt;&gt; ESR_ELx_AR_SHIFT);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    printk(<span class="string">&quot;  SET = %lu, FnV = %lu\n&quot;</span>, (esr &gt;&gt; ESR_ELx_SET_SHIFT) &amp; <span class="number">3</span>,</span><br><span class="line">           (esr &gt;&gt; ESR_ELx_FnV_SHIFT) &amp; <span class="number">1</span>);</span><br><span class="line">    printk(<span class="string">&quot;  EA = %lu, S1PTW = %lu\n&quot;</span>, (esr &gt;&gt; ESR_ELx_EA_SHIFT) &amp; <span class="number">1</span>,</span><br><span class="line">           (esr &gt;&gt; ESR_ELx_S1PTW_SHIFT) &amp; <span class="number">1</span>);</span><br><span class="line">    printk(<span class="string">&quot;  CM = %lu, WnR = %lu\n&quot;</span>, (esr &amp; ESR_ELx_CM) &gt;&gt; ESR_ELx_CM_SHIFT,</span><br><span class="line">           (esr &amp; ESR_ELx_WNR) &gt;&gt; ESR_ELx_WNR_SHIFT);</span><br><span class="line">    printk(<span class="string">&quot;  DFSC = %s\n&quot;</span>, esr_get_dfsc_string(esr));</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    printk(<span class="string">&quot;Not supported yet\n&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">bad_mode</span><span class="params">(<span class="keyword">struct</span> pt_regs *regs, <span class="type">int</span> reason, <span class="type">unsigned</span> <span class="type">int</span> esr)</span> &#123;</span><br><span class="line">  printk(<span class="string">&quot;Bad mode for %s handler detected, far:0x%x esr:0x%x - %s\n&quot;</span>,</span><br><span class="line">         bad_mode_handler[reason], read_sysreg(far_el1), esr,</span><br><span class="line">         esr_get_class_string(esr));</span><br><span class="line"></span><br><span class="line">  parse_esr(esr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="type">void</span> <span class="title function_">trigger_sync_data_abort</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">void</span> <span class="title function_">trigger_sync_instruction_alignment</span><span class="params">(<span class="type">void</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>触发数据异常的代码：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510161510405.png" alt="触发同步数据异常" loading="lazy"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2510160/">https://even629.com/posts/2510160/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ARM/">ARM</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ARM64-%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%EF%BC%88Exception-Model%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">ARM64 的异常处理（Exception Model）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ARM64-%E7%9A%84%E5%BC%82%E5%B8%B8%E7%AD%89%E7%BA%A7%EF%BC%88Exception-Level%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">ARM64 的异常等级（Exception Level）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AF%E8%AF%AD%EF%BC%88Exception-terminology%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">术语（Exception terminology）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%85%A5%E5%8F%A3%EF%BC%88Exception-Entry%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text">异常入口（Exception Entry）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E7%9A%84%E8%BF%94%E5%9B%9E"><span class="toc-number">1.4.</span> <span class="toc-text">异常的返回</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E8%BF%94%E5%9B%9E%E5%9C%B0%E5%9D%80"><span class="toc-number">1.4.1.</span> <span class="toc-text">异常返回地址</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84%E8%B7%AF%E7%94%B1"><span class="toc-number">1.5.</span> <span class="toc-text">异常处理的路由</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E7%9A%84%E9%80%89%E6%8B%A9"><span class="toc-number">1.6.</span> <span class="toc-text">栈的选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.7.</span> <span class="toc-text">执行模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.7.1.</span> <span class="toc-text">异常处理的执行模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E8%BF%94%E5%9B%9E%E7%9A%84%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.7.2.</span> <span class="toc-text">异常返回的执行模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C-1%EF%BC%9A%E5%88%87%E6%8D%A2%E5%88%B0-EL1-%E4%B8%AD%E8%BF%90%E8%A1%8C"><span class="toc-number">1.8.</span> <span class="toc-text">实验 1：切换到 EL1 中运行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%90%91%E9%87%8F%E8%A1%A8%EF%BC%88Exception-vectors%EF%BC%89"><span class="toc-number">1.9.</span> <span class="toc-text">异常向量表（Exception vectors）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux5-0-%E5%86%85%E6%A0%B8%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-number">1.10.</span> <span class="toc-text">Linux5.0 内核的异常处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C-2%EF%BC%9A%E5%BB%BA%E7%AB%8B%E4%B8%80%E4%B8%AA%E5%BC%82%E5%B8%B8%E5%90%91%E9%87%8F%E8%A1%A8%E5%B9%B6%E5%88%9B%E9%80%A0%E4%B8%80%E4%B8%AA%E5%90%8C%E6%AD%A5%E5%BC%82%E5%B8%B8"><span class="toc-number">1.11.</span> <span class="toc-text">实验 2：建立一个异常向量表并创造一个同步异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C-3%EF%BC%9A%E8%A7%A3-bug%EF%BC%9A%E5%AF%BB%E6%89%BE%E6%A0%91%E8%8E%93%E6%B4%BE-4-%E4%B8%8A%E8%A7%A6%E5%8F%91%E5%BC%82%E5%B8%B8%E7%9A%84%E6%8C%87%E4%BB%A4"><span class="toc-number">1.12.</span> <span class="toc-text">实验 3：解 bug：寻找树莓派 4 上触发异常的指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E7%9A%84%E8%A7%A3%E6%9E%90"><span class="toc-number">1.13.</span> <span class="toc-text">异常的解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ESR-ELx-%E5%BC%82%E5%B8%B8%E7%BB%BC%E5%90%88%E4%BF%A1%E6%81%AF%E5%AF%84%E5%AD%98%E5%99%A8-Excepion-Syndrome-Register"><span class="toc-number">1.13.1.</span> <span class="toc-text">ESR_ELx(异常综合信息寄存器 Excepion Syndrome Register)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FAR-%E5%A4%B1%E6%95%88%E5%9C%B0%E5%9D%80%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.13.2.</span> <span class="toc-text">FAR(失效地址寄存器)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%9B%9B%EF%BC%9A%E8%A7%A3%E6%9E%90%E6%95%B0%E6%8D%AE%E5%BC%82%E5%B8%B8%E7%9A%84%E4%BF%A1%E6%81%AF"><span class="toc-number">1.14.</span> <span class="toc-text">实验四：解析数据异常的信息</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'd74d587b8c668afac0e0bbe47c05d0ba'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

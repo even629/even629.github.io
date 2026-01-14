@@ -1,0 +1,1150 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux并发与竞争 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux并发与竞争">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux并发与竞争">
+<meta property="og:url" content="https://even629.com/posts/2511123/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Linux并发与竞争">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2025-11-12T12:31:13.000Z">
+<meta property="article:modified_time" content="2025-11-12T12:31:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2511123/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux并发与竞争',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux并发与竞争</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-12T12:31:13.000Z" title="发表于 2025-11-12 20:31:13">2025-11-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-12T12:31:13.000Z" title="更新于 2025-11-12 20:31:13">2025-11-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">7.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>36分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2511123/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-12</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h2 id="并发与竞争概念"><a href="#并发与竞争概念" class="headerlink" title="并发与竞争概念"></a>并发与竞争概念</h2><p>下面把并发与并行统称并发。</p>
+<p>在并发执行的环境中，多个程序可能同时访问同一个共享资源。当多个任务试图同时操作这类资源时，可能会出现执行异常或数据错误，这类问题被称为竞争。</p>
+<p>竞争产生的常见原因包括：</p>
+<ol>
+<li><strong>多线程访问</strong>。由于 Linux 是一个多任务操作系统，多个线程可能同时访问同一共享资源，这是竞争产生的基本原因。</li>
+<li><strong>中断访问</strong>。当进程正在访问某一共享资源，而中断打断了正在执行的进程，而发出中断的进程与被打断的进程之间也可能发生竞争。</li>
+<li><strong>抢占访问</strong>。linux2.6 及更高版本引入了抢占式内核，高优先级的任务可以打断低优先级的任务。如果正在访问共享资源的任务被打断，另一个任务接着访问相同资源，就可能引发竞争。</li>
+<li><strong>多核并发访问（SMP）</strong>。在多核处理器系统中，不同 CPU 核心之间可能并发访问同一共享资源，形成核间竞争。</li>
+</ol>
+<p>Linux 内核提供了多种机制来应对这一问题，常用的方法包括<strong>原子操作</strong>、<strong>自旋锁</strong>、<strong>互斥锁</strong>、<strong>信号量</strong>等。</p>
+<h2 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h2><p>原子操作会将对整形变量的一次读写操作视为一个整体，确保其不可分割，从而避免竞争。</p>
+<p>原子操作可以进一步细分为“<strong>整型原子操作</strong>”和“<strong>位原子操作</strong>”，这里首先对整型原子操作进行讲解。</p>
+<h3 id="整形原子操作"><a href="#整形原子操作" class="headerlink" title="整形原子操作"></a>整形原子操作</h3><p>在 Linux 内核中使用 <strong>atomic_t</strong> 和 <strong>atomic64_t</strong> 结构体分别来定义 32 位系统和 64 位系统下的原子变量</p>
+<p><strong>include&#x2F;linux&#x2F;types.h</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	<span class="type">int</span> counter;</span><br><span class="line">&#125; <span class="type">atomic_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ATOMIC_INIT(i) &#123; (i) &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_64BIT</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	s64 counter;</span><br><span class="line">&#125; <span class="type">atomic64_t</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>32 位的 atomic_t</strong></p>
+<p><strong>include&#x2F;linux&#x2F;atomic.h</strong></p>
+<table>
+<thead>
+<tr>
+<th>函数原型</th>
+<th>功能解释</th>
+<th>参数</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#define ATOMIC_INIT(i)</code></td>
+<td>初始化 atomic_t 变量为 <code>i</code></td>
+<td><code>i</code>：初始整数值</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>int atomic_read(const atomic_t *v)</code></td>
+<td>读取原子变量的值</td>
+<td><code>v</code>：atomic_t 指针</td>
+<td>返回 <code>v</code> 的当前值</td>
+</tr>
+<tr>
+<td><code>void atomic_set(atomic_t *v, int i)</code></td>
+<td>设置原子变量为 <code>i</code></td>
+<td><code>v</code>：变量指针；<code>i</code>：要写入的值</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic_add(int i, atomic_t *v)</code></td>
+<td>原子地将 <code>v += i</code></td>
+<td><code>i</code>：增加值；<code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic_sub(int i, atomic_t *v)</code></td>
+<td>原子地将 <code>v -= i</code></td>
+<td><code>i</code>：减少值；<code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic_inc(atomic_t *v)</code></td>
+<td>原子地将 <code>v++</code></td>
+<td><code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic_dec(atomic_t *v)</code></td>
+<td>原子地将 <code>v--</code></td>
+<td><code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>int atomic_inc_return(atomic_t *v)</code></td>
+<td>原子 <code>v++</code> 并返回新值（先加后返回）</td>
+<td><code>v</code>：变量指针</td>
+<td>自增后的值</td>
+</tr>
+<tr>
+<td><code>int atomic_dec_return(atomic_t *v)</code></td>
+<td>原子 <code>v--</code> 并返回新值（先减后返回）</td>
+<td><code>v</code>：变量指针</td>
+<td>自减后的值</td>
+</tr>
+<tr>
+<td><code>int atomic_sub_and_test(int i, atomic_t *v)</code></td>
+<td>原子 <code>v -= i</code>，若结果为 <strong>0</strong> 返回 true</td>
+<td><code>i</code>：减的值；<code>v</code>：变量指针</td>
+<td>为 0 → 返回 1，不为 0 → 返回 0</td>
+</tr>
+<tr>
+<td><code>int atomic_dec_and_test(atomic_t *v)</code></td>
+<td>原子 <code>v--</code>，若结果为 <strong>0</strong> 返回 true</td>
+<td><code>v</code>：变量指针</td>
+<td>为 0 → 返回 1，不为 0 → 返回 0</td>
+</tr>
+<tr>
+<td><code>int atomic_inc_and_test(atomic_t *v)</code></td>
+<td>原子 <code>v++</code>，若结果为 <strong>0</strong> 返回 true</td>
+<td><code>v</code>：变量指针</td>
+<td>为 0 → 返回 1，否则 0</td>
+</tr>
+<tr>
+<td><code>int atomic_add_negative(int i, atomic_t *v)</code></td>
+<td>原子 <code>v += i</code>，若结果 <strong>&lt; 0</strong> 返回 true</td>
+<td><code>i</code>：增加值；<code>v</code>：变量指针</td>
+<td>结果 &lt; 0 → 返回 1，否则 0</td>
+</tr>
+</tbody></table>
+<p><strong>64 位的 atomic64_t</strong></p>
+<table>
+<thead>
+<tr>
+<th>函数原型</th>
+<th>功能解释</th>
+<th>参数</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#define ATOMIC64_INIT(i)</code></td>
+<td>初始化 atomic64_t 为 <code>i</code></td>
+<td><code>i</code>：初始 64 位整数</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>long long atomic64_read(const atomic64_t *v)</code></td>
+<td>读取 64 位原子变量的值</td>
+<td><code>v</code>：变量指针</td>
+<td>返回当前 64 位值</td>
+</tr>
+<tr>
+<td><code>void atomic64_set(atomic64_t *v, long long i)</code></td>
+<td>设置原子变量为 <code>i</code></td>
+<td><code>v</code>：变量指针；<code>i</code>：写入的 64 位值</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic64_add(long long i, atomic64_t *v)</code></td>
+<td>原子执行 <code>v += i</code></td>
+<td><code>i</code>：增加值；<code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic64_sub(long long i, atomic64_t *v)</code></td>
+<td>原子执行 <code>v -= i</code></td>
+<td><code>i</code>：减少值；<code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic64_inc(atomic64_t *v)</code></td>
+<td>原子执行 <code>v++</code></td>
+<td><code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void atomic64_dec(atomic64_t *v)</code></td>
+<td>原子执行 <code>v--</code></td>
+<td><code>v</code>：变量指针</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>long long atomic64_add_return(long long i, atomic64_t *v)</code></td>
+<td>原子执行 <code>v += i</code> 并返回新值（先加后返回）</td>
+<td><code>i</code>、<code>v</code></td>
+<td>返回加后的值</td>
+</tr>
+<tr>
+<td><code>long long atomic64_sub_return(long long i, atomic64_t *v)</code></td>
+<td>原子执行 <code>v -= i</code> 并返回新值（先减后返回）</td>
+<td><code>i</code>、<code>v</code></td>
+<td>返回减后的值</td>
+</tr>
+<tr>
+<td><code>long long atomic64_inc_return(atomic64_t *v)</code></td>
+<td>原子 <code>v++</code> 并返回新值</td>
+<td><code>v</code></td>
+<td>返回自增后的值</td>
+</tr>
+<tr>
+<td><code>long long atomic64_dec_return(atomic64_t *v)</code></td>
+<td>原子 <code>v--</code> 并返回新值</td>
+<td><code>v</code></td>
+<td>返回自减后的值</td>
+</tr>
+<tr>
+<td><code>int atomic64_add_negative(long long i, atomic64_t *v)</code></td>
+<td>原子 <code>v += i</code>，若结果 <strong>&lt; 0</strong> 返回 true</td>
+<td><code>i</code>、<code>v</code></td>
+<td>结果 &lt; 0 → 1，否则 0</td>
+</tr>
+<tr>
+<td><code>int atomic64_add_and_test(long long i, atomic64_t *v)</code></td>
+<td>原子 <code>v += i</code>，若结果 <strong>&#x3D;&#x3D; 0</strong> 返回 true</td>
+<td><code>i</code>、<code>v</code></td>
+<td>结果 &#x3D;&#x3D; 0 → 1，否则 0</td>
+</tr>
+<tr>
+<td><code>int atomic64_sub_and_test(long long i, atomic64_t *v)</code></td>
+<td>原子 <code>v -= i</code>，若结果 <strong>&#x3D;&#x3D; 0</strong> 返回 true</td>
+<td><code>i</code>、<code>v</code></td>
+<td>结果 &#x3D;&#x3D; 0 → 1，否则 0</td>
+</tr>
+<tr>
+<td><code>int atomic64_inc_and_test(atomic64_t *v)</code></td>
+<td>原子 <code>v++</code>，若结果 <strong>&#x3D;&#x3D; 0</strong> 返回 true</td>
+<td><code>v</code></td>
+<td>为 0 → 1，否则 0</td>
+</tr>
+<tr>
+<td><code>int atomic64_dec_and_test(atomic64_t *v)</code></td>
+<td>原子 <code>v--</code>，若结果 <strong>&#x3D;&#x3D; 0</strong> 返回 true</td>
+<td><code>v</code></td>
+<td>为 0 → 1，否则 0</td>
+</tr>
+<tr>
+<td><code>long long atomic64_xchg(atomic64_t *v, long long i)</code></td>
+<td>原子交换：将 <code>v</code> 设置成 <code>i</code> 并返回旧值</td>
+<td><code>v</code>、<code>i</code></td>
+<td>返回交换前的旧值</td>
+</tr>
+<tr>
+<td><code>long long atomic64_cmpxchg(atomic64_t *v, long long old, long long new)</code></td>
+<td>原子比较交换：若 *v &#x3D;&#x3D; old，则写入 new</td>
+<td><code>v</code>、<code>old</code>、<code>new</code></td>
+<td>返回交换前的旧值（可用于判断是否成功）</td>
+</tr>
+</tbody></table>
+<h4 id="错误用法"><a href="#错误用法" class="headerlink" title="错误用法"></a>错误用法</h4><p>下面的使用方法是错误的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">atomic_t</span> <span class="type">atomic_key</span> = ATOMIC_INIT(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">atomic_t_test_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        file-&gt;private_data = test_drv_data;</span><br><span class="line">        <span class="keyword">if</span>(<span class="type">atomic_read</span>(&amp;<span class="type">atomic_key</span>) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> -EBUSY;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">atomic_dec</span>(&amp;<span class="type">atomic_key</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">atomic_t_test_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">atomic_inc</span>(&amp;<span class="type">atomic_key</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原因是<code>atomic_read(&amp;atomic_key)</code>和<code>atomic_dec(&amp;atomic_key)</code>这两个操作是分开的，两个进程可以同时<code>atomic_read(&amp;atomic_key)</code>然后<code>atomic_dec(&amp;atomic_key)</code>成功。可以把这两个操作合到一起</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!atomic_dec_and_test(&amp;<span class="type">atomic_key</span>))</span><br><span class="line">    <span class="keyword">return</span> -EBUSY;</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/cdev.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/slab.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/atomic.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> &#123;</span></span><br><span class="line">        <span class="type">dev_t</span> dev_num;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">cdev</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="keyword">class</span> *<span class="keyword">class</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> *<span class="title">test_drv_data</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">atomic_t</span> <span class="type">atomic_key</span> = ATOMIC_INIT(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">atomic_t_test_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        file-&gt;private_data = test_drv_data;</span><br><span class="line">        <span class="keyword">if</span> (atomic_dec_and_test(&amp;<span class="type">atomic_key</span>) == <span class="number">0</span>)&#123;</span><br><span class="line">                pr_err(<span class="string">&quot;this device is opened by another process\n&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> -EBUSY;</span><br><span class="line">        &#125;</span><br><span class="line">        pr_info(<span class="string">&quot;atomic_t_test_open is called\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">atomic_t_test_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">atomic_inc</span>(&amp;<span class="type">atomic_key</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">atomic_t_test_read</span> <span class="params">(<span class="keyword">struct</span> file *file, <span class="type">char</span> __user *buf, <span class="type">size_t</span> size, <span class="type">loff_t</span> *offset)</span>&#123;</span><br><span class="line">	pr_info(<span class="string">&quot;atomic_t_test_read is called\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">atomic_t_test_write</span> <span class="params">(<span class="keyword">struct</span> file *file, <span class="type">const</span> <span class="type">char</span> __user *buf, <span class="type">size_t</span> size, <span class="type">loff_t</span> *offset)</span>&#123;</span><br><span class="line">	pr_info(<span class="string">&quot;atomic_t_test_write is called\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">fops</span> =</span> &#123;</span><br><span class="line">        .owner = THIS_MODULE,</span><br><span class="line">        .open = atomic_t_test_open,</span><br><span class="line">        .release = atomic_t_test_release,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">atomic_t_test_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> err;</span><br><span class="line">        test_drv_data = (<span class="keyword">struct</span> test_drv_data *)kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> test_drv_data), GFP_KERNEL);</span><br><span class="line">        <span class="keyword">if</span> (test_drv_data == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                err = -ENOMEM;</span><br><span class="line">                <span class="keyword">goto</span> kzalloc_fail;</span><br><span class="line">        &#125;</span><br><span class="line">        err = alloc_chrdev_region(&amp;test_drv_data-&gt;dev_num, <span class="number">0</span>, <span class="number">1</span>, <span class="string">&quot;atomic_t test chrdev region&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> alloc_chrdev_region_fail;</span><br><span class="line">        cdev_init(&amp;test_drv_data-&gt;cdev, &amp;fops);</span><br><span class="line">        err = cdev_add(&amp;test_drv_data-&gt;cdev, test_drv_data-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> cdev_add_fail;</span><br><span class="line">        test_drv_data-&gt;<span class="class"><span class="keyword">class</span> =</span> class_create(THIS_MODULE, <span class="string">&quot;atomic_t_test&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(test_drv_data-&gt;class)) &#123;</span><br><span class="line">                err = PTR_ERR(test_drv_data-&gt;class);</span><br><span class="line">                <span class="keyword">goto</span> class_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line">        test_drv_data-&gt;dev = device_create(test_drv_data-&gt;class, <span class="literal">NULL</span>, test_drv_data-&gt;dev_num, <span class="literal">NULL</span>,</span><br><span class="line">                                           <span class="string">&quot;atomic_t_test%d&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(test_drv_data-&gt;dev)) &#123;</span><br><span class="line">                err = PTR_ERR(test_drv_data-&gt;dev);</span><br><span class="line">                <span class="keyword">goto</span> device_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">device_create_fail:</span><br><span class="line">        class_destroy(test_drv_data-&gt;class);</span><br><span class="line">class_create_fail:</span><br><span class="line">        cdev_del(&amp;test_drv_data-&gt;cdev);</span><br><span class="line">cdev_add_fail:</span><br><span class="line">        unregister_chrdev_region(test_drv_data-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">alloc_chrdev_region_fail:</span><br><span class="line">        kfree(test_drv_data);</span><br><span class="line">kzalloc_fail:</span><br><span class="line">        <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">atomic_t_test_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        device_destroy(test_drv_data-&gt;class, test_drv_data-&gt;dev_num);</span><br><span class="line">        class_destroy(test_drv_data-&gt;class);</span><br><span class="line">        cdev_del(&amp;test_drv_data-&gt;cdev);</span><br><span class="line">        unregister_chrdev_region(test_drv_data-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        kfree(test_drv_data);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(atomic_t_test_init);</span><br><span class="line">module_exit(atomic_t_test_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629&lt;asqwgo@163.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;This is a test sample for atomic_t&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>测试代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">pid_t</span> pid;</span><br><span class="line">        <span class="type">int</span> fd;</span><br><span class="line"></span><br><span class="line">        pid = fork();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">goto</span> fail;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123; <span class="comment">// child process</span></span><br><span class="line">                fd = open(<span class="string">&quot;/dev/atomic_t_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span> (fd &lt; <span class="number">0</span>)</span><br><span class="line">                        <span class="keyword">goto</span> fail;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;child open device success\n&quot;</span>);</span><br><span class="line">                <span class="comment">// do something</span></span><br><span class="line">                sleep(<span class="number">3</span>);</span><br><span class="line">                close(fd);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// parent process</span></span><br><span class="line">                fd = open(<span class="string">&quot;/dev/atomic_t_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span>(fd &lt; <span class="number">0</span>)&#123;</span><br><span class="line">                        <span class="keyword">goto</span> fail;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;parent open device success\n&quot;</span>);</span><br><span class="line">                <span class="comment">// do something</span></span><br><span class="line">                sleep(<span class="number">3</span>);</span><br><span class="line">                close(fd);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">fail:</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Error:%s[errno:%d]\n&quot;</span>, strerror(errno), errno);</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ insmod atomic_t.ko</span><br><span class="line">[   13.631548] atomic_t: loading out-of-tree module taints kernel.</span><br><span class="line">$ ./test_atomic_t.o</span><br><span class="line">[   20.232024] atomic_t_test_open is called</span><br><span class="line">[   20.233129] this device is opened by another process</span><br><span class="line">parent open device success</span><br><span class="line">Error:Device or resource busy[errno:16]</span><br></pre></td></tr></table></figure>
+
+<h4 id="atomic-cmpxchg"><a href="#atomic-cmpxchg" class="headerlink" title="atomic_cmpxchg"></a>atomic_cmpxchg</h4><blockquote>
+<p>这个函数比较难理解，作用是：</p>
+<ul>
+<li><strong>如果原子变量的当前值等于 <code>old</code></strong><ul>
+<li><strong>把它改成 <code>new</code></strong></li>
+<li><strong>返回“修改前的值”(因为<code>v</code>修改前的值等于<code>old</code>，所以返回的值等于<code>old</code>)</strong></li>
+</ul>
+</li>
+<li><strong>如果当前值 ≠ <code>old</code>：</strong><ul>
+<li><strong>不会修改原子变量</strong></li>
+<li><strong>直接返回“当前值”</strong></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/atomic.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">long</span> <span class="type">long</span> <span class="title function_">atomic64_cmpxchg</span><span class="params">(<span class="type">atomic64_t</span> *v, <span class="type">long</span> <span class="type">long</span> old, <span class="type">long</span> <span class="type">long</span> new)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>v</code></td>
+<td>指向要操作的 <code>atomic64_t</code> 变量的指针</td>
+</tr>
+<tr>
+<td><code>old</code></td>
+<td>期望的旧值（expected value）</td>
+</tr>
+<tr>
+<td><code>new</code></td>
+<td>如果原子变量的值等于 <code>old</code>，就用 <code>new</code> 替换它</td>
+</tr>
+</tbody></table>
+<p><strong>返回值</strong></p>
+<ul>
+<li>返回 <strong>原子变量操作前的原始值</strong>。</li>
+<li>如果原始值等于 <code>old</code>，把原始值替换位 new，返回值 &#x3D; old。</li>
+<li>如果原始值不等于 <code>old</code>，替换失败，返回值 ≠ old。</li>
+</ul>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a><strong>例子</strong></h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/moduleparam.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/fs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/cdev.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/device.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/uaccess.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/err.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/atomic.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">device_test</span> &#123;</span></span><br><span class="line">	<span class="comment">// 设备号</span></span><br><span class="line">	<span class="type">dev_t</span> dev_id;</span><br><span class="line">	<span class="comment">// 所属类</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="keyword">class</span> *<span class="keyword">class</span>;</span></span><br><span class="line">	<span class="comment">// 类下的device 设备节点</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">device</span>;</span></span><br><span class="line">	<span class="comment">// cdev,字符类设备</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">cdev_test</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">device_test</span> <span class="title">device1</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">atomic64_t</span> cnt = ATOMIC_INIT(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> major_num;</span><br><span class="line"><span class="type">static</span> <span class="type">int</span> minor_num;</span><br><span class="line"></span><br><span class="line">module_param(major_num, <span class="type">int</span>, S_IRUGO);</span><br><span class="line">module_param(minor_num, <span class="type">int</span>, S_IRUGO);</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">cdev_test_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (atomic64_cmpxchg(&amp;cnt, <span class="number">1</span>, <span class="number">0</span>) != <span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> -EBUSY;</span><br><span class="line">	&#125;</span><br><span class="line">	file-&gt;private_data = &amp;device1;</span><br><span class="line">	pr_info(<span class="string">&quot;cdev_test_open was called&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">cdev_test_read</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">char</span> __user *buf, <span class="type">size_t</span> size,</span></span><br><span class="line"><span class="params">		       <span class="type">loff_t</span> *off)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">//struct device_test *dev1 = (struct device_test *)file-&gt;private_data;</span></span><br><span class="line"></span><br><span class="line">	pr_info(<span class="string">&quot;cdev_test_read was called&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">cdev_test_write</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">const</span> <span class="type">char</span> __user *buf, <span class="type">size_t</span> size,</span></span><br><span class="line"><span class="params">			<span class="type">loff_t</span> *off)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">//struct device_test *dev1 = (struct device_test *)file-&gt;private_data;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">cdev_test_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">	atomic64_set(&amp;cnt, <span class="number">1</span>);</span><br><span class="line">	pr_info(<span class="string">&quot;cdev_test_release was called&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">cdev_test_ops</span> =</span> &#123; .owner = THIS_MODULE,</span><br><span class="line">						.open = cdev_test_open,</span><br><span class="line">						.read = cdev_test_read,</span><br><span class="line">						.write = cdev_test_write,</span><br><span class="line">						.release = cdev_test_release &#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">my_driver_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 申请设备号</span></span><br><span class="line">	<span class="keyword">if</span> (major_num) &#123; <span class="comment">//驱动传参，静态申请设备号</span></span><br><span class="line">		device1.dev_id = MKDEV(major_num, minor_num);</span><br><span class="line"></span><br><span class="line">		pr_info(<span class="string">&quot;major from module_param: %d&quot;</span>, MAJOR(device1.dev_id));</span><br><span class="line">		pr_info(<span class="string">&quot;minor from module_param: %d&quot;</span>, MINOR(device1.dev_id));</span><br><span class="line"></span><br><span class="line">		ret = register_chrdev_region(device1.dev_id, <span class="number">1</span>,</span><br><span class="line">					     <span class="string">&quot;my_driver device&quot;</span>);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			pr_err(<span class="string">&quot;register_chrdev_region error\n&quot;</span>);</span><br><span class="line">			<span class="keyword">goto</span> get_chrdev_region_err;</span><br><span class="line">		&#125;</span><br><span class="line">		pr_info(<span class="string">&quot;register_chrdev_region ok\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123; <span class="comment">//动态申请设备号</span></span><br><span class="line">		ret = alloc_chrdev_region(&amp;device1.dev_id, <span class="number">0</span>, <span class="number">1</span>,</span><br><span class="line">					  <span class="string">&quot;my_driver device&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			pr_err(<span class="string">&quot;alloc_chrdev_region error\n&quot;</span>);</span><br><span class="line">			<span class="keyword">goto</span> get_chrdev_region_err;</span><br><span class="line">		&#125;</span><br><span class="line">		pr_info(<span class="string">&quot;alloc_chrdev_region ok\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">		pr_info(<span class="string">&quot;major allocated: %d&quot;</span>, MAJOR(device1.dev_id));</span><br><span class="line">		pr_info(<span class="string">&quot;minor allocated: %d&quot;</span>, MINOR(device1.dev_id));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// cdev初始化，注册字符类设备</span></span><br><span class="line">	cdev_init(&amp;device1.cdev_test, &amp;cdev_test_ops);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//将 owner 字段指向本模块，可以避免在模块的操作正在被使用时卸载该模块</span></span><br><span class="line">	device1.cdev_test.owner = THIS_MODULE;</span><br><span class="line">	<span class="comment">// 添加一个字符设备</span></span><br><span class="line">	ret = cdev_add(&amp;device1.cdev_test, device1.dev_id, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		pr_err(<span class="string">&quot;cdev_add error\n&quot;</span>);</span><br><span class="line">		<span class="keyword">goto</span> cdev_add_err;</span><br><span class="line">	&#125;</span><br><span class="line">	pr_info(<span class="string">&quot;cdev_add ok\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建一个class</span></span><br><span class="line">	device1.class = class_create(THIS_MODULE, <span class="string">&quot;test&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(device1.class)) &#123;</span><br><span class="line">		ret = PTR_ERR(device1.class);</span><br><span class="line">		pr_err(<span class="string">&quot;class create error\n&quot;</span>);</span><br><span class="line">		<span class="keyword">goto</span> class_create_err;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 在class下创建一个设备结点, /dev/my_driver</span></span><br><span class="line">	device1.device = device_create(device1.class, <span class="literal">NULL</span>, device1.dev_id,</span><br><span class="line">				       <span class="literal">NULL</span>, <span class="string">&quot;my_driver&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(device1.device)) &#123;</span><br><span class="line">		ret = PTR_ERR(device1.device);</span><br><span class="line">		pr_err(<span class="string">&quot;device create error\n&quot;</span>);</span><br><span class="line">		<span class="keyword">goto</span> device_create_err;</span><br><span class="line">	&#125;</span><br><span class="line">	pr_info(<span class="string">&quot;my_driver: Module loaded\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">device_create_err:</span><br><span class="line">	class_destroy(device1.class);</span><br><span class="line">class_create_err:</span><br><span class="line">	cdev_del(&amp;device1.cdev_test);</span><br><span class="line">cdev_add_err:</span><br><span class="line">	unregister_chrdev_region(device1.dev_id, <span class="number">1</span>);</span><br><span class="line">get_chrdev_region_err:</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">my_driver_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 删除设备结点</span></span><br><span class="line">	device_destroy(device1.class, device1.dev_id);</span><br><span class="line">	<span class="comment">// 删除该设备结点的class</span></span><br><span class="line">	class_destroy(device1.class);</span><br><span class="line">	<span class="comment">// 删除cdev</span></span><br><span class="line">	cdev_del(&amp;device1.cdev_test);</span><br><span class="line">	<span class="comment">// 释放设备号</span></span><br><span class="line">	unregister_chrdev_region(device1.dev_id, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">	pr_info(<span class="string">&quot;unregister_chrdev_region ok\n&quot;</span>);</span><br><span class="line">	pr_info(<span class="string">&quot;my_driver: Module unloaded\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(my_driver_init);</span><br><span class="line">module_exit(my_driver_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;Zhao Hang&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;my_driver Kernel Module&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="位原子操作"><a href="#位原子操作" class="headerlink" title="位原子操作"></a>位原子操作</h3><table>
+<thead>
+<tr>
+<th>函数原型</th>
+<th>功能解释</th>
+<th>参数说明</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>void set_bit(int nr, void *p)</code></td>
+<td>将 <code>p</code> 地址的第 <code>nr</code> 位 <strong>置为 1</strong></td>
+<td><code>nr</code>：位编号（0 表最低位）<code>p</code>：起始地址</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void clear_bit(int nr, void *p)</code></td>
+<td>将 <code>p</code> 地址的第 <code>nr</code> 位 <strong>清零</strong></td>
+<td>同上</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>void change_bit(int nr, void *p)</code></td>
+<td>将 <code>nr</code> 位 <strong>取反</strong>（0→1 或 1→0）</td>
+<td>同上</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>int test_bit(int nr, void *p)</code></td>
+<td>读取 <code>nr</code> 位的值</td>
+<td>同上</td>
+<td>返回该位的值：0 或 1</td>
+</tr>
+<tr>
+<td><code>int test_and_set_bit(int nr, void *p)</code></td>
+<td>将 <code>nr</code> 位设置为 1，并返回原值</td>
+<td>同上</td>
+<td>返回操作前该位的值（0 或 1）</td>
+</tr>
+<tr>
+<td><code>int test_and_clear_bit(int nr, void *p)</code></td>
+<td>将 <code>nr</code> 位清零，并返回原值</td>
+<td>同上</td>
+<td>返回操作前该位的值</td>
+</tr>
+<tr>
+<td><code>int test_and_change_bit(int nr, void *p)</code></td>
+<td>将 <code>nr</code> 位翻转（1↔0），并返回原值</td>
+<td>同上</td>
+<td>返回操作前该位的值</td>
+</tr>
+</tbody></table>
+<p>位编号是从 <strong>p 指向内存的起始地址</strong>算起：</p>
+<ul>
+<li><code>nr = 0</code> → 第一字节的最低位（bit0）</li>
+<li><code>nr = 7</code> → 第一字节的最高位</li>
+<li><code>nr = 8</code> → 第二字节的 bit0</li>
+<li>依此类推</li>
+</ul>
+<p><strong>位编号为绝对 bit index，而不是字节内偏移。</strong></p>
+<h2 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h2><p>自旋锁是为了保护共享资源提出的一种锁机制。<strong>当一个线程尝试获取自旋锁而发现该锁已被其他线程持有时，它不会进入睡眠状态等待，而是会持续循环地尝试获取锁，直到成功为止</strong>。这个过程称为“自旋”，因此得名“自旋锁”。</p>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p><strong>include&#x2F;linux&#x2F;spinlock_types.h</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">raw_spinlock</span> <span class="title">rlock</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_LOCK_ALLOC</span></span><br><span class="line"><span class="meta"># <span class="keyword">define</span> LOCK_PADSIZE (offsetof(struct raw_spinlock, dep_map))</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			u8 __padding[LOCK_PADSIZE];</span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">lockdep_map</span> <span class="title">dep_map</span>;</span></span><br><span class="line">		&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	&#125;;</span><br><span class="line">&#125; <span class="type">spinlock_t</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>offsetof 定义在<code>include/linux/stddef.h</code>。作用是计算结构体到某一个字段的偏移。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __compiler_offsetof</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> offsetof(TYPE, MEMBER)	__compiler_offsetof(TYPE, MEMBER)</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> offsetof(TYPE, MEMBER)	((size_t)&amp;((TYPE *)0)-&gt;MEMBER)</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>上述 spinlock 字段通过 offsetof 计算设置填充字段，保证<strong>两个 union 成员的 <code>dep_map</code> 地址完全一致</strong>，这样保证不管是否启用 <code>CONFIG_DEBUG_LOCK_ALLOC</code> ，<code>spinlock_t</code> 的大小和对齐方式 <strong>一致</strong></p>
+<p>还有另外一个作用：</p>
+<p><code>spinlock_t</code> 是 <strong>通用锁类型</strong></p>
+<ul>
+<li>不想暴露 <code>raw_spinlock</code> 的内部结构</li>
+<li>但 <code>lockdep</code> 需要 <code>dep_map</code></li>
+</ul>
+<p>这样设计让内核代码可以这样写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lockdep_init_map(&amp;lock-&gt;dep_map, ...);</span><br></pre></td></tr></table></figure>
+
+<p>而非：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lock-&gt;rlock.dep_map   <span class="comment">// ❌ 不希望这样</span></span><br></pre></td></tr></table></figure></blockquote>
+<p>自旋锁相关 API 函数定义在内核源码<code>include/linux/spinlock.h</code> 文件中（spinlock.h 头文件包含 spinlock_types.h 等，所以只需加入 spinlock.h 头文件即可）</p>
+<h3 id="API"><a href="#API" class="headerlink" title="API"></a>API</h3><table>
+<thead>
+<tr>
+<th>API &#x2F; 宏</th>
+<th>返回值类型</th>
+<th>功能描述</th>
+<th>是否阻塞</th>
+<th>中断状态</th>
+<th>返回值 &#x2F; 备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DEFINE_SPINLOCK(name)</code></td>
+<td><code>void</code></td>
+<td>静态定义并初始化自旋锁</td>
+<td>-</td>
+<td>-</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_lock_init(spinlock_t *lock)</code></td>
+<td><code>void</code></td>
+<td>动态初始化自旋锁(只初始化，并不会分配内存)</td>
+<td>-</td>
+<td>-</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_lock(spinlock_t *lock)</code></td>
+<td><code>void</code></td>
+<td>获取自旋锁</td>
+<td>阻塞（自旋）</td>
+<td>不改变</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_lock_bh(spinlock_t *lock)</code></td>
+<td><code>void</code></td>
+<td>获取自旋锁并禁止 softirq</td>
+<td>阻塞</td>
+<td>禁用 softirq</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_lock_irq(spinlock_t *lock)</code></td>
+<td><code>void</code></td>
+<td>获取自旋锁并禁止本地 CPU 中断</td>
+<td>阻塞</td>
+<td>禁止本地中断</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_lock_irqsave(spinlock_t *lock, unsigned long flags)</code></td>
+<td><code>void</code></td>
+<td>获取自旋锁并保存本地中断状态</td>
+<td>阻塞</td>
+<td>禁止中断，保存 flags</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_trylock(spinlock_t *lock)</code></td>
+<td><code>int</code></td>
+<td>尝试获取自旋锁</td>
+<td>非阻塞</td>
+<td>不改变</td>
+<td>成功返回 1，失败返回 0</td>
+</tr>
+<tr>
+<td><code>spin_trylock_bh(spinlock_t *lock)</code></td>
+<td><code>int</code></td>
+<td>尝试获取自旋锁并禁止 softirq</td>
+<td>非阻塞</td>
+<td>禁用 softirq</td>
+<td>成功返回 1，失败返回 0</td>
+</tr>
+<tr>
+<td><code>spin_trylock_irq(spinlock_t *lock)</code></td>
+<td><code>int</code></td>
+<td>尝试获取自旋锁并禁止中断</td>
+<td>非阻塞</td>
+<td>禁用本地中断</td>
+<td>成功返回 1，失败返回 0</td>
+</tr>
+<tr>
+<td><code>spin_trylock_irqsave(spinlock_t *lock, unsigned long flags)</code></td>
+<td><code>int</code></td>
+<td>尝试获取自旋锁并保存中断状态</td>
+<td>非阻塞</td>
+<td>禁用中断，保存 flags</td>
+<td>成功返回 1，失败返回 0</td>
+</tr>
+<tr>
+<td><code>spin_unlock(spinlock_t *lock)</code></td>
+<td><code>void</code></td>
+<td>释放自旋锁</td>
+<td>-</td>
+<td>-</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_unlock_bh(spinlock_t *lock)</code></td>
+<td><code>void</code></td>
+<td>释放自旋锁并恢复 softirq 状态</td>
+<td>-</td>
+<td>恢复 softirq</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_unlock_irq(spinlock_t *lock)</code></td>
+<td><code>void</code></td>
+<td>释放自旋锁并恢复中断</td>
+<td>-</td>
+<td>恢复中断</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_unlock_irqrestore(spinlock_t *lock, unsigned long flags)</code></td>
+<td><code>void</code></td>
+<td>释放自旋锁并恢复中断状态</td>
+<td>-</td>
+<td>恢复中断状态 flags</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>spin_is_locked(spinlock_t *lock)</code></td>
+<td><code>int</code></td>
+<td>检查锁是否被持有</td>
+<td>非阻塞</td>
+<td>-</td>
+<td>被锁返回 1，否则 0</td>
+</tr>
+<tr>
+<td><code>spin_is_contended(spinlock_t *lock)</code></td>
+<td><code>int</code></td>
+<td>检查锁是否存在竞争</td>
+<td>非阻塞</td>
+<td>-</td>
+<td>有竞争返回 1，否则 0</td>
+</tr>
+</tbody></table>
+<p><strong>使用自旋锁分为以下 3 步</strong>:</p>
+<ol>
+<li>在访问临界资源的时候先申请自旋锁</li>
+<li>获取到自旋锁之后就进入临界区，获取不到自旋锁就原地等待。</li>
+<li>退出临界区的时候要释放自旋锁。</li>
+</ol>
+<h3 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/cdev.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/slab.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/spinlock.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/sched.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> &#123;</span></span><br><span class="line">        <span class="type">dev_t</span> dev_num;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">cdev</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="keyword">class</span> *<span class="keyword">class</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> *<span class="title">test_drv_dat</span>;</span></span><br><span class="line"><span class="type">static</span> <span class="type">bool</span> status = <span class="number">1</span>;</span><br><span class="line"><span class="type">static</span> <span class="type">spinlock_t</span> lock;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">spinlock_test_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        file-&gt;private_data = test_drv_dat;</span><br><span class="line">        spin_lock(&amp;lock);</span><br><span class="line">        <span class="keyword">if</span>(status == <span class="number">0</span>)&#123;</span><br><span class="line">                spin_unlock(&amp;lock);</span><br><span class="line">                <span class="keyword">return</span> -EBUSY;</span><br><span class="line">        &#125;</span><br><span class="line">        status = <span class="number">0</span>;</span><br><span class="line">        spin_unlock(&amp;lock);</span><br><span class="line">        pr_info(<span class="string">&quot;spinlock_test_open is called by [pid: %d]\n&quot;</span>,task_pid_nr(current));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">spinlock_test_read</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">char</span> __user *buf, <span class="type">size_t</span> size, <span class="type">loff_t</span> *offset)</span></span><br><span class="line">&#123;</span><br><span class="line">        pr_info(<span class="string">&quot;spinlock_test_read is called\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">spinlock_test_write</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">const</span> <span class="type">char</span> __user *buf, <span class="type">size_t</span> size, <span class="type">loff_t</span> *offset)</span></span><br><span class="line">&#123;</span><br><span class="line">        pr_info(<span class="string">&quot;spinlock_test_write is called\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">spinlock_test_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        spin_lock(&amp;lock);</span><br><span class="line">        status = <span class="number">1</span>;</span><br><span class="line">        spin_unlock(&amp;lock);</span><br><span class="line">        pr_info(<span class="string">&quot;spinlock_test_release is called by [pid: %d]\n&quot;</span>, task_pid_nr(current));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">fops</span> =</span> &#123;</span><br><span class="line">        .owner = THIS_MODULE,</span><br><span class="line">        .open = spinlock_test_open,</span><br><span class="line">        .read = spinlock_test_read,</span><br><span class="line">        .write = spinlock_test_write,</span><br><span class="line">        .release = spinlock_test_release,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">spinlock_test_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> err;</span><br><span class="line">        test_drv_dat = kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> test_drv_data), GFP_KERNEL);</span><br><span class="line">        <span class="keyword">if</span> (test_drv_dat == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                err = -ENOMEM;</span><br><span class="line">                <span class="keyword">goto</span> kzalloc_fail;</span><br><span class="line">        &#125;</span><br><span class="line">        err = alloc_chrdev_region(&amp;test_drv_dat-&gt;dev_num, <span class="number">0</span>, <span class="number">1</span>, <span class="string">&quot;spinlock test chrdev region\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> alloc_chrdev_region_fail;</span><br><span class="line">        cdev_init(&amp;test_drv_dat-&gt;cdev, &amp;fops);</span><br><span class="line">        test_drv_dat-&gt;cdev.owner = THIS_MODULE;</span><br><span class="line">        err = cdev_add(&amp;test_drv_dat-&gt;cdev, test_drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> cdev_add_fail;</span><br><span class="line">        test_drv_dat-&gt;<span class="class"><span class="keyword">class</span> =</span> class_create(THIS_MODULE, <span class="string">&quot;chrdev&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(test_drv_dat-&gt;class)) &#123;</span><br><span class="line">                err = PTR_ERR(test_drv_dat-&gt;class);</span><br><span class="line">                <span class="keyword">goto</span> class_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line">        test_drv_dat-&gt;dev = device_create(test_drv_dat-&gt;class, <span class="literal">NULL</span>, test_drv_dat-&gt;dev_num, <span class="literal">NULL</span>,</span><br><span class="line">                                          <span class="string">&quot;spinlock_test%d&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(test_drv_dat-&gt;dev)) &#123;</span><br><span class="line">                err = PTR_ERR(test_drv_dat-&gt;dev);</span><br><span class="line">                <span class="keyword">goto</span> device_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 初始化自旋锁</span></span><br><span class="line">        spin_lock_init(&amp;lock);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">device_create_fail:</span><br><span class="line">        class_destroy(test_drv_dat-&gt;class);</span><br><span class="line">class_create_fail:</span><br><span class="line">        cdev_del(&amp;test_drv_dat-&gt;cdev);</span><br><span class="line">cdev_add_fail:</span><br><span class="line">        unregister_chrdev_region(test_drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">alloc_chrdev_region_fail:</span><br><span class="line">        kfree(test_drv_dat);</span><br><span class="line">kzalloc_fail:</span><br><span class="line">        <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">spinlock_test_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        device_destroy(test_drv_dat-&gt;class, test_drv_dat-&gt;dev_num);</span><br><span class="line">        class_destroy(test_drv_dat-&gt;class);</span><br><span class="line">        cdev_del(&amp;test_drv_dat-&gt;cdev);</span><br><span class="line">        unregister_chrdev_region(test_drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        kfree(test_drv_dat);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(spinlock_test_init);</span><br><span class="line">module_exit(spinlock_test_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629&lt;asqwgo@163.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;This is a test sample for spinlock&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">pid_t</span> pid;</span><br><span class="line">        <span class="type">int</span> fd = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        pid = fork();</span><br><span class="line">        <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                perror(<span class="string">&quot;fork error&quot;</span>);</span><br><span class="line">                <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Error: %s[errno: %d]\n&quot;</span>, strerror(errno), errno);</span><br><span class="line">                <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123; <span class="comment">// child process</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;[child: &lt;pid: %d&gt;] try to open /dev/spinlock_test0\n&quot;</span>,getpid());</span><br><span class="line">                fd = open(<span class="string">&quot;/dev/spinlock_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                        perror(<span class="string">&quot;[child] open error&quot;</span>);</span><br><span class="line">                        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;[child] Error: %s[errno: %d]\n&quot;</span>, strerror(errno), errno);</span><br><span class="line">                        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;[child: &lt;pid: %d&gt;] open /dev/spinlock_test0 success\n&quot;</span>, getpid());</span><br><span class="line">                sleep(<span class="number">2</span>);</span><br><span class="line">                close(fd);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// parent process</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;[parent: &lt;pid: %d&gt;] try to open /dev/spinlock_test0\n&quot;</span>, getpid());</span><br><span class="line">                fd = open(<span class="string">&quot;/dev/spinlock_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                        perror(<span class="string">&quot;[parent] open error&quot;</span>);</span><br><span class="line">                        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;[parent] Error: %s[errno: %d]\n&quot;</span>, strerror(errno), errno);</span><br><span class="line">                        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">                &#125;</span><br><span class="line">                sleep(<span class="number">2</span>);</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;[parent: &lt;pid: %d&gt;] open /dev/spinlock_test0 success\n&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">                close(fd);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试用例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ insmod spinlock_test.ko</span><br><span class="line">[   10.948417] spinlock_test: loading out-of-tree module taints kernel.</span><br><span class="line">$ ./test_spinlock.o</span><br><span class="line">[child: &lt;pid: 102&gt;] try to open /dev/spinlock_test0</span><br><span class="line">[parent: &lt;pid: 101&gt;] try to open /dev/spinlock_test0</span><br><span class="line">[   16.331206] spinlock_test_open is called by [pid: 102]</span><br><span class="line">[child: &lt;pid: 102&gt;] open /dev/spinlock_test0 success</span><br><span class="line">[parent] open error: Device or resource busy</span><br><span class="line">[parent] Error: Device or resource busy[errno: 16]</span><br><span class="line">$ [   18.335915] spinlock_test_release is called by [pid: 102]</span><br></pre></td></tr></table></figure>
+
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li>由于<strong>自旋锁会”原地等待”，因为原地等待会继续占用 CPU，会消耗 CPU 资源，所以锁的时间不能太长。也就是临界区的代码不能太多</strong></li>
+<li>在自旋锁保护的<strong>临界区里面不能调用可能会导致线程休眠的函数，否则可能会发生死锁</strong></li>
+<li>自旋锁一般是<strong>用在多核 SOC 上</strong></li>
+</ol>
+<h4 id="自旋锁死锁"><a href="#自旋锁死锁" class="headerlink" title="自旋锁死锁"></a>自旋锁死锁</h4><p>自旋锁死锁是指多个任务或进程因互相等待彼此释放资源，导致谁也无法继续往下执行的现象。</p>
+<p>举个例子，假设有进程 A 和进程 B 俩个进程，进程 A 对资源 1 持有自旋锁，同时进程 A 也想获取资源 2。而进程 B 对资源 2 持有自旋锁，同时进程 B 也想获取资源 1。在这种情况下进程 A 和进程 B 都在等待彼此释放资源，从而造成了死锁。</p>
+<p>又如进程 A 在拥有自旋锁期间发生了中断，CPU 转头去执行中断处理函数，而此时的中断处理函数也需要获取同一把自旋锁。这时由于锁已被 A 占用，中断处理函数只能等待自旋，从而导致系统进入死锁状态。</p>
+<ul>
+<li><p>如<strong>在中断处理函数中也要获得自旋锁时，驱动程序则需要在拥有自旋锁时禁止中断（spin_lock_irqsave,spin_lock_irqrestore），在释放自旋锁时使能中断</strong>。</p>
+</li>
+<li><p>同时尽量短时间拥有自旋锁，长时间拥有自旋锁可能会导致系统资源耗尽从而造成死锁。</p>
+</li>
+<li><p>最后也要<strong>避免某个获得自旋锁的函数调用其他同样试图获取这个锁的函数</strong>，否则也会造成死锁。</p>
+</li>
+<li><p><strong>临界区中不能调用任何能够引起休眠或阻塞的函数</strong></p>
+</li>
+</ul>
+<h2 id="信号量"><a href="#信号量" class="headerlink" title="信号量"></a>信号量</h2><p>自旋锁是通过“原地等待”的方式来处理并发与竞争的，所以被保护的临界区不能太长，以免造成对 CPU 资源的浪费。但是有些情况下我们必不可免的<strong>要长时间对一些资源进行保护</strong>。这时候可以使用信号量。</p>
+<p>信号量会引起调用者睡眠，所以信号量也叫睡眠锁。</p>
+<p>信号量具有 <strong>P 操作</strong>和 <strong>V 操作</strong>。P 操作会使信号量的值减一，如果此时信号量的值小于等于 0，说明资源都被占用，如果还有其他进程需要使用，则该进程会被加入等待队列，如果大于 0，表示可用资源为 n</p>
+<h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p><strong>include&#x2F;linux&#x2F;semaphore</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SPDX-License-Identifier: GPL-2.0-only */</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Copyright (c) 2008 Intel Corporation</span></span><br><span class="line"><span class="comment"> * Author: Matthew Wilcox &lt;willy@linux.intel.com&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Please see kernel/locking/semaphore.c for documentation of these functions</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __LINUX_SEMAPHORE_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __LINUX_SEMAPHORE_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/list.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/spinlock.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Please don&#x27;t access any members of this structure directly */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">semaphore</span> &#123;</span></span><br><span class="line">	<span class="type">raw_spinlock_t</span>		lock;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		count;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">wait_list</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __SEMAPHORE_INITIALIZER(name, n)				\</span></span><br><span class="line"><span class="meta">&#123;									\</span></span><br><span class="line"><span class="meta">	.lock		= __RAW_SPIN_LOCK_UNLOCKED((name).lock),	\</span></span><br><span class="line"><span class="meta">	.count		= n,						\</span></span><br><span class="line"><span class="meta">	.wait_list	= LIST_HEAD_INIT((name).wait_list),		\</span></span><br><span class="line"><span class="meta">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DEFINE_SEMAPHORE(name)	\</span></span><br><span class="line"><span class="meta">	struct semaphore name = __SEMAPHORE_INITIALIZER(name, 1)</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title function_">sema_init</span><span class="params">(<span class="keyword">struct</span> semaphore *sem, <span class="type">int</span> val)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">lock_class_key</span> __<span class="title">key</span>;</span></span><br><span class="line">	*sem = (<span class="keyword">struct</span> semaphore) __SEMAPHORE_INITIALIZER(*sem, val);</span><br><span class="line">	lockdep_init_map(&amp;sem-&gt;lock.dep_map, <span class="string">&quot;semaphore-&gt;lock&quot;</span>, &amp;__key, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="type">void</span> <span class="title function_">down</span><span class="params">(<span class="keyword">struct</span> semaphore *sem)</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">int</span> __must_check <span class="title function_">down_interruptible</span><span class="params">(<span class="keyword">struct</span> semaphore *sem)</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">int</span> __must_check <span class="title function_">down_killable</span><span class="params">(<span class="keyword">struct</span> semaphore *sem)</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">int</span> __must_check <span class="title function_">down_trylock</span><span class="params">(<span class="keyword">struct</span> semaphore *sem)</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">int</span> __must_check <span class="title function_">down_timeout</span><span class="params">(<span class="keyword">struct</span> semaphore *sem, <span class="type">long</span> jiffies)</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">void</span> <span class="title function_">up</span><span class="params">(<span class="keyword">struct</span> semaphore *sem)</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* __LINUX_SEMAPHORE_H */</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="API-1"><a href="#API-1" class="headerlink" title="API"></a>API</h3><table>
+<thead>
+<tr>
+<th>API &#x2F; 宏</th>
+<th>返回值类型</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DEFINE_SEMAPHORE(name)</code></td>
+<td>N&#x2F;A</td>
+<td>定义并初始化一个信号量，初值为 1（互斥信号量）。</td>
+</tr>
+<tr>
+<td><code>sema_init(struct semaphore *sem, int val)</code></td>
+<td><code>void</code></td>
+<td>初始化一个信号量 <code>sem</code>，初值为 <code>val</code>。</td>
+</tr>
+<tr>
+<td><code>down(struct semaphore *sem)</code></td>
+<td><code>void</code></td>
+<td>获取信号量。如果计数 &gt; 0，减 1 并立即返回；如果计数为 0，阻塞等待直到可获取。</td>
+</tr>
+<tr>
+<td><code>down_interruptible(struct semaphore *sem)</code></td>
+<td><code>int</code></td>
+<td>获取信号量。如果被中断信号打断，返回非 0；否则阻塞直到获取成功并返回 0。</td>
+</tr>
+<tr>
+<td><code>down_killable(struct semaphore *sem)</code></td>
+<td><code>int</code></td>
+<td>获取信号量，如果进程接收到致命信号则返回非 0；否则阻塞直到获取成功并返回 0。</td>
+</tr>
+<tr>
+<td><code>down_trylock(struct semaphore *sem)</code></td>
+<td><code>int</code></td>
+<td>尝试立即获取信号量。如果获取成功返回非 0，否则立即返回 0，不阻塞。</td>
+</tr>
+<tr>
+<td><code>down_timeout(struct semaphore *sem, long jiffies)</code></td>
+<td><code>int</code></td>
+<td>尝试获取信号量，最多阻塞 <code>jiffies</code> 个时钟周期。返回值 &gt;0 表示成功，0 表示超时，负值表示错误或信号打断。</td>
+</tr>
+<tr>
+<td><code>up(struct semaphore *sem)</code></td>
+<td><code>void</code></td>
+<td>释放信号量（计数 +1），并唤醒等待队列中的任务。</td>
+</tr>
+</tbody></table>
+<p>down 和 down_interruptible 的区别：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>down(struct semaphore *sem)</code></th>
+<th><code>down_interruptible(struct semaphore *sem)</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>阻塞行为</td>
+<td>如果信号量 <code>count</code> 为 0，调用进程会<strong>无限阻塞</strong>，直到信号量可用</td>
+<td>如果信号量 <code>count</code> 为 0，调用进程会阻塞，但<strong>可被中断信号打断</strong></td>
+</tr>
+<tr>
+<td>信号打断</td>
+<td>不响应信号，中断不会让 <code>down()</code> 返回</td>
+<td>响应信号，如果阻塞期间收到信号，则<strong>立即返回非 0</strong></td>
+</tr>
+<tr>
+<td>返回值</td>
+<td><code>void</code>（永远成功，除非内核 BUG）</td>
+<td><code>int</code>，0 表示获取成功，非 0 表示被信号打断，获取失败</td>
+</tr>
+<tr>
+<td>使用场景</td>
+<td>不需要响应中断，确保获取信号量</td>
+<td>需要可中断阻塞，例如用户进程可以响应 Ctrl+C 或其他信号</td>
+</tr>
+</tbody></table>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/cdev.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/slab.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/semaphore.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/sched.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> &#123;</span></span><br><span class="line">        <span class="type">dev_t</span> dev_num;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">cdev</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="keyword">class</span> *<span class="keyword">class</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> *<span class="title">drv_dat</span>;</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">semaphore</span> <span class="title">sema</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">semaphore_test_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> ret;</span><br><span class="line">        file-&gt;private_data = drv_dat;</span><br><span class="line">        ret = down_interruptible(&amp;sema);</span><br><span class="line">        <span class="keyword">if</span> (ret != <span class="number">0</span>) &#123;</span><br><span class="line">                pr_info(<span class="string">&quot;semaphore_test_open is called by [pid: %d] but is interrupted\n&quot;</span>,</span><br><span class="line">                        current-&gt;pid);</span><br><span class="line">                <span class="keyword">return</span> -EINTR;</span><br><span class="line">        &#125;</span><br><span class="line">        pr_info(<span class="string">&quot;semaphore_test_open is called by [pid: %d]\n&quot;</span>, current-&gt;pid);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">semaphore_test_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        up(&amp;sema);</span><br><span class="line">        pr_info(<span class="string">&quot;semaphore_test_release is called by [pid: %d]\n&quot;</span>, current-&gt;pid);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">fops</span> =</span> &#123;</span><br><span class="line">        .owner = THIS_MODULE,</span><br><span class="line">        .open = semaphore_test_open,</span><br><span class="line">        .release = semaphore_test_release,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">semaphore_test_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> err;</span><br><span class="line"></span><br><span class="line">        drv_dat = (<span class="keyword">struct</span> test_drv_data *)kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> test_drv_data), GFP_KERNEL);</span><br><span class="line">        <span class="keyword">if</span> (drv_dat == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                err = -ENOMEM;</span><br><span class="line">                <span class="keyword">goto</span> kzalloc_fail;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        err = alloc_chrdev_region(&amp;drv_dat-&gt;dev_num, <span class="number">0</span>, <span class="number">1</span>, <span class="string">&quot;semaphore_test_chrdev_region&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> alloc_chrdev_region_fail;</span><br><span class="line">        cdev_init(&amp;drv_dat-&gt;cdev, &amp;fops);</span><br><span class="line">        drv_dat-&gt;cdev.owner = THIS_MODULE;</span><br><span class="line">        err = cdev_add(&amp;drv_dat-&gt;cdev, drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> cdev_add_fail;</span><br><span class="line">        drv_dat-&gt;<span class="class"><span class="keyword">class</span> =</span> class_create(THIS_MODULE, <span class="string">&quot;chrdev_test&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(drv_dat-&gt;class)) &#123;</span><br><span class="line">                err = PTR_ERR(drv_dat-&gt;class);</span><br><span class="line">                <span class="keyword">goto</span> class_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        drv_dat-&gt;dev =</span><br><span class="line">                device_create(drv_dat-&gt;class, <span class="literal">NULL</span>, drv_dat-&gt;dev_num, <span class="literal">NULL</span>, <span class="string">&quot;semaphore_test%d&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(drv_dat-&gt;dev)) &#123;</span><br><span class="line">                err = PTR_ERR(drv_dat-&gt;dev);</span><br><span class="line">                <span class="keyword">goto</span> device_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 初始化信号量</span></span><br><span class="line">        sema_init(&amp;sema, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">device_create_fail:</span><br><span class="line">        class_destroy(drv_dat-&gt;class);</span><br><span class="line">class_create_fail:</span><br><span class="line">        cdev_del(&amp;drv_dat-&gt;cdev);</span><br><span class="line">cdev_add_fail:</span><br><span class="line">        unregister_chrdev_region(drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">alloc_chrdev_region_fail:</span><br><span class="line">        kfree(drv_dat);</span><br><span class="line">kzalloc_fail:</span><br><span class="line">        <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">semaphore_test_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        device_destroy(drv_dat-&gt;class, drv_dat-&gt;dev_num);</span><br><span class="line">        class_destroy(drv_dat-&gt;class);</span><br><span class="line">        cdev_del(&amp;drv_dat-&gt;cdev);</span><br><span class="line">        unregister_chrdev_region(drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        kfree(drv_dat);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(semaphore_test_init);</span><br><span class="line">module_exit(semaphore_test_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629&lt;asqwgo@163.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;This is test sample for semaphore&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>测试用例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">pid_t</span> pid;</span><br><span class="line">        <span class="type">int</span> fd;</span><br><span class="line"></span><br><span class="line">        pid = fork();</span><br><span class="line">        <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                perror(<span class="string">&quot;fork error&quot;</span>);</span><br><span class="line">                <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123; <span class="comment">// child</span></span><br><span class="line">                fd = open(<span class="string">&quot;/dev/semaphore_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                        perror(<span class="string">&quot;child open /dev/semaphore_test0 error&quot;</span>);</span><br><span class="line">                        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;[child: pid&lt;%d&gt;] open /dev/semaphore_test0 success\n&quot;</span>, getpid());</span><br><span class="line">                sleep(<span class="number">2</span>);</span><br><span class="line">                close(fd);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// parent</span></span><br><span class="line">                fd = open(<span class="string">&quot;/dev/semaphore_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                        perror(<span class="string">&quot;parent open /dev/semaphore_test0 error&quot;</span>);</span><br><span class="line">                        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;[parent: pid&lt;%d&gt;] open /dev/semaphore_test0 success\n&quot;</span>, getpid());</span><br><span class="line">                sleep(<span class="number">2</span>);</span><br><span class="line">                close(fd);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ insmod semaphore_test.ko</span><br><span class="line">[   15.981179] semaphore_test: loading out-of-tree module taints kernel.</span><br><span class="line">$ ./test_semaphore.o</span><br><span class="line">[   20.535287] semaphore_test_open is called by [pid: 101]</span><br><span class="line">[parent: pid&lt;101&gt;] open /dev/semaphore_test0 success</span><br><span class="line">[   22.544668] semaphore_test_release is called by [pid: 101]</span><br><span class="line">[   22.545409] semaphore_test_open is called by [pid: 102]</span><br><span class="line">[child: pid&lt;102&gt;] open /dev/semaphore_test0 success</span><br><span class="line">[   24.550326] semaphore_test_release is called by [pid: 102]</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ol>
+<li><strong>信号量的值不能小于 0</strong></li>
+<li>访问共享资源时，信号量执行”减一”操作，访问完成后再执行”加一”操作</li>
+<li><strong>当信号量的值为 0，想访问共享资源的线程必须等待</strong>，当信号量大于 0 时，等待的线程才可以访问</li>
+<li>因为<strong>信号量会引起休眠，所以中断里面不能使用信号量</strong></li>
+<li><strong>如果共享资源持有时间比较长，一般用信号量而不用自旋锁</strong></li>
+<li><strong>在同时使用信号量和自旋锁的时候，要先获取信号量，再使用自旋锁。因为信号量会导致睡眠。</strong></li>
+</ol>
+<h2 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h2><p><strong>同一个资源同一个时间只有一个访问者在进行访问</strong>，其他的访问者结束以后才可以访问这个资源。这就是互斥。</p>
+<p><strong>互斥锁和信号量为 1 的情况很类似</strong>，但是互斥锁更简洁高效。不过要注意的事项更多。</p>
+<h3 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a>定义</h3><p><strong>include&#x2F;linux&#x2F;mutex.h</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> &#123;</span></span><br><span class="line">	<span class="type">atomic_long_t</span>		owner;</span><br><span class="line">	<span class="type">spinlock_t</span>		wait_lock;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_MUTEX_SPIN_ON_OWNER</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">optimistic_spin_queue</span> <span class="title">osq</span>;</span> <span class="comment">/* Spinner MCS lock */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">wait_list</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_MUTEXES</span></span><br><span class="line">	<span class="type">void</span>			*magic;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_LOCK_ALLOC</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">lockdep_map</span>	<span class="title">dep_map</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="API-2"><a href="#API-2" class="headerlink" title="API"></a>API</h3><table>
+<thead>
+<tr>
+<th>函数&#x2F;宏</th>
+<th>返回值类型</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>DEFINE_MUTEX(name)</code></strong></td>
+<td><code>struct mutex</code></td>
+<td>静态定义并初始化一个互斥锁，初始状态为 unlocked</td>
+</tr>
+<tr>
+<td><strong><code>mutex_init(struct mutex *lock)</code></strong></td>
+<td><code>void</code></td>
+<td>初始化互斥锁为 unlocked 状态</td>
+</tr>
+<tr>
+<td><code>mutex_destroy(struct mutex *lock)</code></td>
+<td><code>void</code></td>
+<td>销毁互斥锁（仅在 DEBUG_MUTEXES 下实际工作）</td>
+</tr>
+<tr>
+<td><strong><code>mutex_lock(struct mutex *lock)</code></strong></td>
+<td><code>void</code></td>
+<td>获取互斥锁，如果锁被占用则阻塞直到锁可用</td>
+</tr>
+<tr>
+<td><strong><code>mutex_lock_interruptible(struct mutex *lock)</code></strong></td>
+<td><code>int</code></td>
+<td>获取互斥锁，如果锁被占用则阻塞，可被信号中断，成功返回 0，被信号打断返回 -EINTR</td>
+</tr>
+<tr>
+<td><code>mutex_lock_killable(struct mutex *lock)</code></td>
+<td><code>int</code></td>
+<td>获取互斥锁，如果锁被占用则阻塞，可被致死信号打断，返回值同上</td>
+</tr>
+<tr>
+<td><code>mutex_lock_io(struct mutex *lock)</code></td>
+<td><code>void</code></td>
+<td>获取互斥锁，允许在 I&#x2F;O 上下文使用（不常用）</td>
+</tr>
+<tr>
+<td><code>mutex_lock_nested(struct mutex *lock, unsigned int subclass)</code></td>
+<td><code>void</code></td>
+<td>嵌套锁获取，用于 Lockdep 分析，实际等效于 <code>mutex_lock()</code></td>
+</tr>
+<tr>
+<td><code>mutex_lock_interruptible_nested(struct mutex *lock, unsigned int subclass)</code></td>
+<td><code>int</code></td>
+<td>可中断的嵌套锁获取，用于 Lockdep 分析</td>
+</tr>
+<tr>
+<td><code>mutex_lock_killable_nested(struct mutex *lock, unsigned int subclass)</code></td>
+<td><code>int</code></td>
+<td>可致死信号打断的嵌套锁获取，用于 Lockdep 分析</td>
+</tr>
+<tr>
+<td><code>mutex_lock_nest_lock(struct mutex *lock, struct lockdep_map *nest_lock)</code></td>
+<td><code>void</code></td>
+<td>嵌套锁获取，用于 Lockdep 分析</td>
+</tr>
+<tr>
+<td><code>mutex_trylock(struct mutex *lock)</code></td>
+<td><code>int</code></td>
+<td>尝试获取互斥锁，不阻塞，成功返回 1，失败返回 0</td>
+</tr>
+<tr>
+<td><code>mutex_trylock_recursive(struct mutex *lock)</code></td>
+<td><code>enum mutex_trylock_recursive_enum</code></td>
+<td>尝试获取互斥锁，允许递归，返回 0&#x2F;1&#x2F;递归标志</td>
+</tr>
+<tr>
+<td><strong><code>mutex_unlock(struct mutex *lock)</code></strong></td>
+<td><code>void</code></td>
+<td>释放互斥锁，必须由持有锁的线程调用</td>
+</tr>
+<tr>
+<td><code>atomic_dec_and_mutex_lock(atomic_t *cnt, struct mutex *lock)</code></td>
+<td><code>int</code></td>
+<td>将原子计数器减 1，如果减到 0 则获取 mutex；否则返回 0</td>
+</tr>
+<tr>
+<td><strong><code>mutex_is_locked(struct mutex *lock)</code></strong></td>
+<td><code>bool</code></td>
+<td>查询互斥锁是否被占用，true 表示锁被持有，false 表示未被持有</td>
+</tr>
+</tbody></table>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/slab.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/cdev.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/mutex.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/sched.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> &#123;</span></span><br><span class="line">        <span class="type">dev_t</span> dev_num;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">cdev</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="keyword">class</span> *<span class="keyword">class</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">test_drv_data</span> *<span class="title">drv_dat</span>;</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">drv_mutex</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">mutex_test_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> err;</span><br><span class="line">        file-&gt;private_data = drv_dat;</span><br><span class="line">        err = mutex_lock_interruptible(&amp;drv_mutex);</span><br><span class="line">        <span class="keyword">if</span> (err != <span class="number">0</span>) &#123;</span><br><span class="line">                pr_err(<span class="string">&quot;pid: %d is interrupted&quot;</span>, current-&gt;pid);</span><br><span class="line">                <span class="keyword">return</span> err;</span><br><span class="line">        &#125;</span><br><span class="line">        pr_info(<span class="string">&quot;mutex_test_open is called by pid: %d\n&quot;</span>, current-&gt;pid);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">mutex_test_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        mutex_unlock(&amp;drv_mutex);</span><br><span class="line">        pr_info(<span class="string">&quot;mutex_test_release is called by pid: %d\n&quot;</span>, current-&gt;pid);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">fops</span> =</span> &#123;</span><br><span class="line">        .owner = THIS_MODULE,</span><br><span class="line">        .open = mutex_test_open,</span><br><span class="line">        .release = mutex_test_release,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">mutex_test_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> err;</span><br><span class="line">        drv_dat = (<span class="keyword">struct</span> test_drv_data *)kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> test_drv_data), GFP_KERNEL);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (drv_dat == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                err = -ENOMEM;</span><br><span class="line">                <span class="keyword">goto</span> kzalloc_fail;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        err = alloc_chrdev_region(&amp;drv_dat-&gt;dev_num, <span class="number">0</span>, <span class="number">1</span>, <span class="string">&quot;mutex_test_chrdev_region&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> alloc_chrdev_region_fail;</span><br><span class="line"></span><br><span class="line">        cdev_init(&amp;drv_dat-&gt;cdev, &amp;fops);</span><br><span class="line">        drv_dat-&gt;cdev.owner = THIS_MODULE;</span><br><span class="line">        err = cdev_add(&amp;drv_dat-&gt;cdev, drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">goto</span> cdev_add_fail;</span><br><span class="line"></span><br><span class="line">        drv_dat-&gt;<span class="class"><span class="keyword">class</span> =</span> class_create(THIS_MODULE, <span class="string">&quot;chrdev_test&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(drv_dat-&gt;class)) &#123;</span><br><span class="line">                err = PTR_ERR(drv_dat-&gt;class);</span><br><span class="line">                <span class="keyword">goto</span> class_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        drv_dat-&gt;dev =</span><br><span class="line">                device_create(drv_dat-&gt;class, <span class="literal">NULL</span>, drv_dat-&gt;dev_num, <span class="literal">NULL</span>, <span class="string">&quot;mutex_test%d&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(drv_dat-&gt;dev)) &#123;</span><br><span class="line">                err = PTR_ERR(drv_dat-&gt;dev);</span><br><span class="line">                <span class="keyword">goto</span> device_create_fail;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 初始化互斥锁</span></span><br><span class="line">        mutex_init(&amp;drv_mutex);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">device_create_fail:</span><br><span class="line">        class_destroy(drv_dat-&gt;class);</span><br><span class="line">class_create_fail:</span><br><span class="line">        cdev_del(&amp;drv_dat-&gt;cdev);</span><br><span class="line">cdev_add_fail:</span><br><span class="line">        unregister_chrdev_region(drv_dat-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">alloc_chrdev_region_fail:</span><br><span class="line">        kfree(drv_dat);</span><br><span class="line">kzalloc_fail:</span><br><span class="line">        <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">mutex_test_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">        kfree(drv_dat);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(mutex_test_init);</span><br><span class="line">module_exit(mutex_test_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629&lt;asqwgo@163.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;This is a test sample for mutex&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>测试用例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">pid_t</span> pid;</span><br><span class="line">        <span class="type">int</span> fd;</span><br><span class="line">        <span class="type">char</span> prefix[<span class="number">16</span>];        </span><br><span class="line"></span><br><span class="line">        pid = fork();</span><br><span class="line">        <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                perror(<span class="string">&quot;fork error&quot;</span>);</span><br><span class="line">                <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="built_in">snprintf</span>(prefix, <span class="keyword">sizeof</span>(prefix), <span class="string">&quot;[pid: %d]&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">                fd = open(<span class="string">&quot;/dev/mutex_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                        perror(prefix);</span><br><span class="line">                        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%s child open success\n&quot;</span>, prefix);</span><br><span class="line">                sleep(<span class="number">2</span>);</span><br><span class="line">                close(fd);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="built_in">snprintf</span>(prefix, <span class="keyword">sizeof</span>(prefix), <span class="string">&quot;[pid: %d]&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">                fd = open(<span class="string">&quot;/dev/mutex_test0&quot;</span>, O_RDWR);</span><br><span class="line">                <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                        perror(prefix);</span><br><span class="line">                        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%s parent open success\n&quot;</span>, prefix);</span><br><span class="line">                sleep(<span class="number">2</span>);</span><br><span class="line">                close(fd);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ insmod mutex_test.ko</span><br><span class="line">[   13.589343] mutex_test: loading out-of-tree module taints kernel.</span><br><span class="line">$ ./test_mutex.o</span><br><span class="line">[   17.141253] mutex_test_open is called by pid: 101</span><br><span class="line">[pid: 101] parent open success</span><br><span class="line">[   19.150144] mutex_test_release is called by pid: 101</span><br><span class="line">[   19.151379] mutex_test_open is called by pid: 102</span><br><span class="line">[pid: 102] child open success</span><br><span class="line">[   21.156199] mutex_test_release is called by pid: 102</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li><strong>互斥锁会导致休眠</strong>，因此在<strong>中断中不能使用互斥锁</strong></li>
+<li>同一时刻只能有一个线程持有互斥锁，并且只有持有者可以解锁</li>
+<li><strong>不允许递归上锁和解锁</strong></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2511123/">https://even629.com/posts/2511123/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E4%B8%8E%E7%AB%9E%E4%BA%89%E6%A6%82%E5%BF%B5"><span class="toc-text">并发与竞争概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C"><span class="toc-text">原子操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E5%BD%A2%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C"><span class="toc-text">整形原子操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E7%94%A8%E6%B3%95"><span class="toc-text">错误用法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#atomic-cmpxchg"><span class="toc-text">atomic_cmpxchg</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-text">例子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C"><span class="toc-text">位原子操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="toc-text">自旋锁</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API"><span class="toc-text">API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90-1"><span class="toc-text">例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81%E6%AD%BB%E9%94%81"><span class="toc-text">自旋锁死锁</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F"><span class="toc-text">信号量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API-1"><span class="toc-text">API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-text">注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-text">互斥锁</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API-2"><span class="toc-text">API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-1"><span class="toc-text">注意事项</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '26a8b1ad3e0d3b5db2ab4bbfc447cf21'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

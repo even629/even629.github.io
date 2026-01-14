@@ -1,0 +1,866 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Qemu TCG | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Qemu Accelerator: TCG(Tiny Code Generator)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Qemu TCG">
+<meta property="og:url" content="https://even629.com/posts/2511230/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Qemu Accelerator: TCG(Tiny Code Generator)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/qemu_cover.png">
+<meta property="article:published_time" content="2025-11-23T05:50:13.000Z">
+<meta property="article:modified_time" content="2025-11-23T05:50:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="virtualization">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/qemu_cover.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2511230/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Qemu TCG',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/qemu_top_img.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Qemu TCG</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-23T05:50:13.000Z" title="发表于 2025-11-23 13:50:13">2025-11-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-23T05:50:13.000Z" title="更新于 2025-11-23 13:50:13">2025-11-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/virtualization/">virtualization</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>25分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2511230/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-23</p>
+</div></div><div class='timeline-item-content'><ol>
+<li>init</li>
+</ol>
+</div></div></div>
+
+
+
+<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wget https://download.qemu.org/qemu-10.1.2.tar.xz</span><br><span class="line">tar xvJf qemu-10.1.2.tar.xz</span><br><span class="line"><span class="built_in">cd</span> qemu-10.1.2</span><br><span class="line"><span class="built_in">mkdir</span> -p output</span><br><span class="line">./configure --prefix=<span class="variable">$PWD</span>/output --target-list=aarch64-softmmu,riscv64-softmmu --enable-debug</span><br><span class="line">bear -- make -j$(<span class="built_in">nproc</span>)</span><br></pre></td></tr></table></figure>
+
+<p>创建.clangd</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">CompileFlags:</span></span><br><span class="line"><span class="symbol">  Add:</span> -Wno-unknown-warning-option</span><br><span class="line"><span class="symbol">  Remove:</span> [-m*, -f*]</span><br></pre></td></tr></table></figure>
+
+<p><strong>gdb</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb -args ./build/qemu-system-riscv64 -M virt -device edu,<span class="built_in">id</span>=edu1 -nographic</span><br></pre></td></tr></table></figure>
+
+
+
+<p>QEMU 支持多种 accel，但大体可以分为两种：指令模拟技术（TCG）、虚拟化技术（KVM、HVF）等。</p>
+<p>常见翻译技术：</p>
+<ul>
+<li>解释器：Interpreter，每次解析并执行一条 Guest 指令，循环往复。</li>
+<li>静态二进制翻译：Static Binary Translation，在程序运行前进行翻译。运行时没有翻译开销，优化幅度有限。</li>
+<li>动态二进制翻译：Dynamic Binary Translation，在程序运行时动态翻译。一般按照程序 trace 翻译，不会全量翻译，能对热点代码进行深度优化。</li>
+</ul>
+<p>TCG(Tiny Code Generator) 最初是一个 C 语言的编译器后端，后面演化为 QEMU 的<strong>二进制动态编译（翻译）引擎</strong>。</p>
+<h1 id="Target-Guest"><a href="#Target-Guest" class="headerlink" title="Target &amp; Guest"></a>Target &amp; Guest</h1><ul>
+<li><p><strong>Guest（虚拟机&#x2F;被模拟的架构）</strong></p>
+<ul>
+<li><p>指的是 <strong>QEMU 模拟的 CPU 架构</strong>，也就是你运行的系统的 CPU 类型。</p>
+</li>
+<li><p>例如：</p>
+<ul>
+<li><code>riscv64</code>（RISC-V 64 位）</li>
+<li><code>aarch64</code>（ARM 64 位）</li>
+<li><code>i386</code>（x86 32 位）</li>
+</ul>
+</li>
+<li><p>在启动 QEMU 时指定 Guest 架构，例如：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-<span class="keyword">system</span>-riscv64 -machine virt -kernel kernel.elf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Guest 决定 QEMU 模拟出的指令集、寄存器等。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>TCG Target（TCG 目标架构）</strong></p>
+<ul>
+<li>TCG（Tiny Code Generator）是 QEMU 的动态翻译器，用来把 <strong>Guest 指令</strong> 转换成 <strong>Host CPU 可执行的本地指令</strong>。</li>
+<li>TCG Target 就是 <strong>宿主机 CPU 的架构</strong>，决定 QEMU 生成的机器码要在什么 CPU 上运行。</li>
+<li>例如：<ul>
+<li>Host &#x3D; <code>x86_64</code></li>
+<li>Guest &#x3D; <code>riscv64</code></li>
+<li>TCG Target &#x3D; <code>x86_64</code>（因为 QEMU 最终生成 x86_64 机器码在宿主机执行）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="TCR-Translation"><a href="#TCR-Translation" class="headerlink" title="TCR Translation"></a>TCR Translation</h1><h2 id="TCG-IR"><a href="#TCG-IR" class="headerlink" title="TCG IR"></a>TCG IR</h2><p>类似 LLVM，QEMU 也定义有自己的 IR，流程如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+---------------+      +----------------+      +---------------+</span><br><span class="line">|<span class="string">               </span>|<span class="string">      </span>|<span class="string">                </span>|<span class="string">      </span>|<span class="string">               </span>|</span><br><span class="line">|<span class="string"> Source binary </span>|<span class="string"> ---&gt; </span>|<span class="string">    QEMU IR     </span>|<span class="string"> ---&gt; </span>|<span class="string"> Target binary </span>|</span><br><span class="line">|<span class="string">     code      </span>|<span class="string">      </span>|<span class="string">                </span>|<span class="string">      </span>|<span class="string">     code      </span>|</span><br><span class="line">|<span class="string">               </span>|<span class="string">      </span>|<span class="string">                </span>|<span class="string">      </span>|<span class="string">               </span>|</span><br><span class="line">+---------------+      +----------------+      +---------------+</span><br><span class="line">      Guest                                          Host       </span><br></pre></td></tr></table></figure>
+
+<p>把Guest指令翻译成<code>QEMU IR</code>，这是前端，后端把<code>QEMU IR</code>翻译成宿主机指令</p>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>拓展性好：支持新的前端（Guest），只需要实现 source -&gt; IR；</li>
+<li>易于流程化：类似 LLVM，可以引入各种 pass，对不同环节进行优化。</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>性能普遍不高（相对而言）</li>
+</ul>
+<h2 id="TCG翻译流程"><a href="#TCG翻译流程" class="headerlink" title="TCG翻译流程"></a>TCG翻译流程</h2><h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p><strong>TCG 的二进制转换是以代码块（Basic Block）为基本单元，翻译的产物为 Translation Block。</strong></p>
+<p>Basic Block 的划分规则：<strong>分支指令</strong>；<strong>特权指令&#x2F;异常</strong>；<strong>代码段跨页</strong>。</p>
+<ol>
+<li><strong>Guest PC 指向一个 Basic Block</strong><ul>
+<li>**Basic Block（BB）**是连续的、没有分支的指令序列。</li>
+<li>例如 x86&#x2F;RISC-V 中的一段顺序执行的指令。</li>
+</ul>
+</li>
+<li><strong>检查 TB Cache（翻译缓存）</strong><ul>
+<li><strong>TB（Translated Block）</strong> 是 Basic Block 被 DBT 翻译成 <strong>宿主可执行代码</strong> 后的结果。</li>
+<li>DBT 会维护一个哈希表或者缓存，键通常是 Guest PC。</li>
+</ul>
+</li>
+<li><strong>命中 TB Cache（Y）</strong><ul>
+<li>如果 Guest PC 对应的 TB 已经生成过，就直接跳到 <strong>Exec TB</strong> 执行。</li>
+<li><strong>无需再次翻译</strong>，提高效率。</li>
+</ul>
+</li>
+<li><strong>未命中 TB Cache（N）</strong><ul>
+<li>调用 <strong>translation</strong> 模块，把 Guest 的 Basic Block 转换成 Translation Block(TB)。</li>
+<li>翻译完成后，将 TB 保存到缓存中，以便下次快速执行。</li>
+</ul>
+</li>
+<li><strong>Direct Block Chaining</strong><ul>
+<li>每个 TB 会保存 <strong>其对应的 Guest PC</strong>，以及通常还会记录 <strong>下一个 Guest PC</strong>（末尾指令的跳转目标）</li>
+<li><strong>执行完一个 TB 后，如果下一个 Guest PC 已经有 TB，就直接跳转执行下一个 TB，而不回到 <code>Check TB Cache</code>。</strong></li>
+<li>通过在 TB 末尾生成直接跳转指令实现。</li>
+<li>优化了执行效率，避免每次都回到解释器循环，尤其是循环密集型代码。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">                              +---------------+                    </span><br><span class="line">       +----------------------| <span class="type">Do</span> something  |-------------------+</span><br><span class="line">       |                      +---------------+                   |</span><br><span class="line">       v                                                          |</span><br><span class="line">+--------------+       +----------------+ <span class="type">Y</span>       +---------+     |</span><br><span class="line">|   <span class="type">Guest</span> <span class="type">PC</span>   +------&gt;| <span class="type">Check</span> <span class="type">TB</span> <span class="type">Cache</span> +--------&gt;| <span class="type">Exec</span> <span class="type">TB</span> +-----+</span><br><span class="line">+--------------+       +------+---------+         +---------+      </span><br><span class="line">                              | <span class="type">N</span>                      ^           </span><br><span class="line">                              v                        |           </span><br><span class="line">                        +-------------+                |           </span><br><span class="line">                        | translation |                |           </span><br><span class="line">                        +-----+-------+                |           </span><br><span class="line">                              v                        |           </span><br><span class="line">                       +-----------------+             |           </span><br><span class="line">                       |<span class="type">Save</span> <span class="type">TB</span> to <span class="type">Cache</span> +-------------+           </span><br><span class="line">                       +-----------------+                         </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当一个 Basic Block 被 DBT 转换为 TB 以后，下次再执行到相同的 Basic Block 直接从缓存中获取 TB 执行即可，无需再经过转换：</li>
+</ul>
+<h4 id="TranslationBlock"><a href="#TranslationBlock" class="headerlink" title="TranslationBlock"></a>TranslationBlock</h4><p><strong>TCG 的二进制转换是以代码块（Basic Block）为基本单元，翻译的产物为 Translation Block。</strong></p>
+<p>TCG有三种类型的变量：temporary, local temporary和global</p>
+<ul>
+<li><p><strong>global</strong>: 一般系统寄存器是global变量，global变量又分为寄存器和memory两类，memory一般定义的是CPU里的寄存器</p>
+<blockquote>
+<p>memory这种在后端翻译时，会把guest CPU寄存器的值先load到host寄存器里，计算完后再store回guest CPU结构体里，模拟过程会有访存行为。</p>
+<p>寄存器这种TCGv在后端翻译时，会直接映射到host的寄存器上，每次就可以直接访问，一般用来存放guest CPU env的指针。</p>
+</blockquote>
+</li>
+<li><p><strong>temporary</strong>: 变量的生命只在一个BB内</p>
+</li>
+<li><p><strong>local temporary</strong>: 变量的生命在一个TB内，可以跨越BB。</p>
+</li>
+</ul>
+<p>Basic Block 的划分规则：<strong>分支指令</strong>；<strong>特权指令&#x2F;异常</strong>；<strong>代码段跨页</strong>。</p>
+<p>BB从上一个BB的结尾或者一个set_label指令开始, BB以分支指令(brcond_xxx)、goto_tb以及exit_tb结束，</p>
+<ul>
+<li><p><strong>Prologue（前置代码）</strong>：</p>
+<ul>
+<li><p>保存 Guest CPU 状态（寄存器、标志位等）到宿主寄存器或内存</p>
+</li>
+<li><p>设置执行环境</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Epilogue（后置代码）</strong>：</p>
+<ul>
+<li><p>恢复 Guest CPU 状态</p>
+</li>
+<li><p>跳回 Dispatcher 或直接跳到下一个 TB</p>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">                        +---------------------+                                     </span><br><span class="line">         1)             |<span class="string">                     </span>|<span class="string">                                     </span></span><br><span class="line"><span class="string">       +----------------+   QEMU TCG engine   +---------------+                     </span></span><br><span class="line"><span class="string">       </span>|<span class="string">          +----&gt;</span>|<span class="string">                     </span>|<span class="string">&lt;---+          </span>|<span class="string">                     </span></span><br><span class="line"><span class="string">       </span>|<span class="string">          </span>|<span class="string">     +----------+---^------+    </span>|<span class="string">          </span>|<span class="string">                     </span></span><br><span class="line"><span class="string">       </span>|<span class="string">          </span>|<span class="string">                </span>|<span class="string">   </span>|<span class="string">   4)      </span>|<span class="string">          </span>|<span class="string"> 5)                  </span></span><br><span class="line"><span class="string">       </span>|<span class="string">          </span>|<span class="string">            3)  </span>|<span class="string">   +------+    </span>|<span class="string">          </span>|<span class="string">                     </span></span><br><span class="line"><span class="string">       v          </span>|<span class="string">2)              v          </span>|<span class="string">    </span>|<span class="string"> 6)       v                     </span></span><br><span class="line"><span class="string">+---------------+ </span>|<span class="string">        +---------------+  </span>|<span class="string">    </span>|<span class="string">  +---------------+             </span></span><br><span class="line"><span class="string"></span>|<span class="string">   prologue    </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">   prologue    </span>|<span class="string">  </span>|<span class="string">    </span>|<span class="string">  </span>|<span class="string">   prologue    </span>|<span class="string">             </span></span><br><span class="line"><span class="string">+---------------+ </span>|<span class="string">        +---------------+  </span>|<span class="string">    </span>|<span class="string">  +---------------+             </span></span><br><span class="line"><span class="string"></span>|<span class="string">               </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">               </span>|<span class="string">  </span>|<span class="string">    </span>|<span class="string">  </span>|<span class="string">               </span>|<span class="string">             </span></span><br><span class="line"><span class="string"></span>|<span class="string">  Translation  </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">  Translation  </span>|<span class="string">  </span>|<span class="string">    </span>|<span class="string">  </span>|<span class="string">  Translation  </span>|<span class="string">             </span></span><br><span class="line"><span class="string"></span>|<span class="string">     Block1    </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">     Block2    </span>|<span class="string">  </span>|<span class="string">    </span>|<span class="string">  </span>|<span class="string">     Block3    </span>|<span class="string">             </span></span><br><span class="line"><span class="string"></span>|<span class="string">               </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">               </span>|<span class="string">  </span>|<span class="string">    </span>|<span class="string">  </span>|<span class="string">               </span>|<span class="string">             </span></span><br><span class="line"><span class="string">+---------------+ </span>|<span class="string">        +---------------+- </span>|<span class="string">    </span>|<span class="string">  +---------------+             </span></span><br><span class="line"><span class="string"></span>|<span class="string">   epilogue    </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">   epilogue    </span>|<span class="string">  </span>|<span class="string">    </span>|<span class="string">  </span>|<span class="string">   epilogue    </span>|<span class="string">             </span></span><br><span class="line"><span class="string">+------+--------+ </span>|<span class="string">        +-------+-------+  </span>|<span class="string">    </span>|<span class="string">  +------+--------+             </span></span><br><span class="line"><span class="string">       +----------+                +----------+    +---------+                      </span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Direct-block-chaining"><a href="#Direct-block-chaining" class="headerlink" title="Direct block chaining"></a>Direct block chaining</h4><p>拿 x86_64 平台举例，每次执行上下文切换需要执行大约 20 条指令 (指令还会进行内存的读写)，因此 DBT 的优化措施之一就是<strong>减少上下文切换</strong>，实现 TB 之间的直接链接：(比如直接跳转指令，可以直接连接两个TB块，但间接跳转指令不行，因为依赖运行时计算)</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">            1)          +---------------------+                                 </span><br><span class="line">       +----------------+   QEMU TCG engine   +---------------------------+     </span><br><span class="line">       |<span class="string">                +---------------------+                           </span>|<span class="string">     </span></span><br><span class="line"><span class="string">       v                                                                  </span>|<span class="string">     </span></span><br><span class="line"><span class="string">+---------------+          +---------------+          +---------------+   </span>|<span class="string">     </span></span><br><span class="line"><span class="string"></span>|<span class="string">   prologue    </span>|<span class="string">          </span>|<span class="string">   prologue    </span>|<span class="string">   3)     </span>|<span class="string">   prologue    </span>|<span class="string">   </span>|<span class="string">     </span></span><br><span class="line"><span class="string">+---------------+ +------&gt; +---------------+  +-----&gt; +---------------+   </span>|<span class="string">     </span></span><br><span class="line"><span class="string"></span>|<span class="string">               </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">               </span>|<span class="string">  </span>|<span class="string">       </span>|<span class="string">               </span>|<span class="string">   </span>|<span class="string"> 5)  </span></span><br><span class="line"><span class="string"></span>|<span class="string">  Translation  </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">  Translation  </span>|<span class="string">  </span>|<span class="string">       </span>|<span class="string">  Translation  </span>|<span class="string">   </span>|<span class="string">     </span></span><br><span class="line"><span class="string"></span>|<span class="string">     Block1    </span>|<span class="string"> </span>|<span class="string">        </span>|<span class="string">     Block2    </span>|<span class="string">  </span>|<span class="string">       </span>|<span class="string">     Block3    </span>|<span class="string">   </span>|<span class="string">     </span></span><br><span class="line"><span class="string"></span>|<span class="string">               </span>|<span class="string"> </span>|<span class="string">2)      </span>|<span class="string">               </span>|<span class="string">  </span>|<span class="string">       </span>|<span class="string">               </span>|<span class="string">   </span>|<span class="string">     </span></span><br><span class="line"><span class="string">+---------------+-+        +---------------+--+       +---------------+---+     </span></span><br><span class="line"><span class="string"></span>|<span class="string">   epilogue    </span>|<span class="string">          </span>|<span class="string">   epilogue    </span>|<span class="string">          </span>|<span class="string">   epilogue    </span>|<span class="string">         </span></span><br><span class="line"><span class="string">+------+--------+          +-------+-------+          +------+--------+         </span></span><br></pre></td></tr></table></figure>
+
+<p>PS: 两个 chained tb 对应的 Guest 指令需要在同一个 Guest page。</p>
+<h3 id="Code-Buffer"><a href="#Code-Buffer" class="headerlink" title="Code Buffer"></a>Code Buffer</h3><ul>
+<li><strong>code_buffer</strong> 是 TCG（Tiny Code Generator）在宿主机器上存放 <strong>翻译后的 Guest 指令（TB）</strong> 的连续内存区域。</li>
+<li>所有 <strong>Translation Block（TB）</strong> 都在这个 buffer 中生成、存储和执行。</li>
+<li>后续的 <strong>Prologue &#x2F; TB.code &#x2F; Epilogue</strong> 都位于 code_buffer 中。</li>
+</ul>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">code_buffer = mmap()                                               </span><br><span class="line">|<span class="string">                                             TCGContext.code_ptr  </span></span><br><span class="line"><span class="string">v                                              v                   </span></span><br><span class="line"><span class="string">+-----------+----------+-------------+---------+------------------+</span></span><br><span class="line"><span class="string"></span>|<span class="string">           </span>|<span class="string">          </span>|<span class="string">             </span>|<span class="string">         </span>|<span class="string">                  </span>|</span><br><span class="line">|<span class="string">  prologue </span>|<span class="string"> epilogue </span>|<span class="string">  TB.struct  </span>|<span class="string"> TB.code </span>|<span class="string">     ...          </span>|<span class="string"> size = Host / dynamic_code_size</span></span><br><span class="line"><span class="string"></span>|<span class="string">           </span>|<span class="string">          </span>|<span class="string">             </span>|<span class="string">         </span>|<span class="string">                  </span>|</span><br><span class="line">+-----------+----------+-------------+---------+------------------+</span><br><span class="line">^           ^                        ^                             </span><br><span class="line">|<span class="string">           </span>|<span class="string">                        </span>|<span class="string">                             </span></span><br><span class="line"><span class="string"></span>|<span class="string">           tcg_code_gen_epilogue    </span>|<span class="string">                             </span></span><br><span class="line"><span class="string"></span>|<span class="string">                                    tb.tc.ptr                     </span></span><br><span class="line"><span class="string">tcg_qemu_tb_exec                                                   </span></span><br></pre></td></tr></table></figure>
+
+<p><strong>tcg_code_gen_epilogue</strong>：</p>
+<ul>
+<li>生成 TB 的 epilogue 部分，并更新 <code>TB.tc.ptr</code></li>
+</ul>
+<p><strong>tcg_qemu_tb_exec</strong>：</p>
+<ul>
+<li>根据 TB.struct 获取 TB.code，并跳转到TB.code</li>
+</ul>
+<p><strong>TB.struct</strong>：</p>
+<ul>
+<li>记录 TB 的元信息，例如：<ul>
+<li>Guest PC（入口地址）</li>
+<li>TB 长度</li>
+<li>指向 TB.code 的指针</li>
+<li>下一块 TB（Direct Block Chaining）</li>
+</ul>
+</li>
+</ul>
+<p><strong>TB.code</strong>：</p>
+<ul>
+<li>经过 TCG 翻译生成的宿主机器码</li>
+<li>实际执行时从这里开始</li>
+</ul>
+<blockquote>
+<p>epilogue执行后回到qemu世界</p>
+</blockquote>
+<p>在 qemu 启动的早期会执行一个函数叫 tcg_init_machine, 完成 code_buffer 的申请和初始化。</p>
+<p><strong>accel&#x2F;tcg&#x2F;tcg-all.c</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">tcg_init_machine</span><span class="params">(AccelState *as, MachineState *ms)</span></span><br><span class="line">&#123;</span><br><span class="line">    TCGState *s = TCG_STATE(as);</span><br><span class="line">    <span class="type">unsigned</span> max_threads = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> CONFIG_USER_ONLY</span></span><br><span class="line">    CPUClass *cc = CPU_CLASS(object_class_by_name(target_cpu_type()));</span><br><span class="line">    <span class="type">bool</span> mttcg_supported = cc-&gt;tcg_ops-&gt;mttcg_supported;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (s-&gt;mttcg_enabled) &#123;</span><br><span class="line">    <span class="keyword">case</span> ON_OFF_AUTO_AUTO:</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * We default to false if we know other options have been enabled</span></span><br><span class="line"><span class="comment">         * which are currently incompatible with MTTCG. Otherwise when each</span></span><br><span class="line"><span class="comment">         * guest (target) has been updated to support:</span></span><br><span class="line"><span class="comment">         *   - atomic instructions</span></span><br><span class="line"><span class="comment">         *   - memory ordering primitives (barriers)</span></span><br><span class="line"><span class="comment">         * they can set the appropriate CONFIG flags in $&#123;target&#125;-softmmu.mak</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * Once a guest architecture has been converted to the new primitives</span></span><br><span class="line"><span class="comment">         * there is one remaining limitation to check:</span></span><br><span class="line"><span class="comment">         *   - The guest can&#x27;t be oversized (e.g. 64 bit guest on 32 bit host)</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">if</span> (mttcg_supported &amp;&amp; !icount_enabled()) &#123;</span><br><span class="line">            s-&gt;mttcg_enabled = ON_OFF_AUTO_ON;</span><br><span class="line">            max_threads = ms-&gt;smp.max_cpus;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            s-&gt;mttcg_enabled = ON_OFF_AUTO_OFF;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> ON_OFF_AUTO_ON:</span><br><span class="line">        <span class="keyword">if</span> (!mttcg_supported) &#123;</span><br><span class="line">            warn_report(<span class="string">&quot;Guest not yet converted to MTTCG - &quot;</span></span><br><span class="line">                        <span class="string">&quot;you may get unexpected results&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        max_threads = ms-&gt;smp.max_cpus;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> ON_OFF_AUTO_OFF:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        g_assert_not_reached();</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    tcg_allowed = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    page_init();</span><br><span class="line">    tb_htable_init();</span><br><span class="line">    tcg_init(s-&gt;tb_size * MiB, s-&gt;splitwx_enabled, max_threads);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(CONFIG_SOFTMMU)</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * There&#x27;s no guest base to take into account, so go ahead and</span></span><br><span class="line"><span class="comment">     * initialize the prologue now.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    tcg_prologue_init();</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_USER_ONLY</span></span><br><span class="line">    qdev_create_fake_machine();</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>后续所有代码翻译和执行的工作，都围绕 code_buffer 展开</li>
+<li>TCGContext 的后端管理工作，也是围绕 code_buffer 进行</li>
+</ul>
+<h1 id="DecodeTree"><a href="#DecodeTree" class="headerlink" title="DecodeTree"></a>DecodeTree</h1><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+---------------+      +----------------+</span><br><span class="line">|<span class="string">               </span>|<span class="string">      </span>|<span class="string">                </span>|<span class="string"> </span></span><br><span class="line"><span class="string"></span>|<span class="string"> Source binary </span>|<span class="string"> ---&gt; </span>|<span class="string">    QEMU IR     </span>|</span><br><span class="line">|<span class="string">     code      </span>|<span class="string">      </span>|<span class="string">                </span>|<span class="string">   </span></span><br><span class="line"><span class="string"></span>|<span class="string">               </span>|<span class="string">      </span>|<span class="string">                </span>|<span class="string">  </span></span><br><span class="line"><span class="string">+---------------+      +----------------+  </span></span><br><span class="line"><span class="string">      Guest                                 </span></span><br></pre></td></tr></table></figure>
+
+<p>Decodetree 则是由 Bastian Koppelmann 于 2017 年在移植 RISC-V QEMU 的时候所提出来的机制。提出该机制主要是因为过往的 instruction decoders (如：ARM) 都是采用一堆 switch-case 来做判断。不仅难阅读，也难以维护。</p>
+<p>因此 Bastian Koppelmann 就提出了 Decodetree 的机制，开发者只需要<strong>通过 Decodetree 的语法定义各个指令的格式</strong>，便可交由 Decodetree 来动态生成对应包含 switch case 的 instruction decoder.c。</p>
+<p>Decodetree 本质是一个 python 脚本，输入定义了体系结构指令格式的文件，输出指令解码器源码文件。</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+-----------+           +-----------+            +-------------------+</span><br><span class="line">| <span class="type">arch</span>-insn |   <span class="type">input</span>   |  <span class="type">scripts</span>/ |   <span class="type">output</span>   | <span class="type">decode</span>-@BASENAME@ |</span><br><span class="line"><span class="type">|  .decode</span>  +----------&gt;| <span class="type">decode</span>.py +-----------&gt;|       <span class="type">.c</span>.<span class="built_in">in</span>       |</span><br><span class="line"><span class="type">+-----------+           +-----------+            +-------------------+</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>input</strong>: 体系结构定义的指令编码格式文件</li>
+<li><strong>output</strong>: 指令解码器的源代码（参与 QEMU 编译）</li>
+</ul>
+<h2 id="Decodetree-语法"><a href="#Decodetree-语法" class="headerlink" title="Decodetree 语法"></a>Decodetree 语法</h2><p>Decodetree 的语法共分为：Fields、Argument Sets、Formats、Patterns 四部分。</p>
+<ul>
+<li><strong>Fields</strong>，描述指令编码中的寄存器、立即数等字段；</li>
+<li><strong>Argument Sets</strong>，描述用来保存从指令中所截取出来各字段的值；</li>
+<li><strong>Formats</strong>，描述指令的格式，并生成相应的 decode function；</li>
+<li><strong>Pattern</strong>，描述一个指令的 decode 方式。</li>
+</ul>
+<h3 id="Decodetree-Field"><a href="#Decodetree-Field" class="headerlink" title="Decodetree Field"></a>Decodetree Field</h3><p>Field 定义如何取出一指令中，各字段 (eg: rd, rs1, rs2, imm) 的值。</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">field_def     := <span class="string">&#x27;%&#x27;</span> identifier ( unnamed_field )* ( !<span class="function"><span class="keyword">function</span>=<span class="title">identifier</span> )?</span></span><br><span class="line">unnamed_field := <span class="built_in">number</span> <span class="string">&#x27;:&#x27;</span> ( <span class="string">&#x27;s&#x27;</span> ) <span class="built_in">number</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>%identifier</strong><ul>
+<li>字段的名字，由开发者定义</li>
+<li>例：<code>%rd</code>, <code>%rs1</code>, <code>%imm</code></li>
+</ul>
+</li>
+<li><strong>unnamed_field</strong><ul>
+<li>指定字段在指令中的比特位置</li>
+<li>格式：<code>high_bit : low_bit</code></li>
+<li>可选 <code>s</code> 表示符号扩展（sign extension）</li>
+<li>例：<code>7:5</code> 表示指令的 bit[7:5]</li>
+<li>例：<code>31:s20</code> 表示 bit[31:20] 且需要符号扩展</li>
+</ul>
+</li>
+<li><strong>!function&#x3D;identifier</strong><ul>
+<li>从指令中取出字段值之后，调用一个函数做进一步处理</li>
+<li>比如立即数需要符号扩展、位拼接或地址转换</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">以 <span class="type">RISC</span>-<span class="type">V</span> 的 <span class="type">U</span>-<span class="class"><span class="keyword">type</span> 指令为例：</span></span><br><span class="line"><span class="number">31</span>                              <span class="number">12</span>  <span class="number">11</span>                 <span class="number">7</span>  <span class="number">6</span>    <span class="number">0</span></span><br><span class="line">+----------------------------------+--------------------+------+</span><br><span class="line">|            imm[<span class="number">31</span>:<span class="number">12</span>]            |         rd         |opcode| <span class="type">U</span>-<span class="class"><span class="keyword">type</span></span></span><br><span class="line">+----------------------------------+--------------------+------+</span><br><span class="line"></span><br><span class="line">可以声明为：</span><br><span class="line">%rd       <span class="number">7</span>:<span class="number">5</span></span><br><span class="line">%imm_u    <span class="number">12</span>:s20                 !function=ex_shift_12</span><br><span class="line"></span><br><span class="line">最后会生成如下的代码：</span><br><span class="line"><span class="title">static</span> void decode_insn32_extract_u(<span class="type">DisasContext</span> *ctx, arg_u *a, uint32_t insn)</span><br><span class="line">&#123;</span><br><span class="line">    a-&gt;imm = ex_shift_12(ctx, sextract32(insn, <span class="number">12</span>, <span class="number">20</span>)); // 是由 insn[<span class="number">31</span>:<span class="number">12</span>] 所取得并做符号扩展，且会再调用 ex_shift_12() 来左移 <span class="number">12</span> 个 bits</span><br><span class="line">    a-&gt;rd = extract32(insn, <span class="number">7</span>, <span class="number">5</span>); // 由 insn[<span class="number">11</span>:<span class="number">7</span>] 所取得</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Decodetree-Argument-Sets"><a href="#Decodetree-Argument-Sets" class="headerlink" title="Decodetree Argument Sets"></a>Decodetree Argument Sets</h3><p>Argument Set 定义<strong>用来保存从指令中所截取出来各字段的值</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">args_def    := <span class="string">&#x27;&amp;&#x27;</span> identifier ( args_elt )+ ( !extern )?</span><br><span class="line">args_elt    := identifier</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>&amp;identifier</strong><ul>
+<li>定义一个 Argument Set 的名字，由开发者自定义</li>
+<li>例：<code>&amp;regs</code>, <code>&amp;loadstore</code></li>
+</ul>
+</li>
+<li><strong>args_elt</strong><ul>
+<li>Argument Set 中包含的元素，通常是之前定义好的字段（Field）</li>
+<li>例：<code>rd</code>, <code>rs1</code>, <code>imm</code></li>
+<li>意思是：把这些字段提取的值保存到这个 Argument Set 里</li>
+</ul>
+</li>
+<li><strong>!extern</strong><ul>
+<li>表示该 Argument Set 已经在其他 Decoder 中定义过，如果有该字段，就不会再次生成对应的 argument set struct</li>
+<li>避免重复生成结构体</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// U-type 指令格式示例</span></span><br><span class="line"><span class="comment">// &amp;u    imm rd</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 生成如下代码</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> imm;</span><br><span class="line">    <span class="type">int</span> rd;</span><br><span class="line">&#125; arg_u;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Decodetree-Format"><a href="#Decodetree-Format" class="headerlink" title="Decodetree Format"></a>Decodetree Format</h3><p>Format <strong>定义了指令的格式</strong> (如 RISC-V 中的 R、I、S、B、U、J-type)，<strong>并会生成对应的 decode function</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fmt_def      := <span class="string">&#x27;@&#x27;</span> identifier ( fmt_elt )+</span><br><span class="line">fmt_elt      := fixedbit_elt | field_elt | field_ref | args_ref</span><br><span class="line">fixedbit_elt := [<span class="number">01.</span>-]+</span><br><span class="line">field_elt    := identifier <span class="string">&#x27;:&#x27;</span> <span class="string">&#x27;s&#x27;</span>? number</span><br><span class="line">field_ref    := <span class="string">&#x27;%&#x27;</span> identifier | identifier <span class="string">&#x27;=&#x27;</span> <span class="string">&#x27;%&#x27;</span> identifier</span><br><span class="line">args_ref     := <span class="string">&#x27;&amp;&#x27;</span> identifier</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>identifier 可由开发者自定义，如：opr、opi… 等。</p>
+</li>
+<li><p>fmt_elt 则可以采用以下不同的语法：</p>
+<ul>
+<li>fixedbit_elt 包含一个或多个 <code>0</code>、<code>1</code>、<code>.</code>、<code>-</code>，<strong>每一个代表指令中的 1 个 bit</strong>。<ul>
+<li><code>.</code> 代表该 bit 可以用 0 或是 1 来表示。</li>
+<li><code>-</code> 代表该 bit 完全被忽略。</li>
+</ul>
+</li>
+<li>用 Field 的语法来声明，Eg：ra:5、rb:5、lit:8</li>
+</ul>
+</li>
+<li><p>field_ref 有下列两种格式 (以下范例参考上文所定义之 Field)：</p>
+<ul>
+<li><p><code>&#39;%&#39; identifier</code>：直接参考一个被定义过的 Field。</p>
+<ul>
+<li><p>如：<code>%rd</code>，会生成：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">a</span>-&gt;rd = extract32(insn, <span class="number">7</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><code>identifier &#39;=&#39; &#39;%&#39; identifier</code>：直<strong>接参考一个被定义过的 Field，但通过第一个 identifier 来重命名其所对应的 argument 名称</strong>。此方式可以用来指定不同的 argument 名称来参考至同一个 Field</p>
+<ul>
+<li><p>如：<code>my_rd=%rd</code>，会生成：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">a</span>-&gt;my_rd = extract32(insn, <span class="number">7</span>, <span class="number">5</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>args_ref 指定所传入 decode function 的 Argument Set。若没有指定 args_ref 的话，Decodetree 会根据 field_elt 或 field_ref 自动生成一个 Argument Set。此外，<strong>一个 Format 最多只能包含一个 args_ref</strong></p>
+</li>
+</ul>
+<p>当 fixedbit_elt 或 field_ref 被定义时，该 Format 的所有的 bits 都必须被定义（可通过 <code>fixedbit_elt</code> 或 <code>.</code> 来定义各个 bits，空格会被忽略）。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@opi</span>    ...... <span class="attribute">ra</span>:<span class="number">5</span> <span class="attribute">lit</span>:<span class="number">8</span>    <span class="number">1</span> ....... <span class="attribute">rc</span>:<span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>insn[31:26] 可为 0 或 1</li>
+<li>insn[25:21] 为 ra</li>
+<li>insn[20:13] 为 lit</li>
+<li>insn[12] 固定为 1</li>
+<li>insn[11:5] 可为 0 或 1</li>
+<li>insn[4:0] 为 rc</li>
+</ul>
+<p>此 Format 会生成以下的 decode function：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 由于我们没有指定 args_ref，因此 Decodetree 根据了 field_elt 的定义，自动生成了 arg_decode_insn320 这个 Argument Set</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> lit;</span><br><span class="line">    <span class="type">int</span> ra;</span><br><span class="line">    <span class="type">int</span> rc;</span><br><span class="line">&#125; arg_decode_insn320;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">decode_insn32_extract_opi</span><span class="params">(DisasContext *ctx, arg_decode_insn320 *a, <span class="type">uint32_t</span> insn)</span></span><br><span class="line">&#123;</span><br><span class="line">    a-&gt;ra = extract32(insn, <span class="number">21</span>, <span class="number">5</span>);</span><br><span class="line">    a-&gt;lit = extract32(insn, <span class="number">13</span>, <span class="number">8</span>);</span><br><span class="line">    a-&gt;rc = extract32(insn, <span class="number">0</span>, <span class="number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以 RISC-V I-type 指令为例：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">31           20 19    15 14     12  11                 7  6    0</span><br><span class="line">+<span class="params">--------------</span>+<span class="params">--------</span>+<span class="params">----------</span>+<span class="params">--------------------</span>+<span class="params">------</span>+</span><br><span class="line">|   imm[11<span class="function">:0</span>]  |  rs1   |  funct3  |         rd         |opcode| I-type</span><br><span class="line">+<span class="params">--------------</span>+<span class="params">--------</span>+<span class="params">----------</span>+<span class="params">--------------------</span>+<span class="params">------</span>+</span><br><span class="line"></span><br><span class="line"><span class="comment"># Fields:</span></span><br><span class="line">%rs1       15<span class="function">:5</span></span><br><span class="line">%rd        7<span class="function">:5</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># immediates:</span></span><br><span class="line">%imm_i    20<span class="function">:s12</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Argment sets:</span></span><br><span class="line">&amp;i    imm rs1 rd</span><br><span class="line"></span><br><span class="line">@i       <span class="string">........</span> <span class="string">........</span> <span class="string">........</span> <span class="string">........</span> &amp;i      imm=%imm_i     %rs1 %rd</span><br></pre></td></tr></table></figure>
+
+<p>此范例会生成以下的 decode function：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> imm;</span><br><span class="line">    <span class="type">int</span> rd;</span><br><span class="line">    <span class="type">int</span> rs1;</span><br><span class="line">&#125; arg_i;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">decode_insn32extract_i</span><span class="params">(DisasContext *ctx, arg_i *a, <span class="type">uint32_t</span> insn)</span></span><br><span class="line">&#123;</span><br><span class="line">    a-&gt;imm = sextract32(insn, <span class="number">20</span>, <span class="number">12</span>); </span><br><span class="line">    a-&gt;rs1 = extract32(insn, <span class="number">15</span>, <span class="number">5</span>);</span><br><span class="line">    a-&gt;rd = extract32(insn, <span class="number">7</span>, <span class="number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>回到先前的 RISC-V U-type 指令，我们可以如同 I-type 指令定义其格式：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Fields:</span></span><br><span class="line"><span class="variable">%rd</span>        <span class="number">7</span>:<span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># immediates:</span></span><br><span class="line"><span class="variable">%imm_u</span>    <span class="number">12</span>:s20                 !function=ex_shift_12</span><br><span class="line"></span><br><span class="line"><span class="comment"># Argument sets:</span></span><br><span class="line">&amp;u    imm rd</span><br><span class="line"></span><br><span class="line"><span class="variable">@u</span>       ....................      ..... ....... &amp;u      imm=<span class="variable">%imm_u</span>          <span class="variable">%rd</span></span><br></pre></td></tr></table></figure>
+
+<p>会生成以下的 decode function：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> imm;</span><br><span class="line">    <span class="type">int</span> rd;</span><br><span class="line">&#125; arg_u;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">decode_insn32_extract_u</span><span class="params">(DisasContext *ctx, arg_u *a, <span class="type">uint32_t</span> insn)</span></span><br><span class="line">&#123;</span><br><span class="line">    a-&gt;imm = ex_shift_12(ctx, sextract32(insn, <span class="number">12</span>, <span class="number">20</span>));</span><br><span class="line">    a-&gt;rd = extract32(insn, <span class="number">7</span>, <span class="number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Decodetree-Pattern"><a href="#Decodetree-Pattern" class="headerlink" title="Decodetree Pattern"></a>Decodetree Pattern</h3><p>Pattern <strong>实际定义了一个指令的 decode 方式</strong>。Decodetree 会根据 Patterns 的定义，来动态产生出对应的 switch-case decode 判断分支。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pat_def      := identifier ( pat_elt )+</span><br><span class="line">pat_elt      := fixedbit_elt | field_elt | field_ref | args_ref | fmt_ref | const_elt</span><br><span class="line">fmt_ref      := <span class="string">&#x27;@&#x27;</span> identifier</span><br><span class="line">const_elt    := identifier <span class="string">&#x27;=&#x27;</span> number</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>identifier 可由开发者自定义，如：addl_r、addli … 等。</li>
+<li>pat_elt 则可以采用以下不同的语法：<ul>
+<li>fixedbit_elt 与在 Format 中 fixedbit_elt 的定义相同。</li>
+<li>field_elt 与在 Format 中 field_elt 的定义相同。</li>
+<li>field_ref 与在 Format 中 field_ref 的定义相同。</li>
+<li>args_ref 与在 Format 中 args_ref 的定义相同。</li>
+<li>fmt_ref 直接参考一个被定义过的 Format。</li>
+<li>const_elt 可以直接指定某一个 argument 的值。</li>
+</ul>
+</li>
+</ul>
+<p>Pattern 示例：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">addl_i   010000 <span class="string">.....</span> <span class="string">.....</span> <span class="string">....</span> 0000000 <span class="string">.....</span> @opi</span><br></pre></td></tr></table></figure>
+
+<p>定义了 addl_i 这个指令的 Pattern，其中：</p>
+<ul>
+<li>insn[31:26] 为 010000。</li>
+<li>insn[11:5] 为 0000000。</li>
+<li>参考了 Format 示例中 定义的 @opi Format。</li>
+<li>由于 Pattern 的所有 bits 都必须<strong>明确的被定义</strong>，因此 @opi 必须包含其余 insn[25:12] 及 insn[4:0] 的格式定义，否则 Decodetree 便会报错。</li>
+</ul>
+<p>最后 addl_i 的 decoder 还会调用 trans_addl_i() 这个 translator function</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>设计一条 RISC-V 的算数指令 cube，指令编码格式遵循 R-type，语义为：<code>rd = [rs1] * [rs1] * [rs1]</code>。（通过helper实现）</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">31      25 24  20 19    15 14     12  11                7 6     0</span></span><br><span class="line"><span class="section">+---------+--------+--------+----------+-------------------+-------+</span></span><br><span class="line"><span class="section">|  func7  |  rs2   |  rs1   |  funct3  |         rd        | opcode| R-type</span></span><br><span class="line"><span class="section">+---------+--------+--------+----------+-------------------+-------+</span></span><br><span class="line"><span class="section">     6                         6                            0x7b</span></span><br><span class="line"><span class="section">+---------+--------+--------+----------+-------------------+-------+</span></span><br><span class="line"><span class="section">| 000110  | 00000  |  rs1   |    110   |         rd        |1111011| cube</span></span><br><span class="line"><span class="section">+---------+--------+--------+----------+-------------------+-------+</span></span><br></pre></td></tr></table></figure>
+
+<p>QEMU 的 TCG 流程是：</p>
+<ol>
+<li><strong>从 Guest 指令生成 TB（Translation Block）</strong></li>
+<li><strong>翻译 Guest 指令到宿主指令序列</strong></li>
+</ol>
+<p>有些指令比较复杂，或者 QEMU 没有现成的 TCG 操作码可以直接生成。这时就需要 <strong>helper</strong>：</p>
+<ul>
+<li><strong>作用</strong>：把指令语义用宿主可执行的 C 代码实现</li>
+<li><strong>TCG 翻译阶段</strong>，遇到该指令时生成一个调用 helper 的代码片段</li>
+<li><strong>执行阶段</strong>，直接执行 helper 的实现</li>
+</ul>
+<p>示例 C 代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">custom_cube</span><span class="params">(<span class="type">uintptr_t</span> addr)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> cube;</span><br><span class="line">    <span class="keyword">asm</span> <span class="title function_">volatile</span> <span class="params">(</span></span><br><span class="line"><span class="params">       <span class="string">&quot;.insn r 0x7b, 6, 6, %0, %1, x0&quot;</span></span></span><br><span class="line"><span class="params">        :<span class="string">&quot;=r&quot;</span>(cube)  <span class="comment">// 将结果存储在变量 cube 中</span></span></span><br><span class="line"><span class="params">        :<span class="string">&quot;r&quot;</span>(addr))</span>; <span class="comment">// 将变量 addr 的值作为输入</span></span><br><span class="line">    <span class="keyword">return</span> cube; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 QEMU 中添加 cube 的指令译码：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// target/riscv/insn32.decode</span></span><br><span class="line"><span class="variable">@r_cube</span>  ....... ..... .....    ... ..... ....... %rs1 %rd</span><br><span class="line">cube     <span class="number">0000110</span> <span class="number">00000</span> .....    <span class="number">110</span> ..... <span class="number">1111011</span> <span class="variable">@r_cube</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>DEF_HELPER_3</code> 表示这是一个带 3 个参数的 helper</p>
+</li>
+<li><p>参数：</p>
+<ul>
+<li><p><code>env</code> → CPU 状态结构体 (<code>CPURISCVState *env</code>)</p>
+</li>
+<li><p><code>tl</code> → 指令操作数（比如 rd）</p>
+</li>
+<li><p><code>tl</code> → 指令操作数（比如 rs1）</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>添加 cube 的指令模拟逻辑（采用 helper 实现）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// target/riscv/helper.h</span></span><br><span class="line">DEF_HELPER_3(cube, <span class="type">void</span>, env, tl, tl)</span><br><span class="line"></span><br><span class="line"><span class="comment">// target/riscv/op_helper.c</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">helper_cube</span><span class="params">(CPURISCVState *env, target_ulong rd, target_ulong rs1)</span></span><br><span class="line">&#123;</span><br><span class="line">    MemOpIdx oi = make_memop_idx(MO_TEUQ, <span class="number">0</span>);</span><br><span class="line">    target_ulong val = cpu_ldq_mmu(env, env-&gt;gpr[rs1], oi, GETPC());</span><br><span class="line">    env-&gt;gpr[rd] = val * val * val;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// target/riscv/insn_trans/trans_rvi.c.inc</span></span><br><span class="line"><span class="type">static</span> <span class="type">bool</span> <span class="title function_">trans_cube</span><span class="params">(DisasContext *ctx, arg_cube *a)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//gen_helper_cube(tcg_env, tcg_constant_tl(a-&gt;rd), tcg_constant_tl(a-&gt;rs1));//a-&gt;rs1只是寄存器标号</span></span><br><span class="line">    gen_helper_cube(tcg_env, get_gpr(a-&gt;rd), get_gpr(a-&gt;rs1));<span class="comment">//get general purpose register</span></span><br><span class="line">    <span class="comment">// tcg_env是一个全局变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>DEF_HELPER_3表示有三个参数</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cube</code></td>
+<td>helper 名字 → 最终对应的函数名是 <code>helper_cube</code></td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td>helper 的返回类型</td>
+</tr>
+<tr>
+<td><code>env</code></td>
+<td>第一个参数类型：<code>CPURISCVState *env</code>（即 CPU 状态）</td>
+</tr>
+<tr>
+<td><code>tl</code></td>
+<td>第二个参数类型：<code>target_ulong</code></td>
+</tr>
+<tr>
+<td><code>tl</code></td>
+<td>第三个参数类型：<code>target_ulong</code></td>
+</tr>
+</tbody></table>
+<p><code>env-&gt;gpr[rs1]</code> → 从寄存器文件读取 rs1 的值</p>
+<p><code>cpu_ldq_mmu(...)</code> → 模拟从内存加载 rs1 地址处的值</p>
+<p><code>env-&gt;gpr[rd] = val * val * val;</code> → 执行 cube 计算，把结果写入 rd</p>
+<p><code>arg_cube</code>是生成的<code>Argument Sets</code></p>
+<p>编写一个简单的示例程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">3</span>;</span><br><span class="line">    <span class="type">int</span> ret = <span class="number">0</span>;</span><br><span class="line">    ret = custom_cube((<span class="type">uintptr_t</span>)&amp;a);</span><br><span class="line">    <span class="keyword">if</span> (ret == a * a * a) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ok!\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;err! ret=%d\n&quot;</span>, ret);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译运行测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ riscv64-linux-musl-gcc main.c -o cube_demo --static</span><br><span class="line">$ qemu-rsicv64 cube_demo</span><br><span class="line">$ ok!</span><br></pre></td></tr></table></figure>
+
+<h1 id="TCG-IR-1"><a href="#TCG-IR-1" class="headerlink" title="TCG IR"></a>TCG IR</h1><p>前面我们讲了如何使用 qemu 的 helper 函数来模拟指令的功能，但是一般情况下，helper 主要用于 IR 实现不太方便的情况。</p>
+<p>如果想要获得更好的性能，推荐使用 IR 来实现。</p>
+<p>TCG 的前端负责将目标架构的指令转换为 TCG op，而 TCG 的后端则负责将 TCG op 转换为目标架构的指令。</p>
+<p>这里我们主要关注 TCG 的前端，讨论常用的 TCG op 的用法。</p>
+<p>推荐阅读：</p>
+<div class="tag link"><a class="link-card" title="Documentation/TCG/frontend-ops" target="_blank" rel="noopener" href="https://wiki.qemu.org/Documentation/TCG/frontend-ops"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">Documentation/TCG/frontend-ops</p><p class="url">https://wiki.qemu.org/Documentation/TCG/frontend-ops</p></div></a></div>
+
+<p>TCG op 的基本格式如下：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tcg_gen_<span class="symbol">&lt;op&gt;</span>[i]_<span class="symbol">&lt;reg_size&gt;</span>(TCGv<span class="symbol">&lt;reg_size&gt;</span> args, ...)</span><br><span class="line"></span><br><span class="line"><span class="params">op:</span> 操作类型</span><br><span class="line"><span class="params">i:</span> 操作数数量</span><br><span class="line"><span class="params">reg_size:</span> 寄存器大小 (<span class="number">32</span><span class="operator">/</span><span class="number">64</span><span class="operator">/</span>tl)</span><br><span class="line"><span class="params">args:</span> 操作数列表</span><br></pre></td></tr></table></figure>
+
+<h2 id="Registers"><a href="#Registers" class="headerlink" title="Registers"></a>Registers</h2><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">TCGv reg</span> = tcg_global_mem_new(TCG_AREG0, offsetof(CPUState, reg), <span class="string">&quot;reg&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Temporaries"><a href="#Temporaries" class="headerlink" title="Temporaries"></a>Temporaries</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Create a new temporary register</span></span><br><span class="line">TCGv tmp = tcg_temp_new();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create a local temporary register.</span></span><br><span class="line"><span class="comment">// Simple temporary register cannot carry its value across jump/brcond,</span></span><br><span class="line"><span class="comment">// only local temporary can.</span></span><br><span class="line">TCGv tmpl = tcg_temp_local_new();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Free a temporary register</span></span><br><span class="line">tcg_temp_free(tmp);</span><br></pre></td></tr></table></figure>
+
+<h2 id="labels"><a href="#labels" class="headerlink" title="labels"></a>labels</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Create a new label</span></span><br><span class="line"><span class="type">int</span> l = gen_new_label();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Label the current location.</span></span><br><span class="line">gen_set_label(l);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Ops"><a href="#Ops" class="headerlink" title="Ops"></a>Ops</h2><p>操作单个寄存器：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = arg1</span></span><br><span class="line"><span class="comment">// Assignment_(mathematical_logic): Assign one register to another</span></span><br><span class="line">tcg_gen_mov_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = - arg1</span></span><br><span class="line"><span class="comment">// Negation: Negate the sign of a register</span></span><br><span class="line">tcg_gen_neg_tl(ret, arg1);</span><br></pre></td></tr></table></figure>
+
+<p>操作两个寄存器：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = arg1 + arg2</span></span><br><span class="line"><span class="comment">// Addition: Add two registers</span></span><br><span class="line">tcg_gen_add_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 - arg2</span></span><br><span class="line"><span class="comment">// Subtraction: Subtract two registers</span></span><br><span class="line">tcg_gen_sub_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 * arg2</span></span><br><span class="line"><span class="comment">// Multiplication: Multiply two signed registers and return the result</span></span><br><span class="line">tcg_gen_mul_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 * arg2</span></span><br><span class="line"><span class="comment">// Multiplication: Multiply two unsigned registers and return the result</span></span><br><span class="line">tcg_gen_mulu_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 / arg2</span></span><br><span class="line"><span class="comment">// Division_(mathematics): Divide two signed registers and return the result</span></span><br><span class="line">tcg_gen_div_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 / arg2</span></span><br><span class="line"><span class="comment">// Division_(mathematics): Divide two unsigned registers and return the result</span></span><br><span class="line">tcg_gen_divu_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 % arg2</span></span><br><span class="line"><span class="comment">// Division_(mathematics): Divide two signed registers and return the remainder</span></span><br><span class="line">tcg_gen_rem_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 % arg2</span></span><br><span class="line"><span class="comment">// Division_(mathematics) Divide two unsigned registers and return the remainder</span></span><br><span class="line">tcg_gen_remu_tl(ret, arg1, arg2);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Bit-Operations"><a href="#Bit-Operations" class="headerlink" title="Bit Operations"></a>Bit Operations</h2><p>Logic operations on a single register:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = !arg1</span></span><br><span class="line"><span class="comment">// Negation: Logical NOT an register</span></span><br><span class="line">tcg_gen_not_tl(ret, arg1);</span><br></pre></td></tr></table></figure>
+
+<p>Logic operations on two registers:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = arg1 &amp; arg2</span></span><br><span class="line"><span class="comment">// Logical_conjunction: Logical AND two registers</span></span><br><span class="line">tcg_gen_and_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 arg2</span></span><br><span class="line"><span class="comment">// Logical_disjunction: Logical OR two registers</span></span><br><span class="line">tcg_gen_or_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 ^ arg2</span></span><br><span class="line"><span class="comment">// Exclusive_or: Logical XOR two registers</span></span><br><span class="line">tcg_gen_xor_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 ↑ arg2</span></span><br><span class="line"><span class="comment">// Logical_NAND: Logical NAND two registers</span></span><br><span class="line">tcg_gen_nand_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 ↓ arg2</span></span><br><span class="line"><span class="comment">// Logical_NOR Logical NOR two registers</span></span><br><span class="line">tcg_gen_nor_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = !(arg1 ^ arg2)</span></span><br><span class="line"><span class="comment">// Logical_equivalence: Compute logical equivalent of two registers</span></span><br><span class="line">tcg_gen_eqv_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 &amp; ~arg2</span></span><br><span class="line"><span class="comment">// Logical AND one register with the complement of another</span></span><br><span class="line">tcg_gen_andc_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 ~arg2</span></span><br><span class="line"><span class="comment">// Logical OR one register with the complement of another</span></span><br><span class="line">tcg_gen_orc_tl(ret, arg1, arg2);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Shift"><a href="#Shift" class="headerlink" title="Shift"></a>Shift</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = arg1 &gt;&gt; arg2 /* Sign fills vacant bits */</span></span><br><span class="line"><span class="comment">// Arithmetic shift right one operand by magnitude of another</span></span><br><span class="line">tcg_gen_sar_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 &lt;&lt; arg2</span></span><br><span class="line"><span class="comment">// Logical_shift Logical shift left one registerby magnitude of another</span></span><br><span class="line">tcg_gen_shl_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 &gt;&gt; arg2</span></span><br><span class="line"><span class="comment">// Logical_shift Logical shift right one register by magnitude of another</span></span><br><span class="line">tcg_gen_shr_tl(ret, arg1, arg2);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Rotation"><a href="#Rotation" class="headerlink" title="Rotation"></a>Rotation</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = arg1 rotl arg2</span></span><br><span class="line"><span class="comment">// Circular_shift: Rotate left one register by magnitude of another</span></span><br><span class="line">tcg_gen_rotl_tl(ret, arg1, arg2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 rotr arg2</span></span><br><span class="line"><span class="comment">// Circular_shift Rotate right one register by magnitude of another</span></span><br><span class="line">tcg_gen_rotr_tl(ret, arg1, arg2);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Byte"><a href="#Byte" class="headerlink" title="Byte"></a>Byte</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = ((arg1 &amp; 0xff00) &gt;&gt; 8) // ((arg1 &amp; 0xff) &lt;&lt; 8)</span></span><br><span class="line"><span class="comment">// Endianness Byte swap a 16bit register</span></span><br><span class="line">tcg_gen_bswap16_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = ...see bswap16 and extend to 32bits...</span></span><br><span class="line"><span class="comment">// Endianness Byte swap a 32bit register</span></span><br><span class="line">tcg_gen_bswap32_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = ...see bswap32 and extend to 64bits...</span></span><br><span class="line"><span class="comment">// Endianness Byte swap a 64bit register</span></span><br><span class="line">tcg_gen_bswap64_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = (int8_t)arg1</span></span><br><span class="line"><span class="comment">// Sign extend an 8bit register</span></span><br><span class="line">tcg_gen_ext8s_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = (uint8_t)arg1</span></span><br><span class="line"><span class="comment">// Zero extend an 8bit register</span></span><br><span class="line">tcg_gen_ext8u_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = (int16_t)arg1</span></span><br><span class="line"><span class="comment">// Sign extend an 16bit register</span></span><br><span class="line">tcg_gen_ext16s_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = (uint16_t)arg1</span></span><br><span class="line"><span class="comment">// Zero extend an 16bit register</span></span><br><span class="line">tcg_gen_ext16u_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = (int32_t)arg1</span></span><br><span class="line"><span class="comment">// Sign extend an 32bit register</span></span><br><span class="line">tcg_gen_ext32s_tl(ret, arg1);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = (uint32_t)arg1</span></span><br><span class="line"><span class="comment">// Zero extend an 32bit register</span></span><br><span class="line">tcg_gen_ext32u_tl(ret, arg1);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Load-Store"><a href="#Load-Store" class="headerlink" title="Load&#x2F;Store"></a>Load&#x2F;Store</h2><p>These are for moving data between registers and arbitrary host memory.</p>
+<p>Typically used for funky CPU state that is not represented by dedicated registers already and thus infrequently used.</p>
+<p>These are not for accessing the target’s memory space;</p>
+<p>see the QEMU_XX helpers below for that.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Load an 8bit quantity from host memory and sign extend</span></span><br><span class="line">tcg_gen_ld8s_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load an 8bit quantity from host memory and zero extend</span></span><br><span class="line">tcg_gen_ld8u_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load a 16bit quantity from host memory and sign extend</span></span><br><span class="line">tcg_gen_ld16s_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load a 16bit quantity from host memory and zero extend</span></span><br><span class="line">tcg_gen_ld16u_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load a 32bit quantity from host memory and sign extend</span></span><br><span class="line">tcg_gen_ld32s_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load a 32bit quantity from host memory and zero extend</span></span><br><span class="line">tcg_gen_ld32u_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load a 64bit quantity from host memory</span></span><br><span class="line">tcg_gen_ld64_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Alias to target native sized load</span></span><br><span class="line">tcg_gen_ld_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Store a 8bit quantity to host memory</span></span><br><span class="line">tcg_gen_st8_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Store a 16bit quantity to host memory</span></span><br><span class="line">tcg_gen_st16_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Store a 32bit quantity to host memory</span></span><br><span class="line">tcg_gen_st32_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Alias to target native sized store</span></span><br><span class="line">tcg_gen_st_tl(reg, cpu_env, offsetof(CPUState, reg));</span><br></pre></td></tr></table></figure>
+
+<p>These are for moving data between registers and arbitrary target memory.</p>
+<p>The address to load&#x2F;store via is always the second argument while the first argument is always the value to be loaded&#x2F;stored.</p>
+<p>The third argument (memory index) only makes sense for system targets; user targets will simply specify 0 all the time.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ret = *(int8_t *)addr</span></span><br><span class="line"><span class="comment">// Load an 8bit quantity from target memory and sign extend</span></span><br><span class="line">tcg_gen_qemu_ld8s(ret, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = *(uint8_t *)addr</span></span><br><span class="line"><span class="comment">// Load an 8bit quantity from target memory and zero extend</span></span><br><span class="line">tcg_gen_qemu_ld8u(ret, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = *(int8_t *)addr</span></span><br><span class="line"><span class="comment">// Load a 16bit quantity from target memory and sign extend</span></span><br><span class="line">tcg_gen_qemu_ld16s(ret, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = *(uint8_t *)addr</span></span><br><span class="line"><span class="comment">// Load a 16bit quantity from target memory and zero extend</span></span><br><span class="line">tcg_gen_qemu_ld16u(ret, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = *(int8_t *)addr</span></span><br><span class="line"><span class="comment">// Load a 32bit quantity from target memory and sign extend</span></span><br><span class="line">tcg_gen_qemu_ld32s(ret, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = *(uint8_t *)addr</span></span><br><span class="line"><span class="comment">// Load a 32bit quantity from target memory and zero extend</span></span><br><span class="line">tcg_gen_qemu_ld32u(ret, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = *(uint64_t *)addr</span></span><br><span class="line"><span class="comment">// Load a 64bit quantity from target memory</span></span><br><span class="line">tcg_gen_qemu_ld64(ret, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// *(uint8_t *)addr = arg</span></span><br><span class="line"><span class="comment">// Store an 8bit quantity to target memory</span></span><br><span class="line">tcg_gen_qemu_st8(arg, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// *(uint16_t *)addr = arg</span></span><br><span class="line"><span class="comment">// Store a 16bit quantity to target memory</span></span><br><span class="line">tcg_gen_qemu_st16(arg, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// *(uint32_t *)addr = arg</span></span><br><span class="line"><span class="comment">// Store a 32bit quantity to target memory</span></span><br><span class="line">tcg_gen_qemu_st32(arg, addr, mem_idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// *(uint64_t *)addr = arg</span></span><br><span class="line"><span class="comment">// Store a 64bit quantity to target memory</span></span><br><span class="line">tcg_gen_qemu_st64(arg, addr, mem_idx);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Code-Flow"><a href="#Code-Flow" class="headerlink" title="Code Flow"></a>Code Flow</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// if (arg1 &lt;condition&gt; arg2) goto label</span></span><br><span class="line"><span class="comment">// Test two operands and conditionally branch to a label</span></span><br><span class="line">tcg_gen_brcond_tl(TCG_COND_XXX, arg1, arg2, label);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Goto translation block (TB chaining)</span></span><br><span class="line"><span class="comment">// Every TB can goto_tb to max two other different destinations. There are</span></span><br><span class="line"><span class="comment">// two jump slots. tcg_gen_goto_tb takes a jump slot index as an arg,</span></span><br><span class="line"><span class="comment">// 0 or 1. These jumps will only take place if the TB&#x27;s get chained,</span></span><br><span class="line"><span class="comment">// you need to tcg_gen_exit_tb with (tb // index) for that to ever happen.</span></span><br><span class="line"><span class="comment">// tcg_gen_goto_tb may be issued at most once with each slot index per TB.</span></span><br><span class="line">tcg_gen_goto_tb(num);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Exit translation block</span></span><br><span class="line"><span class="comment">// num may be 0 or TB address ORed with the index of the taken jump slot.</span></span><br><span class="line"><span class="comment">// If you tcg_gen_exit_tb(0), chaining will not happen and a new TB</span></span><br><span class="line"><span class="comment">// will be looked up based on the CPU state.</span></span><br><span class="line">tcg_gen_exit_tb(num);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ret = arg1 &lt;condition&gt; arg2</span></span><br><span class="line"><span class="comment">// Compare two operands</span></span><br><span class="line">tcg_gen_setcond_tl(TCG_COND_XXX, ret, arg1, arg2);</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h2><p>我们使用 IR 来实现 cube 指令：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// target/riscv/insn_trans/trans_rvi.c.inc</span></span><br><span class="line"><span class="type">static</span> <span class="type">bool</span> <span class="title function_">trans_cube</span><span class="params">(DisasContext *ctx, arg_cube *a)</span></span><br><span class="line">&#123;</span><br><span class="line">    TCGv dest = tcg_temp_new(); <span class="comment">// 申请一个临时变量</span></span><br><span class="line">    TCGv rd = get_gpr(ctx, a-&gt;rd, EXT_NONE); <span class="comment">// 获取 rd 寄存器</span></span><br><span class="line">    <span class="comment">// 读取 rs1 寄存器的值指向的内存的值，存储到 dest 中</span></span><br><span class="line">    tcg_gen_qemu_ld_tl(dest, get_gpr(ctx, a-&gt;rs1, EXT_NONE), ctx-&gt;mem_idx, MO_TEUQ);</span><br><span class="line">    <span class="comment">// 计算 cube 并存储到 rd 寄存器中</span></span><br><span class="line">    tcg_gen_mul_tl(rd, dest, dest); <span class="comment">// rd = dest * dest</span></span><br><span class="line">    tcg_gen_mul_tl(rd, rd, dest); <span class="comment">// rd = rd * dest</span></span><br><span class="line">    gen_set_gpr(ctx, a-&gt;rd, rd);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="打印IR"><a href="#打印IR" class="headerlink" title="打印IR"></a>打印IR</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./build/qemu-system-riscv64 -M virt -d in_asm,op,out_asm -nographic -D cpu.log</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-d表示输出日志<ul>
+<li>in_asm表示输入汇编</li>
+<li>op表示中间IR</li>
+<li>out_asm表示输出汇编</li>
+</ul>
+</li>
+<li>-D表示输出到文件或终端</li>
+</ul>
+<p>参考：</p>
+<div class="tag link"><a class="link-card" title="Learning Qemu Docs" target="_blank" rel="noopener" href="https://gevico.github.io/learning-qemu-docs/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://gevico.github.io/learning-qemu-docs/assets/images/favicon.png"/></div><div class="right"><p class="text">Learning Qemu Docs</p><p class="url">https://gevico.github.io/learning-qemu-docs/</p></div></a></div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2511230/">https://even629.com/posts/2511230/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/virtualization/">virtualization</a></div><div class="post-share"><div class="social-share" data-image="/images/qemu_cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Target-Guest"><span class="toc-number">2.</span> <span class="toc-text">Target &amp; Guest</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCR-Translation"><span class="toc-number">3.</span> <span class="toc-text">TCR Translation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TCG-IR"><span class="toc-number">3.1.</span> <span class="toc-text">TCG IR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCG%E7%BF%BB%E8%AF%91%E6%B5%81%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">TCG翻译流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B"><span class="toc-number">3.2.1.</span> <span class="toc-text">基本流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#TranslationBlock"><span class="toc-number">3.2.1.1.</span> <span class="toc-text">TranslationBlock</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Direct-block-chaining"><span class="toc-number">3.2.1.2.</span> <span class="toc-text">Direct block chaining</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Code-Buffer"><span class="toc-number">3.2.2.</span> <span class="toc-text">Code Buffer</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DecodeTree"><span class="toc-number">4.</span> <span class="toc-text">DecodeTree</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Decodetree-%E8%AF%AD%E6%B3%95"><span class="toc-number">4.1.</span> <span class="toc-text">Decodetree 语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Decodetree-Field"><span class="toc-number">4.1.1.</span> <span class="toc-text">Decodetree Field</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Decodetree-Argument-Sets"><span class="toc-number">4.1.2.</span> <span class="toc-text">Decodetree Argument Sets</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Decodetree-Format"><span class="toc-number">4.1.3.</span> <span class="toc-text">Decodetree Format</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Decodetree-Pattern"><span class="toc-number">4.1.4.</span> <span class="toc-text">Decodetree Pattern</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.2.</span> <span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCG-IR-1"><span class="toc-number">5.</span> <span class="toc-text">TCG IR</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Registers"><span class="toc-number">5.1.</span> <span class="toc-text">Registers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Temporaries"><span class="toc-number">5.2.</span> <span class="toc-text">Temporaries</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#labels"><span class="toc-number">5.3.</span> <span class="toc-text">labels</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ops"><span class="toc-number">5.4.</span> <span class="toc-text">Ops</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bit-Operations"><span class="toc-number">5.5.</span> <span class="toc-text">Bit Operations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Shift"><span class="toc-number">5.6.</span> <span class="toc-text">Shift</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Rotation"><span class="toc-number">5.7.</span> <span class="toc-text">Rotation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Byte"><span class="toc-number">5.8.</span> <span class="toc-text">Byte</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Load-Store"><span class="toc-number">5.9.</span> <span class="toc-text">Load&#x2F;Store</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Code-Flow"><span class="toc-number">5.10.</span> <span class="toc-text">Code Flow</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">5.11.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%8D%B0IR"><span class="toc-number">5.12.</span> <span class="toc-text">打印IR</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'f989f382a1a3c1e0caac78c58368393e'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

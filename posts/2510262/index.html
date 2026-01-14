@@ -1,0 +1,804 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM Memory Ordering and Memory Barrier | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Arm64 Cache">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM Memory Ordering and Memory Barrier">
+<meta property="og:url" content="https://even629.com/posts/2510262/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Arm64 Cache">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-10-26T12:00:13.000Z">
+<meta property="article:modified_time" content="2025-10-26T12:00:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2510262/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARM Memory Ordering and Memory Barrier',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">ARM Memory Ordering and Memory Barrier</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-26T12:00:13.000Z" title="发表于 2025-10-26 20:00:13">2025-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-26T12:00:13.000Z" title="更新于 2025-10-26 20:00:13">2025-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/arm64/">arm64</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2510262/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-26</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<p>参考文档：</p>
+<div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>
+
+<p>ARMv8.6 芯片手册</p>
+<ul>
+<li>B2.3.7 章 Memory barriers</li>
+<li><strong>Appendix K11 Barrier Litmus Tests</strong></li>
+</ul>
+<h3 id="内存屏障产生的原因"><a href="#内存屏障产生的原因" class="headerlink" title="内存屏障产生的原因"></a>内存屏障产生的原因</h3><p>ARMv8 架构采用弱排序的内存模型。一般来说，这意味着内存访问的顺序不需要与加载和存储操作的程序顺序相同。处理器能够相对于彼此重新排序内存读取操作。写入也可以重新排序（例如，写入组合）。因此，硬件优化（例如缓存和写入缓冲区的使用）以提高处理器性能的方式起作用，这意味着所需的带宽可以减少处理器和外部存储器之间的延迟，并且隐藏与此类外部存储器访问相关的长延迟。</p>
+<p>对普通内存的读取和写入可以由硬件重新排序，仅受数据依赖性和显式内存屏障指令的影响。某些情况需要更严格的排序规则。</p>
+<ul>
+<li>处理器采用超标量技术：乱序发射，乱序执行，提高指令并行进度</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261951672.png" alt="例子" loading="lazy"></p>
+<p>这两条语句先后顺序都有可能，因为没有依赖关系。</p>
+<ul>
+<li><p>内存一致性模型（memory consistency model）</p>
+<ul>
+<li>原子一致性（atomic consistency）内存模型</li>
+<li>顺序一致性（sequential consistency）内存模型</li>
+<li>处理器一致性（processor consistency）内存模型</li>
+<li><strong>弱一致性（weak consistency）内存模型</strong></li>
+</ul>
+</li>
+<li><p>编译乱序</p>
+</li>
+</ul>
+<h3 id="弱一致性内存模型"><a href="#弱一致性内存模型" class="headerlink" title="弱一致性内存模型"></a>弱一致性内存模型</h3><ul>
+<li>1986 年，Dubois 等发表的论文描述了弱一致性内存模型的定义<ul>
+<li>弱一致性内存模型要求同步访问（访问全局同步变量）是顺序一致的，在一个同步访问可以执行之前，之前的所有数据访问必须完成</li>
+<li>在一个正常的数据访问可以执行之前，所有之前的同步访问必须完成</li>
+<li>处理器使用内存屏障指令来实现整个同步访问的功能</li>
+</ul>
+</li>
+<li>内存屏障指令的基本原则如下：<ul>
+<li><strong>所有在内存屏障指令之前的数据访问必须在内存屏障指令之前完成</strong>。</li>
+<li><strong>所有在内存屏障指令后面的数据访问必须等待内存屏障指令执行完</strong>。</li>
+<li><strong>多条内存屏障指令是按顺序执行的</strong></li>
+</ul>
+</li>
+<li>处理器会根据内存屏障的作用范围进行细分</li>
+</ul>
+<p><strong>例子</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261951307.png" alt="例子" loading="lazy"></p>
+<p>会，因为 CPU0 可能会先执行 b&#x3D;1</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261952830.png" alt="解决办法" loading="lazy"></p>
+<h3 id="ARMv8-的内存模型"><a href="#ARMv8-的内存模型" class="headerlink" title="ARMv8 的内存模型"></a>ARMv8 的内存模型</h3><ul>
+<li><p>在<strong>normal memory</strong>实现的是<strong>弱一致性的内存模型</strong>（weak ordering model）</p>
+</li>
+<li><p>在<strong>device memory</strong>实现的是<strong>强一致性的内存模型</strong>（strong ordering model）</p>
+</li>
+<li><p>访存的序列可能和代码中的序列不一致</p>
+</li>
+<li><p>ARMv8 架构支持预测式的访问（speculative accesses）</p>
+<ul>
+<li>从内存中预取数据或者指令</li>
+<li>分支预测（Branch prediction）</li>
+<li>乱序的数据加载（Out of order data loads）</li>
+<li>预测的 cache line 的填充（Speculative cache line fills）</li>
+</ul>
+</li>
+<li><p><strong>预测式的数据访问</strong>只支持<strong>normal memory</strong></p>
+</li>
+<li><p><strong>指令的预测预取可以支持任意内存类型</strong></p>
+</li>
+</ul>
+<h3 id="什么情况下，我们需要考虑内存屏障指令？"><a href="#什么情况下，我们需要考虑内存屏障指令？" class="headerlink" title="什么情况下，我们需要考虑内存屏障指令？"></a>什么情况下，我们需要考虑内存屏障指令？</h3><ul>
+<li>在多个不同的 CPU 核心（线程）之间共享数据，例如 mailbox 等</li>
+<li>和外设共享数据，例如 DMA 操作</li>
+<li>修改内存管理的策略，例如上下文切换，请求缺页，修改页表</li>
+<li>修改存储指令的内存区域（instruction memory）:例如自修代码，加载一个程序到 RAM</li>
+</ul>
+<h3 id="ARMv8-提供的内存屏障指令"><a href="#ARMv8-提供的内存屏障指令" class="headerlink" title="ARMv8 提供的内存屏障指令"></a>ARMv8 提供的内存屏障指令</h3><ul>
+<li><strong>数据存储</strong>屏障( Data Memory Barrier, DMB )指令</li>
+<li><strong>数据同步</strong>屏障( Data Synchronization Barrier, DSB )指令</li>
+<li><strong>指令同步</strong>屏障( Instruction Synchronization Barrier, ISB )指令</li>
+</ul>
+<h4 id="DMB-指令"><a href="#DMB-指令" class="headerlink" title="DMB 指令"></a>DMB 指令</h4><blockquote>
+<p>Ordering of Load&#x2F;Store instructions</p>
+</blockquote>
+<ul>
+<li>仅仅影响数据访问（explicit data accesses，例如 load 和 store）的<strong>访问序列</strong></li>
+<li><strong>Data cache 指令也算数据访问</strong></li>
+<li>保证在<strong>DMB 之前的数据访问</strong>可以被<strong>DMB 后面的数据访问指令</strong>观察到</li>
+</ul>
+<p><strong>DMB</strong>指令需要注意的地方</p>
+<ul>
+<li>DMB 指令关注的是<strong>内存访问的序列</strong>，不关心数据访问指令什么时候执行完成</li>
+<li>DMB 前面的数据访问指令必须要被 DMB 后面的数据访问指令观察到</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261952322.png" alt="DMB前面的数据访问指令必须要被后面的数据访问指令观察到" loading="lazy"></p>
+<ul>
+<li>DMB 前面的 Data&#x2F;unified cache 指令必须在 DMB 后面的内存访问指令之前执行完成（观察到）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261952539.png" alt="DMB指令" loading="lazy"></p>
+<h4 id="DSB-指令"><a href="#DSB-指令" class="headerlink" title="DSB 指令"></a>DSB 指令</h4><blockquote>
+<p>Completion of Load&#x2F;Store instructions</p>
+</blockquote>
+<ul>
+<li>DSB 指令比 DMB 指令严格很多</li>
+<li>在<strong>DSB 指令后面的任何指令</strong>，必须等到如下完成了，<strong>才能开始执行</strong>：<ul>
+<li>在 DSB 指令前面的<strong>所有数据访问</strong>必须执行完成</li>
+<li>在 DSB 指令之前的 cache，branch predictor，TLB 等指令必须执行完成</li>
+</ul>
+</li>
+</ul>
+<p><strong>DSB 指令需要注意的地方</strong></p>
+<ul>
+<li>DMB 指令<strong>关注的仅仅是数据访问的序列</strong>，而 DSB 指令<strong>开始关注指令什么时候必须要执行完成</strong></li>
+<li>在 DSB 指令后面的指令，必须等到：<ul>
+<li>DSB 前面的所有数据访问指令都执行完成</li>
+<li>DSB 前面所有的 Cache，TLB 等指令执行完成</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>dsb 指令更像是 barrier</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261953086.png" alt="dsb指令" loading="lazy"></p>
+<ul>
+<li>在一个<strong>多核系统</strong>中，cache 和 TLB 指令会广播到其他 core，所以 DSB 指令会等到这些指令广播并收到回复才算完成</li>
+</ul>
+<p><strong>dmb 与 dsb 的区别</strong>，例子：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261954800.png" alt="dmb与dsb的区别" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262012075.png" alt="dmb与dsb区别" loading="lazy"></p>
+<p>add 指令不是数据访问指令</p>
+<h4 id="DMB-和-DSB-指令的参数"><a href="#DMB-和-DSB-指令的参数" class="headerlink" title="DMB 和 DSB 指令的参数"></a>DMB 和 DSB 指令的参数</h4><ul>
+<li><p>可以指定两个维度的参数，一个是<strong>Shareability domain</strong>，另一个是<strong>before-after</strong>的访问</p>
+</li>
+<li><p><strong>Shareability domain</strong></p>
+<ul>
+<li>Full System</li>
+<li>Outer Shareable，前缀为<strong>OSH</strong></li>
+<li>Inner Shareable，前缀为<strong>ISH</strong></li>
+<li>Non-shareable，前缀为<strong>NSH</strong></li>
+</ul>
+</li>
+<li><p>before-after 的访问（即 memory barrier 指令的前后，进一步细化，读&#x2F;写 memory barrier）</p>
+<ul>
+<li><p>读 barrier：Load-Load&#x2F;Store：后缀为<strong>LD</strong></p>
+<blockquote>
+<p>This means that <strong>the barrier requires all loads to complete before the barrier</strong> but<br><strong>does not require stores to complete</strong>. Both loads and stores that appear after the<br>barrier in program order must wait for the barrier to complete.</p>
+</blockquote>
+</li>
+<li><p>写 barrier：Store-Store：后缀为<strong>ST</strong></p>
+<blockquote>
+<p>This means that <strong>the barrier only affects store accesses</strong> and that loads can still be<br>freely re-ordered around the barrier.</p>
+</blockquote>
+</li>
+<li><p>读写 barrier：Any-Any：后缀为<strong>SY</strong></p>
+<blockquote>
+<p>This means that <strong>both loads and stores must complete before the barrier</strong>. Both<br>loads and stores that appear after the barrier in program order must wait for the<br>barrier to complete.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261954615.png" alt="Barrier Parameters" loading="lazy"></p>
+<h4 id="DMB-和-DSB-指令案例-1：mailbox"><a href="#DMB-和-DSB-指令案例-1：mailbox" class="headerlink" title="DMB 和 DSB 指令案例 1：mailbox"></a>DMB 和 DSB 指令案例 1：mailbox</h4><ul>
+<li>两个 CPU 通过 mailbox 来共享数据：共享内存和 flags</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261954543.png" alt="mailbox" loading="lazy"></p>
+<h4 id="DMB-和-DSB-指令-案例-2：DMA-外设"><a href="#DMB-和-DSB-指令-案例-2：DMA-外设" class="headerlink" title="DMB 和 DSB 指令 案例 2：DMA 外设"></a>DMB 和 DSB 指令 案例 2：DMA 外设</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261954321.png" alt="DMA外设" loading="lazy"></p>
+<p>DSB 指令保证，DMA 引擎在启动前看到了最新的数据已经在 DMA buffer 里。</p>
+<h4 id="Cache-维护指令的执行顺序"><a href="#Cache-维护指令的执行顺序" class="headerlink" title="Cache 维护指令的执行顺序"></a>Cache 维护指令的执行顺序</h4><ul>
+<li>Cache 维护指令例如 dc 和 ic，它们的执行顺序和其他内存访问指令是一样的，没有特殊性</li>
+<li>指令单元（instruction interface）,数据单元（data interface）,MMU walker 等可以看成是不同的观察者（observers）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261954926.png" alt="问题" loading="lazy"></p>
+<p>解决办法：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261955505.png" alt="解决办法" loading="lazy"></p>
+<h4 id="单方向的内存屏障（one-way-barriers）"><a href="#单方向的内存屏障（one-way-barriers）" class="headerlink" title="单方向的内存屏障（one way barriers）"></a>单方向的内存屏障（one way barriers）</h4><h5 id="Load-Acquire-LDAR"><a href="#Load-Acquire-LDAR" class="headerlink" title="Load-Acquire (LDAR)"></a><strong>Load-Acquire (LDAR)</strong></h5><p>​	All loads and stores that are after an LDAR in program order, and that match the shareability domain of the target address, must be observed after the LDAR.</p>
+<h5 id="Store-Release-STLR"><a href="#Store-Release-STLR" class="headerlink" title="Store-Release (STLR)"></a><strong>Store-Release (STLR)</strong></h5><p>​	All loads and stores preceding an STLR that match the shareability domain of the target address, must be observed before the STLR.</p>
+<blockquote>
+<p>There are also exclusive versions of the above, LDAXR and STLXR, available.</p>
+</blockquote>
+<ul>
+<li><p>DMB 和 DSB 都是双向的内存屏障指令，armv8 支持“单方向”的内存屏障原语</p>
+</li>
+<li><p><strong>获取（acquire）原语</strong>：指的是<strong>该屏障原语之后的读写操作不能重排到该屏障原语前面</strong>，通常该屏障原语<strong>与加载指令结合</strong></p>
+</li>
+<li><p><strong>释放（release）原语</strong>：指的是<strong>该屏障原语之前的读写操作不能重排到该屏障原语后面</strong>，通常该屏障原语<strong>和存储指令结合</strong></p>
+</li>
+<li><p><strong>加载-获取（Load-Acquire）屏障原语</strong>：普通的读和写操作可以向后越过该屏障指令，但是之后的读和写操作不能向前越过该屏障指令</p>
+</li>
+<li><p>ARMv8 中的<strong>ldar</strong>指令</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261955824.png" alt="ldar指令" loading="lazy"></p>
+<ul>
+<li><strong>存储-释放（Store-Release）屏障原语</strong>：普通的读和写可以向前越过存储-释放屏障指令，但是之前的读和写操作不能向后越过存储-释放屏障指令</li>
+<li>ARMv8 中的<strong>stlr</strong>指令</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262013418.png" alt="stlr指令" loading="lazy"></p>
+<ul>
+<li><strong>加载-获取</strong>（<strong>Load-Acquire</strong>）以及<strong>存储-释放</strong>（<strong>Store-Release</strong>）通常需要配对使用</li>
+<li><strong>ldar</strong>和<strong>stlr</strong>配对使用：<ul>
+<li>用于保护一个临界区数据</li>
+<li>在临界区的指令可以乱序（仅限临界区范围内）</li>
+<li>比全功能的 DMB 指令性能要好</li>
+<li><strong>对 data cache 维护指令没有作用，因为它不会去等待 cache 的广播</strong></li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261956842.png" alt="ldar与stlr配对使用" loading="lazy"></p>
+<h4 id="指令级别的内存屏障指令：ISB-指令"><a href="#指令级别的内存屏障指令：ISB-指令" class="headerlink" title="指令级别的内存屏障指令：ISB 指令"></a>指令级别的内存屏障指令：ISB 指令</h4><blockquote>
+<p>Context synchronization</p>
+</blockquote>
+<ul>
+<li><p>ISB 指令威力巨大，它会<strong>flush 流水线</strong>，然后<strong>从指令 cache 或者内存中重新预取指令</strong>。</p>
+</li>
+<li><p>ISB 指令保证</p>
+<ul>
+<li><strong>ISB 后面的指令都从指令 cache 或者内存中重新取址</strong></li>
+<li>ISB 指令前面的更改上下文操作（contex-changing operation）都已经完成（这里的 contex 指的是系统寄存器状态等）</li>
+</ul>
+</li>
+<li><p>更改上下文操作（contex-changing operation）包括：</p>
+<ul>
+<li>Cache，TLB 和 branch predictor 等操作</li>
+<li>改变系统寄存器，例如 TTBR0</li>
+</ul>
+<blockquote>
+<p>The ARMv8 architecture defines context as the state of the system registers and context-changing operations as things like cache, TLB, and branch predictor maintenance operations, or changes to system control registers, for example, SCTLR_EL1, TCR_EL1, and TTBRn_EL1. The effect of such a context-changing operation is only guaranteed to be seen after a context synchronization event.</p>
+</blockquote>
+</li>
+<li><p>更改上下文操作的效果：仅仅在<strong>上下文同步事件</strong>之后能看到</p>
+</li>
+<li><p>上下文同步事件（<strong>context synchronization event</strong>）</p>
+<ul>
+<li>发生一个异常（exception）</li>
+<li>从一个异常返回</li>
+<li>ISB 指令</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>实际上修改系统寄存器后一般都需要 isb 指令，尤其是修改了系统控制寄存器，但例如 PSTATE 等系统寄存器则不需要</p>
+</blockquote>
+<h4 id="ISB-指令例子-1：打开-FPU"><a href="#ISB-指令例子-1：打开-FPU" class="headerlink" title="ISB 指令例子 1：打开 FPU"></a>ISB 指令例子 1：打开 FPU</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261956464.png" alt="打开FPU" loading="lazy"></p>
+<p>改变了系统控制寄存器时需要一条 isb 指令</p>
+<h4 id="ISB-指令例子-2：改变页表项"><a href="#ISB-指令例子-2：改变页表项" class="headerlink" title="ISB 指令例子 2：改变页表项"></a>ISB 指令例子 2：改变页表项</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261957574.png" alt="改变页表项" loading="lazy"></p>
+<h4 id="ISB-指令例子-3：self-modify-code"><a href="#ISB-指令例子-3：self-modify-code" class="headerlink" title="ISB 指令例子 3：self-modify code"></a>ISB 指令例子 3：self-modify code</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261957868.png" alt="self-modifying code" loading="lazy"></p>
+<ul>
+<li>在更新新代码内容(str x11,[x1])和 clean 数据 cache 指令之间没有使用内存屏障指令<ul>
+<li>更新代码的内容和 clean 数据 cache 都是操作相同的地址，并且都是数据相关的操作，他们之间有数据依赖性，可以理解为相同的观察者</li>
+<li>他们之间可以保证程序执行的次序(program order)</li>
+</ul>
+</li>
+<li>在 clean 数据 cache 和无效指令 cache 之间需要内存屏障<ul>
+<li>虽然这两条 cache 指令都是操作相同的地址，但是他们是不同的观察者（一个是数据端，另外一个是指令端）</li>
+<li>这里的 DSB 保证 clean 完数据 cache 之后才去无效指令 cache</li>
+</ul>
+</li>
+<li>在一个多核一致性的系统中，DSB 指令能保证 cache 维护指令执行完成，即其他 CPU 都能够观察到 cache 维护指令完成</li>
+<li>ISB 指令不会 broadcast，因此 CPU1 也需要执行 isb 指令</li>
+</ul>
+<h4 id="Non-temporal-load-and-store-pair"><a href="#Non-temporal-load-and-store-pair" class="headerlink" title="Non-temporal load and store pair"></a>Non-temporal load and store pair</h4><p><strong>LDNP 和 STNP</strong></p>
+<p>LDNP 和 STNP执行读取或写入一对寄存器值的指令。它们还向内存系统提示缓存对这些数据没有用处。该提示不会禁止内存系统活动，例如地址缓存、预加载或收集，而只是表明缓存不太可能提高性能。一个典型的用例可能是流数据，但应该注意，有效使用这些指令需要一种特定于微架构的方法。</p>
+<p><strong>非临时加载和存储放宽了内存排序要求</strong>。在上述情况下，可能会在前面的 LDR 指令之前观察到 LDNP 指令，这可能导致从 X0 中不可预知的地址读取。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LDR X0, [X3]</span><br><span class="line">LDNP X2, X1, [X0]</span><br></pre></td></tr></table></figure>
+
+<p>要纠正上述问题，您需要一个明确的负载屏障：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LDR X0, [X3]</span><br><span class="line">DMB NSHLD</span><br><span class="line">LDNP X2, X1, [X0]</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="总结：内存屏障指令与-cache-TLB-维护指令"><a href="#总结：内存屏障指令与-cache-TLB-维护指令" class="headerlink" title="总结：内存屏障指令与 cache&#x2F;TLB 维护指令"></a>总结：内存屏障指令与 cache&#x2F;TLB 维护指令</h4><ul>
+<li>data cache 或者 unified cache 维护指令<ul>
+<li>可以使用 DMB 指令来保证 cache 维护指令在指定的 shareable domain 中执行完成</li>
+<li>Load-acquire 和 store-release 屏障对 data cache 维护指令没有作用（因为它不会去等待 cache 的广播）</li>
+</ul>
+</li>
+<li>指令 cache 维护指令<ul>
+<li>指令 cache 和数据 cache 在内存观察者角度看，是两个不同的观察者</li>
+<li>在指令 cache 和维护操作完成之后执行一条 DSB 指令，确保 inner shareable domain 里所有的 CPU 核心都能看到这条指令 cache 的执行完成</li>
+</ul>
+</li>
+<li>TLB 维护指令<ul>
+<li>遍历页表的单元和数据访问的硬件单元，其实是两个不同的内存系统的观察者</li>
+<li>在 TLB 维护指令后面需要执行一条 DSB 指令，来保证 inner shareable domain 里面的所有 CPU 都能完成</li>
+</ul>
+</li>
+<li><strong>ISB 指令不会 broadcast</strong>，如果需要每个 CPU 核心需要单独调用 ISB 指令</li>
+</ul>
+<h4 id="芯片手册阅读-memory-barrier"><a href="#芯片手册阅读-memory-barrier" class="headerlink" title="芯片手册阅读 memory barrier"></a>芯片手册阅读 memory barrier</h4><ul>
+<li><p><strong>ARM Architecture Reference Manual Armv8, for Armv8-A architecture profile</strong></p>
+<ul>
+<li><strong>B2.3.7 Memory barriers</strong></li>
+<li>(<strong>重点</strong>) <strong>Appendix K11 Barrier Litmus Test</strong></li>
+</ul>
+</li>
+<li><p><strong>ARM Cortex-A Series Programmer’s Guide for ARMv8-A</strong></p>
+<ul>
+<li><strong>13.2 Barriers</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="再谈缓存一致性与内存屏障"><a href="#再谈缓存一致性与内存屏障" class="headerlink" title="再谈缓存一致性与内存屏障"></a>再谈缓存一致性与内存屏障</h3><h4 id="问题的引入"><a href="#问题的引入" class="headerlink" title="问题的引入"></a>问题的引入</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261957942.png" alt="问题引入" loading="lazy"></p>
+<p>下面的执行顺序</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261957587.png" alt="执行顺序" loading="lazy"></p>
+<p>CPU1 的断言仍然可能失败！！！</p>
+<h4 id="缓存一致性协议带来的-CPU-停滞现象"><a href="#缓存一致性协议带来的-CPU-停滞现象" class="headerlink" title="缓存一致性协议带来的 CPU 停滞现象"></a>缓存一致性协议带来的 CPU 停滞现象</h4><ul>
+<li>MESI 协议是一种基于总线侦听和传输的协议，其总线传输带宽和 CPU 之间的负载以及 CPU 核数量有关系</li>
+<li>高速缓存行状态的变化严重依赖于其他告诉缓存行的应答信号，即必须受到其他所有 CPU 的高速缓存行的应答信号才能进行下一步的状态转换。在一个总线繁忙或者总线带宽紧张的场景下，CPU 可能需要比较长的时间来等待其他 CPU 的应答引号，这会大大影响系统性能，这个现象称为 CPU 停滞（<strong>CPU stall</strong>）</li>
+</ul>
+<h4 id="例子分析：MESI-协议带来的-CPU-停滞"><a href="#例子分析：MESI-协议带来的-CPU-停滞" class="headerlink" title="例子分析：MESI 协议带来的 CPU 停滞"></a>例子分析：MESI 协议带来的 CPU 停滞</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261958481.png" alt="MESI协议带来的CPU Stall" loading="lazy"></p>
+<p>在一个 4 核 CPU 系统中，数据 A 在 CPU1，CPU2 以及 CPU3 上共享，它们对应的高速缓存行的状态为 S(共享)，A 的初始值为 0。而数据 A 在 CPU0 的高速缓存中没有缓存，其状态为 I(无效)</p>
+<p>此时，CPU0 往数据 A 中写入新值（例如写入 1），那么这些高速缓存行的状态会如何发生变化呢？</p>
+<p><strong>T1 时刻</strong></p>
+<p>CPU0 向总线发送一个本地写操作信号</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261958494.png" alt="T1时刻" loading="lazy"></p>
+<p><strong>T2 时刻</strong></p>
+<p>CPU1，CPU2，CPU3 都收到总线发来的 BusRdX 信号</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261959113.png" alt="T2时刻" loading="lazy"></p>
+<p><strong>T3 时刻</strong></p>
+<p>CPU1 检查自己本地高速缓存中是否有缓存数据 A 的副本。CPU1 回复一个<strong>Flushopt</strong>信号并且把数据发送到总线上，然后把自己的高速缓存行状态设置为无效，状态变成 I，最后广播应答信号。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261959068.png" alt="T3时刻" loading="lazy"></p>
+<p><strong>T4 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261959881.png" alt="T4时刻" loading="lazy"></p>
+<p>CPU2 和 CPU3 都检查本地 loacl cache，状态从 S 变成 I</p>
+<p><strong>T5 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251006161411464.png" alt="T5时刻" loading="lazy"></p>
+<p>CPU0 接收其他所有 CPU 的应答信号，确认其他 CPU 上没有这个数据的缓存副本或者缓存副本已经被无效之后，才能修改数据 A。最后，CPU0 的高速缓存行状态变成 M。</p>
+<p><strong>总结</strong></p>
+<p>CPU0 有一个等待的过程，它需要等待其他所有 CPU 的应答信号</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262000421.png" alt="CPU0有一个等待的过程，它需要等待其他所有CPU的应答信号" loading="lazy"></p>
+<h4 id="优化办法-1：存储缓冲区（Store-Buffer）"><a href="#优化办法-1：存储缓冲区（Store-Buffer）" class="headerlink" title="优化办法 1：存储缓冲区（Store Buffer）"></a>优化办法 1：存储缓冲区（Store Buffer）</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262000604.png" alt="store buffer" loading="lazy"></p>
+<ul>
+<li><strong>不需要等待其他 CPU 的应答信号</strong>，可以<strong>先把数据写入到存储缓冲区中，继续执行下一条指令</strong></li>
+<li>当 CPU0 都收到了其他 CPU 都回复的应答信号之后，CPU0 才从缓冲存储区中把数据 A 的最新值写入本地高速缓存行，并且修改高速缓存行的状态为 M</li>
+</ul>
+<h4 id="存储缓冲区带来的副作用"><a href="#存储缓冲区带来的副作用" class="headerlink" title="存储缓冲区带来的副作用"></a>存储缓冲区带来的副作用</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262001596.png" alt="缓冲区带来的副作用" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262012298.png" alt="例子" loading="lazy"></p>
+<p>数据 a 在 CPU1 的高速缓存中有缓存副本，且状态为 E</p>
+<p>数据 b 在 CPU0 的高速缓存里有缓存副本，且状态为 E</p>
+<p>那么在带有缓冲区的系统中，会不会发生 assert 失败？</p>
+<p><strong>T1 时刻</strong> CPU0 执行”a&#x3D;1”的语句</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262001707.png" alt="T1时刻" loading="lazy"></p>
+<p><strong>T2 时刻</strong> CPU0 执行”b&#x3D;1”的语句</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262001641.png" alt="T2时刻" loading="lazy"></p>
+<p><strong>T3 时刻</strong> CPU1 执行”while(b&#x3D;&#x3D;0)”的语句</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262001764.png" alt="T3时刻" loading="lazy"></p>
+<p><strong>T4 时刻</strong> CPU0 收到总线读信号。</p>
+<p><strong>T5 时刻</strong> CPU1 获取了 b 的最新值</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262002522.png" alt="T5时刻" loading="lazy"></p>
+<p><strong>T6 时刻</strong> assert 失败</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262002583.png" alt="T6时刻 assert失败" loading="lazy"></p>
+<p>整个过程的流程图</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262002106.png" alt="整个过程的流程图" loading="lazy"></p>
+<h4 id="副作用解决办法：使用写内存屏障指令"><a href="#副作用解决办法：使用写内存屏障指令" class="headerlink" title="副作用解决办法：使用写内存屏障指令"></a>副作用解决办法：使用写内存屏障指令</h4><ul>
+<li><strong>存储缓冲区</strong>，优化了多核处理器之间长时间等待应答信号导致的性能下降。但是，依然<strong>无法感知多核 CPU 之间是否存在数据依赖</strong></li>
+<li><strong>写内存屏障语句</strong>(例如 smp_wmb())，把当前存储缓冲区中所有的数据都做一个标记，然后<strong>flush 存储缓冲区，保证之前写入到存储缓冲区的数据更新到高速缓存行，然后才能执行后面的写操作</strong></li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262002711.png" alt="使用内存屏障指令" loading="lazy"></p>
+<p>解决办法：加入写内存屏障语句：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262003762.png" alt="加入写内存屏障语句" loading="lazy"></p>
+<p>**T1 时刻 **CPU0 执行”a&#x3D;1”语句</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262003530.png" alt="T1时刻" loading="lazy"></p>
+<p><strong>T2 时刻</strong> CPU0 执行”smp_wmb()”</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262003452.png" alt="T2时刻" loading="lazy"></p>
+<p><strong>T3 时刻：CPU0 执行”b&#x3D;1”的语句</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262004113.png" alt="T3时刻" loading="lazy"></p>
+<p><strong>T4 时刻</strong> CPU1 执行”while(b&#x3D;&#x3D;0)”的语句</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262004685.png" alt="T4时刻" loading="lazy"></p>
+<p><strong>T5 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262004758.png" alt="T5时刻" loading="lazy"></p>
+<p>CPU 的数据 b 状态从 E 变为 S</p>
+<p><strong>T6 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262004040.png" alt="T6时刻" loading="lazy"></p>
+<p><strong>T7 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262004037.png" alt="T7时刻" loading="lazy"></p>
+<p><strong>T8 时刻</strong></p>
+<p>CPU0 收到关于数据 a 的回应信号。把存储缓冲区的数据 a 写入高速缓存中。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262005302.png" alt="T8时刻" loading="lazy"></p>
+<p><strong>T9 时刻</strong></p>
+<p>在存储缓冲区的数据项 b 也写入高速缓存中</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262005708.png" alt="T9时刻" loading="lazy"></p>
+<p><strong>T10 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262005065.png" alt="T10时刻" loading="lazy"></p>
+<p><strong>T11 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262005864.png" alt="T11时刻" loading="lazy"></p>
+<p><strong>T12 时刻</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262005954.png" alt="T12时刻" loading="lazy"></p>
+<p>因为 a&#x3D;1 和 b&#x3D;1 之间加入了 smp_wmb()指令，因此 b&#x3D;1 的写入高速缓存的操作必须在 a&#x3D;1 写入高速缓存后才能执行</p>
+<h4 id="优化办法-2：无效队列（Invalidate-Queue）"><a href="#优化办法-2：无效队列（Invalidate-Queue）" class="headerlink" title="优化办法 2：无效队列（Invalidate Queue）"></a>优化办法 2：无效队列（Invalidate Queue）</h4><ul>
+<li>优化方法 1 中的存储缓冲区很小，容易填满</li>
+<li>CPU 停滞的一个原因是：<strong>等待其他 CPU 做”使无效”的操作(invalidate)而且比较耗时</strong></li>
+<li>无效队列：<strong>把”使无效操作”缓存起来，先给请求者回复一个应答信号，然后再慢慢做无效操作</strong>，这样其他 CPU 就不必长时间等待了</li>
+</ul>
+<blockquote>
+<p>回复无效操作的 CPU 本身也不需要这个数据</p>
+</blockquote>
+<ul>
+<li>当 CPU 收到总线请求之后，如果需要执行无效本地高速缓存行的操作，那么会把这个请求加入到无效队列里，然后立马给对方回复一个应答信号，而无需把该高速缓存行无效之后再应答</li>
+<li>如果 CPU 将某个请求加入到无效队列，那么在该请求对应的无效操作完成之前，那么 CPU 不能向总线发送任何与该请求对应的高速缓存行相关的总线消息。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262006348.png" alt="加入无效队列" loading="lazy"></p>
+<h4 id="无效队列的副作用"><a href="#无效队列的副作用" class="headerlink" title="无效队列的副作用"></a>无效队列的副作用</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262006930.png" alt="无效队列产生副作用" loading="lazy"></p>
+<p>假设数据 a 和数据 b 的初始值为 0，数据 a 在 CPU0 和 CPU1 都有副本，状态为 S，数据 b 在 CPU0 上有缓存副本，状态为 E，那么 assert 会成功吗？</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262006584.png" alt="例子" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262007121.png" alt="流程图" loading="lazy"></p>
+<h4 id="副作用解决办法：使用读内存屏障指令"><a href="#副作用解决办法：使用读内存屏障指令" class="headerlink" title="副作用解决办法：使用读内存屏障指令"></a>副作用解决办法：使用读内存屏障指令</h4><p><strong>读内存屏障指令</strong>: 读内存屏障指令可以<strong>让无效队列里所有的无效操作都执行完成才能执行该读屏障指令后面的读操作</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262007783.png" alt="使用读内存屏障指令" loading="lazy"></p>
+<h4 id="内存屏障与缓存一致性的总结"><a href="#内存屏障与缓存一致性的总结" class="headerlink" title="内存屏障与缓存一致性的总结"></a>内存屏障与缓存一致性的总结</h4><ul>
+<li><p>在 SMP 中，一条简单的 load 和 store 指令不简单，它的行为需要与 MESI 缓存一致性协议结合来分析</p>
+</li>
+<li><p>内存屏障需要和 MESI 缓存一致性来结合分析</p>
+</li>
+<li><p>存储缓冲区和无效队列是一种硬件优化手段，但是也带来一些副作用</p>
+</li>
+<li><p>读内存屏障指令作用于无效队列，让无效队列中积压的无效操作尽快执行完成才能执行后面的读操作</p>
+</li>
+<li><p>写内存屏障指令作用域存储缓冲区，让存储缓冲区中数据写入到高速缓存之后才能执行后面的写操作</p>
+</li>
+</ul>
+<h4 id="Linux-内核中提供的内存屏障-API"><a href="#Linux-内核中提供的内存屏障-API" class="headerlink" title="Linux 内核中提供的内存屏障 API"></a>Linux 内核中提供的内存屏障 API</h4><p>Linux 内核抽象出一种最小的共同性，在这个集合里，每种处理器体系结构都能支持</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262007091.png" alt="Linux内核提供的内存屏障API" loading="lazy"></p>
+<h2 id="ARM64-内存屏障指令的深入理解"><a href="#ARM64-内存屏障指令的深入理解" class="headerlink" title="ARM64 内存屏障指令的深入理解"></a>ARM64 内存屏障指令的深入理解</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510262000666.png" alt="ARM64内存屏障指令的深入理解" loading="lazy"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2510262/">https://even629.com/posts/2510262/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ARM/">ARM</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%BA%A7%E7%94%9F%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">1.</span> <span class="toc-text">内存屏障产生的原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%B1%E4%B8%80%E8%87%B4%E6%80%A7%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">弱一致性内存模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ARMv8-%E7%9A%84%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">ARMv8 的内存模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E8%80%83%E8%99%91%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">什么情况下，我们需要考虑内存屏障指令？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ARMv8-%E6%8F%90%E4%BE%9B%E7%9A%84%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4"><span class="toc-number">5.</span> <span class="toc-text">ARMv8 提供的内存屏障指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#DMB-%E6%8C%87%E4%BB%A4"><span class="toc-number">5.1.</span> <span class="toc-text">DMB 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DSB-%E6%8C%87%E4%BB%A4"><span class="toc-number">5.2.</span> <span class="toc-text">DSB 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DMB-%E5%92%8C-DSB-%E6%8C%87%E4%BB%A4%E7%9A%84%E5%8F%82%E6%95%B0"><span class="toc-number">5.3.</span> <span class="toc-text">DMB 和 DSB 指令的参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DMB-%E5%92%8C-DSB-%E6%8C%87%E4%BB%A4%E6%A1%88%E4%BE%8B-1%EF%BC%9Amailbox"><span class="toc-number">5.4.</span> <span class="toc-text">DMB 和 DSB 指令案例 1：mailbox</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DMB-%E5%92%8C-DSB-%E6%8C%87%E4%BB%A4-%E6%A1%88%E4%BE%8B-2%EF%BC%9ADMA-%E5%A4%96%E8%AE%BE"><span class="toc-number">5.5.</span> <span class="toc-text">DMB 和 DSB 指令 案例 2：DMA 外设</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Cache-%E7%BB%B4%E6%8A%A4%E6%8C%87%E4%BB%A4%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="toc-number">5.6.</span> <span class="toc-text">Cache 维护指令的执行顺序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E6%96%B9%E5%90%91%E7%9A%84%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%EF%BC%88one-way-barriers%EF%BC%89"><span class="toc-number">5.7.</span> <span class="toc-text">单方向的内存屏障（one way barriers）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Load-Acquire-LDAR"><span class="toc-number">5.7.1.</span> <span class="toc-text">Load-Acquire (LDAR)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Store-Release-STLR"><span class="toc-number">5.7.2.</span> <span class="toc-text">Store-Release (STLR)</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E7%BA%A7%E5%88%AB%E7%9A%84%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4%EF%BC%9AISB-%E6%8C%87%E4%BB%A4"><span class="toc-number">5.8.</span> <span class="toc-text">指令级别的内存屏障指令：ISB 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ISB-%E6%8C%87%E4%BB%A4%E4%BE%8B%E5%AD%90-1%EF%BC%9A%E6%89%93%E5%BC%80-FPU"><span class="toc-number">5.9.</span> <span class="toc-text">ISB 指令例子 1：打开 FPU</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ISB-%E6%8C%87%E4%BB%A4%E4%BE%8B%E5%AD%90-2%EF%BC%9A%E6%94%B9%E5%8F%98%E9%A1%B5%E8%A1%A8%E9%A1%B9"><span class="toc-number">5.10.</span> <span class="toc-text">ISB 指令例子 2：改变页表项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ISB-%E6%8C%87%E4%BB%A4%E4%BE%8B%E5%AD%90-3%EF%BC%9Aself-modify-code"><span class="toc-number">5.11.</span> <span class="toc-text">ISB 指令例子 3：self-modify code</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Non-temporal-load-and-store-pair"><span class="toc-number">5.12.</span> <span class="toc-text">Non-temporal load and store pair</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4%E4%B8%8E-cache-TLB-%E7%BB%B4%E6%8A%A4%E6%8C%87%E4%BB%A4"><span class="toc-number">5.13.</span> <span class="toc-text">总结：内存屏障指令与 cache&#x2F;TLB 维护指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8A%AF%E7%89%87%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB-memory-barrier"><span class="toc-number">5.14.</span> <span class="toc-text">芯片手册阅读 memory barrier</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%8D%E8%B0%88%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E4%B8%8E%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C"><span class="toc-number">6.</span> <span class="toc-text">再谈缓存一致性与内存屏障</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E7%9A%84%E5%BC%95%E5%85%A5"><span class="toc-number">6.1.</span> <span class="toc-text">问题的引入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE%E5%B8%A6%E6%9D%A5%E7%9A%84-CPU-%E5%81%9C%E6%BB%9E%E7%8E%B0%E8%B1%A1"><span class="toc-number">6.2.</span> <span class="toc-text">缓存一致性协议带来的 CPU 停滞现象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90%E5%88%86%E6%9E%90%EF%BC%9AMESI-%E5%8D%8F%E8%AE%AE%E5%B8%A6%E6%9D%A5%E7%9A%84-CPU-%E5%81%9C%E6%BB%9E"><span class="toc-number">6.3.</span> <span class="toc-text">例子分析：MESI 协议带来的 CPU 停滞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%8A%9E%E6%B3%95-1%EF%BC%9A%E5%AD%98%E5%82%A8%E7%BC%93%E5%86%B2%E5%8C%BA%EF%BC%88Store-Buffer%EF%BC%89"><span class="toc-number">6.4.</span> <span class="toc-text">优化办法 1：存储缓冲区（Store Buffer）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E7%BC%93%E5%86%B2%E5%8C%BA%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%89%AF%E4%BD%9C%E7%94%A8"><span class="toc-number">6.5.</span> <span class="toc-text">存储缓冲区带来的副作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%AF%E4%BD%9C%E7%94%A8%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%86%99%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4"><span class="toc-number">6.6.</span> <span class="toc-text">副作用解决办法：使用写内存屏障指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%8A%9E%E6%B3%95-2%EF%BC%9A%E6%97%A0%E6%95%88%E9%98%9F%E5%88%97%EF%BC%88Invalidate-Queue%EF%BC%89"><span class="toc-number">6.7.</span> <span class="toc-text">优化办法 2：无效队列（Invalidate Queue）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E6%95%88%E9%98%9F%E5%88%97%E7%9A%84%E5%89%AF%E4%BD%9C%E7%94%A8"><span class="toc-number">6.8.</span> <span class="toc-text">无效队列的副作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%AF%E4%BD%9C%E7%94%A8%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A%E4%BD%BF%E7%94%A8%E8%AF%BB%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4"><span class="toc-number">6.9.</span> <span class="toc-text">副作用解决办法：使用读内存屏障指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E4%B8%8E%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E6%80%BB%E7%BB%93"><span class="toc-number">6.10.</span> <span class="toc-text">内存屏障与缓存一致性的总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux-%E5%86%85%E6%A0%B8%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C-API"><span class="toc-number">6.11.</span> <span class="toc-text">Linux 内核中提供的内存屏障 API</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ARM64-%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4%E7%9A%84%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3"><span class="toc-number"></span> <span class="toc-text">ARM64 内存屏障指令的深入理解</span></a></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '312330bf0d5498fb6f67a28a77dc1cbb'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

@@ -1,0 +1,1564 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux 网络设备 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux 网络设备">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 网络设备">
+<meta property="og:url" content="https://even629.com/posts/2601133/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Linux 网络设备">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2026-01-13T14:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-13T14:00:00.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2601133/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux 网络设备',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux 网络设备</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-13T14:00:00.000Z" title="更新于 2026-01-13 22:00:00">2026-01-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">17.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>60分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2601133/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-01-13</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h1 id="网络通信基础"><a href="#网络通信基础" class="headerlink" title="网络通信基础"></a>网络通信基础</h1><p><strong>发展历史</strong></p>
+<p>1969 年，ARPAnet 最初连接了美国四所大学的计算机，采用分组交换技术，实现计算机间数据传输 。</p>
+<p>1972 年，首次实现与英国、挪威计算机的跨大西洋连接。</p>
+<p>1973 年开始研究传输控制协议（TCP）和网际协议（IP）。</p>
+<p>1984 年，TCP&#x2F;IP 协议成为计算机网络通信标准。</p>
+<p>1986 年，美国国家科学基金会 NSF 建立了广域网（因特网的前身）。</p>
+<p>1994 年，中国的 NCFC 网络正式接入 NSFnet, 中国加入到了因特网。</p>
+<h2 id="网络协议"><a href="#网络协议" class="headerlink" title="网络协议"></a>网络协议</h2><p>网络协议是网络中设备进行通信的规则和约定，常见的网络协议有：</p>
+<h3 id="TCP-IP-协议"><a href="#TCP-IP-协议" class="headerlink" title="TCP&#x2F;IP 协议"></a>TCP&#x2F;IP 协议</h3><p>TCP&#x2F;IP（Transmission Control Protocol&#x2F;Internet Protocol）协议，即传输控制协议&#x2F;网际协议，是用于互联网通信的基础协议族。</p>
+<p><strong>特点</strong></p>
+<ul>
+<li><strong>面向连接</strong>：在传输数据前，TCP 协议会通过“三次握手”建立连接，以此确保通信双方的可靠性以及数据传输的有序性。</li>
+<li><strong>可靠性强</strong>：TCP 借助序号、确认应答、重传机制以及流量控制等机制，保障数据的可靠性与完整性。若数据包在传输过程中丢失或损坏，TCP 会要求重新发送，直至数据准确无误地到达。</li>
+<li><strong>基于字节流</strong>：TCP 将应用层数据视作无结构的字节流，不保留消息边界。这表明 TCP 并不关注应用层数据的具体内容，仅将其当作一系列字节进行传输。</li>
+</ul>
+<p><strong>作用</strong></p>
+<ul>
+<li>TCP&#x2F;IP 协议采用分层工作方式，每个层级承担特定功能，提供了从网络硬件到应用程序的完整通信解决方案。让不同计算机和网络之间的数据交换得以实现。</li>
+</ul>
+<h3 id="UDP-协议"><a href="#UDP-协议" class="headerlink" title="UDP 协议"></a>UDP 协议</h3><p>UDP（User Datagram Protocol）即用户数据报协议。与 TCP 不同，UDP 不提供面向连接的通信方式，也不确保数据的可靠性与完整性。</p>
+<p><strong>特点</strong></p>
+<ul>
+<li><p><strong>无连接性</strong>：UDP 在发送数据前无需建立连接，每个数据包都独立发送，接收方也无需发送确认应答。这种特性使 UDP 具备较低的延迟和较高的传输效率。</p>
+</li>
+<li><p><strong>不可靠性</strong>：UDP 无法保证数据包的顺序性、完整性以及可靠性。若数据包在传输过程中出现丢失或损坏的情况，UDP 不会要求重新发送。</p>
+</li>
+<li><p><strong>基于数据报</strong>：UDP 会将应用层的数据封装成一个个独立的数据报进行传输，每个数据报都包含完整的目的地址和源地址信息。</p>
+</li>
+</ul>
+<p><strong>作用</strong></p>
+<p>UDP 适用于对实时性要求较高的场景，如视频流、音频流以及在线游戏等。在这些应用中，即便少量数据包丢失，也不会对整体体验造成严重影响。</p>
+<h3 id="DNS-协议"><a href="#DNS-协议" class="headerlink" title="DNS 协议"></a>DNS 协议</h3><p>DNS（Domain Name System，域名系统）是一种分布式数据库系统，主要功能是将域名转换为对应的 IP 地址（例如 192.0.2.1）。借助 DNS，用户能够通过易于记忆的域名访问网站，而不必牢记复杂的 IP 地址。</p>
+<h3 id="DHCP-协议"><a href="#DHCP-协议" class="headerlink" title="DHCP 协议"></a>DHCP 协议</h3><p>DHCP（Dynamic Host Configuration Protocol，动态主机配置协议）是一种网络协议，其作用是自动为局域网内的客户端设备分配 IP 地址、子网掩码、默认网关以及 DNS 服务器地址等网络参数。</p>
+<h3 id="FTP-协议"><a href="#FTP-协议" class="headerlink" title="FTP 协议"></a>FTP 协议</h3><p>FTP（File Transfer Protocol，文件传输协议）是用于网络文件传输的协议，可以用于在不同计算机之间实现文件共享，是互联网上进行文件传输的重要工具之一。</p>
+<h3 id="HTTP-HTTPS-协议"><a href="#HTTP-HTTPS-协议" class="headerlink" title="HTTP&#x2F;HTTPS 协议"></a>HTTP&#x2F;HTTPS 协议</h3><p>HTTP（HyperText Transfer Protocol，超文本传输协议）是用于分布式、协作式、超媒体信息系统的应用层协议，是万维网（WWW）数据通信的基础。</p>
+<p>HTTPS（HyperText Transfer Protocol Secure，超文本传输安全协议）是 HTTP 的安全版本，它通过 SSL&#x2F;TLS 协议对数据进行加密，从而保障数据传输的安全性。</p>
+<p><strong>作用</strong></p>
+<p>HTTP 协议使用户能够通过浏览器访问互联网上的各类资源，如网页、图片、视频等。HTTPS 协议则致力于保护用户的数据安全，防止数据在传输过程中被窃取或篡改，广泛应用于网上银行、网上支付、电子商务等对数据安全要求较高的场景</p>
+<h2 id="传输介质"><a href="#传输介质" class="headerlink" title="传输介质"></a>传输介质</h2><p>包括网线，电缆，光纤</p>
+<ul>
+<li><strong>网线</strong></li>
+</ul>
+<p>网线一般由几根导线组成，常见的是 8 根铜导线，两两相互缠绕，形成 4 对双绞线。外部包裹绝缘层和护套，起到保护内部导线，防止信息泄露和外界电磁干扰的作用。</p>
+<ul>
+<li><strong>电缆</strong></li>
+</ul>
+<p>电缆是一种电能或信号传输装置，通常是由几根或几组导线组成。电缆由导体，绝缘层，护套层组成。</p>
+<ul>
+<li><strong>光纤</strong></li>
+</ul>
+<p>光纤是一种以光为信息载体，利用光在玻璃或塑料制成的纤维中全反射原理进行数据传输的线缆。它主要分为单模光纤和多模光纤。</p>
+<h3 id="网线种类"><a href="#网线种类" class="headerlink" title="网线种类"></a>网线种类</h3><p><strong>1 类线和 2 类线</strong></p>
+<p>1 类线与 2 类线主要应用于早期的电话通信系统，并不支持数据传输或现代意义上的网络应用。随着网络技术的不断进步，这两类线已被淘汰，不再用于网络布线。</p>
+<p><strong>3 类线（Category 3, Cat 3）</strong></p>
+<p>3 类线是早期以太网电缆标准之一，主要用于传输速率为 10Mbps 的传统以太网。在现代网络环境中，3 类网线已很少被使用。</p>
+<p><strong>4 类网线（Category 4, Cat 4）</strong></p>
+<p>相较于 3 类线，4 类线虽有所提升，但在实际应用中，因其性价比不高，未能得到广泛推广，很快便被更为先进的 5 类线所取代。</p>
+<p><strong>5 类线（Category 5, Cat 5）</strong></p>
+<emp>5 类线是计算机网络中常用的双绞式电缆，支持最高 100Mbps 的数据传输速率（FastEthernet）。</emp>
+
+<p><strong>超 5 类线（Category 5e, Cat 5e）</strong></p>
+<emp>超 5 类线是 5 类线的增强版本，主要用于千兆以太网（1000Mbps），同时向下兼容百兆以太网。</emp>
+
+<p><strong>6 类线（Category 6，Cat 6）</strong></p>
+<emp>相较于之前的线缆，6 类线在内部结构、材质以及外部保护等方面均有所改进，以此确保更高的传输质量和稳定性。6 类线也是用于千兆以太网（1000Mbps）的传输介质</emp>
+
+<p><strong>超 6 类线（Category 6A, Cat 6a）</strong></p>
+<u>超 6 类线是 6 类线的进一步升级版本，支持 10Gbps 的传输速率（万兆以太网）。</u>
+
+<p><strong>7 类线（Category 7，Cat 7）</strong></p>
+<u>7 类线属于屏蔽双绞线（STP），支持 10Gbps 的传输速率，具有更高的带宽和更低的信号衰减率。</u>
+
+
+
+<h3 id="网线制作标准"><a href="#网线制作标准" class="headerlink" title="网线制作标准"></a>网线制作标准</h3><p>网线制作有俩种标准，即 T568A 和 T568B。</p>
+<blockquote>
+<p>如果网线两端采用相同的线序标准，称为直连线，用于连接不同类型的设备，如电脑与路由器；</p>
+<p>若两端线序不同，如一端为 T568A，另一端为 T568B，则称为交叉线，常用于连接相同类型的设备，如电脑与电脑、交换机与交换机。</p>
+</blockquote>
+<h4 id="T568A"><a href="#T568A" class="headerlink" title="T568A"></a>T568A</h4><p>T568A 标准线序：绿白、绿、橙白、蓝、蓝白、橙、棕白、棕。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302228.png" alt="T568A" loading="lazy"></p>
+<h4 id="T568B"><a href="#T568B" class="headerlink" title="T568B"></a>T568B</h4><p>T568B 标准线序：橙白、橙、绿白、蓝、蓝白、绿、棕白、棕</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302274.png" alt="T568B" loading="lazy"></p>
+<h2 id="网络模型"><a href="#网络模型" class="headerlink" title="网络模型"></a>网络模型</h2><h3 id="OSI-七层模型"><a href="#OSI-七层模型" class="headerlink" title="OSI 七层模型"></a>OSI 七层模型</h3><p>OSI 七层网络模型是国际标准化组织（ISO）专门为实现不同系统之间的互连互通而制定的网络体系结构标准。</p>
+<p>OSI 七层模型由底层至高层依次为：物理层、数据链路层、网络层、传输层、会话层、表示层以及应用层，具体如下所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302311.png" alt="OSI七层网络模型" loading="lazy"></p>
+<ul>
+<li><strong>物理层</strong></li>
+</ul>
+<p>物理层只需要考虑如何发送 0 和 1，以及接收端如何识别从而完成比特流的传输，并不需要关心比特流的具体含义。除此以外还规定了网络中的一些电气特性。</p>
+<ul>
+<li><strong>数据链路层</strong></li>
+</ul>
+<p>单纯的 0 和 1 没有意义，数据链路层要将物理层传来的原始比特流转化为一个个独立的帧。并负责链路连接的建立、维护以及终止，同时还具备帧同步、差错控制和流量控制等功能。</p>
+<ul>
+<li><strong>网络层</strong></li>
+</ul>
+<p>网络层主要处理数据包从源节点到目标节点的传输与路由问题。也就是建立主机到主机之间的通信。</p>
+<ul>
+<li><strong>传输层</strong></li>
+</ul>
+<p>传输层负责提供可靠的端口到端口的数据传输服务。确保数据能够准确无误地从发送端传输到接收端。</p>
+<ul>
+<li><strong>会话层</strong></li>
+</ul>
+<p>主要负责管理用户会话，对应用程序之间的对话进行控制，包括对话的开始、结束以及数据交换过程。</p>
+<ul>
+<li><strong>表示层</strong></li>
+</ul>
+<p>表示层负责数据格式的转换，如设备固有格式与网络标准格式之间的转换，可以理解是充当“翻译官”的作用。</p>
+<ul>
+<li><strong>应用层</strong></li>
+</ul>
+<p>应用层是直接面向用户的一层，通过应用程序之间的交互完成特定的网络应用。</p>
+<h3 id="TCP-IP-四层模型"><a href="#TCP-IP-四层模型" class="headerlink" title="TCP&#x2F;IP 四层模型"></a>TCP&#x2F;IP 四层模型</h3><p>TCP&#x2F;IP 四层模型是对 OSI 七层模型的简化，它将网络功能划分为网络接口层、网际层、传输层和应用层，如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302347.png" alt="TCP&#x2F;IP四层模型" loading="lazy"></p>
+<ul>
+<li><strong>应用层</strong></li>
+</ul>
+<p>应用层直接与应用程序交互。常见的应用层协议有 HTTP、FTP、SMTP、DNS 等，不同种类的应用程序会根据自己的需要来选择应用层中不同的协议，如邮件传输应用可以选择 SMTP 协议。</p>
+<ul>
+<li><strong>传输层</strong></li>
+</ul>
+<p>提供可靠的端口到端口的数据传输服务，传输层中最重要的是 TCP 和 UDP 协议，TCP 提供面向连接的，可靠的服务。UDP 提供无连接的，不可靠但速度快的服务。</p>
+<ul>
+<li><strong>网络层</strong></li>
+</ul>
+<p>提供主机到主机之间的通信。网络层中最重要的是 IP 协议，IP 协议会给每个数据包加上 IP地址。</p>
+<ul>
+<li><strong>网络接口层</strong></li>
+</ul>
+<p>网络接口层包含了物理层和数据链路层，所以网络接口层既包括物理传输又包括链路的建立。</p>
+<blockquote>
+<p>OSI（Open System Interconnection）是国际标准化组织（ISO）制定的七层模型。</p>
+<p>TCP&#x2F;IP 四层模型参考 OSI 七层模型，简化为了四个层次。如下图所示。因此在应用中效率更高，成本更低。所以迅速发展起来并成为事实上的标准。</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302395.png" alt="两个模型的区别" loading="lazy"></p>
+<h2 id="网络数据的封装和解封装"><a href="#网络数据的封装和解封装" class="headerlink" title="网络数据的封装和解封装"></a>网络数据的封装和解封装</h2><p>在网络通信中，封装是指将上层协议的数据加上本层的协议头和协议尾，形成一个新的数据单元，然后再传递给下一层进行处理。</p>
+<p>而解封装则是封装的逆过程，即接收方将接收到的数据单元去掉本层的协议头和协议尾，提取出上层协议的数据，然后传递给上层进行处理。</p>
+<p>封装和解封装的过程是在不同的网络层次中依次进行的</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302437.png" alt="封装过程" loading="lazy"></p>
+<p><strong>应用层封装</strong>：应用程序生成的数据，如 HTTP 协议传输的网页数据、SMTP 协议传输的邮件数据等，此时数据被称为应用数据。应用层协议会根据自身需求对数据进行格式化，比如HTTP 会添加请求头或响应头，包含如请求方法、URL、响应状态码等信息。</p>
+<p><strong>传输层封装</strong>：应用数据到达传输层（如 TCP 或 UDP）。以 TCP 为例，TCP 会为数据添加TCP 头部，包含源端口号、目的端口号、序列号、确认号、控制位等信息。端口号用于标识应用程序，使接收端能将数据正确交付给对应的应用。UDP 头部相对简单，同样有源端口号和目的端口号，用于多路复用和分用。此时数据加上 TCP 或 UDP 头部后称为段（Segment）。</p>
+<p><strong>网络层封装</strong>：传输层的段到达网络层（如 IPv4 或 IPv6），网络层添加 IP 头部。IP 头部包含源 IP 地址、目的 IP 地址等关键信息，用于在不同网络间进行路由选择。添加 IP 头部后的数据称为数据包（Packet）。例如，当你访问网站时，你的设备会将 TCP 段封装在 IP 数据包中，目的 IP 地址为网站服务器的 IP。</p>
+<p><strong>数据链路层封装</strong>：网络层的数据包到达数据链路层（如以太网），数据链路层添加帧头和帧尾。以太网帧头包含源 MAC 地址、目的 MAC 地址等，帧尾包含循环冗余校验（CRC）值用于差错检测。此时的数据称为数据帧（Frame）。数据帧通过物理层转化为电信号或光信号在物理介质上传输。</p>
+<p>解封装是封装的逆过程，在接收端，数据从物理层开始，依次向上经过各网络层次，每一层去除相应头部信息，将数据还原为应用层能处理的形式，如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302482.png" alt="解封装过程" loading="lazy"></p>
+<p><strong>数据链路层解封装</strong>：物理层接收到电信号或光信号，转换为数据帧交给数据链路层。数据链路层检查帧头和帧尾，通过 CRC 校验确保数据传输无误后，去除帧头和帧尾，将数据包交给网络层。</p>
+<p><strong>网络层解封装</strong>：网络层接收到数据包，检查 IP 头部，根据目的 IP 地址判断是否是发给本机的。如果是，去除 IP 头部，将段交给传输层。</p>
+<p><strong>传输层解封装</strong>：传输层接收到段，根据 TCP 或 UDP 头部中的端口号，将数据交付给对应的应用程序，并去除 TCP 或 UDP 头部。此时数据还原为应用层数据，应用层程序即可处理这些数据。</p>
+<h1 id="硬件连接"><a href="#硬件连接" class="headerlink" title="硬件连接"></a>硬件连接</h1><h2 id="RJ45接口"><a href="#RJ45接口" class="headerlink" title="RJ45接口"></a>RJ45接口</h2><p><strong>RJ45</strong> 是 <strong>Registered Jack 45</strong> 的缩写，在计算机网络中 RJ45 是标准 8 芯模块接口的简称，RJ45由插头和插座组成，这两种元器件之间用网线相连。RJ45 插头如下图所示</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302543.png" alt="RJ45插头" loading="lazy"></p>
+<p>从外观上看，<strong>RJ45 插头</strong>呈矩形，外部是塑料外壳，<strong>内部中有 8 个金属触点，金属触点用于与 RJ45 插座进行电气连接</strong>。</p>
+<p>与 RJ45 插头对应在 <strong>RJ45 插座</strong>中同样有 <strong>8 个金属接触片，用于与 RJ45 插头相连</strong>。RJ45 插头前端的 8 个金属触点在插入插座时会与插座内的金属片紧密接触，从而实现信号的传输。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302598.png" alt="RJ45插座" loading="lazy"></p>
+<p>百兆网口和千兆网口都采用 RJ45 接口进行物理连接，不过，尽管外观看起来一模一样，但它们的传输能力却大不相同。对应的引脚使用情况也大不相同。</p>
+<p><strong>百兆 RJ45 接口</strong>有 8 个引脚，这 8 个引脚分别是</p>
+<table>
+<thead>
+<tr>
+<th align="center">引脚号</th>
+<th align="center">标识</th>
+<th align="center">中文名称</th>
+<th align="center">功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">TX+</td>
+<td align="center">发送数据 +</td>
+<td align="center">以太网差分发送信号的正端</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">TX-</td>
+<td align="center">发送数据 -</td>
+<td align="center">以太网差分发送信号的负端</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">RX+</td>
+<td align="center">接收数据 +</td>
+<td align="center">以太网差分接收信号的正端</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">NC</td>
+<td align="center">空脚</td>
+<td align="center">无电气连接，未使用</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">NC</td>
+<td align="center">空脚</td>
+<td align="center">无电气连接，未使用</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">RX-</td>
+<td align="center">接收数据 -</td>
+<td align="center">以太网差分接收信号的负端</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td align="center">NC</td>
+<td align="center">空脚</td>
+<td align="center">无电气连接，未使用</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">NC</td>
+<td align="center">空脚</td>
+<td align="center">无电气连接，未使用</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>差分信号</strong>：TX+&#x2F;-、RX+&#x2F;- 为成对的差分信号线，通过差分传输抗干扰，提升以太网数据传输的稳定性，这是 RJ45 网口的核心设计。</p>
+<p><strong>标准匹配</strong>：该定义符合<strong>T568B</strong>布线标准（民用 &#x2F; 工业场景最常用），与 T568A 标准仅线序排列不同，引脚功能一致。</p>
+<p><strong>空脚作用</strong>：4、5、7、8 脚为预留脚，部分工业级网口会将其用于供电（如 POE 供电），但常规以太网应用中均为 NC（空脚）。</p>
+</blockquote>
+<p><strong>千兆 RJ45 接口</strong>也有 8 个引脚，相比百兆以太网，千兆网口启用了全部 8 个引脚，分为 4 对差分线实现全双工高速传输</p>
+<table>
+<thead>
+<tr>
+<th align="center">引脚编号</th>
+<th align="center">名称</th>
+<th align="center">功能说明</th>
+<th align="center">传输方向</th>
+<th align="center">差分对分组</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">TX_D1+</td>
+<td align="center">Tranceive Data1+(发信号 +)</td>
+<td align="center">发送</td>
+<td align="center">第一对</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">TX_D1-</td>
+<td align="center">Tranceive Data1-(发信号 -)</td>
+<td align="center">发送</td>
+<td align="center">第一对</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">RX_D2+</td>
+<td align="center">Receive Data2+(收信号 +)</td>
+<td align="center">接收</td>
+<td align="center">第二对</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">BI_D3+</td>
+<td align="center">Bi-directional Data3+(双向信号)</td>
+<td align="center">双向</td>
+<td align="center">第三对</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">BI_D3-</td>
+<td align="center">Bi-directional Data3-(双向信号)</td>
+<td align="center">双向</td>
+<td align="center">第三对</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">RX_D2-</td>
+<td align="center">Receive Data2-(收信号 -)</td>
+<td align="center">接收</td>
+<td align="center">第二对</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td align="center">BI_D4+</td>
+<td align="center">Bi-directional Data4+(双向信号)</td>
+<td align="center">双向</td>
+<td align="center">第四对</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">BI_D4-</td>
+<td align="center">Bi-directional Data4-(双向信号)</td>
+<td align="center">双向</td>
+<td align="center">第四对</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>传输速率与引脚利用</strong>：百兆以太网（100BASE-TX）仅使用 1&#x2F;2（TX）、3&#x2F;6（RX）4 个引脚，而<strong>千兆以太网（1000BASE-T）启用全部 8 个引脚</strong>，通过 4 对差分线同时进行收发，实现 1Gbps 的传输速率。</p>
+<p><strong>双向引脚（BI）的作用</strong>：4&#x2F;5、7&#x2F;8 引脚为双向传输设计，在千兆模式下，这两对线会根据通信需求动态切换收发方向，配合数字信号处理（DSP）技术实现全双工通信。</p>
+<p><strong>差分传输特性</strong>：每对引脚（如 TX_D1+&#x2F;TX_D1-）均为差分信号线，通过两根线的电压差值传递信号，能有效抑制共模干扰，提升高速数据传输的稳定性，这是以太网物理层的核心设计。</p>
+<p><strong>布线标准兼容</strong>：该引脚定义仍遵循 T568A&#x2F;T568B 布线标准，线序排列与百兆网口一致，因此千兆网线可向下兼容百兆网口使用。</p>
+</blockquote>
+<h2 id="MAC-控制器"><a href="#MAC-控制器" class="headerlink" title="MAC 控制器"></a>MAC 控制器</h2><p>MAC 控制器全称为 Media Access Control(介质访问控制)。属于 <strong>OSI 第二层（数据链路层）</strong> 的一部分。</p>
+<blockquote>
+<p>MAC 控制器的主要功能是控制与 PHY 芯片的连接，它就像是一个“桥梁管理员”，负责管理数据在数据链路层和物理层之间的传输，确保数据能够顺利地在两个层次之间流动。</p>
+</blockquote>
+<p>MAC 控制器的主要功能包括：</p>
+<ol>
+<li><strong>以太网帧的封装与解析</strong><ul>
+<li>负责添加&#x2F;解析以太网帧头（目标 MAC、源 MAC、类型字段）</li>
+<li>校验并生成 CRC（FCS）</li>
+</ul>
+</li>
+<li><strong>数据收发控制</strong><ul>
+<li>从系统内存（DMA）读取数据，封装成以太网帧并发送</li>
+<li>接收来自 PHY 的数据并写入内存</li>
+</ul>
+</li>
+<li><strong>流量与缓冲管理</strong><ul>
+<li>发送&#x2F;接收 FIFO</li>
+<li>中断或轮询方式通知 CPU</li>
+<li>DMA 描述符管理（驱动层重点）</li>
+</ul>
+</li>
+<li><strong>链路层控制</strong><ul>
+<li>支持全双工 &#x2F; 半双工</li>
+<li>支持流控（PAUSE 帧）</li>
+<li>统计信息（丢包、冲突、错误计数等）</li>
+</ul>
+</li>
+<li><strong>与 PHY 的接口</strong><ul>
+<li>通过 <strong>MII &#x2F; RMII &#x2F; RGMII &#x2F; SGMII</strong> 等接口与 PHY 通信</li>
+<li>通过 <strong>MDIO&#x2F;MDC</strong> 配置和管理 PHY 芯片</li>
+</ul>
+</li>
+</ol>
+<h2 id="PHY-芯片"><a href="#PHY-芯片" class="headerlink" title="PHY 芯片"></a>PHY 芯片</h2><p>PHY 芯片全称为物理层芯片（Physical Layer chip）。PHY 芯片的主要任务就是<strong>将数字信号转换为适合在物理介质（如网线）中传输的模拟信号</strong>，然后<strong>将接收到的模拟信号再转换回数字信号</strong>，以便计算机能够识别和处理。</p>
+<p>PHY 的核心功能包括：</p>
+<ol>
+<li><strong>信号编码与解码</strong><ul>
+<li>100M：MLT-3、4B&#x2F;5B</li>
+<li>1000M：PAM-5</li>
+<li>自适应均衡、回波消除</li>
+</ul>
+</li>
+<li><strong>自动协商（Auto-Negotiation）</strong><ul>
+<li>协商速率（10M &#x2F; 100M &#x2F; 1000M）</li>
+<li>协商双工模式（半双工 &#x2F; 全双工）</li>
+</ul>
+</li>
+<li><strong>链路检测</strong><ul>
+<li>网线插拔检测</li>
+<li>Link Up &#x2F; Link Down 状态上报给 MAC</li>
+</ul>
+</li>
+<li><strong>时钟恢复与同步</strong><ul>
+<li>从接收到的信号中恢复时钟</li>
+<li>保证数据采样准确</li>
+</ul>
+</li>
+<li><strong>与 MAC 的管理接口</strong><ul>
+<li>使用 <strong>MDIO&#x2F;MDC</strong> 寄存器接口</li>
+<li>Linux 驱动中常见 <code>phy_read()</code> &#x2F; <code>phy_write()</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="网络变压器"><a href="#网络变压器" class="headerlink" title="网络变压器"></a>网络变压器</h2><p>网络变压器又称网络隔离变压器，以太网变压器等，网络变压器主要起到信号耦合，电气隔离和阻抗匹配的作用。位于 <strong>PHY 与 RJ45 接口之间</strong>，属于被动器件。</p>
+<p>网络变压器的主要作用包括：</p>
+<ol>
+<li><strong>电气隔离</strong><ul>
+<li>提供 1500V 以上的隔离能力</li>
+<li>防止浪涌、电位差损坏芯片</li>
+<li>满足以太网安规标准（如 IEEE 802.3）</li>
+</ul>
+</li>
+<li><strong>信号耦合</strong><ul>
+<li>将 PHY 输出的差分信号耦合到双绞线</li>
+<li>阻断直流分量，只传输交流信号</li>
+</ul>
+</li>
+<li><strong>阻抗匹配</strong><ul>
+<li>匹配 PHY 输出阻抗与网线（100Ω）</li>
+<li>减少反射，提高信号质量</li>
+</ul>
+</li>
+<li><strong>EMI 抑制</strong><ul>
+<li>配合共模电感降低电磁干扰</li>
+<li>提升抗干扰能力</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>很多 RJ45 接口内部 <strong>集成了网络变压器和共模电感</strong>，工程中常称为 <strong>“带灯网口”</strong>。</p>
+</blockquote>
+<h2 id="连接方式"><a href="#连接方式" class="headerlink" title="连接方式"></a>连接方式</h2><p>根据 CPU、MAC 和 PHY 的集成情况，又可以进一步细分为以下三种方式：</p>
+<p><strong>方式 1：CPU 内部集成了 MAC 和 PHY</strong></p>
+<p>在这种方式中，CPU 将 MAC 和 PHY 集成于自身内部。这种方式虽然可以减少外围硬件数量，但是 CPU 成本会显著提高，并且由于全部集成在 CPU 内部，灵活性较差。所以这种方式在实际应用中并不多见。</p>
+<p><strong>方式 2：CPU 内部集成 MAC，PHY 采用独立芯片</strong></p>
+<p>CPU 内部只集成 MAC 控制器，PHY 采用独立的芯片，这种方式的优势是可以根据适应场景灵活选择 PHY 芯片，也是<strong>目前主流的方式</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302643.png" alt="CPU 内部集成 MAC，PHY 采用独立芯片" loading="lazy"></p>
+<blockquote>
+<p>iTOP-RK3568 也是使用的这种方式，需要注意的是 iTOP-RK3568 开发板上的 RJ45 插座内部集成了网络变压器，如果使用的<br>RJ45 插座内部没有集成网络变压器，则需要使用单独网络变压器芯片。</p>
+</blockquote>
+<p><strong>方式 3：CPU 不集成 MAC 和 PHY，MAC 和 PHY 采用独立芯片或者集成芯片</strong></p>
+<p>在这种连接方式下，CPU 没有 MAC 和 PHY 的功能，也就是我们常说的 CPU 本身不支持网络功能。如果使用网络功能就需要通过其他接口转接。所以这种方式成本较高。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302704.png" alt="CPU 不集成 MAC 和 PHY，MAC 和 PHY 采用独立芯片或者集成芯片" loading="lazy"></p>
+<h2 id="PHY-接口"><a href="#PHY-接口" class="headerlink" title="PHY 接口"></a>PHY 接口</h2><p>在嵌入式网络开发中，最主流的方案如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302643.png" alt="CPU 内部集成 MAC，PHY 采用独立芯片" loading="lazy"></p>
+<p>通过框图可知，PHY 芯片的左侧连接了 MAC，右侧连接了 RJ45 插座。尤其可见 PHY 芯片起到了一个桥梁作用。</p>
+<p><strong>PHY 芯片与 MAC 控制器相连可以通过 MII，RMII，GMII，RGMII 和 MIDO 接口。</strong></p>
+<h3 id="MII-接口"><a href="#MII-接口" class="headerlink" title="MII 接口"></a>MII 接口</h3><p>MII 接口全称为 <strong>Media Independent Interface</strong>，即“介质独立接口”。</p>
+<p>MII 接口的传输速率为10Mbps 或 100Mbps，在 100Mbps 下时钟为 25M，在 10Mbps 下钟为 2.5M。硬件连接如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302758.png" alt="MII接口" loading="lazy"></p>
+<p>MII 接口一共需要 16 根信号线，含义如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">信号线类型</th>
+<th align="center">信号线名称</th>
+<th align="center">数量</th>
+<th align="center">描述</th>
+<th align="center">方向（MAC←→PHY）</th>
+<th align="center">核心作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>发送通道</strong></td>
+<td align="center">TX_CLK</td>
+<td align="center">1</td>
+<td align="center">发送时钟，由 PHY 产生</td>
+<td align="center">MAC ← PHY</td>
+<td align="center">发送数据的同步时钟（百兆下为 25MHz）</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">TX_EN</td>
+<td align="center">1</td>
+<td align="center">发送使能，高电平有效</td>
+<td align="center">MAC → PHY</td>
+<td align="center">指示 TXD [3:0] 上的数据有效</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">TXD[3:0]</td>
+<td align="center">4</td>
+<td align="center">发送数据总线</td>
+<td align="center">MAC → PHY</td>
+<td align="center">并行传输发送的以太网数据（4 位宽）</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">TX_ER</td>
+<td align="center">1</td>
+<td align="center">发送错误，高电平有效</td>
+<td align="center">MAC → PHY</td>
+<td align="center">指示发送过程中出现错误（如帧格式错误）</td>
+</tr>
+<tr>
+<td align="center"><strong>接收通道</strong></td>
+<td align="center">RX_CLK</td>
+<td align="center">1</td>
+<td align="center">接收时钟，由 PHY 产生</td>
+<td align="center">MAC ← PHY</td>
+<td align="center">接收数据的同步时钟（百兆下为 25MHz）</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">RX_DV</td>
+<td align="center">1</td>
+<td align="center">接收数据有效，高电平有效</td>
+<td align="center">MAC ← PHY</td>
+<td align="center">指示 RXD [3:0] 上的数据有效（替代 RX_EN）</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">RXD[3:0]</td>
+<td align="center">4</td>
+<td align="center">接收数据总线</td>
+<td align="center">MAC ← PHY</td>
+<td align="center">并行传输接收的以太网数据（4 位宽）</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">RX_ER</td>
+<td align="center">1</td>
+<td align="center">接收错误，高电平有效</td>
+<td align="center">MAC ← PHY</td>
+<td align="center">指示接收过程中出现错误（如 CRC 错误、帧过长）</td>
+</tr>
+<tr>
+<td align="center"><strong>冲突 &#x2F; 载波检测</strong></td>
+<td align="center">COL</td>
+<td align="center">1</td>
+<td align="center">冲突检测，高电平有效</td>
+<td align="center">MAC ← PHY</td>
+<td align="center">半双工模式下，指示总线上发生数据冲突</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">CRS</td>
+<td align="center">1</td>
+<td align="center">载波侦听，高电平有效</td>
+<td align="center">MAC ← PHY</td>
+<td align="center">半双工模式下，指示总线处于忙状态</td>
+</tr>
+</tbody></table>
+<h3 id="RMII-接口"><a href="#RMII-接口" class="headerlink" title="RMII 接口"></a>RMII 接口</h3><p>RMII 接口全称为 <strong>Reduced Media Independent Interface</strong>，即“简化媒体独立接口”，它是 MII 接口的简化版本。所以相较于 MII 接口，RMII 接口在数据的发送与接收方面减少了一半的信号线。硬件连接如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302795.png" alt="RMII接口" loading="lazy"></p>
+<p>RMII 接口一共需要 7 根信号线，含义如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">信号线名称</th>
+<th align="center">数量</th>
+<th align="center">方向（MAC ↔ PHY）</th>
+<th align="center">核心描述 &amp; 开发关键要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">REF_CLK</td>
+<td align="center">1 根</td>
+<td align="center">外部 → MAC + PHY</td>
+<td align="center">50MHz 固定参考时钟，<strong>收发数据唯一同步时钟</strong>（替代 MII 的 TX_CLK&#x2F;RX_CLK）；需同时供给 MAC 和 PHY，时钟源可选 PHY 内置晶振或外部晶振</td>
+</tr>
+<tr>
+<td align="center">TX_EN</td>
+<td align="center">1 根</td>
+<td align="center">MAC → PHY</td>
+<td align="center">发送使能，高电平有效；PHY 仅在该信号高电平时采样 TXD [1:0] 数据</td>
+</tr>
+<tr>
+<td align="center">TXD[1:0]</td>
+<td align="center">2 根</td>
+<td align="center">MAC → PHY</td>
+<td align="center">2 位并行发送数据总线；通过「2 位宽 × 50MHz」实现 100Mbps 速率，是 RMII 精简的核心设计</td>
+</tr>
+<tr>
+<td align="center">CRS_DV</td>
+<td align="center">1 根</td>
+<td align="center">PHY → MAC</td>
+<td align="center"><strong>复用信号</strong>：<br />全双工模式：仅作「RX_DV（接收数据有效）」<br />半双工模式：同时指示「CRS（载波侦听）」和「DV（数据有效）」</td>
+</tr>
+<tr>
+<td align="center">RXD[1:0]</td>
+<td align="center">2 根</td>
+<td align="center">PHY → MAC</td>
+<td align="center">2 位并行接收数据总线；MAC 仅在 CRS_DV 高电平时采样数据</td>
+</tr>
+</tbody></table>
+<h3 id="GMII-接口"><a href="#GMII-接口" class="headerlink" title="GMII 接口"></a>GMII 接口</h3><p>GMII 接口全称为 <strong>Gigabit Media Independent Interface</strong>，即“千兆介质无关接口”，它是为了满足千兆以太网的高速数据传输需求而设计的接口。在 10M&#x2F;100M&#x2F;1000M 下时钟分别是 2.5M，25M 和 125M。硬件连接如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302845.png" alt="GMII" loading="lazy"></p>
+<p>GMII 接口一共需要 25 根信号线，含义如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">信号名称</th>
+<th align="center">位宽 &#x2F; 数量</th>
+<th align="center">中文描述</th>
+<th align="center">信号方向</th>
+<th align="center">功能详解（开发核心）</th>
+<th align="center">速率适配说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">GTX_CLK</td>
+<td align="center">1 根</td>
+<td align="center">千兆发送时钟</td>
+<td align="center">MAC → PHY</td>
+<td align="center">千兆模式专属发送同步时钟，固定<strong>125MHz</strong>，MAC 基于此时钟发送数据，PHY 同步采样 TXD 数据</td>
+<td align="center">仅千兆 (1000M) 使用，核心时钟</td>
+</tr>
+<tr>
+<td align="center">TX_CLK</td>
+<td align="center">1 根</td>
+<td align="center">百兆发送时钟</td>
+<td align="center">MAC → PHY</td>
+<td align="center">兼容 10&#x2F;100M 速率的发送时钟，10M&#x3D;2.5MHz、100M&#x3D;25MHz</td>
+<td align="center">仅 10&#x2F;100M 模式使用，千兆模式无效（悬空）</td>
+</tr>
+<tr>
+<td align="center">TXD[7:0]</td>
+<td align="center">8 根</td>
+<td align="center">发送数据总线</td>
+<td align="center">MAC → PHY</td>
+<td align="center">8 位并行发送数据，GMII 的核心宽位宽设计</td>
+<td align="center">千兆 &#x2F; 百兆 &#x2F; 十兆全兼容，速率不同时钟不同</td>
+</tr>
+<tr>
+<td align="center">TX_EN</td>
+<td align="center">1 根</td>
+<td align="center">发送使能</td>
+<td align="center">MAC → PHY</td>
+<td align="center">高电平有效，指示 TXD [7:0] 上的数据有效，PHY 仅此时采样数据</td>
+<td align="center">全速率通用</td>
+</tr>
+<tr>
+<td align="center">TX_ER</td>
+<td align="center">1 根</td>
+<td align="center">发送错误指示</td>
+<td align="center">MAC → PHY</td>
+<td align="center">高电平有效，指示当前发送的数据帧存在格式错误</td>
+<td align="center">全速率通用</td>
+</tr>
+<tr>
+<td align="center">RX_CLK</td>
+<td align="center">1 根</td>
+<td align="center">接收时钟</td>
+<td align="center">PHY → MAC</td>
+<td align="center">接收同步时钟，千兆模式 &#x3D; 125MHz，百兆 &#x3D; 25MHz，十兆 &#x3D; 2.5MHz，<strong>由 PHY 从接收数据中提取并提供</strong>，MAC 同步采样 RXD 数据</td>
+<td align="center">全速率通用，核心接收时钟</td>
+</tr>
+<tr>
+<td align="center">RXD[7:0]</td>
+<td align="center">8 根</td>
+<td align="center">接收数据总线</td>
+<td align="center">PHY → MAC</td>
+<td align="center">8 位并行接收数据，GMII 的核心宽位宽设计</td>
+<td align="center">千兆 &#x2F; 百兆 &#x2F; 十兆全兼容</td>
+</tr>
+<tr>
+<td align="center">RX_DV</td>
+<td align="center">1 根</td>
+<td align="center">接收数据有效</td>
+<td align="center">PHY → MAC</td>
+<td align="center">高电平有效，指示 RXD [7:0] 上的数据有效，MAC 仅此时采样数据</td>
+<td align="center">全速率通用，替代 MII 的 RX_EN 命名</td>
+</tr>
+<tr>
+<td align="center">RX_ER</td>
+<td align="center">1 根</td>
+<td align="center">接收错误指示</td>
+<td align="center">PHY → MAC</td>
+<td align="center">高电平有效，指示当前接收的数据帧存在错误（CRC&#x2F;FCS 错误、帧长错误等）</td>
+<td align="center">全速率通用</td>
+</tr>
+<tr>
+<td align="center">CRS</td>
+<td align="center">1 根</td>
+<td align="center">载波侦听信号</td>
+<td align="center">PHY → MAC</td>
+<td align="center">仅<strong>半双工模式</strong>有效，高电平表示以太网总线忙，禁止 MAC 发送数据</td>
+<td align="center">全速率通用，全双工模式下该信号无效（拉低）</td>
+</tr>
+<tr>
+<td align="center">COL</td>
+<td align="center">1 根</td>
+<td align="center">冲突检测信号</td>
+<td align="center">PHY → MAC</td>
+<td align="center">仅<strong>半双工模式</strong>有效，高电平表示总线上发生数据碰撞，MAC 触发帧重传</td>
+<td align="center">全速率通用，全双工模式下无冲突，该信号无效</td>
+</tr>
+</tbody></table>
+<h3 id="RGMII-接口"><a href="#RGMII-接口" class="headerlink" title="RGMII 接口"></a>RGMII 接口</h3><p>RGMII 是 GMII 的简化版本。将引脚数量从 GMII 的 25 个减少至 RGMII 的 14 个。在10M&#x2F;100M&#x2F;1000M 下时钟分别是 2.5M，25M 和 125M。硬件连接如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302889.png" alt="RGMII" loading="lazy"></p>
+<p>RGMII 接口一共需要 14 根信号线，含义如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">信号名称</th>
+<th align="center">数量</th>
+<th align="center">方向（MAC ↔ PHY）</th>
+<th align="center">核心描述 &amp; 开发关键要点</th>
+<th align="center">速率适配</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">TXC</td>
+<td align="center">1 根</td>
+<td align="center">MAC → PHY</td>
+<td align="center">发送时钟，千兆模式固定<strong>125MHz</strong>；<strong>双边沿采样</strong>（上升沿 + 下降沿）是 RGMII 精简的核心</td>
+<td align="center">1000M&#x3D;125MHz100M&#x3D;25MHz10M&#x3D;2.5MHz</td>
+</tr>
+<tr>
+<td align="center">TX_CTL</td>
+<td align="center">1 根</td>
+<td align="center">MAC → PHY</td>
+<td align="center">发送控制信号，<strong>复用 TX_EN（发送使能）和 TX_ER（发送错误）</strong>；与 TXC 双边沿同步</td>
+<td align="center">全速率通用</td>
+</tr>
+<tr>
+<td align="center">TXD[3:0]</td>
+<td align="center">4 根</td>
+<td align="center">MAC → PHY</td>
+<td align="center">发送数据总线，4 位并行；<strong>双边沿采样</strong>，时钟每个沿都传输 1 位数据，等效 8 位带宽</td>
+<td align="center">全速率通用</td>
+</tr>
+<tr>
+<td align="center">RXC</td>
+<td align="center">1 根</td>
+<td align="center">PHY → MAC</td>
+<td align="center">接收时钟，千兆模式固定<strong>125MHz</strong>；由 PHY 提供，同样支持<strong>双边沿采样</strong></td>
+<td align="center">1000M&#x3D;125MHz100M&#x3D;25MHz10M&#x3D;2.5MHz</td>
+</tr>
+<tr>
+<td align="center">RX_CTL</td>
+<td align="center">1 根</td>
+<td align="center">PHY → MAC</td>
+<td align="center">接收控制信号，<strong>复用 RX_DV（接收有效）和 RX_ER（接收错误）</strong>；与 RXC 双边沿同步</td>
+<td align="center">全速率通用</td>
+</tr>
+<tr>
+<td align="center">RXD[3:0]</td>
+<td align="center">4 根</td>
+<td align="center">MAC → PHY</td>
+<td align="center">接收数据总线，4 位并行；<strong>双边沿采样</strong>，等效 8 位带宽</td>
+<td align="center">全速率通用</td>
+</tr>
+</tbody></table>
+<h3 id="MDIO-接口"><a href="#MDIO-接口" class="headerlink" title="MDIO 接口"></a>MDIO 接口</h3><p>MDIO 接口全称为 <strong>Management Data Input&#x2F;Output</strong>，即管理数据输入输出接口。</p>
+<p>主要功能是<strong>实现 MAC 控制器对 PHY 芯片的管理与控制</strong>，例如通过 MDIO 接口对 PHY 寄存器进行设置来配置工作速率；也能够通过读取 PHY 芯片的状态寄存器从而获取网口的状态。</p>
+<p>MDIO 接口属于<strong>同步串行半双工接口</strong>，由两根信号线构成，分别是：</p>
+<ul>
+<li>MDIO: 作为数据线，用于在 MAC 层和 PHY 层之间传输配置和管理数据。</li>
+<li>MDC：作为时钟线，为数据传输提供时钟同步。</li>
+</ul>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="RTL8211-PHY芯片"><a href="#RTL8211-PHY芯片" class="headerlink" title="RTL8211 PHY芯片"></a>RTL8211 PHY芯片</h3><p>在 iTOP-RK3568 开发板采用的是 RTL8211 这款 PHY 芯片。RTL8211 支持 10Mbps、100Mbps和 1000Mbps 的传输速率，并且具备自动协商功能，能够根据网络环境自动调整工作模式。</p>
+<p>通过 RTL8211 芯片数据手册中电路连接示意图可知，RTL8211 芯片通过 MDI 接口与 RJ45 接口。MAC 控制器通过 RGMII 接口和 MDIO 接口与 PHY 芯片连接。如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302950.png" alt="RTL8211" loading="lazy"></p>
+<p>对数据手册中的框图进行简化：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220302984.png" alt="RTL8211" loading="lazy"></p>
+<p>iTOP-RK3568 核心板有引出 RGMII 接口。如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303031.png" alt="RK3568核心板引出RGMII0" loading="lazy"></p>
+<p>iTOP-RK3568 核心板通过 RGMII 接口和 MDIO 接口与 RTL8211 芯片相连。原理图如下</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303086.png" alt="通过 RGMII 接口和 MDIO 接口与 RTL8211 芯片相连" loading="lazy"></p>
+<ul>
+<li>第 15，16，17，18 引脚分别对应 TXD3，TXD2，TXD1，TXD0。是发送引脚，方向从MAC 到 PHY。</li>
+<li>第 22，23，24，25，26 分别对应 RXD3，RXD2，RXD1，RXD0。是接收引脚，方向从PHY 到 MAC。</li>
+<li>第 20 脚为 TXC 引脚，发送时钟信号引脚。</li>
+<li>第 27 脚为 RXC 引脚，接收时钟信号引脚。</li>
+<li>第 26 脚为 RXCTL 引脚，接收控制信号引脚。</li>
+<li>第 13 和 14 脚为 MDIO 引脚。</li>
+<li>第 31 引脚为 INTB&#x2F;PMEB 引脚，如果不使用这样俩个功能，此引脚悬空。如果把 Page 0xd40，REG.22 bit[5]寄存器设置成 1，则为 PMEB 功能，如果设置成 0，为中断功能。</li>
+</ul>
+<p>RTL8211 通过 MDI 接口与 RJ45 插座相连，原理图如下：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303142.png" alt="RTL8211 通过 MDI 接口与 RJ45 插座相连" loading="lazy"></p>
+<p>其中第 1 到 10 脚是分别对应 MDI 接口的 MDIP0，MDIN0，MDIP1，MDIN1，MDIP2，MDIN2，MDIP3，MDIN3 引脚。</p>
+<p>MDI 接口是用于 PHY 芯片与网络变压器或者说是与 RJ45 插座相连的接口。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303199.png" alt="RJ45插座" loading="lazy"></p>
+<h1 id="PHY-寄存器"><a href="#PHY-寄存器" class="headerlink" title="PHY 寄存器"></a>PHY 寄存器</h1><p>在 802.3 规范中，对 PHY 芯片的前 16 个寄存器进行了规定。如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303258.png" alt="PHY 芯片的前 16 个寄存器" loading="lazy"></p>
+<p>在开发中和我们打交道最多是寄存器 0，寄存器 1。</p>
+<p><strong>寄存器 0 是控制寄存器</strong>：用于配置 PHY 芯片的工作模式和参数。可以通过控制寄存器设置芯片的传输速率（10Mbps、100Mbps 或 1000Mbps）、双工模式（全双工或半双工）以及自动协商功能的开启或关闭等。</p>
+<p><strong>寄存器 1 是状态寄存器</strong>：用于表示 PHY 芯片当前的工作状态。比如，通过状态寄存器可以查看是否已经成功连接到网络、是否检测到链路故障、当前的传输速率和双工模式等信息等。</p>
+<p><strong>寄存器 16 到 31 是扩展寄存器</strong>：寄存器 0 到 15 是 IEEE 802.3 规定的寄存器，不论使用哪个厂家的 PHY 芯片，寄存器 0 到 15 是一摸一样的，所以一般情况下，使用 Linux 中通用的 PHY 驱动即可驱动 PHY 芯片。但是不同厂家的 PHY 芯片可能有额外特性的功能，所以扩展寄存器就是给 PHY 厂家自由发挥的寄存器。也就是说只有用到这些特性功能时，才会涉及到扩展寄存器。</p>
+<h2 id="PHY-地址"><a href="#PHY-地址" class="headerlink" title="PHY 地址"></a>PHY 地址</h2><p>每个 PHY 寄存器都有唯一的地址，通过这些地址，我们可以准确的访问和操作相应的寄存器。iTOP-RK3568 开发板中 RTL8211 PHY 芯片的地址可以通过 22，27，26 脚来设置。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303305.png" alt="PHY Address Config" loading="lazy"></p>
+<p><strong>物理地址（MAC 地址）</strong></p>
+<p>物理地址，也称为 MAC 地址，是网络设备的唯一标识符。它由 48 位二进制数组成，通常用 12 位十六进制数表示，如 00:11:22:33:44:55。</p>
+<p><strong>IP 地址</strong></p>
+<p>IP 地址是网络层的地址，用于在网络中标识设备的逻辑位置。它分为 IPv4 和 IPv6 两种版本：</p>
+<ul>
+<li>IPv4 地址由 32 位二进制数组成，通常用点分十进制表示，如 192.168.1.1；</li>
+<li>IPv6 地址由 128 位二进制数组成。IP 地址的主要作用是实现不同网络之间的通信，通过 IP 地址可以将数据包从源网络路由到目标网络。</li>
+</ul>
+<p><strong>PHY 地址</strong></p>
+<p>PHY 地址是用于在一个网络中唯一标识 PHY 芯片的地址。在一个系统中，可能会有多个 PHY 芯片同时存在，通过 PHY 地址可以区分不同的 PHY 芯片，以便对它们进行单独的配置和管理。</p>
+<h2 id="PHY-芯片地址的确定"><a href="#PHY-芯片地址的确定" class="headerlink" title="PHY 芯片地址的确定"></a>PHY 芯片地址的确定</h2><p>以迅为 iTOP-RK3568 开发板为例，其采用的 RTL8211 PHY 芯片地址通过以下方式进行确定。</p>
+<p>打开 RTL8211 PHY 芯片的数据手册，如下图所示，22 26 27 引脚是配置 PHY 芯片的地址。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303372.png" alt="RTL8211 PHY" loading="lazy"></p>
+<p>又RK3568 底板原理图上 PHY 芯片这三个引脚是连接的如下：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303305.png" alt="PHY Address Config" loading="lazy"></p>
+<p>由上图可知，PHY 芯片的地址是 001，也就是 1。PHY 芯片通过硬件引脚来设置地址</p>
+<h2 id="操作-PHY-寄存器"><a href="#操作-PHY-寄存器" class="headerlink" title="操作 PHY 寄存器"></a>操作 PHY 寄存器</h2><p>首先，打开 iTOP-RK3568 开发板的调试串口，接着为开发板上电。待进入终端后，通过执行命令<code>cd /sys/bus/mdio_bus/devices</code>，进入开发板的<code>mdio_bus</code>总线设备目录。</p>
+<p>随后，再执行命令<code>cd stmmac-0:00/</code>，即可进入网卡 0 的设备，具体操作过程如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /sys/bus/mdio_bus/devices</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> stmmac-0:00/</span><br><span class="line"><span class="comment"># 查看各个寄存器的值</span></span><br><span class="line"><span class="built_in">cat</span> phy_registers</span><br><span class="line"><span class="comment"># 对 0 号寄存器的值进行修改，设置为0x40</span></span><br><span class="line"><span class="built_in">echo</span> 0x00 0x40 &gt; phy_registers</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="网络应用编程基础"><a href="#网络应用编程基础" class="headerlink" title="网络应用编程基础"></a>网络应用编程基础</h1><h2 id="字节序"><a href="#字节序" class="headerlink" title="字节序"></a>字节序</h2><p>小端模式：低位字节存在低地址，高位字节存在高地址。</p>
+<p>大端模式：高位字节存在低地址，低位字节存在高地址。</p>
+<h2 id="字节序转换函数"><a href="#字节序转换函数" class="headerlink" title="字节序转换函数"></a>字节序转换函数</h2><p>常见的字节序转换函数有四个，分别为 htonl、htons、ntohl、ntohs，每个函数的简要介绍如下表所示：</p>
+<blockquote>
+<p>它们的核心作用是解决不同主机与网络之间的字节序不兼容问题。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">函数名称</th>
+<th align="center">功能描述</th>
+<th align="center">数据类型</th>
+<th align="center">转换方向</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>htonl</code></td>
+<td align="center">将 32 位主机字节序转换为网络字节序</td>
+<td align="center"><code>uint32_t</code></td>
+<td align="center">主机 → 网络</td>
+</tr>
+<tr>
+<td align="center"><code>htons</code></td>
+<td align="center">将 16 位主机字节序转换为网络字节序</td>
+<td align="center"><code>uint16_t</code></td>
+<td align="center">主机 → 网络</td>
+</tr>
+<tr>
+<td align="center"><code>ntohl</code></td>
+<td align="center">将 32 位网络字节序转换为主机字节序</td>
+<td align="center"><code>uint32_t</code></td>
+<td align="center">网络 → 主机</td>
+</tr>
+<tr>
+<td align="center"><code>ntohs</code></td>
+<td align="center">将 16 位网络字节序转换为主机字节序</td>
+<td align="center"><code>uint16_t</code></td>
+<td align="center">网络 → 主机</td>
+</tr>
+</tbody></table>
+<p><code>uint32_t htonl(uint32_t hostlong)</code></p>
+<ul>
+<li>功能：用于将本地存储的 32 位整数转换为适合在网络上传输的格式（大端模式）。</li>
+<li>参数：32 位主机字节序整数。</li>
+<li>返回值：返回一个 32 位网络字节序整数。</li>
+</ul>
+<p><code>uint16_t htons(uint16_t hostshort)</code></p>
+<ul>
+<li>功能：用于将本地存储的 16 位整数（如端口号）转换为适合在网络上传输的格式。</li>
+<li>参数：16 位主机字节序整数。</li>
+<li>返回值：返回一个 16 位网络字节序整数。</li>
+</ul>
+<p><code>uint32_t ntohl(uint32_t netlong)</code></p>
+<ul>
+<li>功能：用于将从网络接收到的 32 位数据（如 IPv4 地址）转换为本地系统可以处理的格式。</li>
+<li>参数：32 位网络字节序整数。</li>
+<li>返回值：返回一个 32 位主机字节序整数。</li>
+</ul>
+<p><code>uint16_t ntohs(uint16_t netshort)</code></p>
+<ul>
+<li>功能：用于将从网络接收到的 16 位数据（如端口号）转换为本地系统可以处理的格式。</li>
+<li>参数：16 位网络字节序整数。</li>
+<li>返回值：返回一个 16 位主机字节序整数。</li>
+</ul>
+<p>例如在编写 TCP 和 UDP 代码的时候，需要用到端口号，例如 8080，这时候就要用到字节序的转换了，需要通过 htons 将 8080 从主机字节序转换为网络字节序，一个简单的示例程序如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">uint16_t</span> host_port = <span class="number">8080</span>; <span class="comment">// 主机端口号</span></span><br><span class="line">	<span class="type">uint16_t</span> net_port = htons(host_port); <span class="comment">// 转换为网络字节序</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Host Port: 0x%04X\n&quot;</span>, host_port);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Network Port: 0x%04X\n&quot;</span>, net_port);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="地址转换函数"><a href="#地址转换函数" class="headerlink" title="地址转换函数"></a>地址转换函数</h2><blockquote>
+<p>除了字节序需要转换之外 IP 地址也需要转换，IP 地址通常是以点分十进制（如 192.168.1.1）这一人类可读的形式下展示的，而在程序内部则需要以二进制形式进行存储和处理。</p>
+</blockquote>
+<p>在网络编程中，IP 地址转换函数有两个，分别是 <code>inet_pton</code> 和 <code>inet_ntop</code>，它们支持 IPv4 和IPv6 地址的转换，两个函数的简单介绍如下所示：</p>
+<p>这张表格展示了网络编程中用于 IP 地址格式转换的两个核心函数，它们同时支持 IPv4 和 IPv6 地址的转换。</p>
+<table>
+<thead>
+<tr>
+<th align="center">函数名称</th>
+<th align="center">功能描述</th>
+<th align="center">转换方向</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>inet_pton</code></td>
+<td align="center">将点分十进制（IPv4）或冒号十六进制（IPv6）的字符串格式 IP 地址，转换为网络字节序的二进制数据</td>
+<td align="center">字符串 → 二进制</td>
+</tr>
+<tr>
+<td align="center"><code>inet_ntop</code></td>
+<td align="center">将网络字节序的二进制 IP 地址，转换为点分十进制（IPv4）或冒号十六进制（IPv6）的字符串格式</td>
+<td align="center">二进制 → 字符串</td>
+</tr>
+</tbody></table>
+<h3 id="inet-pton"><a href="#inet-pton" class="headerlink" title="inet_pton()"></a>inet_pton()</h3><ul>
+<li>将字符串地址转换为二进制数据</li>
+<li>将点分十进制（IPv4）或冒号十六进制（IPv6）的 IP 地址字符串转换为网络字节序的二进制数据。</li>
+</ul>
+<p><code>inet_pton</code> 函数原型如下所示，成功时返回 1，如果 src 格式无效，返回 0，如果 af 不支持，返回-1。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">inet_pton</span><span class="params">(<span class="type">int</span> af, <span class="type">const</span> <span class="type">char</span> *src, <span class="type">void</span> *dst)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>具体的参数介绍如下所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数名称</th>
+<th align="center">描述</th>
+<th align="center">数据类型 &#x2F; 值范围</th>
+<th align="center">示例值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>af</code></td>
+<td align="center">指定地址族，用于区分 IPv4 或 IPv6 地址</td>
+<td align="center"><code>AF_INET</code>：IPv4<code>AF_INET6</code>：IPv6</td>
+<td align="center"><code>AF_INET</code>（IPv4）</td>
+</tr>
+<tr>
+<td align="center"><code>src</code></td>
+<td align="center">指向要转换的 IP 地址字符串的指针</td>
+<td align="center">字符串</td>
+<td align="center"><code>&quot;192.168.1.1&quot;</code></td>
+</tr>
+<tr>
+<td align="center"><code>dst</code></td>
+<td align="center">指向存储转换后二进制数据的缓冲区</td>
+<td align="center">二进制数据</td>
+<td align="center"><code>struct in_addr</code></td>
+</tr>
+</tbody></table>
+<p>示例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *ipv4 = <span class="string">&quot;192.168.1.1&quot;</span>;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">addr</span>;</span></span><br><span class="line">	<span class="keyword">if</span> (inet_pton(AF_INET, ipv4, &amp;addr) &lt;= <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Invalid IPv4 address\n&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Network byte order: 0x%x\n&quot;</span>, addr.s_addr);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="inet-ntop"><a href="#inet-ntop" class="headerlink" title="inet_ntop()"></a>inet_ntop()</h3><ul>
+<li>将二进制数据转换为字符串地址</li>
+<li><code>inet_ntop</code> 函数用于将网络字节序的二进制 IP 地址转换为人类可读的字符串形式（点分十进制或冒号十六进制）。</li>
+</ul>
+<p><code>inet_ntop</code> 的函数原型如下所示，运行成功时返回指向 dst 的指针，失败时返回 NULL 并设置 errno。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">char</span> *<span class="title function_">inet_ntop</span><span class="params">(<span class="type">int</span> af, <span class="type">const</span> <span class="type">void</span> *src, <span class="type">char</span> *dst, <span class="type">socklen_t</span> size)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>参数如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数名称</th>
+<th align="center">描述</th>
+<th align="center">数据类型 &#x2F; 值范围</th>
+<th align="center">示例值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>af</code></td>
+<td align="center">指定地址族，用于区分 IPv4 或 IPv6 地址</td>
+<td align="center"><code>AF_INET</code>：IPv4<code>AF_INET6</code>：IPv6</td>
+<td align="center"><code>AF_INET</code>（IPv4）</td>
+</tr>
+<tr>
+<td align="center"><code>src</code></td>
+<td align="center">指向存储二进制 IP 地址的缓冲区</td>
+<td align="center">二进制数据</td>
+<td align="center"><code>struct in_addr</code></td>
+</tr>
+<tr>
+<td align="center"><code>dst</code></td>
+<td align="center">指向存储转换后字符串形式 IP 地址的缓冲区</td>
+<td align="center">字符串</td>
+<td align="center"><code>char ip[INET_ADDRSTRLEN]</code></td>
+</tr>
+<tr>
+<td align="center"><code>size</code></td>
+<td align="center"><code>dst</code> 缓冲区的大小，确保足够容纳结果字符串</td>
+<td align="center"><code>socklen_t</code></td>
+<td align="center"><code>INET_ADDRSTRLEN</code> 或 <code>INET6_ADDRSTRLEN</code></td>
+</tr>
+</tbody></table>
+<p>示例代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">addr</span>;</span></span><br><span class="line">	addr.s_addr = <span class="number">0xC0A80101</span>; <span class="comment">// 网络字节序的 192.168.1.1</span></span><br><span class="line">	<span class="type">char</span> ip[INET_ADDRSTRLEN];</span><br><span class="line">	<span class="keyword">if</span> (inet_ntop(AF_INET, &amp;addr, ip, <span class="keyword">sizeof</span>(ip)) == <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;inet_ntop&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Dotted decimal: %s\n&quot;</span>, ip);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><p>UDP 的英文全称为 <strong>User Datagram Protocol</strong>，意为用户数据报协议，它是一种<strong>无连接</strong>的传输层协议，属于 TCP&#x2F;IP 协议栈的一部分。它提供了一种简单、轻量的数据传输方式，适用于对速度要求高但对可靠性要求较低的场景，例如如视频会议、在线游戏、语音通话等，这些场景对延迟敏感且能容忍偶尔的丢包。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303419.png" alt="UDP通信框架" loading="lazy"></p>
+<h3 id="UDP-函数"><a href="#UDP-函数" class="headerlink" title="UDP 函数"></a>UDP 函数</h3><table>
+<thead>
+<tr>
+<th align="center">函数名</th>
+<th align="center">功能描述</th>
+<th align="center">使用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>socket()</code></td>
+<td align="center">创建一个套接字（socket），作为网络通信的端点。</td>
+<td align="center">服务器和客户端都需要调用此函数，创建一个用于后续通信的句柄。</td>
+</tr>
+<tr>
+<td align="center"><code>bind()</code></td>
+<td align="center">将套接字绑定到指定的 IP 地址和端口号，使系统能将发送到该地址的数据交付给此套接字。</td>
+<td align="center">服务器必须调用，以绑定一个固定的监听端口，让客户端能找到它；客户端通常不需要显式调用。</td>
+</tr>
+<tr>
+<td align="center"><code>sendto()</code></td>
+<td align="center">向指定的目标 IP 地址和端口发送数据报，是 UDP 协议的核心发送接口。</td>
+<td align="center">客户端用它向服务器发送请求；服务器用它向客户端发送响应。</td>
+</tr>
+<tr>
+<td align="center"><code>recvfrom()</code></td>
+<td align="center">从网络接收数据报，并获取发送方的 IP 地址和端口信息。</td>
+<td align="center">服务器用它接收客户端的请求；客户端用它接收服务器的响应。</td>
+</tr>
+</tbody></table>
+<h4 id="sendto"><a href="#sendto" class="headerlink" title="sendto()"></a>sendto()</h4><p><code>sendto()</code> 是一个用于发送数据的系统调用，主要用于无连接的 UDP 协议。它允许程序将数据发送到指定的目标地址（即目标 IP 和端口）。与 <code>send()</code>不同，<code>sendto()</code>需要显式指定目标地址，因此非常适合无连接的通信。它的函数原型如下所示:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">sendto</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">const</span> <span class="type">void</span> *buf, <span class="type">size_t</span> len, <span class="type">int</span> flags, <span class="type">const</span> <span class="keyword">struct</span> sockaddr *dest_addr, <span class="type">socklen_t</span> addrlen)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>sockfd</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">套接字文件描述符，由 <code>socket()</code> 函数创建，是后续所有网络操作的句柄。</td>
+</tr>
+<tr>
+<td align="center"><code>buf</code></td>
+<td align="center"><code>const void *</code></td>
+<td align="center">指向要发送的数据缓冲区的指针，它是 <code>const</code> 类型，表示函数不会修改该缓冲区的内容。</td>
+</tr>
+<tr>
+<td align="center"><code>len</code></td>
+<td align="center"><code>size_t</code></td>
+<td align="center">数据缓冲区的长度，以字节为单位，告诉函数需要发送多少字节的数据。</td>
+</tr>
+<tr>
+<td align="center"><code>flags</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">发送标志，通常设为 <code>0</code>。可以设置特殊标志（如 <code>MSG_DONTROUTE</code> 表示不查路由表，<code>MSG_CONFIRM</code> 用于链路层确认），但在常规 UDP 通信中很少使用。</td>
+</tr>
+<tr>
+<td align="center"><code>dest_addr</code></td>
+<td align="center"><code>struct sockaddr *</code></td>
+<td align="center">指向目标地址结构体的指针，通常是 <code>struct sockaddr_in</code>（IPv4）或 <code>struct sockaddr_in6</code>（IPv6），包含了目标 IP 和端口信息。</td>
+</tr>
+<tr>
+<td align="center"><code>addrlen</code></td>
+<td align="center"><code>socklen_t</code></td>
+<td align="center">目标地址结构体的大小，以字节为单位，用于告诉函数 <code>dest_addr</code> 指向的结构体有多大。</td>
+</tr>
+</tbody></table>
+<p>成功会返回实际发送的字节数</p>
+<h4 id="recvfrom"><a href="#recvfrom" class="headerlink" title="recvfrom()"></a>recvfrom()</h4><p><code>recvfrom()</code>是一个用于接收数据的系统调用，主要用于无连接的 UDP 协议。它允许程序从指定的源地址（即发送方的 IP 和端口）接收数据包。与 <code>recv()</code>不同，<code>recvfrom()</code>可以获取发送方的地址信息，因此非常适合无连接的通信。它的函数原型如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">recvfrom</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">void</span> *buf, <span class="type">size_t</span> len, <span class="type">int</span> flags, <span class="keyword">struct</span> sockaddr *src_addr, <span class="type">socklen_t</span> *addrlen)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>该函数的各个参数介绍如下所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>sockfd</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">套接字文件描述符，由 <code>socket()</code> 函数创建，是网络操作的句柄。</td>
+</tr>
+<tr>
+<td align="center"><code>buf</code></td>
+<td align="center"><code>void *</code></td>
+<td align="center">指向存储接收数据的缓冲区的指针，函数会将收到的数据写入此缓冲区。</td>
+</tr>
+<tr>
+<td align="center"><code>len</code></td>
+<td align="center"><code>size_t</code></td>
+<td align="center">缓冲区的最大长度（字节）。若接收的数据超过此长度，多余部分会被截断。</td>
+</tr>
+<tr>
+<td align="center"><code>flags</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">接收标志，通常设为 <code>0</code>。可设置特殊标志（如 <code>MSG_PEEK</code> 仅查看数据不取出、<code>MSG_DONTWAIT</code> 非阻塞接收），常规 UDP 通信中较少使用。</td>
+</tr>
+<tr>
+<td align="center"><code>src_addr</code></td>
+<td align="center"><code>struct sockaddr *</code></td>
+<td align="center">指向存储发送方地址结构体的指针，通常为 <code>struct sockaddr_in</code>（IPv4）或 <code>struct sockaddr_in6</code>（IPv6），用于获取发送方的 IP 和端口。</td>
+</tr>
+<tr>
+<td align="center"><code>addrlen</code></td>
+<td align="center"><code>socklen_t *</code></td>
+<td align="center">指向发送方地址结构体大小的指针。调用前需初始化为结构体的预期大小，调用后会更新为实际的地址长度。</td>
+</tr>
+</tbody></table>
+<p>成功之后会返回实际接收到的字节数</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p><code>udp_client.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="comment">// 定义变量port用于存储端口号</span></span><br><span class="line">    <span class="type">int</span> port;</span><br><span class="line">    <span class="comment">// 定义变量fd用于存储套接字描述符</span></span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="comment">// 定义字符数组buf作为发送数据的缓冲区</span></span><br><span class="line">    <span class="type">char</span> buf[<span class="number">1024</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查命令行参数个数是否为3</span></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果参数个数不正确，输出使用示例提示信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;for example: ./app ip port\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1 表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将命令行参数中的端口号字符串转换为整数</span></span><br><span class="line">    port = atoi(argv[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建一个UDP套接字</span></span><br><span class="line">    <span class="comment">// AF_INET 表示使用IPv4协议</span></span><br><span class="line">    <span class="comment">// SOCK_DGRAM 表示这是一个UDP套接字</span></span><br><span class="line">    <span class="comment">// 0 表示使用默认协议</span></span><br><span class="line">    fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 检查套接字是否创建成功</span></span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果创建失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;socket fd error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1 表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化一个sockaddr_in结构体，用于存储目标服务器地址信息</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">addr</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="comment">// 设置地址族为IPv4</span></span><br><span class="line">    addr.sin_family = AF_INET;</span><br><span class="line">    <span class="comment">// 将端口号从主机字节序转换为网络字节序并赋值给addr.sin_port</span></span><br><span class="line">    addr.sin_port = htons(port);</span><br><span class="line">    <span class="comment">// 将命令行参数中的IP地址字符串转换为网络字节序的IP地址并赋值给addr.sin_addr.s_addr</span></span><br><span class="line">    <span class="comment">// 这里也可以使用inet_pton(AF_INET, argv[1], &amp;addr.sin_addr); ，但当前代码使用的inet_addr也是可行的</span></span><br><span class="line">    addr.sin_addr.s_addr = inet_addr(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将缓冲区buf清零，为后续接收数据做准备</span></span><br><span class="line">    <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    <span class="comment">// 进入无限循环，实现持续向服务器发送数据</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 从标准输入读取字符串到buf缓冲区</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, buf);</span><br><span class="line">        <span class="comment">// 通过UDP套接字向服务器发送buf中的数据</span></span><br><span class="line">        <span class="comment">// fd为套接字描述符</span></span><br><span class="line">        <span class="comment">// buf为要发送的数据</span></span><br><span class="line">        <span class="comment">// strlen(buf)为数据长度</span></span><br><span class="line">        <span class="comment">// 0表示默认的发送标志</span></span><br><span class="line">        <span class="comment">// (struct sockaddr*)&amp;addr为服务器地址</span></span><br><span class="line">        <span class="comment">// sizeof(addr)为服务器地址结构体的大小</span></span><br><span class="line">        sendto(fd, buf, <span class="built_in">strlen</span>(buf), <span class="number">0</span>, (<span class="keyword">struct</span> sockaddr*)&amp;addr, <span class="keyword">sizeof</span>(addr));</span><br><span class="line">        <span class="comment">// 将buf缓冲区清零，为下一次接收数据做准备</span></span><br><span class="line">        <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>udp_server.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="comment">// 定义变量port用于存储端口号</span></span><br><span class="line">    <span class="type">int</span> port;</span><br><span class="line">    <span class="comment">// 定义变量fd用于存储套接字描述符</span></span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="comment">// 定义字符数组buf作为接收数据的缓冲区</span></span><br><span class="line">    <span class="type">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="comment">// 定义变量ret用于存储函数返回值</span></span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line">    <span class="comment">// 定义变量len用于存储地址结构体的长度</span></span><br><span class="line">    <span class="type">int</span> len;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查命令行参数个数是否为3</span></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果参数个数不正确，输出使用示例提示</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;for example: ./app ip port\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1 表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将命令行参数中的端口号字符串转换为整数</span></span><br><span class="line">    port = atoi(argv[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建一个UDP套接字</span></span><br><span class="line">    <span class="comment">// AF_INET表示使用IPv4协议</span></span><br><span class="line">    <span class="comment">// SOCK_DGRAM表示这是一个UDP套接字</span></span><br><span class="line">    <span class="comment">// 0表示使用默认协议</span></span><br><span class="line">    fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 检查套接字是否创建成功</span></span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果创建失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;socket fd error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1 表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化本地地址结构体local_addr</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">local_addr</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="comment">// 初始化源地址结构体src_addr</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">src_addr</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="comment">// 设置本地地址的地址族为IPv4</span></span><br><span class="line">    local_addr.sin_family = AF_INET;</span><br><span class="line">    <span class="comment">// 将端口号从主机字节序转换为网络字节序并赋值给local_addr.sin_port</span></span><br><span class="line">    local_addr.sin_port = htons(port);</span><br><span class="line">    <span class="comment">// 将命令行参数中的IP地址字符串转换为网络字节序的IP地址并赋值给local_addr.sin_addr.s_addr</span></span><br><span class="line">    local_addr.sin_addr.s_addr = inet_addr(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将套接字fd绑定到local_addr</span></span><br><span class="line">    ret = bind(fd, (<span class="keyword">struct</span> sockaddr *)&amp;local_addr, <span class="keyword">sizeof</span>(local_addr));</span><br><span class="line">    <span class="comment">// 检查绑定是否成功</span></span><br><span class="line">    <span class="keyword">if</span> (ret == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果绑定失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;bind error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1 表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置src_addr结构体的长度</span></span><br><span class="line">    len = <span class="keyword">sizeof</span>(src_addr);</span><br><span class="line">    <span class="comment">// 将缓冲区buf清零，为接收数据做准备</span></span><br><span class="line">    <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进入无限循环，持续接收数据</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 从UDP套接字fd接收数据</span></span><br><span class="line">        <span class="comment">// buf是接收数据的缓冲区</span></span><br><span class="line">        <span class="comment">// sizeof(buf)是缓冲区大小</span></span><br><span class="line">        <span class="comment">// 0是接收标志</span></span><br><span class="line">        <span class="comment">// (struct sockaddr *)&amp;src_addr是源地址结构体指针</span></span><br><span class="line">        <span class="comment">// &amp;len用于返回源地址结构体的实际长度</span></span><br><span class="line">        recvfrom(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>, (<span class="keyword">struct</span> sockaddr *)&amp;src_addr, &amp;len);</span><br><span class="line">        <span class="comment">// 将源地址的IP地址转换为点分十进制格式并输出</span></span><br><span class="line">        <span class="comment">// inet_ntoa函数将网络字节序的IP地址转换为点分十进制字符串</span></span><br><span class="line">        <span class="comment">// ntohs函数将网络字节序的端口号转换为主机字节序</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ip:%s port:%d\n&quot;</span>, inet_ntoa(src_addr.sin_addr), ntohs(src_addr.sin_port));</span><br><span class="line">        <span class="comment">// 输出接收到的数据</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;buf is %s\n&quot;</span>, buf);</span><br><span class="line">        <span class="comment">// 将缓冲区buf清零，为下一次接收做准备</span></span><br><span class="line">        <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><p>TCP 的英文全称为 <strong>Transmission Control Protocol</strong>，意为传输控制协议，它是一种<strong>面向连接</strong>的传输层协议，与 UDP 一样，都属于TCP&#x2F;IP 协议栈的核心部分。</p>
+<p>TCP 通过建立可靠的端到端连接，确保数据在传输过程中的完整性、顺序性和无丢失性。它使用三次握手建立连接，并通过确认机制、重传机制以及流量控制等功能来保障数据传输的可靠性。</p>
+<p>因此，TCP 适用于对数据准确性要求较高的场景，例如文件传输、电子邮件、网页浏览等，这些场景中数据的完整性和顺序性至关重要，而对延迟的容忍度相对较高。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260113220303465.png" alt="TCP通信框架图" loading="lazy"></p>
+<ul>
+<li>TCP 客户端与 UDP 客户端相比，中间多了调用 connect 发起连接请求的这一步骤</li>
+<li>TCP服务器端与 UDP 服务器端相比，中间多了调用 listen 启动监听模式以及调用 accept 阻塞并等待客户端的请求这两个步骤<ul>
+<li>listen 会将套接字设置为被动模式以等待客户端的连接请求</li>
+<li>当客户端发起连接时，accept 会阻塞并等待，直到接收到请求后返回一个新的套接字文件描述符，该描述符专门用于与该客户端进行通信。</li>
+</ul>
+</li>
+</ul>
+<p>当客户端通过 connect 发起连接请求后，会与服务器进行 TCP 三次握手建立连接，连接建立后，客户端和服务器可以通过 write()和 read()进行数据的发送和接收。</p>
+<p>数据传输完成后，客户端和服务器分别通过 close()关闭连接。</p>
+<h3 id="TCP-函数"><a href="#TCP-函数" class="headerlink" title="TCP 函数"></a>TCP 函数</h3><h4 id="connect"><a href="#connect" class="headerlink" title="connect()"></a>connect()</h4><p>connect()是一个用于建立连接的系统调用，主要用于客户端。它通过指定服务器的地址（IP 地址和端口号），向服务器发起连接请求。对于 TCP 协议，connect()会触发 TCP 的三次握手过程；需要注意的是对于 UDP 协议，connect 同样可以使用，但是并不会真正建立连接，而是将目标地址绑定到套接字上，以便后续的通信过程。 它的函数原型如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">connect</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">const</span> <span class="keyword">struct</span> sockaddr *addr, <span class="type">socklen_t</span> addrlen)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>成功返回 0，失败则返回-1</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>sockfd</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">套接字文件描述符，由 <code>socket()</code> 函数创建，是后续所有网络操作的句柄。</td>
+</tr>
+<tr>
+<td align="center"><code>addr</code></td>
+<td align="center"><code>struct sockaddr *</code></td>
+<td align="center">指向目标地址结构体的指针，通常是 <code>struct sockaddr_in</code>（IPv4）或 <code>struct sockaddr_in6</code>（IPv6），包含了要绑定的 IP 地址和端口号。</td>
+</tr>
+<tr>
+<td align="center"><code>addrlen</code></td>
+<td align="center"><code>socklen_t</code></td>
+<td align="center">目标地址结构体的大小，以字节为单位，例如 <code>sizeof(struct sockaddr_in)</code>。</td>
+</tr>
+</tbody></table>
+<h4 id="listen"><a href="#listen" class="headerlink" title="listen()"></a>listen()</h4><p><code>listen()</code> 是一个用于将套接字设置为监听模式的系统调用，主要用于 TCP 服务器。它将套接字从主动模式（用于发起连接）转换为被动模式（用于接收连接请求）。调用 <code>listen()</code> 后，套接字会开始监听来自客户端的连接请求，并维护一个等待队列以管理这些请求。它的函数原型如下所示</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">listen</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">int</span> backlog)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>函数长度</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>sockfd</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">套接字文件描述符，由 <code>socket()</code> 创建并通过 <code>bind()</code> 绑定到特定地址和端口。</td>
+</tr>
+<tr>
+<td align="center"><code>backlog</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">等待连接队列的最大长度，代表可以同时排队等待处理的 TCP 连接请求数量。</td>
+</tr>
+</tbody></table>
+<p>成功后返回 0，失败则返回-1，</p>
+<h4 id="accept"><a href="#accept" class="headerlink" title="accept()"></a>accept()</h4><p><code>accept()</code> 是一个用于接收客户端连接请求的系统调用，主要用于 TCP 服务器。它从监听套接字的等待队列中取出一个连接请求，并创建一个新的套接字专门用于与该客户端通信。通过<code>accept()</code>，服务器能够处理多个客户端的连接请求。它的函数原型如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">accept</span><span class="params">(<span class="type">int</span> sockfd, <span class="keyword">struct</span> sockaddr *addr, <span class="type">socklen_t</span> *addrlen)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>该函数的各个参数介绍如下所示:</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数名</th>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>sockfd</code></td>
+<td align="center"><code>int</code></td>
+<td align="center">监听套接字文件描述符，由 <code>socket()</code> 创建并通过 <code>listen()</code> 设置为监听模式。</td>
+</tr>
+<tr>
+<td align="center"><code>addr</code></td>
+<td align="center"><code>struct sockaddr *</code></td>
+<td align="center">指向存储客户端地址结构体的指针（如 <code>struct sockaddr_in</code> 表示 IPv4 地址）。可以为 <code>NULL</code>，表示不需要获取客户端地址。</td>
+</tr>
+<tr>
+<td align="center"><code>addrlen</code></td>
+<td align="center"><code>socklen_t *</code></td>
+<td align="center">指向客户端地址结构体大小的指针。调用前需初始化为目标地址结构体的大小，调用后会更新为实际的地址长度。</td>
+</tr>
+</tbody></table>
+<p>成功后返回 0，失败则返回-1，</p>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><p><code>tcp_client.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="comment">// 定义变量port，用于存储从命令行获取的端口号</span></span><br><span class="line">    <span class="type">int</span> port;</span><br><span class="line">    <span class="comment">// 定义变量fd，用于存储套接字描述符</span></span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="comment">// 定义字符数组buf，作为数据缓冲区，用于存储从标准输入读取的数据以及接收的数据</span></span><br><span class="line">    <span class="type">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="comment">// 定义变量ret，用于存储函数的返回值</span></span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查命令行参数个数是否为3</span></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果参数个数不正确，输出使用示例提示信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;for example: ./app ip port\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将命令行参数中的端口号字符串转换为整数</span></span><br><span class="line">    port = atoi(argv[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建一个TCP套接字</span></span><br><span class="line">    <span class="comment">// AF_INET 表示使用IPv4协议</span></span><br><span class="line">    <span class="comment">// SOCK_STREAM 表示这是一个面向连接的字节流套接字，适用于TCP协议</span></span><br><span class="line">    <span class="comment">// 0 表示使用默认协议</span></span><br><span class="line">    fd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 检查套接字是否创建成功</span></span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果创建失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;socket fd error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化一个sockaddr_in结构体，用于存储服务器的地址信息</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">addr</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="comment">// 设置地址族为IPv4</span></span><br><span class="line">    addr.sin_family = AF_INET;</span><br><span class="line">    <span class="comment">// 将端口号从主机字节序转换为网络字节序并赋值给addr.sin_port</span></span><br><span class="line">    addr.sin_port = htons(port);</span><br><span class="line">    <span class="comment">// 将命令行参数中的IP地址字符串转换为网络字节序的IP地址并赋值给addr.sin_addr.s_addr</span></span><br><span class="line">    <span class="comment">// 这里也可以使用inet_pton(AF_INET, argv[1], &amp;addr.sin_addr); ，但当前代码使用的inet_addr也是可行的</span></span><br><span class="line">    addr.sin_addr.s_addr = inet_addr(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用connect函数连接到服务器</span></span><br><span class="line">    <span class="comment">// fd为套接字描述符</span></span><br><span class="line">    <span class="comment">// (struct sockaddr*)&amp;addr为服务器地址结构体指针</span></span><br><span class="line">    <span class="comment">// sizeof(addr)为服务器地址结构体的大小</span></span><br><span class="line">    ret = connect(fd, (<span class="keyword">struct</span> sockaddr*)&amp;addr, <span class="keyword">sizeof</span>(addr));</span><br><span class="line">    <span class="comment">// 检查连接是否成功</span></span><br><span class="line">    <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果连接失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;connect error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将缓冲区buf清零，为后续操作做准备</span></span><br><span class="line">    <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进入无限循环，实现持续向服务器发送数据</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 从标准输入读取字符串到buf缓冲区</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, buf);</span><br><span class="line">        <span class="comment">// 通过TCP套接字向服务器发送buf中的数据</span></span><br><span class="line">        <span class="comment">// 注意：这里使用sendto函数对于TCP套接字不太合适，通常TCP使用send函数</span></span><br><span class="line">        <span class="comment">// 正确的应该是send(fd, buf, strlen(buf), 0);</span></span><br><span class="line">        <span class="comment">// 但原代码使用sendto，这里按照原代码逻辑注释</span></span><br><span class="line">        sendto(fd, buf, <span class="built_in">strlen</span>(buf), <span class="number">0</span>, (<span class="keyword">struct</span> sockaddr*)&amp;addr, <span class="keyword">sizeof</span>(addr));</span><br><span class="line">        <span class="comment">// 将buf缓冲区清零，为下一次接收数据做准备</span></span><br><span class="line">        <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>tcp_server.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="comment">// 定义变量port，用于存储从命令行获取的端口号</span></span><br><span class="line">    <span class="type">int</span> port;</span><br><span class="line">    <span class="comment">// 定义变量fd，用于存储套接字描述符</span></span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="comment">// 定义字符数组buf，作为接收数据的缓冲区</span></span><br><span class="line">    <span class="type">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="comment">// 定义变量ret，用于存储函数的返回值</span></span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line">    <span class="comment">// 定义变量len，用于存储地址结构体的长度</span></span><br><span class="line">    <span class="type">int</span> len;</span><br><span class="line">    <span class="comment">// 定义变量acc_fd，用于存储接受连接后的新套接字描述符</span></span><br><span class="line">    <span class="type">int</span> acc_fd;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查命令行参数个数是否为3</span></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果参数个数不正确，输出使用示例提示信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;for example: ./app ip port\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将命令行参数中的端口号字符串转换为整数</span></span><br><span class="line">    port = atoi(argv[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建一个TCP套接字</span></span><br><span class="line">    <span class="comment">// AF_INET 表示使用IPv4协议</span></span><br><span class="line">    <span class="comment">// SOCK_STREAM 表示这是一个面向连接的字节流套接字，适用于TCP协议</span></span><br><span class="line">    <span class="comment">// 0 表示使用默认协议</span></span><br><span class="line">    fd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 检查套接字是否创建成功</span></span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果创建失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;socket fd error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化一个sockaddr_in结构体，用于存储本地地址信息</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">local_addr</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="comment">// 设置地址族为IPv4</span></span><br><span class="line">    local_addr.sin_family = AF_INET;</span><br><span class="line">    <span class="comment">// 将端口号从主机字节序转换为网络字节序并赋值给local_addr.sin_port</span></span><br><span class="line">    local_addr.sin_port = htons(port);</span><br><span class="line">    <span class="comment">// 将命令行参数中的IP地址字符串转换为网络字节序的IP地址并赋值给local_addr.sin_addr.s_addr</span></span><br><span class="line">    <span class="comment">// 这里也可以使用inet_pton(AF_INET, argv[1], &amp;local_addr.sin_addr); ，但当前代码使用的inet_addr也是可行的</span></span><br><span class="line">    local_addr.sin_addr.s_addr = inet_addr(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将套接字fd绑定到local_addr</span></span><br><span class="line">    ret = bind(fd, (<span class="keyword">struct</span> sockaddr*)&amp;local_addr, <span class="keyword">sizeof</span>(local_addr));</span><br><span class="line">    <span class="comment">// 检查绑定是否成功</span></span><br><span class="line">    <span class="keyword">if</span> (ret == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果绑定失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;bind error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置套接字为监听状态，等待客户端连接</span></span><br><span class="line">    <span class="comment">// 第二个参数10表示等待连接队列的最大长度</span></span><br><span class="line">    listen(fd, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化一个sockaddr_in结构体，用于存储客户端地址信息</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">src_addr</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="comment">// 定义变量src_len，用于存储客户端地址结构体的长度</span></span><br><span class="line">    <span class="type">socklen_t</span> src_len = <span class="keyword">sizeof</span>(src_addr);</span><br><span class="line">    <span class="comment">// 接受客户端的连接请求，返回一个新的套接字描述符acc_fd用于与客户端通信</span></span><br><span class="line">    acc_fd = accept(fd, (<span class="keyword">struct</span> sockaddr*)&amp;src_addr, &amp;src_len);</span><br><span class="line">    <span class="comment">// 检查接受连接是否成功</span></span><br><span class="line">    <span class="keyword">if</span> (acc_fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果接受连接失败，输出错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;accept error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将缓冲区buf清零，为后续接收数据做准备</span></span><br><span class="line">    <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进入无限循环，持续接收客户端发送的数据</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 从新套接字acc_fd接收数据到buf缓冲区</span></span><br><span class="line">        <span class="type">int</span> byte = recvfrom(acc_fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>, (<span class="keyword">struct</span> sockaddr*)&amp;src_addr, &amp;len);</span><br><span class="line">        <span class="comment">// 检查接收数据的字节数</span></span><br><span class="line">        <span class="keyword">if</span> (byte &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果接收到的数据字节数大于0，打印客户端的IP地址、端口号以及接收到的数据</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;ip:%s port:%d\n&quot;</span>, inet_ntoa(src_addr.sin_addr), ntohs(src_addr.sin_port));</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;buf is %s\n&quot;</span>, buf);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果接收到的数据字节数为0，表示客户端关闭了连接</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (byte == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;close\n&quot;</span>);</span><br><span class="line">            <span class="comment">// 跳出循环，结束数据接收</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果接收数据时发生错误</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;recvfrom error\n&quot;</span>);</span><br><span class="line">            <span class="comment">// 返回 -1，表示程序异常结束</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 将buf缓冲区清零，为下一次接收数据做准备</span></span><br><span class="line">        <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭与客户端通信的套接字acc_fd</span></span><br><span class="line">    close(acc_fd);</span><br><span class="line">    <span class="comment">// 关闭监听套接字fd</span></span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回0，表示程序正常结束</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="最小网络设备驱动"><a href="#最小网络设备驱动" class="headerlink" title="最小网络设备驱动"></a>最小网络设备驱动</h1><p>可借助 Linux 源码中现有的驱动作为模板，该驱动路径为 <code>drivers/net/loopback.c</code>。先将这个文件备份为 <code>loopback.c.bak</code>，随后新建一个 <code>loopback.c</code> 文件，在其中编写我们的最小网络设备驱动。</p>
+<p>驱动程序内容如下所示, 代码实现了一个简单的回环网络设备驱动程序</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含与内核相关的基础定义和函数，如内核数据类型、内核打印函数等</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/jiffies.h&gt;</span></span></span><br><span class="line"><span class="comment">// 提供与系统时间相关的jiffies变量和函数，jiffies记录系统启动以来的时钟滴答数</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="comment">// 用于构建可加载内核模块的相关定义和宏</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/interrupt.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含与中断处理相关的函数和数据结构</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/fs.h&gt;</span></span></span><br><span class="line"><span class="comment">// 文件系统相关的定义和函数，例如inode、file_operations等结构体的定义</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/types.h&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了各种内核数据类型，如 kuid_t、kgid_t等</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/string.h&gt;</span></span></span><br><span class="line"><span class="comment">// 提供字符串处理函数，如strcpy、strlen等</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/socket.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含套接字相关的定义和函数，用于网络编程</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/errno.h&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了各种错误码，用于错误处理</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/fcntl.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含文件控制相关的定义，如文件打开标志（O_RDONLY、O_WRONLY等）</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/in.h&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了与Internet地址相关的数据结构和常量，如sockaddr_in等</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/uaccess.h&gt;</span></span></span><br><span class="line"><span class="comment">// 提供用户空间和内核空间数据交互的函数，如copy_from_user、copy_to_user等</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/io.h&gt;</span></span></span><br><span class="line"><span class="comment">// 用于执行I/O操作，如ioread、iowrite等函数</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/inet.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含与Internet协议相关的函数和数据结构，如IP地址处理等</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/netdevice.h&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了网络设备相关的结构体和函数，是网络设备驱动开发的核心头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/etherdevice.h&gt;</span></span></span><br><span class="line"><span class="comment">// 提供以太网设备相关的辅助函数，如以太网地址操作等</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/skbuff.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含套接字缓冲区（sk_buff）相关的定义和函数，用于网络数据的处理和传输</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/ethtool.h&gt;</span></span></span><br><span class="line"><span class="comment">// 用于操作网络设备的ethtool功能，如获取和设置网络设备的各种参数</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;net/sock.h&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了套接字相关的数据结构和函数，是网络编程中套接字操作的基础</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;net/checksum.h&gt;</span></span></span><br><span class="line"><span class="comment">// 提供计算校验和的函数，用于网络数据的校验</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/if_ether.h&gt;</span>	<span class="comment">// For the statistics structure.</span></span></span><br><span class="line"><span class="comment">// 包含以太网相关的定义，如以太网帧格式、统计信息结构体等</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/if_arp.h&gt;</span>	<span class="comment">// For ARPHRD_ETHER</span></span></span><br><span class="line"><span class="comment">// 包含地址解析协议（ARP）相关的定义，如ARP硬件类型</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/ip.h&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了IP协议相关的数据结构，如iphdr结构体用于表示IP头部</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/tcp.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含TCP协议相关的数据结构和定义，如tcphdr结构体用于表示TCP头部</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/percpu.h&gt;</span></span></span><br><span class="line"><span class="comment">// 提供了与每个CPU变量相关的功能，允许为每个CPU分配独立的数据</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/net_tstamp.h&gt;</span></span></span><br><span class="line"><span class="comment">// 与网络时间戳相关的定义和函数，用于记录网络数据包的时间信息</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;net/net_namespace.h&gt;</span></span></span><br><span class="line"><span class="comment">// 包含网络命名空间相关的定义和函数，用于实现网络资源的隔离</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/u64_stats_sync.h&gt;</span></span></span><br><span class="line"><span class="comment">// 提供了用于同步64位统计数据的机制</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个全局变量，指向网络设备结构体，用于表示回环网络设备</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">net_device</span> *<span class="title">virnet_netdevice</span>;</span></span><br><span class="line"><span class="comment">// 定义一个全局变量，用于记录传输的字节数</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> bytes = <span class="number">0</span>;</span><br><span class="line"><span class="comment">// 定义一个全局变量，用于记录传输的数据包数</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> packets = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义网络设备的发送函数，负责处理网络设备的数据发送</span></span><br><span class="line"><span class="type">netdev_tx_t</span> <span class="title function_">loopback_netdevice_xmit</span><span class="params">(<span class="keyword">struct</span> sk_buff *skb, <span class="keyword">struct</span> net_device *dev)</span> &#123;</span><br><span class="line">    <span class="comment">// 停止网络设备的发送队列，防止新的数据被发送</span></span><br><span class="line">    netif_stop_queue(dev);</span><br><span class="line">    <span class="comment">// 更新发送的字节数，增加当前skb的长度</span></span><br><span class="line">    bytes += skb-&gt;len;</span><br><span class="line">    <span class="comment">// 更新发送的数据包数，增加1</span></span><br><span class="line">    packets++;</span><br><span class="line">    <span class="comment">// 根据设备类型设置skb的协议类型</span></span><br><span class="line">    skb-&gt;protocol = eth_type_trans(skb, dev);</span><br><span class="line">    <span class="comment">// 将接收到的skb传递给网络设备的接收函数处理</span></span><br><span class="line">    <span class="keyword">if</span> (netif_rx(skb) == NET_RX_SUCCESS) &#123;</span><br><span class="line">        <span class="comment">// 如果接收成功，打印成功信息</span></span><br><span class="line">        printk(<span class="string">&quot;NET_RX_SUCCESS\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 唤醒网络设备的发送队列，允许继续发送数据</span></span><br><span class="line">    netif_wake_queue(dev);</span><br><span class="line">    <span class="comment">// 返回发送成功的标志</span></span><br><span class="line">    <span class="keyword">return</span> NETDEV_TX_OK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义获取网络设备统计信息的函数</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">loopback_get_stats64</span><span class="params">(<span class="keyword">struct</span> net_device *dev, <span class="keyword">struct</span> rtnl_link_stats64 *stats)</span> &#123;</span><br><span class="line">    <span class="comment">// 设置发送的字节数统计信息</span></span><br><span class="line">    stats-&gt;tx_bytes = bytes;</span><br><span class="line">    <span class="comment">// 设置接收的字节数统计信息，这里回环设备发送和接收字节数相同</span></span><br><span class="line">    stats-&gt;rx_bytes = bytes;</span><br><span class="line">    <span class="comment">// 设置发送的数据包数统计信息</span></span><br><span class="line">    stats-&gt;tx_packets = packets;</span><br><span class="line">    <span class="comment">// 设置接收的数据包数统计信息，这里回环设备发送和接收数据包数相同</span></span><br><span class="line">    stats-&gt;rx_packets = packets;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义网络设备操作集结构体，包含网络设备的各种操作函数指针</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">net_device_ops</span> <span class="title">loopback_ops</span> =</span> &#123;</span><br><span class="line">   .ndo_start_xmit = loopback_netdevice_xmit,</span><br><span class="line">    <span class="comment">// 指向数据发送函数</span></span><br><span class="line">   .ndo_get_stats64 = loopback_get_stats64,</span><br><span class="line">    <span class="comment">// 指向获取统计信息函数</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义网络设备头部操作集结构体，包含创建网络头部的函数指针</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">header_ops</span> <span class="title">loopback_header_ops</span> =</span> &#123;</span><br><span class="line">   .create = eth_header,</span><br><span class="line">    <span class="comment">// 指向创建以太网头部的函数</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义网络设备的设置函数，用于初始化网络设备的属性</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">loopback_setup</span><span class="params">(<span class="keyword">struct</span> net_device *dev)</span> &#123;</span><br><span class="line">    <span class="comment">// 设置网络设备的最大传输单元（MTU）为64KB</span></span><br><span class="line">    dev-&gt;mtu = <span class="number">64</span> * <span class="number">1024</span>;</span><br><span class="line">    <span class="comment">// 设置网络设备的类型为回环设备</span></span><br><span class="line">    dev-&gt;type = ARPHRD_LOOPBACK;</span><br><span class="line">    <span class="comment">// 设置网络设备的标志，添加回环设备标志</span></span><br><span class="line">    dev-&gt;flags |= IFF_LOOPBACK;</span><br><span class="line">    <span class="comment">// 清除一些特定的私有标志</span></span><br><span class="line">    dev-&gt;priv_flags &amp;= ~(IFF_XMIT_DST_RELEASE | IFF_XMIT_DST_RELEASE_PERM);</span><br><span class="line">    <span class="comment">// 设置网络设备的特性，添加回环特性</span></span><br><span class="line">    dev-&gt;features = NETIF_F_LOOPBACK;</span><br><span class="line">    <span class="comment">// 设置网络设备的头部操作集</span></span><br><span class="line">    dev-&gt;header_ops = &amp;loopback_header_ops;</span><br><span class="line">    <span class="comment">// 设置网络设备的操作集</span></span><br><span class="line">    dev-&gt;netdev_ops = &amp;loopback_ops;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义网络设备初始化函数，在网络命名空间初始化时被调用</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">loopback_net_init</span><span class="params">(<span class="keyword">struct</span> net *net)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line">    <span class="comment">// 分配一个网络设备结构体，指定设备名称格式和初始化函数</span></span><br><span class="line">    virnet_netdevice = alloc_netdev(<span class="number">0</span>, <span class="string">&quot;loopback%d&quot;</span>, NET_NAME_UNKNOWN, loopback_setup);</span><br><span class="line">    <span class="comment">// 将分配的网络设备设置为网络命名空间的回环设备</span></span><br><span class="line">    net-&gt;loopback_dev = virnet_netdevice;</span><br><span class="line">    <span class="comment">// 注册网络设备</span></span><br><span class="line">    ret = register_netdev(virnet_netdevice);</span><br><span class="line">    <span class="comment">// 如果注册失败</span></span><br><span class="line">    <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 打印注册错误信息</span></span><br><span class="line">        printk(<span class="string">&quot;register_netdev error\n&quot;</span>);</span><br><span class="line">        <span class="comment">// 释放分配的网络设备结构体</span></span><br><span class="line">        free_netdev(virnet_netdevice);</span><br><span class="line">        <span class="comment">// 返回错误码</span></span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 初始化成功，返回0</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义网络设备退出函数，在网络命名空间退出时被调用</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">loopback_net_exit</span><span class="params">(<span class="keyword">struct</span> net *net)</span> &#123;</span><br><span class="line">    <span class="comment">// 获取网络命名空间中的回环设备</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">net_device</span> *<span class="title">dev</span> =</span> net-&gt;loopback_dev;</span><br><span class="line">    <span class="comment">// 注销网络设备</span></span><br><span class="line">    unregister_netdev(dev);</span><br><span class="line">    <span class="comment">// 释放分配的网络设备结构体</span></span><br><span class="line">    free_netdev(virnet_netdevice);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义网络命名空间操作结构体，包含网络命名空间初始化和退出函数指针</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pernet_operations</span> <span class="title">loopback_net_ops</span> =</span> &#123;</span><br><span class="line">   .init = loopback_net_init,</span><br><span class="line">    <span class="comment">// 指向网络命名空间初始化函数</span></span><br><span class="line">   .<span class="built_in">exit</span> = loopback_net_exit,</span><br><span class="line">    <span class="comment">// 指向网络命名空间退出函数</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="移植-RTL8723DU-wifi-驱动"><a href="#移植-RTL8723DU-wifi-驱动" class="headerlink" title="移植 RTL8723DU(wifi)驱动"></a>移植 RTL8723DU(wifi)驱动</h1><p>将厂家提供的代码解压后，解压后修改Makefile</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">CONFIG_MULTIDRV = n</span><br><span class="line">CONFIG_RTL8188E = n</span><br><span class="line">CONFIG_RTL8812A = n</span><br><span class="line">CONFIG_RTL8821A = n</span><br><span class="line">CONFIG_RTL8192E = n</span><br><span class="line">CONFIG_RTL8723B = n</span><br><span class="line">CONFIG_RTL8814A = n</span><br><span class="line">CONFIG_RTL8723C = n</span><br><span class="line">CONFIG_RTL8188F = n</span><br><span class="line">CONFIG_RTL8188GTV = n</span><br><span class="line">CONFIG_RTL8822B = n</span><br><span class="line">CONFIG_RTL8723D = y //因为适配的模块是 RTL8723du，所以此选项为 y</span><br><span class="line">CONFIG_RTL8821C = n</span><br><span class="line">CONFIG_RTL8710B = n</span><br><span class="line">CONFIG_RTL8192F = n</span><br><span class="line">CONFIG_RTL8822C = n</span><br><span class="line">CONFIG_RTL8814B = n</span><br><span class="line">CONFIG_RTL8723F = n</span><br><span class="line"><span class="comment">######################### Interface ###########################</span></span><br><span class="line">CONFIG_USB_HCI = y//模块为 usb 接口 设置为 y</span><br><span class="line">CONFIG_PCI_HCI = n</span><br><span class="line">CONFIG_SDIO_HCI = n</span><br><span class="line">CONFIG_GSPI_HCI = n</span><br><span class="line">CONFIG_PLATFORM_I386_PC = n//此选项修改为 n</span><br><span class="line">CONFIG_PLATFORM_ANDROID_X86 = n</span><br><span class="line">CONFIG_PLATFORM_ANDROID_INTEL_X86 = n</span><br><span class="line">CONFIG_PLATFORM_JB_X86 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_S3C2K4 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_PXA2XX = n</span><br><span class="line">CONFIG_PLATFORM_ARM_S3C6K4 = n</span><br><span class="line">CONFIG_PLATFORM_MIPS_RMI = n</span><br><span class="line">CONFIG_PLATFORM_RTD2880B = n</span><br><span class="line">CONFIG_PLATFORM_MIPS_AR9132 = n</span><br><span class="line">CONFIG_PLATFORM_RTK_DMP = n</span><br><span class="line">CONFIG_PLATFORM_MIPS_PLM = n</span><br><span class="line">CONFIG_PLATFORM_MSTAR389 = n</span><br><span class="line">CONFIG_PLATFORM_MT53XX = n</span><br><span class="line">CONFIG_PLATFORM_ARM_MX51_241H = n</span><br><span class="line">CONFIG_PLATFORM_FS_MX61 = n</span><br><span class="line">CONFIG_PLATFORM_ACTIONS_ATJ227X = n</span><br><span class="line">CONFIG_PLATFORM_TEGRA3_CARDHU = n</span><br><span class="line">CONFIG_PLATFORM_TEGRA4_DALMORE = n</span><br><span class="line">CONFIG_PLATFORM_ARM_TCC8900 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_TCC8920 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_TCC8920_JB42 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_TCC8930_JB42 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_RK2818 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_RK3066 = n</span><br><span class="line">CONFIG_PLATFORM_ARM_RK3568 = y //新增此选项设置为 y</span><br><span class="line"></span><br><span class="line">//将下面的 3188 改成 3568</span><br><span class="line">CONFIG_PLATFORM_ARM_RK3188 = nifeq (<span class="variable">$(CONFIG_PLATFORM_ARM_RK3568)</span>, y)</span><br><span class="line">EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -DCONFIG_PLATFORM_ANDROID</span><br><span class="line">-DCONFIG_PLATFORM_ROCKCHIPS</span><br><span class="line"><span class="comment"># default setting for Power control</span></span><br><span class="line"><span class="comment">#EXTRA_CFLAGS += -DRTW_ENABLE_WIFI_CONTROL_FUNC</span></span><br><span class="line"><span class="keyword">ifeq</span> (<span class="variable">$(CONFIG_SDIO_HCI)</span>, y)</span><br><span class="line">EXTRA_CFLAGS += -DRTW_SUPPORT_PLATFORM_SHUTDOWN</span><br><span class="line"><span class="keyword">endif</span></span><br><span class="line"><span class="comment"># default setting for Special function</span></span><br><span class="line">ARCH := arm64 //修改为 arm64</span><br><span class="line">CROSS_COMPILE :=</span><br><span class="line">/home/topeet/rk356x_linux/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-</span><br><span class="line">gnu/bin/aarch64-linux-gnu-</span><br><span class="line">KSRC := /home/topeet/rk356x_linux/kernel</span><br><span class="line">MODULE_NAME := wlan //模块名称</span><br><span class="line"><span class="keyword">endif</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>make</code>命令生成<code>wlan.ko</code>文件</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2601133/">https://even629.com/posts/2601133/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80"><span class="toc-text">网络通信基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE"><span class="toc-text">网络协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-IP-%E5%8D%8F%E8%AE%AE"><span class="toc-text">TCP&#x2F;IP 协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UDP-%E5%8D%8F%E8%AE%AE"><span class="toc-text">UDP 协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DNS-%E5%8D%8F%E8%AE%AE"><span class="toc-text">DNS 协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DHCP-%E5%8D%8F%E8%AE%AE"><span class="toc-text">DHCP 协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FTP-%E5%8D%8F%E8%AE%AE"><span class="toc-text">FTP 协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP-HTTPS-%E5%8D%8F%E8%AE%AE"><span class="toc-text">HTTP&#x2F;HTTPS 协议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E8%BE%93%E4%BB%8B%E8%B4%A8"><span class="toc-text">传输介质</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BA%BF%E7%A7%8D%E7%B1%BB"><span class="toc-text">网线种类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BA%BF%E5%88%B6%E4%BD%9C%E6%A0%87%E5%87%86"><span class="toc-text">网线制作标准</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#T568A"><span class="toc-text">T568A</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#T568B"><span class="toc-text">T568B</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B"><span class="toc-text">网络模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#OSI-%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B"><span class="toc-text">OSI 七层模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-IP-%E5%9B%9B%E5%B1%82%E6%A8%A1%E5%9E%8B"><span class="toc-text">TCP&#x2F;IP 四层模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%B0%81%E8%A3%85%E5%92%8C%E8%A7%A3%E5%B0%81%E8%A3%85"><span class="toc-text">网络数据的封装和解封装</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E8%BF%9E%E6%8E%A5"><span class="toc-text">硬件连接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RJ45%E6%8E%A5%E5%8F%A3"><span class="toc-text">RJ45接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MAC-%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-text">MAC 控制器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PHY-%E8%8A%AF%E7%89%87"><span class="toc-text">PHY 芯片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E5%8F%98%E5%8E%8B%E5%99%A8"><span class="toc-text">网络变压器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F"><span class="toc-text">连接方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PHY-%E6%8E%A5%E5%8F%A3"><span class="toc-text">PHY 接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MII-%E6%8E%A5%E5%8F%A3"><span class="toc-text">MII 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RMII-%E6%8E%A5%E5%8F%A3"><span class="toc-text">RMII 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GMII-%E6%8E%A5%E5%8F%A3"><span class="toc-text">GMII 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RGMII-%E6%8E%A5%E5%8F%A3"><span class="toc-text">RGMII 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MDIO-%E6%8E%A5%E5%8F%A3"><span class="toc-text">MDIO 接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RTL8211-PHY%E8%8A%AF%E7%89%87"><span class="toc-text">RTL8211 PHY芯片</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PHY-%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-text">PHY 寄存器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#PHY-%E5%9C%B0%E5%9D%80"><span class="toc-text">PHY 地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PHY-%E8%8A%AF%E7%89%87%E5%9C%B0%E5%9D%80%E7%9A%84%E7%A1%AE%E5%AE%9A"><span class="toc-text">PHY 芯片地址的确定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C-PHY-%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-text">操作 PHY 寄存器</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E5%BA%94%E7%94%A8%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80"><span class="toc-text">网络应用编程基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E8%8A%82%E5%BA%8F"><span class="toc-text">字节序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E8%8A%82%E5%BA%8F%E8%BD%AC%E6%8D%A2%E5%87%BD%E6%95%B0"><span class="toc-text">字节序转换函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2%E5%87%BD%E6%95%B0"><span class="toc-text">地址转换函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#inet-pton"><span class="toc-text">inet_pton()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inet-ntop"><span class="toc-text">inet_ntop()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDP"><span class="toc-text">UDP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#UDP-%E5%87%BD%E6%95%B0"><span class="toc-text">UDP 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sendto"><span class="toc-text">sendto()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#recvfrom"><span class="toc-text">recvfrom()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP"><span class="toc-text">TCP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%87%BD%E6%95%B0"><span class="toc-text">TCP 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#connect"><span class="toc-text">connect()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#listen"><span class="toc-text">listen()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#accept"><span class="toc-text">accept()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-text">示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%B0%8F%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8"><span class="toc-text">最小网络设备驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A7%BB%E6%A4%8D-RTL8723DU-wifi-%E9%A9%B1%E5%8A%A8"><span class="toc-text">移植 RTL8723DU(wifi)驱动</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '7c465a0c01a04c6cc6697d5806b1fcd7'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

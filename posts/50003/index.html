@@ -1,0 +1,1567 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AArch64 ASM | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="arm64 asm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AArch64 ASM">
+<meta property="og:url" content="https://even629.com/posts/50003/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="arm64 asm">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-09-28T07:25:13.000Z">
+<meta property="article:modified_time" content="2025-09-28T07:25:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="asm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/50003/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AArch64 ASM',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">AArch64 ASM</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-09-28T07:25:13.000Z" title="发表于 2025-09-28 15:25:13">2025-09-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-09-28T07:25:13.000Z" title="更新于 2025-09-28 15:25:13">2025-09-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/arm64/">arm64</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">6.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>22分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/50003/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-09-28</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<p><strong>ARM 常用寄存器</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/ARM%E5%AF%84%E5%AD%98%E5%99%A8.png" alt="ARM寄存器" loading="lazy"></p>
+<p><strong>指令分类</strong>：</p>
+<ol>
+<li>内存加载和存储指令</li>
+<li>多字节内存加载和存储</li>
+<li>算数和移位指令</li>
+<li>移位操作</li>
+<li>位操作指令</li>
+<li>条件操作</li>
+<li>跳转指令</li>
+<li>独占访存指令</li>
+<li>内存屏障指令</li>
+<li>异常处理指令</li>
+<li>系统寄存器访问指令</li>
+</ol>
+<h3 id="加载与存储指令"><a href="#加载与存储指令" class="headerlink" title="加载与存储指令"></a>加载与存储指令</h3><ol>
+<li>LDR</li>
+<li>STR</li>
+</ol>
+<h4 id="练习-1：ldr-指令"><a href="#练习-1：ldr-指令" class="headerlink" title="练习 1：ldr 指令"></a>练习 1：ldr 指令</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281510440.png" alt="练习1: ldr指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281510415.png" alt="练习1代码" loading="lazy"></p>
+<p>注意 lsl #3 中间不要有分号</p>
+<p>当扩展为 lsl 时，amount 只能为#0 或#3(ARM 文档定义)</p>
+<h4 id="练习-2：ldr-前变基模式和后变基模式"><a href="#练习-2：ldr-前变基模式和后变基模式" class="headerlink" title="练习 2：ldr 前变基模式和后变基模式"></a>练习 2：ldr 前变基模式和后变基模式</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281510825.png" alt="练习2" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281512954.png" alt="练习2代码" loading="lazy"></p>
+<h4 id="练习-3：str-的前变基和后变基模式"><a href="#练习-3：str-的前变基和后变基模式" class="headerlink" title="练习 3：str 的前变基和后变基模式"></a>练习 3：str 的前变基和后变基模式</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281513703.png" alt="练习3" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281513069.png" alt="练习3调试" loading="lazy"></p>
+<h4 id="ldr-标签-literal"><a href="#ldr-标签-literal" class="headerlink" title="ldr 标签(literal)"></a>ldr 标签(literal)</h4><p>读取<strong>PC+label</strong>的值</p>
+<h4 id="练习-4：ldr-伪指令"><a href="#练习-4：ldr-伪指令" class="headerlink" title="练习 4：ldr 伪指令"></a>练习 4：ldr 伪指令</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281513336.png" alt="练习4: ldr伪指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281514877.png" alt="练习4代码" loading="lazy"></p>
+<ul>
+<li>指令：每一条指令都对应一种 CPU 操作</li>
+<li>伪指令：对编译器发出的命令，它是在对源程序汇编期间由汇编程序处理的操作，它们可以完成如处理处理器选择，定义程序模式，定义数据，分配存储区，指示程序结束等功能，总之，可以分解为几条指令的集合</li>
+<li>ldr 指令既可以是大范围的地址读取伪指令，也可以是内存访问指令，而当它的第二个参数前面有“&#x3D;”时，表示伪指令，否则表示内存访问指令</li>
+<li>ldr 伪指令没有立即数访问限制</li>
+</ul>
+<p>ldr x6, MY_LABEL 是内存访问指令</p>
+<p>ldr x7, &#x3D;MY_LABEL 是 ldr 伪指令</p>
+<h4 id="练习-5：实现-memcpy-汇编"><a href="#练习-5：实现-memcpy-汇编" class="headerlink" title="练习 5：实现 memcpy 汇编"></a>练习 5：实现 memcpy 汇编</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281514480.png" alt="练习5" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281515539.png" alt="练习5代码" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281515126.png" alt="练习5代码及调试" loading="lazy"></p>
+<p>可以看到 0xffffffff 没有复制过去，这是因为起始地址没有四字节对齐</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281516499.png" alt="练习5代码" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281516985.png" alt="对齐起始地址" loading="lazy"></p>
+<h4 id="mov-指令"><a href="#mov-指令" class="headerlink" title="mov 指令"></a>mov 指令</h4><ol>
+<li>16 位立即数</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281516493.png" alt="mov指令" loading="lazy"></p>
+<h4 id="ldp-和-stp"><a href="#ldp-和-stp" class="headerlink" title="ldp 和 stp"></a>ldp 和 stp</h4><blockquote>
+<p>A32 指令集中提供<strong>LDM</strong>和<strong>STM</strong>来实现多字节内存加载和存储，到了 A64 指令集，不再提供 LDM 和 STM 指令，而是采用 LDP 和 STP 指令</p>
+</blockquote>
+<ul>
+<li>ldp 和 stp 可以一条指令加载和存储 16 个字节</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281516078.png" alt="LDP和STP" loading="lazy"></p>
+<h4 id="练习-6-memset"><a href="#练习-6-memset" class="headerlink" title="练习 6: memset"></a>练习 6: memset</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281516426.png" alt="练习6" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281517160.png" alt="练习6代码" loading="lazy"></p>
+<h4 id="练习-7：坑"><a href="#练习-7：坑" class="headerlink" title="练习 7：坑"></a>练习 7：坑</h4><ol>
+<li><p>加载一个很大的数值到通用寄存器，例如 0xffff_0000_ffff_ffff</p>
+</li>
+<li><p>加载一个寄存器的值，例如 sctrl_el1 寄存器</p>
+</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281517268.png" alt="SCTLR_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281517785.png" alt="练习7 坑2" loading="lazy"></p>
+<ol start="3">
+<li></li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281518147.png" alt="练习7：坑3" loading="lazy"></p>
+<ol start="4">
+<li></li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281518015.png" alt="练习7：坑4" loading="lazy"></p>
+<ol start="5">
+<li></li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281518564.png" alt="练习7：坑5" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281518390.png" alt="练习7：坑5调试" loading="lazy"></p>
+<p>注意使用 ldr 时，可能产生 literal pool, 最好用 adrp 指令</p>
+<h4 id="存储指令变种"><a href="#存储指令变种" class="headerlink" title="存储指令变种"></a>存储指令变种</h4><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>含义（全称）</th>
+<th>访问大小</th>
+<th>符号扩展</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LDR</strong></td>
+<td>Load Register</td>
+<td>32 位（W 寄存器）或 64 位（X 寄存器）</td>
+<td>无符号</td>
+</tr>
+<tr>
+<td><strong>LDRSW</strong></td>
+<td>Load Register Signed Word</td>
+<td>32 位 → 符号扩展到 64 位</td>
+<td>有符号</td>
+</tr>
+<tr>
+<td><strong>LDRB</strong></td>
+<td>Load Register Byte</td>
+<td>8 位 → 零扩展到 32&#x2F;64 位</td>
+<td>无符号</td>
+</tr>
+<tr>
+<td><strong>LDRSB</strong></td>
+<td>Load Register Signed Byte</td>
+<td>8 位 → 符号扩展到 32&#x2F;64 位</td>
+<td>有符号</td>
+</tr>
+<tr>
+<td><strong>LDRH</strong></td>
+<td>Load Register Halfword</td>
+<td>16 位 → 零扩展到 32&#x2F;64 位</td>
+<td>无符号</td>
+</tr>
+<tr>
+<td><strong>LDRSH</strong></td>
+<td>Load Register Signed Halfword</td>
+<td>16 位 → 符号扩展到 32&#x2F;64 位</td>
+<td>有符号</td>
+</tr>
+<tr>
+<td><strong>LDRQ</strong></td>
+<td>Load Register Quadword (NEON&#x2F;SIMD 寄存器)</td>
+<td>128 位（V 寄存器）</td>
+<td>无符号</td>
+</tr>
+<tr>
+<td><strong>STR</strong></td>
+<td>Store Register</td>
+<td>32 位或 64 位</td>
+<td>无符号</td>
+</tr>
+<tr>
+<td><strong>STRB</strong></td>
+<td>Store Register Byte</td>
+<td>8 位</td>
+<td>无符号</td>
+</tr>
+<tr>
+<td><strong>STRH</strong></td>
+<td>Store Register Halfword</td>
+<td>16 位</td>
+<td>无符号</td>
+</tr>
+</tbody></table>
+<p><strong>补充说明</strong></p>
+<ul>
+<li><strong>无符号加载 (LDR, LDRB, LDRH)</strong>：高位部分填充 <code>0</code>。</li>
+<li><strong>有符号加载 (LDRSB, LDRSH, LDRSW)</strong>：会进行符号扩展（最高位是 1 则扩展为 1）。</li>
+<li>如果访问和存储 4 个字节或 8 个字节都是用 ldr 和 str，只不过目标寄存器使用 wn 或者 xn</li>
+<li><code>STR</code> 系列指令不存在有符号版本，因为存储时“原封不动”写入内存，<strong>不会进行符号扩展、零扩展或任何填充操作</strong>，但要注意寄存器位宽，如 xn 和 wn 时不同的。</li>
+<li>AArch64 默认小端序（低地址存低字节）。</li>
+<li>还有一类<strong>原子加载&#x2F;存储指令</strong>（<code>LDAXR</code>、<code>STLXR</code>等）用于锁操作</li>
+</ul>
+<h3 id="算数与移位指令"><a href="#算数与移位指令" class="headerlink" title="算数与移位指令"></a>算数与移位指令</h3><p>pstate 处理器状态中四个条件操作码 NZCV</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281519910.png" alt="NZCV条件标志域" loading="lazy"></p>
+<h4 id="add-加法指令"><a href="#add-加法指令" class="headerlink" title="add 加法指令"></a>add 加法指令</h4><h5 id="普通的加法指令-add"><a href="#普通的加法指令-add" class="headerlink" title="普通的加法指令 add"></a>普通的加法指令 add</h5><ul>
+<li>使用寄存器的加法</li>
+<li>使用立即数的加法</li>
+<li>使用移位操作的加法</li>
+</ul>
+<h5 id="adds-指令-影响条件标志位-进位"><a href="#adds-指令-影响条件标志位-进位" class="headerlink" title="adds 指令-影响条件标志位(进位)"></a>adds 指令-影响条件标志位(进位)</h5><p>主要影响 C 标志位(无符号溢出)</p>
+<h4 id="sub-减法指令"><a href="#sub-减法指令" class="headerlink" title="sub 减法指令"></a>sub 减法指令</h4><h5 id="普通的减法指令"><a href="#普通的减法指令" class="headerlink" title="普通的减法指令"></a>普通的减法指令</h5><h5 id="subs-指令-影响条件标志位-C-标志位"><a href="#subs-指令-影响条件标志位-C-标志位" class="headerlink" title="subs 指令-影响条件标志位(C 标志位)"></a>subs 指令-影响条件标志位(C 标志位)</h5><h4 id="adc-指令-带进位的加法指令"><a href="#adc-指令-带进位的加法指令" class="headerlink" title="adc 指令(带进位的加法指令)"></a>adc 指令(带进位的加法指令)</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281520110.png" alt="ADC指令" loading="lazy"></p>
+<h4 id="sbc-指令-带进位的减法指令"><a href="#sbc-指令-带进位的减法指令" class="headerlink" title="sbc 指令(带进位的减法指令)"></a>sbc 指令(带进位的减法指令)</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281520218.png" alt="SBC指令" loading="lazy"></p>
+<p>Wd &#x3D; Wn - Wm-1+ C</p>
+<h4 id="cmp-比较指令"><a href="#cmp-比较指令" class="headerlink" title="cmp 比较指令"></a>cmp 比较指令</h4><blockquote>
+<p>比较两个数的大小，内部使用 subs 指令来实现，影响 C 标志位</p>
+</blockquote>
+<p>等同于</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUBS XZR, &lt;Xn&gt;, #&lt;imm&gt;</span><br></pre></td></tr></table></figure>
+
+<p>当 x1 和 x2 都为无符号数时</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmp x1, x2</span><br></pre></td></tr></table></figure>
+
+<p>x1-x2 &#x3D; x1+ ~x2+1(发生溢出)</p>
+<p>当 x1&gt;&#x3D; x2 时，C&#x3D;1</p>
+<p>当 x1&lt;x2 时 C&#x3D;0</p>
+<h4 id="练习-1-adds-和-cmp-指令的-C-条件标志位"><a href="#练习-1-adds-和-cmp-指令的-C-条件标志位" class="headerlink" title="练习 1 adds 和 cmp 指令的 C 条件标志位"></a>练习 1 adds 和 cmp 指令的 C 条件标志位</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281520095.png" alt="练习1：adds和cmp指令的C条件标志位" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281521890.png" alt="练习1代码" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>位</th>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>31</td>
+<td>N</td>
+<td>结果为负数</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Z</td>
+<td>结果为零</td>
+</tr>
+<tr>
+<td>29</td>
+<td>C</td>
+<td>无符号比较无借位（Carry）</td>
+</tr>
+<tr>
+<td>28</td>
+<td>V</td>
+<td>有符号溢出</td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281521034.png" alt="练习1调试" loading="lazy"></p>
+<h4 id="练习-2-cmp-和-sbc-指令"><a href="#练习-2-cmp-和-sbc-指令" class="headerlink" title="练习 2 cmp 和 sbc 指令"></a>练习 2 cmp 和 sbc 指令</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281521159.png" alt="练习2 cmp和sbc指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281522515.png" alt="练习2代码" loading="lazy"></p>
+<h4 id="移位操作"><a href="#移位操作" class="headerlink" title="移位操作"></a>移位操作</h4><ul>
+<li>lsl 逻辑左移</li>
+<li>lsr 逻辑右移</li>
+<li>asr 算数右移</li>
+<li>ror 循环右移</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281522183.png" alt="移位操作" loading="lazy"></p>
+<h4 id="按位与操作"><a href="#按位与操作" class="headerlink" title="按位与操作"></a>按位与操作</h4><ul>
+<li><strong>and</strong> 与操作</li>
+<li><strong>ands</strong> 带进位的与操作，影响 Z 标志位</li>
+</ul>
+<h4 id="按位或操作"><a href="#按位或操作" class="headerlink" title="按位或操作"></a>按位或操作</h4><ul>
+<li><strong>orr</strong> 或操作</li>
+<li><strong>eor</strong> 异或操作</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281522079.png" alt="异或" loading="lazy"></p>
+<h4 id="按位清除"><a href="#按位清除" class="headerlink" title="按位清除"></a>按位清除</h4><ul>
+<li><strong>bic</strong> 位清零指令</li>
+</ul>
+<p>不常见</p>
+<h4 id="练习-3：测试-ands-指令以及-Z-标志位"><a href="#练习-3：测试-ands-指令以及-Z-标志位" class="headerlink" title="练习 3：测试 ands 指令以及 Z 标志位"></a>练习 3：测试 ands 指令以及 Z 标志位</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281523308.png" alt="练习3：ands指令以及Z标志位" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281523754.png" alt="练习3代码" loading="lazy"></p>
+<h4 id="位段插入操作"><a href="#位段插入操作" class="headerlink" title="位段插入操作"></a>位段插入操作</h4><blockquote>
+<p>位段(bitfield)</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281525078.png" alt="位段插入操作" loading="lazy"></p>
+<h5 id="bfi-位段插入指令"><a href="#bfi-位段插入指令" class="headerlink" title="bfi 位段插入指令"></a><strong>bfi</strong> 位段插入指令</h5><blockquote>
+<p>bitfield insert</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281526528.png" alt="位段插入指令" loading="lazy"></p>
+<ul>
+<li><p><strong>Xd</strong>：目标寄存器（Destination）</p>
+</li>
+<li><p><strong>Xn</strong>：源寄存器（Source）</p>
+</li>
+<li><p><strong>lsb</strong>：<strong>Least Significant Bit</strong>，即 <strong>目标寄存器 Xd 中要开始插入的最低位位置索引</strong>（从 0 开始计数）。</p>
+</li>
+<li><p><strong>width</strong>：要插入的位宽（bit 数）。</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281526731.png" alt="bfi位段插入指令" loading="lazy"></p>
+<h5 id="ubfx-无符号数的位段提取指令"><a href="#ubfx-无符号数的位段提取指令" class="headerlink" title="ubfx 无符号数的位段提取指令"></a>ubfx 无符号数的位段提取指令</h5><h5 id="sbfx-有符号数的位段提取指令"><a href="#sbfx-有符号数的位段提取指令" class="headerlink" title="sbfx 有符号数的位段提取指令"></a>sbfx 有符号数的位段提取指令</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281526965.png" alt="sbfx有符号数的位段提取指令" loading="lazy"></p>
+<p>注意是从 0 开始计数</p>
+<h4 id="练习-4：测试-bitfield-指令"><a href="#练习-4：测试-bitfield-指令" class="headerlink" title="练习 4：测试 bitfield 指令"></a>练习 4：测试 bitfield 指令</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281527450.png" alt="练习4: 测试bitfield指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281528651.png" alt="练习4代码及调试" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281533783.png" alt="练习4调试" loading="lazy"></p>
+<h4 id="乘法和除法指令"><a href="#乘法和除法指令" class="headerlink" title="乘法和除法指令"></a>乘法和除法指令</h4><p>乘法：</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>MADD</strong></td>
+<td>Multiply-Add：<code>Xd = (Xn * Xm) + Xa</code></td>
+</tr>
+<tr>
+<td><strong>MNEG</strong></td>
+<td>Multiply-Negate：<code>Xd = -(Xn * Xm)</code></td>
+</tr>
+<tr>
+<td><strong>MSUB</strong></td>
+<td>Multiply-Subtract：<code>Xd = Xa - (Xn * Xm)</code></td>
+</tr>
+<tr>
+<td><strong>MUL</strong></td>
+<td>Multiply：<code>Xd = Xn * Xm</code>（低 64 位结果）</td>
+</tr>
+<tr>
+<td><strong>SMADDL</strong></td>
+<td>Signed Multiply-Add Long：32 位*32 位 → 64 位，加上加数</td>
+</tr>
+<tr>
+<td><strong>SMNEGL</strong></td>
+<td>Signed Multiply-Negate Long：32 位*32 位 → 64 位，取负</td>
+</tr>
+<tr>
+<td><strong>SMSUBL</strong></td>
+<td>Signed Multiply-Subtract Long：32 位*32 位 → 64 位，执行减法</td>
+</tr>
+<tr>
+<td><strong>SMULH</strong></td>
+<td>Signed Multiply returning High half：取 128 位结果的高 64 位（有符号）</td>
+</tr>
+<tr>
+<td><strong>SMULL</strong></td>
+<td>Signed Multiply Long：32 位*32 位 → 64 位</td>
+</tr>
+<tr>
+<td><strong>UMADDL</strong></td>
+<td>Unsigned Multiply-Add Long：无符号版本</td>
+</tr>
+<tr>
+<td><strong>UMNEGL</strong></td>
+<td>Unsigned Multiply-Negate Long：无符号版本</td>
+</tr>
+<tr>
+<td><strong>UMSUBL</strong></td>
+<td>Unsigned Multiply-Subtract Long：无符号版本</td>
+</tr>
+<tr>
+<td><strong>UMULH</strong></td>
+<td>Unsigned Multiply returning High half：取高 64 位（无符号）</td>
+</tr>
+<tr>
+<td><strong>UMULL</strong></td>
+<td>Unsigned Multiply Long：无符号 32 位*32 位 → 64 位</td>
+</tr>
+</tbody></table>
+<p>除法：</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SDIV</strong></td>
+<td>Signed Divide：有符号除法</td>
+</tr>
+<tr>
+<td><strong>UDIV</strong></td>
+<td>Unsigned Divide：无符号除法</td>
+</tr>
+</tbody></table>
+<h3 id="比较与跳转指令"><a href="#比较与跳转指令" class="headerlink" title="比较与跳转指令"></a>比较与跳转指令</h3><h4 id="练习-5：使用-bitfield-指令来读取寄存器"><a href="#练习-5：使用-bitfield-指令来读取寄存器" class="headerlink" title="练习 5：使用 bitfield 指令来读取寄存器"></a>练习 5：使用 bitfield 指令来读取寄存器</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281533866.png" alt="练习5" loading="lazy"></p>
+<blockquote>
+<p>注意 ubfx 这类指令只能对普通寄存器的值进行位域提取，不能直接提取系统寄存器，因此需要先用 msr 把系统寄存器存入通用寄存器</p>
+</blockquote>
+<p>读取系统寄存器(move register from system)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mrs x1, ID_AA64ISAR0_EL1</span><br></pre></td></tr></table></figure>
+
+<p>写入系统寄存器(move system from register)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msr ID_AA64ISAR0_EL1, x1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>⚠️ 但注意：很多 CPU 特性寄存器（如 <code>ID_AA64ISAR0_EL1</code>）是 <strong>只读的</strong>，所以 <code>MSR</code> 往这个寄存器写入通常会触发异常，不能随意修改。</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281534502.png" alt="练习5代码及调试" loading="lazy"></p>
+<h4 id="零计数指令-clz"><a href="#零计数指令-clz" class="headerlink" title="零计数指令 clz"></a>零计数指令 clz</h4><blockquote>
+<p>clz: 计算最高为 1 的比特位前面有几个 0</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281553353.png" alt="CLZ指令" loading="lazy"></p>
+<h4 id="比较指令"><a href="#比较指令" class="headerlink" title="比较指令"></a>比较指令</h4><h5 id="cmp"><a href="#cmp" class="headerlink" title="cmp"></a>cmp</h5><blockquote>
+<p>比较两个数</p>
+</blockquote>
+<p>cmp x1, x2</p>
+<p>x1-x2</p>
+<h5 id="cmn"><a href="#cmn" class="headerlink" title="cmn"></a>cmn</h5><blockquote>
+<p>负向比较</p>
+</blockquote>
+<p>cmn x1, x2</p>
+<p>x1+x2</p>
+<h5 id="条件操作后缀"><a href="#条件操作后缀" class="headerlink" title="条件操作后缀"></a>条件操作后缀</h5><table>
+<thead>
+<tr>
+<th>条件后缀</th>
+<th>含义</th>
+<th>标志</th>
+<th>条件码</th>
+<th>缩写说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EQ</td>
+<td>相等</td>
+<td>Z&#x3D;1</td>
+<td>0b0000</td>
+<td>Equal</td>
+</tr>
+<tr>
+<td>NE</td>
+<td>不相等</td>
+<td>Z&#x3D;0</td>
+<td>0b0001</td>
+<td>Not Equal</td>
+</tr>
+<tr>
+<td>CS&#x2F;HS</td>
+<td>无符号数大于或等于</td>
+<td>C&#x3D;1</td>
+<td>0b0010</td>
+<td>Carry Set &#x2F; Higher or Same</td>
+</tr>
+<tr>
+<td>CC&#x2F;LO</td>
+<td>无符号数小于</td>
+<td>C&#x3D;0</td>
+<td>0b0011</td>
+<td>Carry Clear &#x2F; Lower</td>
+</tr>
+<tr>
+<td>MI</td>
+<td>负数</td>
+<td>N&#x3D;1</td>
+<td>0b0100</td>
+<td>Minus</td>
+</tr>
+<tr>
+<td>PL</td>
+<td>正数或零</td>
+<td>N&#x3D;0</td>
+<td>0b0101</td>
+<td>Plus</td>
+</tr>
+<tr>
+<td>VS</td>
+<td>溢出</td>
+<td>V&#x3D;1</td>
+<td>0b0110</td>
+<td>Overflow Set</td>
+</tr>
+<tr>
+<td>VC</td>
+<td>未溢出</td>
+<td>V&#x3D;0</td>
+<td>0b0111</td>
+<td>Overflow Clear</td>
+</tr>
+<tr>
+<td>HI</td>
+<td>无符号数大于</td>
+<td>(C&#x3D;1) &amp;&amp; (Z&#x3D;0)</td>
+<td>0b1000</td>
+<td>Higher</td>
+</tr>
+<tr>
+<td>LS</td>
+<td>无符号数小于或等于</td>
+<td>(C&#x3D;0) ∨ (Z&#x3D;1)</td>
+<td>0b1001</td>
+<td>Lower or Same</td>
+</tr>
+<tr>
+<td>GE</td>
+<td>带符号数大于或等于</td>
+<td>N &#x3D; V</td>
+<td>0b1010</td>
+<td>Greater or Equal</td>
+</tr>
+<tr>
+<td>LT</td>
+<td>带符号数小于</td>
+<td>N ≠ V</td>
+<td>0b1011</td>
+<td>Less Than</td>
+</tr>
+<tr>
+<td>GT</td>
+<td>带符号数大于</td>
+<td>(Z&#x3D;0) &amp;&amp; (N&#x3D;V)</td>
+<td>0b1100</td>
+<td>Greater Than</td>
+</tr>
+<tr>
+<td>LE</td>
+<td>带符号数小于或等于</td>
+<td>(Z&#x3D;1) ∨ (N≠V)</td>
+<td>0b1101</td>
+<td>Less or Equal</td>
+</tr>
+<tr>
+<td>AL</td>
+<td>无条件执行</td>
+<td>–</td>
+<td>0b1110</td>
+<td>Always</td>
+</tr>
+<tr>
+<td>NV</td>
+<td>无条件执行</td>
+<td>–</td>
+<td>0b1111</td>
+<td>Never (保留，一般不用)</td>
+</tr>
+</tbody></table>
+<h4 id="练习-1：cmp-cmn-指令以及条件操作后缀"><a href="#练习-1：cmp-cmn-指令以及条件操作后缀" class="headerlink" title="练习 1：cmp&#x2F;cmn 指令以及条件操作后缀"></a>练习 1：cmp&#x2F;cmn 指令以及条件操作后缀</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281534431.png" alt="实验1：cmp&#x2F;cmn指令以及条件操作后缀" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281535847.png" alt="练习1代码及调试" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281535990.png" alt="练习1代码" loading="lazy"></p>
+<h4 id="NZCV-寄存器结构图"><a href="#NZCV-寄存器结构图" class="headerlink" title="NZCV 寄存器结构图"></a><strong>NZCV 寄存器结构图</strong></h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281535429.png" alt="NZCV寄存器结构图" loading="lazy"></p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">┌───┬───┬───┬───┐</span><br><span class="line">│ <span class="built_in">N</span> │ <span class="variable">Z</span> │ <span class="built_in">C</span> │ <span class="variable">V</span> │</span><br><span class="line">└───┴───┴───┴───┘</span><br><span class="line"> <span class="number">31</span>  <span class="number">30</span>  <span class="number">29</span>  <span class="number">28</span>   ← 在 <span class="variable">PSTATE</span> 或 <span class="variable">NZCV</span> 系统寄存器的位位置</span><br></pre></td></tr></table></figure>
+
+<p><strong>N (Negative flag)</strong></p>
+<ul>
+<li>结果为负数（有符号数最高位为 1） → N&#x3D;1</li>
+<li>否则 N&#x3D;0</li>
+</ul>
+<p><strong>Z (Zero flag)</strong></p>
+<ul>
+<li>结果等于 0 → Z&#x3D;1</li>
+<li>否则 Z&#x3D;0</li>
+</ul>
+<p><strong>C (Carry flag)</strong></p>
+<ul>
+<li>加法：有进位 → C&#x3D;1</li>
+<li>减法：无借位（即操作数 1 ≥ 操作数 2） → C&#x3D;1</li>
+<li>否则 C&#x3D;0</li>
+</ul>
+<p><strong>V (Overflow flag)</strong></p>
+<ul>
+<li>有符号加&#x2F;减法溢出（结果超出可表示范围） → V&#x3D;1</li>
+<li>否则 V&#x3D;0</li>
+</ul>
+<h4 id="条件选择指令"><a href="#条件选择指令" class="headerlink" title="条件选择指令"></a>条件选择指令</h4><blockquote>
+<p>搭配 cmp 指令来使用</p>
+</blockquote>
+<h5 id="csel"><a href="#csel" class="headerlink" title="csel"></a>csel</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281536572.png" alt="条件选择指令 csel" loading="lazy"></p>
+<h5 id="cset"><a href="#cset" class="headerlink" title="cset"></a>cset</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281536198.png" alt="条件选择指令 cset" loading="lazy"></p>
+<h5 id="csinc"><a href="#csinc" class="headerlink" title="csinc"></a>csinc</h5><blockquote>
+<p><strong>Conditional Select Increment</strong></p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281537698.png" alt="条件选择指令 csinc" loading="lazy"></p>
+<h4 id="练习-2：条件选择指令"><a href="#练习-2：条件选择指令" class="headerlink" title="练习 2：条件选择指令"></a>练习 2：条件选择指令</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281537488.png" alt="练习2 条件选择指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281538849.png" alt="练习2 代码及其调试" loading="lazy"></p>
+<h4 id="跳转指令"><a href="#跳转指令" class="headerlink" title="跳转指令"></a>跳转指令</h4><h5 id="b-无条件跳转"><a href="#b-无条件跳转" class="headerlink" title="b 无条件跳转"></a>b 无条件跳转</h5><blockquote>
+<p>跳转指令，无条件的跳转指令，不返回</p>
+<p>跳转范围：PC+&#x2F;- 128MB</p>
+</blockquote>
+<h5 id="b-cnd-有条件跳转指令"><a href="#b-cnd-有条件跳转指令" class="headerlink" title="b.cnd 有条件跳转指令"></a>b.cnd 有条件跳转指令</h5><blockquote>
+<p>有条件的跳转指令，不返回</p>
+<p>cnd 为条件操作后缀</p>
+<p>跳转范围：PC+&#x2F;- 1MB</p>
+</blockquote>
+<h5 id="bx-跳转到寄存器指定地址处"><a href="#bx-跳转到寄存器指定地址处" class="headerlink" title="bx 跳转到寄存器指定地址处"></a>bx 跳转到寄存器指定地址处</h5><blockquote>
+<p>跳转到寄存器指定的地址处，不返回</p>
+</blockquote>
+<h5 id="bl-Branch-with-Link-带返回地址的跳转"><a href="#bl-Branch-with-Link-带返回地址的跳转" class="headerlink" title="bl (Branch with Link)带返回地址的跳转"></a>bl (Branch with Link)带返回地址的跳转</h5><blockquote>
+<p>带返回地址(PC+4 &#x3D;&gt; x30)，适用于 call 子函数</p>
+<p>返回地址保存到 x30 中，保存的是父函数的 PC+4</p>
+<p>跳转范围：PC+&#x2F;- 128MB</p>
+</blockquote>
+<h5 id="blx-Branch-with-Link-to-Register"><a href="#blx-Branch-with-Link-to-Register" class="headerlink" title="blx (Branch with Link to Register)"></a>blx (Branch with Link to Register)</h5><blockquote>
+<p>跳转到寄存器指定的地址处，可以返回</p>
+<p>返回地址保存到 x30 中，保存的是父函数的 PC+4</p>
+</blockquote>
+<h4 id="返回指令"><a href="#返回指令" class="headerlink" title="返回指令"></a>返回指令</h4><h5 id="ret"><a href="#ret" class="headerlink" title="ret"></a>ret</h5><blockquote>
+<p>从子函数中返回，通常是 x30 里保存了返回地址</p>
+</blockquote>
+<h5 id="eret"><a href="#eret" class="headerlink" title="eret"></a>eret</h5><blockquote>
+<p>从当前的异常模式返回，通常可以实现模式的切换，例如 EL1 切换到 EL0</p>
+<p>它从当前的异常模式中返回，它会从 SPSR 中恢复 PSTATE，从 ELR 中获取跳转地址，并返回到该地址</p>
+</blockquote>
+<h4 id="练习-3：-为啥-ret-之后就跑飞了"><a href="#练习-3：-为啥-ret-之后就跑飞了" class="headerlink" title="练习 3： 为啥 ret 之后就跑飞了"></a>练习 3： 为啥 ret 之后就跑飞了</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281538578.png" alt="练习3: 为什么ret后就跑飞了" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281539851.png" alt="练习3代码" loading="lazy"></p>
+<p><strong>陷阱与坑</strong></p>
+<blockquote>
+<p>bl 指令：用于 call 子函数，它把返回地址写入到 x30 寄存器，返回地址为 PC+4</p>
+<p>在一个函数里调用 bl 来 call 子函数，有可能会把父函数的 lr 寄存器给冲走，然后父函数的 ret 返回就跑飞了</p>
+</blockquote>
+<p>简单来讲就是子函数更改了 x30 寄存器的值，返回时没有恢复</p>
+<h4 id="比较并跳转指令"><a href="#比较并跳转指令" class="headerlink" title="比较并跳转指令"></a>比较并跳转指令</h4><h5 id="cbz-cbnz-tbz-tbnz"><a href="#cbz-cbnz-tbz-tbnz" class="headerlink" title="cbz cbnz tbz tbnz"></a>cbz cbnz tbz tbnz</h5><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>缩写含义</th>
+<th>作用描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CBZ</strong></td>
+<td><em>Compare and Branch if Zero</em></td>
+<td>检查指定寄存器的值是否为零，若为零则跳转到目标地址，跳转范围+&#x2F;- 1MB。</td>
+</tr>
+<tr>
+<td><strong>CBNZ</strong></td>
+<td><em>Compare and Branch if Non-Zero</em></td>
+<td>检查指定寄存器的值是否非零，若非零则跳转到目标地址，跳转范围+&#x2F;- 1MB。</td>
+</tr>
+<tr>
+<td><strong>TBZ</strong></td>
+<td><em>Test Bit and Branch if Zero</em></td>
+<td>检查指定寄存器的某一位（bit）是否为 0，若该位为 0 则跳转到目标地址，跳转范围+&#x2F;- 32KB。</td>
+</tr>
+<tr>
+<td><strong>TBNZ</strong></td>
+<td><em>Test Bit and Branch if Non-Zero</em></td>
+<td>检查指定寄存器的某一位（bit）是否为 1，若该位为 1 则跳转到目标地址，跳转范围+&#x2F;- 32KB。</td>
+</tr>
+</tbody></table>
+<h3 id="其他重要的指令"><a href="#其他重要的指令" class="headerlink" title="其他重要的指令"></a>其他重要的指令</h3><h4 id="PC-相对地址加载指令"><a href="#PC-相对地址加载指令" class="headerlink" title="PC 相对地址加载指令"></a>PC 相对地址加载指令</h4><ul>
+<li>adr 指令，加载 PC 相对地址的 label 的地址，范围为+&#x2F;- 1MB</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281539740.png" alt="adr指令" loading="lazy"></p>
+<ul>
+<li>adrp 指令，加载 PC 相对地址的 label 的地址，它只加载 label 所属的 4KB 对齐的地址，范围为+&#x2F;- 4GB</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281539698.png" alt="adrp指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281555627.png" alt="adrp指令图解" loading="lazy"></p>
+<h4 id="练习-1：-测试-adrp-和-ldr-指令"><a href="#练习-1：-测试-adrp-和-ldr-指令" class="headerlink" title="练习 1： 测试 adrp 和 ldr 指令"></a>练习 1： 测试 adrp 和 ldr 指令</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281540433.png" alt="练习1: 测试adrp和ldr指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281540313.png" alt="练习1代码" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281540748.png" alt="练习1调试" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281540382.png" alt="练习1调试" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281541316.png" alt="练习1调试" loading="lazy"></p>
+<h4 id="adrp-和-ldr-究竟有什么不同"><a href="#adrp-和-ldr-究竟有什么不同" class="headerlink" title="adrp 和 ldr 究竟有什么不同"></a>adrp 和 ldr 究竟有什么不同</h4><p>陷阱与坑：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281541759.png" alt="adrp和ldr究竟有什么不同" loading="lazy"></p>
+<ul>
+<li><p>ldr 伪指令：加载的绝对地址</p>
+</li>
+<li><p>adrp 指令：加载的 PC 相对地址</p>
+</li>
+<li><p>当链接地址 &#x3D; 运行地址时</p>
+</li>
+</ul>
+<blockquote>
+<p>ldr 伪指令 加载的地址 &#x3D; adrp 指令加载的地址</p>
+</blockquote>
+<ul>
+<li>当链接地址!&#x3D;运行地址时</li>
+</ul>
+<blockquote>
+<p>ldr 伪指令地址：加载的时链接地址（或称为虚拟地址）</p>
+<p>adrp 指令：加载的时当前运行地址的 PC 值+label 的 offset，即 label 在当前运行时的地址（或者称为物理内存）</p>
+</blockquote>
+<h4 id="练习-2：adrp-和-ldr-指令的陷阱"><a href="#练习-2：adrp-和-ldr-指令的陷阱" class="headerlink" title="练习 2：adrp 和 ldr 指令的陷阱"></a>练习 2：adrp 和 ldr 指令的陷阱</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281541510.png" alt="练习2: adrp和ldr指令的陷阱" loading="lazy"></p>
+<h4 id="内存独占加载和存储指令"><a href="#内存独占加载和存储指令" class="headerlink" title="内存独占加载和存储指令"></a>内存独占加载和存储指令</h4><ul>
+<li>ldxr 指令</li>
+</ul>
+<blockquote>
+<p>内存独占加载指令，从内存中以独占 exclusive 的方式加载内存的地址到通用寄存器</p>
+</blockquote>
+<ul>
+<li>stxr 指令</li>
+</ul>
+<blockquote>
+<p>内存独占存储指令</p>
+</blockquote>
+<ol>
+<li>ldrx 是加载内存，不过它会通过独占监视器来监视这个内存的访问，监视器会把这个内存地址标记为独占访问，保证其独占的方式来访问</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281542169.png" alt="内存独占加载指令 ldrx" loading="lazy"></p>
+<ol start="2">
+<li>stxr 是有条件的存储内存，刚才 ldxr 标记的内存地址被独占的方式存储了，注意第一个寄存器为 w0</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281542053.png" alt="内存独占存储指令 stxr" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281543300.png" alt="内存独占加载和存储指令原理" loading="lazy"></p>
+<ul>
+<li>ldxr 指令和 stxr 指令通常需要配对使用</li>
+<li>Linux 内核常常用来实现 atomic 的访问，例如 atomic_write()，atomic_set_bit()</li>
+<li>spinlock 机制可以简单地使用 ldxr 和 stxr 指令来实现</li>
+</ul>
+<h4 id="练习-3：ldxr-和-stxr-指令的使用"><a href="#练习-3：ldxr-和-stxr-指令的使用" class="headerlink" title="练习 3：ldxr 和 stxr 指令的使用"></a>练习 3：ldxr 和 stxr 指令的使用</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281543030.png" alt="练习3: ldxr和stxr指令的使用" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281544535.png" alt="练习3代码" loading="lazy"></p>
+<h4 id="异常处理指令"><a href="#异常处理指令" class="headerlink" title="异常处理指令"></a>异常处理指令</h4><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SVC #imm</strong></td>
+<td><strong>系统调用指令</strong>(Supervisor Call)</td>
+<td>应用程序通过 <code>SVC</code> 指令从用户态跳转到内核态操作系统，通常进入 EL1 异常级别，用于触发系统调用</td>
+</tr>
+<tr>
+<td><strong>HVC #imm</strong></td>
+<td><strong>虚拟化系统调用指令</strong>(Hypervisor Call)</td>
+<td>主机操作系统通过 <code>HVC</code> 指令从 EL1 进入 EL2，调用虚拟化管理程序（Hypervisor），用于虚拟化支持场景</td>
+</tr>
+<tr>
+<td><strong>SMC #imm</strong></td>
+<td><strong>安全监控系统调用指令</strong>(Secure Monitor Call)</td>
+<td>主机操作系统或监控程序通过 <code>SMC</code> 指令从普通世界（Non-secure World）进入安全世界（Secure World），通常触发 EL3 异常，用于 TrustZone 安全机制</td>
+</tr>
+</tbody></table>
+<h4 id="系统寄存器访问指令"><a href="#系统寄存器访问指令" class="headerlink" title="系统寄存器访问指令"></a>系统寄存器访问指令</h4><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>MRS</strong></td>
+<td>读取系统寄存器的值到通用寄存器（Move Register from System）</td>
+</tr>
+<tr>
+<td><strong>MSR</strong></td>
+<td>将通用寄存器的值写入系统寄存器（Move Register to System）</td>
+</tr>
+</tbody></table>
+<h4 id="内存屏障指令"><a href="#内存屏障指令" class="headerlink" title="内存屏障指令"></a>内存屏障指令</h4><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>全称</th>
+<th>作用</th>
+<th>强度</th>
+<th>示例用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>DMB</strong></td>
+<td>Data Memory Barrier</td>
+<td>保证<strong>内存访问指令的执行顺序</strong>（如写后读不会乱序）</td>
+<td>中等</td>
+<td>多核间共享数据通信</td>
+</tr>
+<tr>
+<td><strong>DSB</strong></td>
+<td>Data Synchronization Barrier</td>
+<td><strong>等待所有内存访问完成</strong>后再执行后续指令</td>
+<td>强</td>
+<td>外设寄存器读写前后，缓存同步</td>
+</tr>
+<tr>
+<td><strong>ISB</strong></td>
+<td>Instruction Synchronization Barrier</td>
+<td><strong>清除指令流水线和缓存</strong>，强制重新取指</td>
+<td>特殊</td>
+<td>改变系统状态寄存器后，强制刷新指令</td>
+</tr>
+</tbody></table>
+<ol>
+<li>DMB</li>
+</ol>
+<p>作用： 保证内存访问的先后顺序，但不阻塞执行。<br>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str x0, [x1]     // 写数据</span><br><span class="line">dmb sy           // 确保写操作完成</span><br><span class="line">ldr x2, [x3]     // 再读其他数据</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>DSB</li>
+</ol>
+<p>作用： 必须等待之前所有内存操作完成，再继续执行后续指令。<br>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str x0, [x1]     // 写数据</span><br><span class="line">dsb sy           // 等待写入完成</span><br><span class="line">isb              // 保证后面执行的是最新的代码</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>ISB</li>
+</ol>
+<p>作用： 清除 CPU 指令预取缓存，通常在修改系统控制寄存器后用。<br>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">msr sctlr_el1, x0  // 修改系统控制寄存器</span><br><span class="line">isb                // 强制刷新指令流</span><br></pre></td></tr></table></figure>
+
+<p><strong>DMB&#x2F;DSB 指令参数详解(内存屏障的粒度与作用范围)</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>访问顺序控制</th>
+<th>共享范围</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SY</code></td>
+<td>读&#x2F;写</td>
+<td>全系统共享</td>
+<td>最强，<strong>所有处理器和设备</strong>可见，常用于设备驱动或关键同步</td>
+</tr>
+<tr>
+<td><code>ST</code></td>
+<td>写</td>
+<td>全系统共享</td>
+<td>只对<strong>写操作</strong>建立顺序</td>
+</tr>
+<tr>
+<td><code>LD</code></td>
+<td>读</td>
+<td>全系统共享</td>
+<td>只对<strong>读操作</strong>建立顺序</td>
+</tr>
+<tr>
+<td><code>ISH</code></td>
+<td>读&#x2F;写</td>
+<td><strong>Inner Shareable（内部共享）</strong></td>
+<td>多核共享同一个 L2 cache 时使用</td>
+</tr>
+<tr>
+<td><code>ISHST</code></td>
+<td>写</td>
+<td>Inner 共享</td>
+<td>内部共享域的<strong>写操作屏障</strong></td>
+</tr>
+<tr>
+<td><code>ISHLD</code></td>
+<td>读</td>
+<td>Inner 共享</td>
+<td>内部共享域的<strong>读操作屏障</strong></td>
+</tr>
+<tr>
+<td><code>NSH</code></td>
+<td>读&#x2F;写</td>
+<td><strong>Non-shareable（不共享）</strong></td>
+<td>本核私有内存使用</td>
+</tr>
+<tr>
+<td><code>NSHST</code></td>
+<td>写</td>
+<td>不共享</td>
+<td>本核私有写屏障</td>
+</tr>
+<tr>
+<td><code>NSHLD</code></td>
+<td>读</td>
+<td>不共享</td>
+<td>本核私有读屏障</td>
+</tr>
+<tr>
+<td><code>OSH</code></td>
+<td>读&#x2F;写</td>
+<td><strong>Outer Shareable（外部共享）</strong></td>
+<td>多个 L2 之间共享时使用</td>
+</tr>
+<tr>
+<td><code>OSHST</code></td>
+<td>写</td>
+<td>Outer 共享</td>
+<td>外部共享写屏障</td>
+</tr>
+<tr>
+<td><code>OSHLT</code></td>
+<td>读</td>
+<td>Outer 共享</td>
+<td>外部共享读屏障</td>
+</tr>
+</tbody></table>
+<h3 id="Overview-总结"><a href="#Overview-总结" class="headerlink" title="Overview 总结"></a>Overview 总结</h3><ul>
+<li><p>运行在 aarch64 execution state 的指令集，64 是指它的运行环境，而不是指令长度</p>
+</li>
+<li><p>指令长度是 32bit，而不是 64bit</p>
+</li>
+<li><p>31 个通用寄存器，xn 为 64bit，wn 为 32bit</p>
+</li>
+<li><p>零寄存器：xzr, wzr</p>
+</li>
+<li><p>pc 不是通用寄存器，通常不能直接返回</p>
+</li>
+<li><p>x30 用作链接寄存器 lr，用于函数返回</p>
+</li>
+<li><p>ELR_ELx 用于从异常返回</p>
+</li>
+<li><p>每个异常等级都有自己的栈 SP，例如 SP_EL0, SP_EL1</p>
+</li>
+<li><p>SP 不是通用寄存器</p>
+</li>
+<li><p>SIMD 和浮点运算的寄存器</p>
+</li>
+<li><p>Qn（126bit，16 字节），Dn（64bit）,Sn（32bit）， Hn（16bit）,Bn（Bn）</p>
+</li>
+<li><p><code>PSTATE</code>（Processor State Register）<strong>不是单独存在的一个物理寄存器</strong>，而是<strong>多个位段组成的处理器状态集合</strong>。</p>
+</li>
+<li><p><code>PSTATE</code> 的值控制 CPU 的当前状态，包括异常屏蔽、当前异常级别、条件码等。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NZCV</code></td>
+<td>条件码标志位（ALU Flags）用于条件跳转等：<strong>N</strong>（负号）、<strong>Z</strong>（零）、<strong>C</strong>（进位）、<strong>V</strong>（溢出）</td>
+</tr>
+<tr>
+<td><code>Q</code></td>
+<td>溢出标志位位，仅 AArch32 用某些 SIMD 操作溢出时设置</td>
+</tr>
+<tr>
+<td><code>DAIF</code></td>
+<td>异常屏蔽位：<strong>D</strong>：调试异常屏蔽<strong>A</strong>：SError 屏蔽<strong>I</strong>：IRQ 中断屏蔽<strong>F</strong>：FIQ 中断屏蔽</td>
+</tr>
+<tr>
+<td><code>SPSel</code></td>
+<td>SP 寄存器选择（仅 AArch64）控制是使用 <code>SP_EL0</code> 还是 <code>SP_ELx</code></td>
+</tr>
+<tr>
+<td><code>CurrentEL</code></td>
+<td>当前异常级别（EL0&#x2F;EL1&#x2F;EL2&#x2F;EL3）影响特权级访问和执行</td>
+</tr>
+<tr>
+<td><code>E</code></td>
+<td>字节序选择（AArch32）控制数据访问是小端或大端</td>
+</tr>
+<tr>
+<td><code>IL</code></td>
+<td>非法指令标志设为 1 时，<strong>所有指令都会被当作 UNDEFINED 执行</strong>，调试用</td>
+</tr>
+<tr>
+<td><code>SS</code></td>
+<td>单步执行标志（Software Stepping）与调试器联合使用，每次执行一条指令后触发异常</td>
+</tr>
+</tbody></table>
+<ul>
+<li>加载和存储指令</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>类型</th>
+<th>数据大小</th>
+<th>是否符号扩展</th>
+<th>存储&#x2F;加载目标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>LDR</code></td>
+<td>普通加载</td>
+<td>依寄存器</td>
+<td>否</td>
+<td>任意位宽</td>
+</tr>
+<tr>
+<td><code>LDRSW</code></td>
+<td>加载有符号 word</td>
+<td>32-bit</td>
+<td>✔（符号扩展至 64-bit）</td>
+<td><strong>Xn only</strong></td>
+</tr>
+<tr>
+<td><code>LDRB</code></td>
+<td>加载字节</td>
+<td>8-bit</td>
+<td>否</td>
+<td>Wn&#x2F;Xn</td>
+</tr>
+<tr>
+<td><code>LDRSB</code></td>
+<td>加载符号字节</td>
+<td>8-bit</td>
+<td>✔</td>
+<td>Wn 或 Xn</td>
+</tr>
+<tr>
+<td><code>LDRH</code></td>
+<td>加载半字</td>
+<td>16-bit</td>
+<td>否</td>
+<td>Wn&#x2F;Xn</td>
+</tr>
+<tr>
+<td><code>LDRSH</code></td>
+<td>加载符号半字</td>
+<td>16-bit</td>
+<td>✔</td>
+<td>Wn 或 Xn</td>
+</tr>
+<tr>
+<td><code>STRB</code></td>
+<td>存储字节</td>
+<td>8-bit</td>
+<td>N&#x2F;A</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>STRH</code></td>
+<td>存储半字</td>
+<td>16-bit</td>
+<td>N&#x2F;A</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p>指令后缀含义</p>
+<table>
+<thead>
+<tr>
+<th>后缀</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>B</code></td>
+<td>Byte（8-bit）</td>
+</tr>
+<tr>
+<td><code>H</code></td>
+<td>Halfword（16-bit）</td>
+</tr>
+<tr>
+<td><code>W</code></td>
+<td>Word（32-bit）</td>
+</tr>
+<tr>
+<td><code>S</code></td>
+<td>Sign-extended（符号扩展）</td>
+</tr>
+<tr>
+<td>无后缀</td>
+<td>默认按目标寄存器位数加载或存储</td>
+</tr>
+</tbody></table>
+<ul>
+<li>多字节加载和存储指令<ul>
+<li>A64 指令集已经把 ldm，stm，push，pop 指令删掉</li>
+<li>ldp 和 stp 来实现多字节加载和存储指令</li>
+</ul>
+</li>
+</ul>
+<p><strong>与 PC 相关的指令</strong></p>
+<p><code>ldr x0, =label</code>（伪指令）</p>
+<ul>
+<li><strong>含义</strong>：加载 <code>label</code> 的地址（<strong>链接地址</strong>）到 <code>x0</code>。</li>
+<li><strong>实现方式</strong>：汇编器会在 <code>.rodata</code> 区域生成一个常量表，<code>ldr</code> 实际上是从常量表中加载地址。</li>
+<li><strong>适用场景</strong>：任何位置都能使用，但<strong>依赖链接时地址信息</strong>，在支持重定位的系统中要谨慎。</li>
+</ul>
+<hr>
+<p><code>ldr x0, label</code></p>
+<ul>
+<li><strong>含义</strong>：将 <code>label</code> 地址处的值加载到 <code>x0</code> 中。</li>
+<li><strong>注意</strong>：这里的 <code>label</code> 是个地址，指向的数据会被加载到寄存器中（不是加载地址本身）。</li>
+<li><strong>区别于上面</strong>：这个不是加载地址，而是<strong>通过地址去读取数据</strong>。</li>
+</ul>
+<hr>
+<p><code>adr x0, .</code></p>
+<ul>
+<li><strong>含义</strong>：把当前 PC 的值加载到 <code>x0</code> 中。</li>
+<li><strong>常用场景</strong>：定位当前代码位置（如实现 Position-Independent Code）。</li>
+</ul>
+<hr>
+<p><code>adrp x0, label</code></p>
+<ul>
+<li><strong>含义</strong>：将 <code>label</code> 所在 page 的**页首地址（4KB 对齐）**加载到 <code>x0</code> 中。</li>
+<li><strong>用途</strong>：<ul>
+<li>多用于 <strong>位置无关代码（PIC）</strong>。</li>
+<li>搭配 <code>add</code> 实现完整地址加载：</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>标志位</th>
+<th>含义</th>
+<th>常见触发情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>N</code></td>
+<td>Negative（负号）标志位：结果为负时置位</td>
+<td>如 <code>subs x0, x1, x2</code> 得到负数</td>
+</tr>
+<tr>
+<td><code>Z</code></td>
+<td>Zero（零）标志位：结果为零时置位</td>
+<td>如 <code>subs x0, x1, x1</code>，结果为 0</td>
+</tr>
+<tr>
+<td><code>C</code></td>
+<td>Carry（进位）标志位：无符号加法进位&#x2F;无符号减法借位</td>
+<td>如 <code>adds</code>, <code>subs</code>, <code>adc</code>, <code>sbc</code></td>
+</tr>
+<tr>
+<td><code>V</code></td>
+<td>Overflow（溢出）标志位：有符号数加减运算时溢出</td>
+<td>如 <code>adds</code>, <code>subs</code> 溢出</td>
+</tr>
+</tbody></table>
+<p>推荐查阅文档</p>
+<p><strong>arm8.6 Chapter C3 A64 Instruction Set Overview</strong></p>
+<h3 id="QEMU-能跑但板子不能跑的陷阱与坑"><a href="#QEMU-能跑但板子不能跑的陷阱与坑" class="headerlink" title="QEMU 能跑但板子不能跑的陷阱与坑"></a>QEMU 能跑但板子不能跑的陷阱与坑</h3><h4 id="坑-1：ldr-指令加载宏"><a href="#坑-1：ldr-指令加载宏" class="headerlink" title="坑 1：ldr 指令加载宏"></a>坑 1：ldr 指令加载宏</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281545985.png" alt="坑1: ldr指令加载宏" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281545915.png" alt="ldr指令加载宏问题调试" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281546904.png" alt="ARM文档解释" loading="lazy"></p>
+<p>在裸机编程中，没有 enable MMU，因此内存属性一律被视为 Device memory</p>
+<p>ldr 指令访问 8 个字节，如果地址不是 8 个字节对齐，那么会触发 alignment 异常，也就是 Data abort</p>
+<p>解决办法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ldr x6, MY_LABEL</span><br><span class="line">// 修改</span><br><span class="line">ldr w6, MY_LABEL</span><br></pre></td></tr></table></figure>
+
+<h4 id="坑-2-ldr-指令加载字符串"><a href="#坑-2-ldr-指令加载字符串" class="headerlink" title="坑 2: ldr 指令加载字符串"></a><strong>坑 2: ldr 指令加载字符串</strong></h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281546036.png" alt="坑2: ldr指令加载字符串" loading="lazy"></p>
+<p>这也是 alignment 导致的，因为不能保证 string1 的起始地址是 8 个字节对齐</p>
+<p>解决办法：让 string1 按 8 个字节对齐</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281547163.png" alt="坑2的解决办法" loading="lazy"></p>
+<h4 id="对齐访问总结"><a href="#对齐访问总结" class="headerlink" title="对齐访问总结"></a>对齐访问总结</h4><ul>
+<li>对于 normal memory，支持不对齐访问。（需要 enable MMU，并设置内存属性为 normal）</li>
+<li>可以单独设置不对齐访问时触发异常（设置 SCTLR_Elx.A）</li>
+<li>对于 Device memory，不对齐访问会触发 Data Abort 异常<ul>
+<li>没有 enable MMU 的系统，例如我们的实验代访问 DDR 编程访问 device memory</li>
+</ul>
+</li>
+<li>指令预取，需要 4 个字节对齐，否则会触发异常</li>
+</ul>
+<ol>
+<li>Normal memory 支持不对齐访问</li>
+</ol>
+<ul>
+<li><strong>条件</strong>：<ul>
+<li>启用了 <strong>MMU</strong>（Memory Management Unit）；</li>
+<li>并且该内存区域的属性被设置为 <strong>Normal memory</strong>；</li>
+</ul>
+</li>
+<li><strong>结果</strong>：<ul>
+<li>支持对字（4 字节）、半字（2 字节）、字节（1 字节）的不对齐访问；</li>
+<li>可实现跨边界访问，不触发异常；</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>配置不对齐访问异常（SCTLR_ELx.A 位）</li>
+</ol>
+<ul>
+<li><strong>SCTLR_EL1.A</strong> 控制是否允许 <strong>不对齐访问</strong>（Alignment Check）：<ul>
+<li><code>A = 0</code>（默认）：允许不对齐访问（如果 memory 类型允许）；</li>
+<li><code>A = 1</code>：<strong>强制对齐访问</strong>，一旦发生不对齐访问，则触发 <strong>Alignment fault 异常（Data Abort）</strong>；</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>Device memory 不支持不对齐访问</li>
+</ol>
+<ul>
+<li><strong>特点</strong>：<ul>
+<li>无论 MMU 是否启用，Device memory 类型都<strong>不允许不对齐访问</strong>；</li>
+</ul>
+</li>
+<li><strong>后果</strong>：<ul>
+<li>一旦访问未对齐的地址（如访问 <code>0x1003</code> 的 32-bit 数据），将触发 <strong>Data Abort 异常</strong>；</li>
+</ul>
+</li>
+<li><strong>应用示例</strong>：<ul>
+<li>实验环境中直接映射访问 <strong>DDR、外设寄存器</strong> 等，通常被定义为 Device memory 类型；</li>
+<li>访问这些区域时必须对齐，如访问 32-bit 数据必须 4 字节对齐；</li>
+</ul>
+</li>
+</ul>
+<ol start="4">
+<li>指令预取要求</li>
+</ol>
+<ul>
+<li><strong>指令取址</strong> 必须是 <strong>4 字节对齐</strong>（即地址最低两位必须为 0）；</li>
+<li>否则会触发 <strong>Instruction Abort 异常</strong>；</li>
+<li>原因：ARMv8 指令以 4 字节为基本单位存储和取指，无法从非对齐位置解码执行指令。</li>
+</ul>
+<h4 id="坑-3：存储指令数据大小"><a href="#坑-3：存储指令数据大小" class="headerlink" title="坑 3：存储指令数据大小"></a><strong>坑 3：存储指令数据大小</strong></h4><p>使用 str 指令来设置寄存器，一定要注意寄存器的位宽，否则会出现死机问题</p>
+<p>树莓派 4b 上的寄存器位宽都是 32bit 的，也就是 4 个字节</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281547346.png" alt="坑3: 存储指令数据大小" loading="lazy"></p>
+<h4 id="坑-4：ldxr-的大坑"><a href="#坑-4：ldxr-的大坑" class="headerlink" title="坑 4：ldxr 的大坑"></a>坑 4：ldxr 的大坑</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281547572.png" alt="坑4：ldxr的大坑" loading="lazy"></p>
+<p><strong>ldxr 指令的使用会有很多限制</strong></p>
+<ol>
+<li>首先确保访问的内存是 normal memory 并且是 sharable</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281548815.png" alt="ldxr指令要求内存是normal memory并且是sharable的" loading="lazy"></p>
+<ol start="2">
+<li>如果访问 device memory，例如 MMU 没有打开的情况，那就需要 CPU IP 核心支持以独占的方式访问 device memory，这个需要查询具体 CPU IP 手册的描述</li>
+</ol>
+<p>例如： Cortex-A72 MPCore Processor Technical Reference Manual 第 6.45 章节</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281548939.png" alt="在Cortex-A72没有打开MMU时以独占方式访问device memory会出错" loading="lazy"></p>
+<p>解决方法：</p>
+<p>填充好页表，使能 MMU 和 cache，才能使用 ldxr 和 stxr</p>
+<h3 id="在汇编中实现串口打印功能"><a href="#在汇编中实现串口打印功能" class="headerlink" title="在汇编中实现串口打印功能"></a>在汇编中实现串口打印功能</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281549929.png" alt="大作业: 在汇编中实现串口打印功能" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509281556610.png" alt="大作业预期结果" loading="lazy"></p>
+<p>🧱 1. GPIO 初始化（引脚复用配置）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ldr x1, =GPFSEL1</span><br><span class="line">ldr w0, [x1]</span><br><span class="line">and w0, w0, #0xffff8fff    // 清除 GPIO14 功能选择位（bit 12-14）</span><br><span class="line">orr w0, w0, #0x4000        // 设置 GPIO14 为 ALT0 (UART0_TXD)</span><br><span class="line">and w0, w0, #0xfffc7fff    // 清除 GPIO15 功能选择位（bit 15-17）</span><br><span class="line">orr w0, w0, #0x20000       // 设置 GPIO15 为 ALT0 (UART0_RXD)</span><br><span class="line">str w0, [x1]</span><br></pre></td></tr></table></figure>
+
+<p>✅ 作用：将 GPIO14 和 GPIO15 设置为 UART 功能（ALT0 模式）。<br>🧱 2. 禁用上拉&#x2F;下拉（仅 Pi 3B 配置）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#ifdef CONFIG_BOARD_PI3B</span><br><span class="line">	ldr x1, =GPPUD</span><br><span class="line">	str wzr,[x1]</span><br><span class="line"></span><br><span class="line">	// delay 150 cycles</span><br><span class="line">	mov x0, #150</span><br><span class="line">1:</span><br><span class="line">	sub x0, x0, #1</span><br><span class="line">	cmp x0, #0</span><br><span class="line">	bne 1b</span><br><span class="line"></span><br><span class="line">	ldr x1, =GPPUDCLK0</span><br><span class="line">	ldr w2, #0xc000   // 对 GPIO14 和 GPIO15 生效</span><br><span class="line">	str w2, [x1]</span><br><span class="line"></span><br><span class="line">	// delay again</span><br><span class="line">	mov x0, #150</span><br><span class="line">2:</span><br><span class="line">	sub x0, x0, #1</span><br><span class="line">	cmp x0, #0</span><br><span class="line">	bne 2b</span><br><span class="line"></span><br><span class="line">	ldr x1, =GPPUDCLK0</span><br><span class="line">	str wzr, [x1]</span><br><span class="line">	isb</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+
+<p>✅ 对 GPIO14&#x2F;15 禁用上拉&#x2F;下拉，符合 BCM2837 的初始化流程。<br>🧱 3. UART 初始化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">// 禁用 UART</span><br><span class="line">ldr x1, =U_CR_REG</span><br><span class="line">str wzr, [x1]</span><br><span class="line"></span><br><span class="line">// 设置波特率</span><br><span class="line">ldr x1, =U_IBRD_REG</span><br><span class="line">mov w2, #26          // Integer Baud Rate Divisor</span><br><span class="line">str w2, [x1]</span><br><span class="line"></span><br><span class="line">ldr x1, =U_FBRD_REG</span><br><span class="line">mov w2, #3           // Fractional Baud Rate Divisor</span><br><span class="line">str w2, [x1]</span><br><span class="line"></span><br><span class="line">// 设置数据格式</span><br><span class="line">ldr x1, =U_LCRH_REG</span><br><span class="line">mov w2, #0x70        // FIFO enable + 8-bit word length</span><br><span class="line">str w2, [x1]</span><br><span class="line"></span><br><span class="line">// 禁用中断</span><br><span class="line">ldr x1, =U_IMSC_REG</span><br><span class="line">str wzr, [x1]</span><br><span class="line"></span><br><span class="line">// 使能 UART (TX/RX/UART enable)</span><br><span class="line">ldr x1, =U_CR_REG</span><br><span class="line">mov w2, #0x301       // UARTEN | TXE | RXE</span><br><span class="line">str w2, [x1]</span><br><span class="line">isb</span><br></pre></td></tr></table></figure>
+
+<p>✅ 正确配置波特率和数据格式（8N1, FIFO），最后使能 UART。</p>
+<p>你使用的是：</p>
+<pre><code>波特率 = UARTCLK / (16 * (IBRD + FBRD/64))
+假设 UARTCLK = 48 MHz，则波特率约为 115200。
+</code></pre>
+<p>🧱 4. 单个字符输出函数 put_uart</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">put_uart:</span><br><span class="line">	ldr x1, =U_FR_REG</span><br><span class="line">1:</span><br><span class="line">	ldr w2, [x1]</span><br><span class="line">	and w2, w2, #0x20       // 检查 TXFF (Transmit FIFO full)</span><br><span class="line">	cmp w2, #0</span><br><span class="line">	b.ne 1b                 // 如果 FIFO 满，则等待</span><br><span class="line"></span><br><span class="line">	ldr x1, =U_DATA_REG</span><br><span class="line">	str w0, [x1]            // 写入字符</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+
+<p>✅ 会等待 FIFO 可用后发送字符。</p>
+<p>🧱 5. 字符串输出函数 put_string_uart</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">put_string_uart:</span><br><span class="line">	mov x4, x0              // x0: 指向字符串</span><br><span class="line">	mov x6, x30             // 保存返回地址</span><br><span class="line">1:</span><br><span class="line">	ldrb w0, [x4]           // 读取一个字节（字符）</span><br><span class="line">	bl put_uart</span><br><span class="line">	add x4, x4, 1</span><br><span class="line">	cmp w0, #0</span><br><span class="line">	bne 1b</span><br><span class="line">	mov x30, x6</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+
+<p>✅ 输入：x0 &#x3D; 字符串地址，将其打印出来直到遇到 NULL（0x00）。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/50003/">https://even629.com/posts/50003/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/asm/">asm</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%AD%98%E5%82%A8%E6%8C%87%E4%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">加载与存储指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1%EF%BC%9Aldr-%E6%8C%87%E4%BB%A4"><span class="toc-number">1.1.</span> <span class="toc-text">练习 1：ldr 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-2%EF%BC%9Aldr-%E5%89%8D%E5%8F%98%E5%9F%BA%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%90%8E%E5%8F%98%E5%9F%BA%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">练习 2：ldr 前变基模式和后变基模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-3%EF%BC%9Astr-%E7%9A%84%E5%89%8D%E5%8F%98%E5%9F%BA%E5%92%8C%E5%90%8E%E5%8F%98%E5%9F%BA%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">练习 3：str 的前变基和后变基模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ldr-%E6%A0%87%E7%AD%BE-literal"><span class="toc-number">1.4.</span> <span class="toc-text">ldr 标签(literal)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-4%EF%BC%9Aldr-%E4%BC%AA%E6%8C%87%E4%BB%A4"><span class="toc-number">1.5.</span> <span class="toc-text">练习 4：ldr 伪指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-5%EF%BC%9A%E5%AE%9E%E7%8E%B0-memcpy-%E6%B1%87%E7%BC%96"><span class="toc-number">1.6.</span> <span class="toc-text">练习 5：实现 memcpy 汇编</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mov-%E6%8C%87%E4%BB%A4"><span class="toc-number">1.7.</span> <span class="toc-text">mov 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ldp-%E5%92%8C-stp"><span class="toc-number">1.8.</span> <span class="toc-text">ldp 和 stp</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-6-memset"><span class="toc-number">1.9.</span> <span class="toc-text">练习 6: memset</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-7%EF%BC%9A%E5%9D%91"><span class="toc-number">1.10.</span> <span class="toc-text">练习 7：坑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E6%8C%87%E4%BB%A4%E5%8F%98%E7%A7%8D"><span class="toc-number">1.11.</span> <span class="toc-text">存储指令变种</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E6%95%B0%E4%B8%8E%E7%A7%BB%E4%BD%8D%E6%8C%87%E4%BB%A4"><span class="toc-number">2.</span> <span class="toc-text">算数与移位指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#add-%E5%8A%A0%E6%B3%95%E6%8C%87%E4%BB%A4"><span class="toc-number">2.1.</span> <span class="toc-text">add 加法指令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E7%9A%84%E5%8A%A0%E6%B3%95%E6%8C%87%E4%BB%A4-add"><span class="toc-number">2.1.1.</span> <span class="toc-text">普通的加法指令 add</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#adds-%E6%8C%87%E4%BB%A4-%E5%BD%B1%E5%93%8D%E6%9D%A1%E4%BB%B6%E6%A0%87%E5%BF%97%E4%BD%8D-%E8%BF%9B%E4%BD%8D"><span class="toc-number">2.1.2.</span> <span class="toc-text">adds 指令-影响条件标志位(进位)</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sub-%E5%87%8F%E6%B3%95%E6%8C%87%E4%BB%A4"><span class="toc-number">2.2.</span> <span class="toc-text">sub 减法指令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E7%9A%84%E5%87%8F%E6%B3%95%E6%8C%87%E4%BB%A4"><span class="toc-number">2.2.1.</span> <span class="toc-text">普通的减法指令</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#subs-%E6%8C%87%E4%BB%A4-%E5%BD%B1%E5%93%8D%E6%9D%A1%E4%BB%B6%E6%A0%87%E5%BF%97%E4%BD%8D-C-%E6%A0%87%E5%BF%97%E4%BD%8D"><span class="toc-number">2.2.2.</span> <span class="toc-text">subs 指令-影响条件标志位(C 标志位)</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#adc-%E6%8C%87%E4%BB%A4-%E5%B8%A6%E8%BF%9B%E4%BD%8D%E7%9A%84%E5%8A%A0%E6%B3%95%E6%8C%87%E4%BB%A4"><span class="toc-number">2.3.</span> <span class="toc-text">adc 指令(带进位的加法指令)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sbc-%E6%8C%87%E4%BB%A4-%E5%B8%A6%E8%BF%9B%E4%BD%8D%E7%9A%84%E5%87%8F%E6%B3%95%E6%8C%87%E4%BB%A4"><span class="toc-number">2.4.</span> <span class="toc-text">sbc 指令(带进位的减法指令)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cmp-%E6%AF%94%E8%BE%83%E6%8C%87%E4%BB%A4"><span class="toc-number">2.5.</span> <span class="toc-text">cmp 比较指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1-adds-%E5%92%8C-cmp-%E6%8C%87%E4%BB%A4%E7%9A%84-C-%E6%9D%A1%E4%BB%B6%E6%A0%87%E5%BF%97%E4%BD%8D"><span class="toc-number">2.6.</span> <span class="toc-text">练习 1 adds 和 cmp 指令的 C 条件标志位</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-2-cmp-%E5%92%8C-sbc-%E6%8C%87%E4%BB%A4"><span class="toc-number">2.7.</span> <span class="toc-text">练习 2 cmp 和 sbc 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A7%BB%E4%BD%8D%E6%93%8D%E4%BD%9C"><span class="toc-number">2.8.</span> <span class="toc-text">移位操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E4%BD%8D%E4%B8%8E%E6%93%8D%E4%BD%9C"><span class="toc-number">2.9.</span> <span class="toc-text">按位与操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E4%BD%8D%E6%88%96%E6%93%8D%E4%BD%9C"><span class="toc-number">2.10.</span> <span class="toc-text">按位或操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E4%BD%8D%E6%B8%85%E9%99%A4"><span class="toc-number">2.11.</span> <span class="toc-text">按位清除</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-3%EF%BC%9A%E6%B5%8B%E8%AF%95-ands-%E6%8C%87%E4%BB%A4%E4%BB%A5%E5%8F%8A-Z-%E6%A0%87%E5%BF%97%E4%BD%8D"><span class="toc-number">2.12.</span> <span class="toc-text">练习 3：测试 ands 指令以及 Z 标志位</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%8D%E6%AE%B5%E6%8F%92%E5%85%A5%E6%93%8D%E4%BD%9C"><span class="toc-number">2.13.</span> <span class="toc-text">位段插入操作</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#bfi-%E4%BD%8D%E6%AE%B5%E6%8F%92%E5%85%A5%E6%8C%87%E4%BB%A4"><span class="toc-number">2.13.1.</span> <span class="toc-text">bfi 位段插入指令</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ubfx-%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%95%B0%E7%9A%84%E4%BD%8D%E6%AE%B5%E6%8F%90%E5%8F%96%E6%8C%87%E4%BB%A4"><span class="toc-number">2.13.2.</span> <span class="toc-text">ubfx 无符号数的位段提取指令</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#sbfx-%E6%9C%89%E7%AC%A6%E5%8F%B7%E6%95%B0%E7%9A%84%E4%BD%8D%E6%AE%B5%E6%8F%90%E5%8F%96%E6%8C%87%E4%BB%A4"><span class="toc-number">2.13.3.</span> <span class="toc-text">sbfx 有符号数的位段提取指令</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-4%EF%BC%9A%E6%B5%8B%E8%AF%95-bitfield-%E6%8C%87%E4%BB%A4"><span class="toc-number">2.14.</span> <span class="toc-text">练习 4：测试 bitfield 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B9%98%E6%B3%95%E5%92%8C%E9%99%A4%E6%B3%95%E6%8C%87%E4%BB%A4"><span class="toc-number">2.15.</span> <span class="toc-text">乘法和除法指令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AF%94%E8%BE%83%E4%B8%8E%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="toc-number">3.</span> <span class="toc-text">比较与跳转指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-5%EF%BC%9A%E4%BD%BF%E7%94%A8-bitfield-%E6%8C%87%E4%BB%A4%E6%9D%A5%E8%AF%BB%E5%8F%96%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">3.1.</span> <span class="toc-text">练习 5：使用 bitfield 指令来读取寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9B%B6%E8%AE%A1%E6%95%B0%E6%8C%87%E4%BB%A4-clz"><span class="toc-number">3.2.</span> <span class="toc-text">零计数指令 clz</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AF%94%E8%BE%83%E6%8C%87%E4%BB%A4"><span class="toc-number">3.3.</span> <span class="toc-text">比较指令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#cmp"><span class="toc-number">3.3.1.</span> <span class="toc-text">cmp</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#cmn"><span class="toc-number">3.3.2.</span> <span class="toc-text">cmn</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E6%93%8D%E4%BD%9C%E5%90%8E%E7%BC%80"><span class="toc-number">3.3.3.</span> <span class="toc-text">条件操作后缀</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1%EF%BC%9Acmp-cmn-%E6%8C%87%E4%BB%A4%E4%BB%A5%E5%8F%8A%E6%9D%A1%E4%BB%B6%E6%93%8D%E4%BD%9C%E5%90%8E%E7%BC%80"><span class="toc-number">3.4.</span> <span class="toc-text">练习 1：cmp&#x2F;cmn 指令以及条件操作后缀</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NZCV-%E5%AF%84%E5%AD%98%E5%99%A8%E7%BB%93%E6%9E%84%E5%9B%BE"><span class="toc-number">3.5.</span> <span class="toc-text">NZCV 寄存器结构图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E9%80%89%E6%8B%A9%E6%8C%87%E4%BB%A4"><span class="toc-number">3.6.</span> <span class="toc-text">条件选择指令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#csel"><span class="toc-number">3.6.1.</span> <span class="toc-text">csel</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#cset"><span class="toc-number">3.6.2.</span> <span class="toc-text">cset</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#csinc"><span class="toc-number">3.6.3.</span> <span class="toc-text">csinc</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-2%EF%BC%9A%E6%9D%A1%E4%BB%B6%E9%80%89%E6%8B%A9%E6%8C%87%E4%BB%A4"><span class="toc-number">3.7.</span> <span class="toc-text">练习 2：条件选择指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="toc-number">3.8.</span> <span class="toc-text">跳转指令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#b-%E6%97%A0%E6%9D%A1%E4%BB%B6%E8%B7%B3%E8%BD%AC"><span class="toc-number">3.8.1.</span> <span class="toc-text">b 无条件跳转</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#b-cnd-%E6%9C%89%E6%9D%A1%E4%BB%B6%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="toc-number">3.8.2.</span> <span class="toc-text">b.cnd 有条件跳转指令</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#bx-%E8%B7%B3%E8%BD%AC%E5%88%B0%E5%AF%84%E5%AD%98%E5%99%A8%E6%8C%87%E5%AE%9A%E5%9C%B0%E5%9D%80%E5%A4%84"><span class="toc-number">3.8.3.</span> <span class="toc-text">bx 跳转到寄存器指定地址处</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#bl-Branch-with-Link-%E5%B8%A6%E8%BF%94%E5%9B%9E%E5%9C%B0%E5%9D%80%E7%9A%84%E8%B7%B3%E8%BD%AC"><span class="toc-number">3.8.4.</span> <span class="toc-text">bl (Branch with Link)带返回地址的跳转</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#blx-Branch-with-Link-to-Register"><span class="toc-number">3.8.5.</span> <span class="toc-text">blx (Branch with Link to Register)</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E6%8C%87%E4%BB%A4"><span class="toc-number">3.9.</span> <span class="toc-text">返回指令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#ret"><span class="toc-number">3.9.1.</span> <span class="toc-text">ret</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#eret"><span class="toc-number">3.9.2.</span> <span class="toc-text">eret</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-3%EF%BC%9A-%E4%B8%BA%E5%95%A5-ret-%E4%B9%8B%E5%90%8E%E5%B0%B1%E8%B7%91%E9%A3%9E%E4%BA%86"><span class="toc-number">3.10.</span> <span class="toc-text">练习 3： 为啥 ret 之后就跑飞了</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AF%94%E8%BE%83%E5%B9%B6%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="toc-number">3.11.</span> <span class="toc-text">比较并跳转指令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#cbz-cbnz-tbz-tbnz"><span class="toc-number">3.11.1.</span> <span class="toc-text">cbz cbnz tbz tbnz</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%87%8D%E8%A6%81%E7%9A%84%E6%8C%87%E4%BB%A4"><span class="toc-number">4.</span> <span class="toc-text">其他重要的指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PC-%E7%9B%B8%E5%AF%B9%E5%9C%B0%E5%9D%80%E5%8A%A0%E8%BD%BD%E6%8C%87%E4%BB%A4"><span class="toc-number">4.1.</span> <span class="toc-text">PC 相对地址加载指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1%EF%BC%9A-%E6%B5%8B%E8%AF%95-adrp-%E5%92%8C-ldr-%E6%8C%87%E4%BB%A4"><span class="toc-number">4.2.</span> <span class="toc-text">练习 1： 测试 adrp 和 ldr 指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#adrp-%E5%92%8C-ldr-%E7%A9%B6%E7%AB%9F%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C"><span class="toc-number">4.3.</span> <span class="toc-text">adrp 和 ldr 究竟有什么不同</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-2%EF%BC%9Aadrp-%E5%92%8C-ldr-%E6%8C%87%E4%BB%A4%E7%9A%84%E9%99%B7%E9%98%B1"><span class="toc-number">4.4.</span> <span class="toc-text">练习 2：adrp 和 ldr 指令的陷阱</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%8B%AC%E5%8D%A0%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%AD%98%E5%82%A8%E6%8C%87%E4%BB%A4"><span class="toc-number">4.5.</span> <span class="toc-text">内存独占加载和存储指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-3%EF%BC%9Aldxr-%E5%92%8C-stxr-%E6%8C%87%E4%BB%A4%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">4.6.</span> <span class="toc-text">练习 3：ldxr 和 stxr 指令的使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%8C%87%E4%BB%A4"><span class="toc-number">4.7.</span> <span class="toc-text">异常处理指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%AF%84%E5%AD%98%E5%99%A8%E8%AE%BF%E9%97%AE%E6%8C%87%E4%BB%A4"><span class="toc-number">4.8.</span> <span class="toc-text">系统寄存器访问指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E6%8C%87%E4%BB%A4"><span class="toc-number">4.9.</span> <span class="toc-text">内存屏障指令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Overview-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">Overview 总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#QEMU-%E8%83%BD%E8%B7%91%E4%BD%86%E6%9D%BF%E5%AD%90%E4%B8%8D%E8%83%BD%E8%B7%91%E7%9A%84%E9%99%B7%E9%98%B1%E4%B8%8E%E5%9D%91"><span class="toc-number">6.</span> <span class="toc-text">QEMU 能跑但板子不能跑的陷阱与坑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9D%91-1%EF%BC%9Aldr-%E6%8C%87%E4%BB%A4%E5%8A%A0%E8%BD%BD%E5%AE%8F"><span class="toc-number">6.1.</span> <span class="toc-text">坑 1：ldr 指令加载宏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9D%91-2-ldr-%E6%8C%87%E4%BB%A4%E5%8A%A0%E8%BD%BD%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">6.2.</span> <span class="toc-text">坑 2: ldr 指令加载字符串</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E9%BD%90%E8%AE%BF%E9%97%AE%E6%80%BB%E7%BB%93"><span class="toc-number">6.3.</span> <span class="toc-text">对齐访问总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9D%91-3%EF%BC%9A%E5%AD%98%E5%82%A8%E6%8C%87%E4%BB%A4%E6%95%B0%E6%8D%AE%E5%A4%A7%E5%B0%8F"><span class="toc-number">6.4.</span> <span class="toc-text">坑 3：存储指令数据大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9D%91-4%EF%BC%9Aldxr-%E7%9A%84%E5%A4%A7%E5%9D%91"><span class="toc-number">6.5.</span> <span class="toc-text">坑 4：ldxr 的大坑</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%B1%87%E7%BC%96%E4%B8%AD%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E6%89%93%E5%8D%B0%E5%8A%9F%E8%83%BD"><span class="toc-number">7.</span> <span class="toc-text">在汇编中实现串口打印功能</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '1a1da29cf093a8cdd2123f4ac6bc6439'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

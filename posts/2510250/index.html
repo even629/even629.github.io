@@ -1,0 +1,1168 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM Cache | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Arm64 Cache">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM Cache">
+<meta property="og:url" content="https://even629.com/posts/2510250/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Arm64 Cache">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-10-25T13:33:13.000Z">
+<meta property="article:modified_time" content="2025-10-25T13:33:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2510250/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARM Cache',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">ARM Cache</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-25T13:33:13.000Z" title="发表于 2025-10-25 21:33:13">2025-10-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-25T13:33:13.000Z" title="更新于 2025-10-25 21:33:13">2025-10-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/arm64/">arm64</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">6.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>25分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2510250/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-25</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+
+<p>参考文档：</p>
+<div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>
+
+
+
+
+
+<p><strong>经典的cache架构</strong>：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921194233140.png" alt="经典cache架构" loading="lazy"></p>
+<h3 id="Cache内部架构图"><a href="#Cache内部架构图" class="headerlink" title="Cache内部架构图"></a>Cache内部架构图</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921194635709.png" alt="Cache内部架构图" loading="lazy"></p>
+<ul>
+<li><strong>高速缓存行</strong>：高速缓存中的最小的访问单元</li>
+<li><strong>索引(index)域</strong>: 用于索引和查找是在高速缓存中的哪一行</li>
+<li><strong>标记(tag)</strong>：高速缓存地址编码的一部分，通常是高速缓存地址的高位部分，用来判断高速缓存行缓存的数据地址是否和处理器寻址地址一致</li>
+<li><strong>偏移(offset)</strong>: 高速缓存行中的偏移。处理器可以按字(word)或者字节(Byte)来寻址高速缓存行的内容</li>
+<li><strong>组(set)</strong>：<strong>相同索引域</strong>的高速缓存行组成一个组</li>
+<li><strong>路(way)</strong>: 在组相联的高速缓存中，高速缓存被分成大小相同的几个块</li>
+</ul>
+<p>组的作用主要是防止cache的”颠簸”</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921195738818.png" alt="Cache内部划分" loading="lazy"></p>
+<h3 id="Cache的类型"><a href="#Cache的类型" class="headerlink" title="Cache的类型"></a>Cache的类型</h3><p>ARM64 架构上主要有：</p>
+<ul>
+<li><strong>Instruction Cache (I-Cache)</strong><br>专门缓存指令流，加快取指速度。</li>
+<li><strong>Data Cache (D-Cache)</strong><br>缓存数据读写（Load&#x2F;Store）。</li>
+<li><strong>Unified Cache</strong><br>一些层级（如 L2、L3）往往是统一缓存（既存指令也存数据），不像 L1 那样严格分指令&#x2F;数据。</li>
+</ul>
+<p>有时称既有I-Cache也有D-Cache的为Separate Cache，它是分离缓存结构：既有独立的 I-Cache，又有独立的 D-Cache。典型于 <strong>L1 Cache</strong>。</p>
+<h3 id="Cache映射方式"><a href="#Cache映射方式" class="headerlink" title="Cache映射方式"></a>Cache映射方式</h3><h4 id="直接映射"><a href="#直接映射" class="headerlink" title="直接映射"></a>直接映射</h4><blockquote>
+<p>每个组只有一行高速缓存行时，称为直接映射高速缓存(direct-mapping)</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922151547275.png" alt="直接映射" loading="lazy"></p>
+<p>例子：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922151745544.png" alt="直接映射的例子" loading="lazy"></p>
+<p>0x00,0x40,0x80都映射了同一个高速缓存行里，会频繁发生高速缓存替换性能较低</p>
+<h4 id="全相联"><a href="#全相联" class="headerlink" title="全相联"></a>全相联</h4><blockquote>
+<p>当cache只有一个组，即主存中只有一个地址与n个cache line对应，成为全相联</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922152226573.png" alt="全相联的例子" loading="lazy"></p>
+<h4 id="组相联"><a href="#组相联" class="headerlink" title="组相联"></a>组相联</h4><ul>
+<li>一个二路相联的高速缓存为例，每一路包括4个高速缓存行，那么每两个组有两个高速缓存行可以提供高速缓存行的替换</li>
+<li>减小高速缓存的颠簸</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922152539265.png" alt="组相联" loading="lazy"></p>
+<p>举例：</p>
+<ul>
+<li>高速缓存的总大小是32KB，并且是4路(way)，所以每一路的大小为8KB：way_size &#x3D; 32&#x2F;4 &#x3D; 8(KB)</li>
+<li>高速缓存行的大小为32字节，所以每一路包含的高速缓存行数量为：num_cache_line &#x3D; 8KB&#x2F;32B&#x3D;256</li>
+</ul>
+<p>由此可以画出高速缓存的结构图：<br><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922153052251.png" alt="高速缓存结构图" loading="lazy"></p>
+<p>索引值为12-5+1 &#x3D; 8位，共2^8&#x3D;256，可以索引256个cache line</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Cache</span> Level (L1 / L2 / L3)</span><br><span class="line">┌──────────────┐</span><br><span class="line">│ <span class="built_in">Set</span> <span class="number">0</span>        │── Way <span class="number">0</span> → <span class="keyword">Cache</span> Line</span><br><span class="line">│              │── Way <span class="number">1</span> → <span class="keyword">Cache</span> Line</span><br><span class="line">│              │── Way <span class="number">2</span> → <span class="keyword">Cache</span> Line</span><br><span class="line">│              │── Way <span class="number">3</span> → <span class="keyword">Cache</span> Line</span><br><span class="line">├──────────────┤</span><br><span class="line">│ <span class="built_in">Set</span> <span class="number">1</span>        │── Way <span class="number">0</span> → <span class="keyword">Cache</span> Line</span><br><span class="line">│ <span class="params">...</span>          │</span><br><span class="line">└──────────────┘</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="物理高速缓存"><a href="#物理高速缓存" class="headerlink" title="物理高速缓存"></a>物理高速缓存</h3><blockquote>
+<p>当处理器查询MMU和TLB得到物理地址之后，使用物理地址去查询高速缓存</p>
+</blockquote>
+<p><strong>缺点</strong>：处理器在查询MMU和TLB后才能访问高速缓存，增加了流水线的延迟</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922153248763.png" alt="物理高速缓存" loading="lazy"></p>
+<h3 id="虚拟高速缓存"><a href="#虚拟高速缓存" class="headerlink" title="虚拟高速缓存"></a>虚拟高速缓存</h3><blockquote>
+<p>处理器使用虚拟地址来寻址高速缓存</p>
+</blockquote>
+<p><strong>缺点</strong>：会引入不少问题：</p>
+<ul>
+<li>重名(Aliasing)问题</li>
+<li>同名(Homonyms)问题</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922153646668.png" alt="虚拟高速缓存" loading="lazy"></p>
+<h4 id="别名问题-Aliasing"><a href="#别名问题-Aliasing" class="headerlink" title="别名问题(Aliasing)"></a>别名问题(Aliasing)</h4><blockquote>
+<p>也称重名问题</p>
+</blockquote>
+<ul>
+<li>在<strong>操作系统中，多个不同的虚拟地址可能映射相同的物理地址</strong>。由于采用虚拟高速缓存架构，那么这些不同的虚拟地址会占用高速缓存中不同的高速缓存行，但是它们对应的是相同的物理地址</li>
+<li>举个例子：VA1和VA2都映射到PA，在cache中有两个cache line缓存了VA1和VA2<ul>
+<li>当程序往VA1写入数据时，VA1对应的高速缓存行以及PA的内容会被更改，但是VA2还保存着旧数据。这样一个物理地址在虚拟高速缓存中就保存了两份数据，这样会产生歧义</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922155306709.png" alt="重名问题" loading="lazy">	</p>
+<h4 id="同名问题-Homonyms"><a href="#同名问题-Homonyms" class="headerlink" title="同名问题(Homonyms)"></a>同名问题(Homonyms)</h4><ul>
+<li><strong>相同的虚拟地址对应着不同的物理地址</strong>，因为操作系统中不同的进程会存在很多相同的虚拟地址，而这些相同的虚拟地址在经过MMU转换后得到不同的物理地址，这就产生了同名问题</li>
+<li>同名问题最常见的地方是进程切换。当一个进程切换到另外一个进程时，新进程使用虚拟地址来访问高速缓存的话，新进程会访问到旧进程遗留下来的高速缓存，这些高速缓存数据对于新进程来说是错误和没用的。解决办法是在进程切换时把旧进程遗留下来的高速缓存都置为无效，这样就能保证新进程执行时得到一个干净的虚拟高速缓存。</li>
+</ul>
+<h3 id="高速缓存分类"><a href="#高速缓存分类" class="headerlink" title="高速缓存分类"></a>高速缓存分类</h3><ul>
+<li><p><strong>VIVT</strong> (Virtual Index Virtual Tag):  使用<strong>虚拟地址的索引域和虚拟地址的标记域</strong>，相当于是<strong>虚拟高速缓存</strong></p>
+<ul>
+<li>CPU 在访问缓存时，不需要先进行地址转换（虚拟地址 → 物理地址），直接用虚拟地址来决定缓存行（index）和匹配标记（tag）。</li>
+<li>存在别名问题 (Synonym&#x2F;Aliasing)：不同虚拟地址映射到同一物理地址时，会在缓存中出现多份数据，可能导致数据不一致。</li>
+</ul>
+</li>
+<li><p><strong>PIPT</strong> (Physical Index Physical Tag): 使用<strong>物理地址索引域和物理地址标记域</strong>，相当于是<strong>物理高速缓存</strong></p>
+<ul>
+<li>CPU 先通过 MMU 将虚拟地址转换成物理地址，然后用物理地址进行缓存索引和匹配。</li>
+<li>不存在别名问题</li>
+<li>常见L2 Cache</li>
+</ul>
+</li>
+<li><p><strong>VIPT</strong> (Virtual Index Physical Tag): 使用<strong>虚拟地址索引域和物理地址的标记域</strong></p>
+<ul>
+<li>CPU <strong>使用虚拟地址的低位部分作为缓存索引（Index）</strong>。<strong>使用物理地址作为标记（Tag）</strong>，用于匹配判断。因为<strong>缓存行对齐（通常是 64 字节或 128 字节），虚拟地址低位与物理地址低位一致</strong>，所以可以安全地用虚拟地址索引。</li>
+<li><strong>避免了别名问题</strong>，因为使用了物理地址作为标记</li>
+<li>受 <strong>Page Size</strong> 限制：虚拟索引长度必须 ≤ 页面偏移位数，否则不同页的同一虚拟索引会冲突。（VIPT 用虚拟地址的低位索引缓存行）</li>
+<li>常见L1 Cache</li>
+</ul>
+</li>
+</ul>
+<h4 id="VIPT工作过程"><a href="#VIPT工作过程" class="headerlink" title="VIPT工作过程"></a>VIPT工作过程</h4><p>一般视角下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">VA</span> = 虚拟页号 (VPN) | 页内偏移 (PO)</span><br></pre></td></tr></table></figure>
+
+<p>VIPT视角下<strong>PO</strong>分成：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">PO</span> = Cache Index | Cache Line <span class="literal">Off</span>set</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>VIPT 缓存的<strong>索引位仅来自虚拟地址的页内偏移部分</strong>（而非 VPN），这是为了避免索引位受虚拟地址转换影响（PO 在虚实地址中是一致的）。</li>
+<li>缓存行偏移（Line Offset）用于定位缓存行内的具体字节</li>
+</ul>
+<p>假设 L1 Cache 有 64KB，缓存行 64B：</p>
+<ul>
+<li><p>索引位数 &#x3D; log₂(64KB &#x2F; 64B) &#x3D; log₂(1024) &#x3D; 10 位</p>
+</li>
+<li><p>所以缓存索引使用虚拟地址的 <strong>10 位</strong></p>
+</li>
+<li><p>页内偏移 &#x3D; 12 位（4KB 页）</p>
+</li>
+<li><p>页内偏移在虚拟地址和物理地址中是<strong>完全相同</strong>的（分页机制只转换 VPN，不改变 PO）。</p>
+</li>
+<li><p>若索引位完全落在页内偏移中（即索引位长度 ≤ 页内偏移位长度），则 Cache 索引使用的是 “虚实一致” 的地址位，可避免因 VPN 不同但物理页相同导致的缓存别名问题（Alias Problem）。</p>
+</li>
+</ul>
+<p>所以要求：索引位 ≤ 页内偏移位</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922160506763.png" alt="VIPT工作流程图" loading="lazy"></p>
+<p>左右两步同时进行</p>
+<h4 id="VIPT别名问题"><a href="#VIPT别名问题" class="headerlink" title="VIPT别名问题"></a>VIPT别名问题</h4><p>两个虚拟页面同时映射到同一个物理页面时，两个虚拟页面同时一起填满了Cache的一路</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922160903254.png" alt="两个虚拟地址映射同一个物理页面" loading="lazy"></p>
+<p>如图，Virtual Page1改写后，Virtual Page2访问的仍然是原来的数据</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922161212502.png" alt="例子" loading="lazy"></p>
+<p>这个别名问题可以通过<strong>cache layout</strong> 来避免，即让VIPT 缓存的<strong>索引位仅来自虚拟地址的页内偏移部分</strong>（而非 VPN）</p>
+<h3 id="Cache层级"><a href="#Cache层级" class="headerlink" title="Cache层级"></a>Cache层级</h3><p><strong>两级cache</strong>的系统</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922161320308.png" alt="两级cache" loading="lazy"></p>
+<p><strong>三级cache</strong>的系统</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922161334333.png" alt="三级cache" loading="lazy"></p>
+<h3 id="多级cache的处理流程"><a href="#多级cache的处理流程" class="headerlink" title="多级cache的处理流程"></a>多级cache的处理流程</h3><p>举例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LDR x0,[x1]</span><br></pre></td></tr></table></figure>
+
+<p>加载x1地址的值到x0，假设x1是cachable的</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922170619435.png" alt="多级cache" loading="lazy"></p>
+<ul>
+<li><strong>Case1</strong>: 如果x1的值在<strong>L1 cache</strong>中，那么CPU直接从<strong>L1 cache</strong>获取了数据</li>
+<li><strong>Case2</strong>: 如果x1的值不在<strong>L1 cache</strong>中，而是在<strong>L2 cache</strong>中<ul>
+<li>如果<strong>L1 cache</strong>中没有空间，那么会淘汰一些<strong>cache line</strong></li>
+<li>数据从<strong>L2 cache line</strong>加载到<strong>L1 cache line</strong></li>
+<li>CPU从<strong>L1 cache line</strong>中读取数据</li>
+</ul>
+</li>
+<li><strong>Case3</strong>: x1的值都不在L1和L2 <strong>cache</strong>中，但是在内存中<ul>
+<li>如果<strong>L1 cache</strong>和<strong>L2 cache</strong>中没有空间，那么会淘汰一些<strong>cache line</strong></li>
+<li>数据从内存中加载到L2和L1的<strong>cache line</strong>中</li>
+<li>CPU从<strong>L1 cache line</strong>中读取数据</li>
+</ul>
+</li>
+</ul>
+<h3 id="多级cache的访问延迟"><a href="#多级cache的访问延迟" class="headerlink" title="多级cache的访问延迟"></a>多级cache的访问延迟</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922171339545.png" alt="多级访问的延迟" loading="lazy"></p>
+<h3 id="Cache的策略（Cache-Policies）"><a href="#Cache的策略（Cache-Policies）" class="headerlink" title="Cache的策略（Cache Policies）"></a>Cache的策略（Cache Policies）</h3><ul>
+<li><p>Cache相关的策略是<strong>在MMU页表中配置</strong>。<strong>只有Normal内存可以被cacheable</strong></p>
+</li>
+<li><p>Cache策略包括：</p>
+<ul>
+<li>Cacheable&#x2F;non-cacheable</li>
+<li>Cacheable细分<ul>
+<li>Read&#x2F;write-allocate</li>
+<li>Write-Back cacheable, write-through cacheable</li>
+<li>Shareability</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Cache 的分配策略</strong></p>
+<ul>
+<li><strong>Write allocation（WA）</strong>: 当write miss的时候才分配一个新的cache line</li>
+<li><strong>Read allocation（RA）</strong>: 当read miss的时候才分配一个新的cache line</li>
+</ul>
+</li>
+<li><p>Cache回写策略：</p>
+<ul>
+<li><strong>Write-back（WB）</strong>: 回写操作仅仅更新到cache，并没有马上更新回内存(cache line is marked as dirty)</li>
+<li><strong>Write through（WT）</strong>: 回写操作会直接更新cache和内存</li>
+</ul>
+</li>
+</ul>
+<h4 id="Write-Back和Write-Through"><a href="#Write-Back和Write-Through" class="headerlink" title="Write Back和Write Through"></a>Write Back和Write Through</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922174043566.png" alt="Write Back和Write Through" loading="lazy"></p>
+<ul>
+<li>WT写直通模式<ul>
+<li>进行写操作时，数据同时写入当前的高速缓存，下一级高速缓存或主存储器中</li>
+<li>直写模式可以降低高速缓存一致性的实现难度，最大的缺点是消耗比较多的总线带宽</li>
+<li>ARM Cortex-A系列处理器把WT模式看成Non-cacheable<ul>
+<li>The Cortex-A72 processor memory system treats all Write-Through pages as Non-cacheable</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261403419.png" alt="WT" loading="lazy"></p>
+<ul>
+<li><p>WB模式回写模式</p>
+<ul>
+<li>写入仅更新缓存并将缓存行标记为脏。仅当cache line被flush或明确清除时，才会更新外部存储器。</li>
+<li>Cache line变成Dirty data</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261402716.png" alt="WB" loading="lazy"></p>
+</li>
+</ul>
+<h4 id="Inner-和-Outer-Shareability"><a href="#Inner-和-Outer-Shareability" class="headerlink" title="Inner 和 Outer Shareability"></a>Inner 和 Outer Shareability</h4><ul>
+<li><strong>Normal memory</strong>可以设置inner或者outer shareability</li>
+<li>怎么区分是inner或者outer，不同设计有不同的区分<ul>
+<li><strong>inner attribute</strong>通常是<strong>CPU IP</strong>集成的caches</li>
+<li><strong>outer attribute</strong> are exported on the bus</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922190239281.png" alt="Inner和Outer Shareability" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922190633835.png" alt="inner and outer" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922190703269.png" alt="inner and outer" loading="lazy"></p>
+<ul>
+<li>inner attribute是内部集成的cache</li>
+<li>outer attribute是挂载在外部总线的外部cache</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922190725856.png" alt="内部共享与外部共享" loading="lazy"></p>
+<h3 id="预取指令"><a href="#预取指令" class="headerlink" title="预取指令"></a>预取指令</h3><p>AArch64（ARMv8 64-bit）中的预取指令</p>
+<p>在 A64 中，使用的是 <strong>PRFM</strong>（Prefetch Memory）。</p>
+<h4 id="指令格式"><a href="#指令格式" class="headerlink" title="指令格式"></a>指令格式</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PRFM &lt;prfop&gt;, [Xn, #imm]  // 从 Xn + offset 的地址预取缓存</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p> prfop 语法结构说明</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">&lt;prfop&gt;</span> = <span class="variable">&lt;type&gt;</span><span class="variable">&lt;target&gt;</span><span class="variable">&lt;policy&gt;</span> |<span class="string"> #uimm5</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>示例值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;type&gt;</code></td>
+<td>预取目的</td>
+<td><code>PLD</code> 读，<code>PST</code> 写</td>
+</tr>
+<tr>
+<td><code>&lt;target&gt;</code></td>
+<td>预取目标缓存层级</td>
+<td><code>L1</code>, <code>L2</code>, <code>L3</code></td>
+</tr>
+<tr>
+<td><code>&lt;policy&gt;</code></td>
+<td>缓存使用策略</td>
+<td><code>KEEP</code>（重复使用），<code>STRM</code>（流式访问&#x2F;一次性用）</td>
+</tr>
+<tr>
+<td><code>#uimm5</code></td>
+<td>5 位编码形式</td>
+<td><code>#0</code> ~ <code>#31</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><h5 id="预取读取数据到-L1，保留在缓存"><a href="#预取读取数据到-L1，保留在缓存" class="headerlink" title="预取读取数据到 L1，保留在缓存"></a>预取读取数据到 L1，保留在缓存</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PRFM PLDL1KEEP, [X0, #32]</span><br></pre></td></tr></table></figure>
+
+<p>意思是：把地址 <code>(X0 + 32)</code> 对应的数据提前加载到 <strong>L1 Cache</strong>，并且标记为<strong>可能反复使用</strong>。</p>
+<hr>
+<h5 id="预取一次性读取（流式访问）"><a href="#预取一次性读取（流式访问）" class="headerlink" title="预取一次性读取（流式访问）"></a>预取一次性读取（流式访问）</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PRFM PLDL1STRM, [X1]</span><br></pre></td></tr></table></figure>
+
+<p>意思是：把 <code>[X1]</code> 预加载进缓存，但<strong>不长期保留</strong>（适合 memcpy 这种顺序流式读取）。</p>
+<hr>
+<h5 id="等价立即数写法"><a href="#等价立即数写法" class="headerlink" title="等价立即数写法"></a>等价立即数写法</h5><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">PRFM</span> #<span class="number">0</span>,<span class="meta"> [X0]</span></span><br></pre></td></tr></table></figure>
+
+<p><code>#0</code> 在 ARM 预取 hint 表是默认的 <code>PLDL1KEEP</code>。</p>
+<table>
+<thead>
+<tr>
+<th>uimm5值</th>
+<th>对应 prfop</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#0</code></td>
+<td><code>PLDL1KEEP</code></td>
+<td>读预取到 L1，重用（最常用）</td>
+</tr>
+<tr>
+<td><code>#1</code></td>
+<td><code>PLDL1STRM</code></td>
+<td>读预取到 L1，流式（只用一次）</td>
+</tr>
+<tr>
+<td><code>#4</code></td>
+<td><code>PLDL2KEEP</code></td>
+<td>读预取到 L2</td>
+</tr>
+<tr>
+<td><code>#8</code></td>
+<td><code>PLDL3KEEP</code></td>
+<td>读预取到 L3</td>
+</tr>
+<tr>
+<td><code>#16</code></td>
+<td><code>PSTL1KEEP</code></td>
+<td>写预取</td>
+</tr>
+<tr>
+<td><code>#17</code></td>
+<td><code>PSTL1STRM</code></td>
+<td>写预取（流式）</td>
+</tr>
+</tbody></table>
+<h3 id="Point-of-Unification-PoU-和Point-of-Coherency-PoC"><a href="#Point-of-Unification-PoU-和Point-of-Coherency-PoC" class="headerlink" title="Point of Unification(PoU)和Point of Coherency(PoC)"></a>Point of Unification(PoU)和Point of Coherency(PoC)</h3><ul>
+<li><strong>PoU</strong>: 表示一个CPU中的<strong>指令cache</strong>，<strong>数据cache</strong>还有<strong>MMU</strong>，<strong>TLB</strong>等看到的是同一份的内存拷贝<ul>
+<li><strong>PoU for a PE</strong>，是说保证<strong>PE</strong>看到的<strong>I&#x2F;D cache</strong>和<strong>MMU</strong>是同一份拷贝。大多情况下，<strong>PoU是站在单核系统的角度来观察的</strong></li>
+<li><strong>PoU for inner share</strong>，意思是说在<strong>inner share</strong>里面的所有<strong>PE</strong>都能看到相同的一份拷贝</li>
+</ul>
+</li>
+<li><strong>PoC</strong>: 系统中所有的观察者例如<strong>DSP</strong>, <strong>GPU</strong>, <strong>CPU</strong>, <strong>DMA</strong>等都能看到同一份内存拷贝</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922191415284.png" alt="PoU" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922191831728.png" alt="PoU和Poc" loading="lazy"></p>
+<h4 id="PoU和PoC的区别"><a href="#PoU和PoC的区别" class="headerlink" title="PoU和PoC的区别"></a>PoU和PoC的区别</h4><ul>
+<li><strong>PoC</strong>是系统一个概念，和系统配置相关</li>
+<li>例如，<strong>Cortex-A53</strong>可以配置<strong>L2 cache</strong>和没有<strong>L2 cache</strong>，可能会影响<strong>PoU</strong>的范围</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922192009950.png" alt="PoU和PoC的区别" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922192115229.png" alt="PoU和PoC" loading="lazy"></p>
+<h3 id="Cache维护"><a href="#Cache维护" class="headerlink" title="Cache维护"></a>Cache维护</h3><ul>
+<li>Cache的管理操作<ul>
+<li>无效 (<strong>Invalidate</strong>)  整个高速缓存或者某个高速缓存行。高速缓存上的数据会被丢弃。</li>
+<li>清除 (<strong>Clean</strong>) 整个高速缓存或者某个告诉缓存行。相应的告诉缓存行会被标记为脏，数<strong>据会写回到下一级高速缓存中或者主存储器中</strong>（也可称为flush）</li>
+<li>清零 (<strong>Zero</strong>) 操作</li>
+</ul>
+</li>
+<li>Cache管理的对象<ul>
+<li><strong>ALL</strong> : 整块高速缓存</li>
+<li><strong>VA</strong>:   某个虚拟地址，有时称MVA(修改后的虚拟地址，是包含特定虚拟地址的高速缓存行)</li>
+<li><strong>Set&#x2F;Way</strong>: 特定的告诉缓存行或者组和路</li>
+</ul>
+</li>
+<li>Cache管理的范围<ul>
+<li><strong>PoC</strong></li>
+<li><strong>PoU</strong></li>
+</ul>
+</li>
+<li>Shareability<ul>
+<li><strong>inner</strong></li>
+</ul>
+</li>
+</ul>
+<h4 id="Cache指令格式"><a href="#Cache指令格式" class="headerlink" title="Cache指令格式"></a>Cache指令格式</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922192804276.png" alt="Cache指令格式" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922193009565.png" alt="高速缓存操作指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250927164329862.png" alt="System instructions for cache maintenance" loading="lazy"></p>
+<p>接受地址参数的指令采用一个 64 位寄存器，该寄存器保存要维护的虚拟地址。此地址没有对齐限制。</p>
+<p>AArch64 数据缓存按地址无效指令 DC IVAC 需要写权限，否则会生成权限错误。</p>
+<h4 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h4><p>遍历所有 CPU 数据缓存（Data Cache）层级（L1&#x2F;L2&#x2F;L3…），并对每一级缓存执行逐路逐组的清理（Clean by Set&#x2F;Way），确保缓存中的数据都回写到内存：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">// AArch64: Data Cache Clean by Set/Way</span><br><span class="line">// 可在 EL1（内核态）执行</span><br><span class="line"></span><br><span class="line">.global clean_data_cache</span><br><span class="line">clean_data_cache:</span><br><span class="line">    // 读取缓存等级 ID（CLIDR_EL1)</span><br><span class="line">    MRS     X0, CLIDR_EL1</span><br><span class="line"></span><br><span class="line">    // 提取 Level of Coherency（3-bit per level）</span><br><span class="line">    AND     W3, W0, #0x07000000     // mask[26:24]</span><br><span class="line">    LSR     W3, W3, #23             // W3 = 2 * LoC</span><br><span class="line">    CBZ     W3, Finished            // 无缓存则退出</span><br><span class="line"></span><br><span class="line">    MOV     W10, #0                 // W10 = 2 * cache level index</span><br><span class="line">    MOV     W8, #1                  // 常数 1</span><br><span class="line"></span><br><span class="line">Loop1:</span><br><span class="line">    // 计算 3 × cache level (每层3bit描述cache类型)</span><br><span class="line">    ADD     W2, W10, W10, LSR #1    // W2 = 3*level = level*2 + level/2</span><br><span class="line">    LSR     W1, W0, W2              // 取当前层 cache 类型</span><br><span class="line"></span><br><span class="line">    AND     W1, W1, #0x7            // 取最低三位</span><br><span class="line">    CMP     W1, #2                  // 2 = Data Cache，3 = Unified</span><br><span class="line">    B.LT    Skip                    // 跳过没有 D cache 的层</span><br><span class="line"></span><br><span class="line">    // ---- 选择当前缓存层进行操作 ----</span><br><span class="line">    MSR     CSSELR_EL1, X10         // X10低位bit指定 level</span><br><span class="line">    ISB                             // 等待选择生效</span><br><span class="line"></span><br><span class="line">    // 从 CCSIDR_EL1 读 cache 配置</span><br><span class="line">    MRS     X1, CCSIDR_EL1          // X1 holds CCSIDR</span><br><span class="line"></span><br><span class="line">    // ---- 解析 Cache Line 大小 ----</span><br><span class="line">    AND     W2, W1, #7              // bits[2:0]: log2(line_len)-4</span><br><span class="line">    ADD     W2, W2, #4              // W2 = log2(line_len)</span><br><span class="line"></span><br><span class="line">    // ---- 解析 Way ----</span><br><span class="line">    UBFX    W4, W1, #3, #10         // bits[12:3]: ways-1</span><br><span class="line">    CLZ     W5, W4                  // W5 = leading zero count</span><br><span class="line">    LSL     W9, W4, W5              // 初始化 way 位偏移值</span><br><span class="line">    LSL     W16, W8, W5             // 每次递减步长</span><br><span class="line"></span><br><span class="line">Loop2:</span><br><span class="line">    // ---- 解析 Set ----</span><br><span class="line">    UBFX    W7, W1, #13, #15        // bits[27:13]: sets-1</span><br><span class="line">    LSL     W7, W7, W2              // 对齐 set 位</span><br><span class="line">    LSL     W17, W8, W2             // 每次递减步长</span><br><span class="line"></span><br><span class="line">Loop3:</span><br><span class="line">    // ---- 拼装 DC 操作参数 ----</span><br><span class="line">    ORR     W11, W10, W9            // 组合 level + way</span><br><span class="line">    ORR     W11, W11, W7            // 加 set</span><br><span class="line">	</span><br><span class="line">	// X11 中低位字段编码 Way + Set + Cache level，告诉 CPU 哪一条 Cache 行要清理。</span><br><span class="line">    DC      CSW, X11               // CLEAN by set/way </span><br><span class="line"></span><br><span class="line">    SUBS    W7, W7, W17            // set-- 循环</span><br><span class="line">    B.GE    Loop3</span><br><span class="line"></span><br><span class="line">    SUBS    X9, X9, X16            // way-- 循环</span><br><span class="line">    B.GE    Loop2</span><br><span class="line"></span><br><span class="line">Skip:</span><br><span class="line">    ADD     W10, W10, #2           // 下一个 cache level</span><br><span class="line">    CMP     W3, W10</span><br><span class="line">    DSB                             // 确保上次 clean 完全执行</span><br><span class="line">    B.GT    Loop1</span><br><span class="line"></span><br><span class="line">Finished:</span><br><span class="line">    DSB     SY                      // 同步屏障</span><br><span class="line">    ISB</span><br><span class="line">    RET</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>CLIDR_EL1</strong></p>
+<table>
+<thead>
+<tr>
+<th>位段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bits [26:24]</td>
+<td>LoC &#x3D; Level of Coherency（缓存一致性层级 × 2）</td>
+</tr>
+<tr>
+<td>bits [2:0]</td>
+<td>L1 cache type</td>
+</tr>
+<tr>
+<td>bits [5:3]</td>
+<td>L2 cache type</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p>代码整体流程：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>动作</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>读 CLIDR_EL1</td>
+<td>获取系统中有几级 Cache 以及类型</td>
+</tr>
+<tr>
+<td>2</td>
+<td>解析 LoC</td>
+<td>确定需要遍历多少级缓存</td>
+</tr>
+<tr>
+<td>3</td>
+<td>逐层循环</td>
+<td>从 L1 → L2 → L3… 依次处理每一级缓存</td>
+</tr>
+<tr>
+<td>4</td>
+<td>用 CSSELR_EL1 选择缓存层</td>
+<td>告诉 CPU：接下来我要访问哪一级的 Cache</td>
+</tr>
+<tr>
+<td>5</td>
+<td>读 CCSIDR_EL1</td>
+<td>查询该 Cache 的详细配置（组数、路数、行大小）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>双重循环</td>
+<td>遍历 Set（组）和 Way（路），逐行清理缓存</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>DC CSW</code></td>
+<td>执行 <strong>Clean by Set&#x2F;Way</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>DSB</code> + <code>ISB</code></td>
+<td>数据同步屏障，确保清理完成后再继续执行</td>
+</tr>
+</tbody></table>
+<p>在正常情况下，清理或使整个缓存无效是只有固件应该做的事情，作为内核加电或断电序列的一部分。它也可能需要大量时间，L2 缓存中的行数可能非常大，并且有必要逐个循环它们。因此，这种清理绝对只适用于特殊场合！</p>
+<h4 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/* Coherency example for data and instruction accesses within the same Inner</span><br><span class="line">Shareable domain. Enter this code with &lt;Wt&gt; containing a new 32-bit instruction,</span><br><span class="line">to be held in Cacheable space at a location pointed to by Xn. */</span><br><span class="line">STR Wt, [Xn]</span><br><span class="line">DC CVAU, Xn // Clean data cache by VA to point of unification (PoU)</span><br><span class="line">DSB ISH // Ensure visibility of the data cleaned from cache</span><br><span class="line">IC IVAU, Xn // Invalidate instruction cache by VA to PoU</span><br><span class="line">DSB ISH // Ensure completion of the invalidations</span><br><span class="line">ISB // Synchronize the fetched instruction stream</span><br></pre></td></tr></table></figure>
+
+<p>这段代码是标准的 <strong>Self-modifying code &#x2F; JIT 编译同步</strong>步骤：</p>
+<ol>
+<li>写入新指令到内存（可能在 D-Cache）</li>
+<li>清 D-Cache，把数据写回 PoU</li>
+<li>DSB：保证写回完成</li>
+<li>I-Cache 作废对应地址</li>
+<li>DSB：保证作废完成</li>
+<li>ISB：刷新取指流水线，CPU 执行新指令</li>
+</ol>
+<h3 id="Cache-discovery"><a href="#Cache-discovery" class="headerlink" title="Cache discovery"></a>Cache discovery</h3><ul>
+<li>在我们做cache指令管理的时候，你需要知道如下信息：<ul>
+<li>系统支持多少级的cache?</li>
+<li>Cache line是多少</li>
+<li>每一级的cache，它的set和way是多少</li>
+<li>对于zero操作，我们需要知道多少data可以被zeroed?</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250922193251688.png" alt="Cache" loading="lazy"></p>
+<ul>
+<li>Cache Level ID Register (<strong>CLIDR</strong>, <strong>CLIDR_EL1</strong>)：列出有多少level的cache，可以读取缓存级别的数量</li>
+<li>Cache Type Register(<strong>CTR, CRT_EL0</strong>): cache line大小，可以读取缓存行的大小</li>
+<li>如果这需要由运行在执行级别EL0的用户代码访问， 这可以通过设置系统控制寄存器(<strong>SCTLR&#x2F;SCTLR_EL1</strong>) 的 <strong>UCT</strong> 位来完成。</li>
+<li>sets and ways: 需要访问两个寄存器来获取<ul>
+<li>告诉Cache Size Selection Register(<strong>CSSELR</strong>, <strong>CSSELR_EL1</strong>)要查询哪个cache</li>
+<li>从Cache Size ID Register(<strong>CCSIDR</strong>, <strong>CCSIDR_EL1</strong>)中读取相关信息</li>
+</ul>
+</li>
+</ul>
+<p><strong>Cache Discovery其他说明</strong></p>
+<ul>
+<li><p>数据缓存零 ID 寄存器 (DCZID_EL0) 包含要为零操作归零的块大小。</p>
+<ul>
+<li><p><strong>DC ZVA (Data Cache Zero by Virtual Address)</strong></p>
+<ul>
+<li>将一条 cache line 对应的内存清零</li>
+<li><strong>DCZID_EL0</strong> 保存可以归零的块大小</li>
+<li><strong>访问权限</strong>：只有特权级别（EL1 及以上）能访问 DCZID_EL0</li>
+</ul>
+</li>
+<li><p><strong>控制位</strong>：</p>
+<ul>
+<li><strong>SCTLR_EL1.DZE</strong>：控制 EL0 是否允许 DC ZVA</li>
+<li><strong>HCR_EL2.TDZ</strong>：控制 EL0&#x2F;EL1 在非安全世界是否允许 DC ZVA</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>SCTLR&#x2F;SCTLR_EL1 的 [DZE] 位和 Hypervisor 配置寄存器 (HCR&#x2F;HCR_EL2) 中的 [TDZ] 位控制哪些执行级别和哪些世界可以访问 DCZID_EL0。CLIDR_EL1、CSSELR_EL1 和 CCSIDR_EL1 只能通过特权代码访问，即 AArch32 中的 PL1 或更高版本，或 AArch64 中的 EL1 或更高版本。</p>
+</li>
+<li><p>如果在异常级别禁止通过虚拟地址执行数据高速缓存零 (DC ZVA) 指令，EL0 由 SCTLR_EL1.DZE位控制，EL1 和 EL0 中的非安全执行由 HCR_EL2 控制.TDZ 位，然后读取该寄存器返回一个值，指示该指令不受支持。</p>
+</li>
+<li><p>CLIDR 寄存器只知道处理器本身集成了多少级缓存。它不能提供有关外部存储系统中任何缓存的信息。例如，如果只集成了 L1 和 L2，CLIDR&#x2F;CLIDR_EL1 标识了两个级别的缓存，处理器不知道任何外部 L3 缓存。在执行缓存维护或与集成缓存保持一致性的代码时，可能需要考虑非集成缓存。</p>
+</li>
+</ul>
+<h3 id="Cache实验一：cache的枚举-Cache-Discovery"><a href="#Cache实验一：cache的枚举-Cache-Discovery" class="headerlink" title="Cache实验一：cache的枚举 Cache Discovery"></a>Cache实验一：cache的枚举 Cache Discovery</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250927172720572.png" alt="实验一" loading="lazy"></p>
+<p>实验运行结果：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250928191458830.png" alt="实验运行结果与树莓派官网对比" loading="lazy"></p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><p>核心思路：</p>
+<ol>
+<li><strong>先识别每一级 cache 类型（CLIDR）</strong></li>
+<li><strong>选择层级和类型，读取配置寄存器（CSSELR&#x2F;CCSIDR）</strong></li>
+<li><strong>计算每一级 cache 的 set&#x2F;way&#x2F;line size 和总大小</strong></li>
+<li><strong>打印边界信息和 L1 I-Cache 寻址策略</strong>**</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;cache_info.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span> *cache_type_string[] = &#123;<span class="string">&quot;nocache&quot;</span>, <span class="string">&quot;i-cache&quot;</span>, <span class="string">&quot;d-cache&quot;</span>,</span><br><span class="line">                                          <span class="string">&quot;separate cache&quot;</span>, <span class="string">&quot;unifed cache&quot;</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// instruction cache的policies</span></span><br><span class="line"><span class="comment">// L1 指令缓存寻址策略</span></span><br><span class="line"><span class="comment">// 0 = VPIPT</span></span><br><span class="line"><span class="comment">// 1 = Reserved</span></span><br><span class="line"><span class="comment">// 2 = VIPT</span></span><br><span class="line"><span class="comment">// 3 = PIPT</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span> *icache_policy_str[] = &#123;</span><br><span class="line">    [<span class="number">0</span> ... ICACHE_POLICY_PIPT] = <span class="string">&quot;RESERVED/UNKNOWN&quot;</span>,</span><br><span class="line">    [ICACHE_POLICY_VIPT] = <span class="string">&quot;VIPT&quot;</span>,</span><br><span class="line">    [ICACHE_POLICY_PIPT] = <span class="string">&quot;PIPT&quot;</span>,</span><br><span class="line">    [ICACHE_POLICY_VPIPT] = <span class="string">&quot;VPIPT&quot;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取CTR_EL0的CRT_CWG(Cache WriteBack Granule)</span></span><br><span class="line"><span class="comment">// 缓存写回的最大粒度2^(val) * 4Byte</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">unsigned</span> <span class="type">int</span> <span class="title function_">cache_type_cwg</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> (read_sysreg(CTR_EL0) &gt;&gt; CTR_CWG_SHIFT) &amp; CTR_CWG_MASK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通常情况下 cache_line_size = CWG</span></span><br><span class="line"><span class="comment">// 获取cache的line size 2^(CWG) * 4 = 4 &lt;&lt; CWG</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> <span class="title function_">cache_line_size</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> cwg = cache_type_cwg();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">4</span> &lt;&lt; cwg;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取CLIDR_EL1, Cache Level ID Register</span></span><br><span class="line"><span class="comment">// 获取cache的类型，读取CLIDR_EL1的CTYPE字段</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="keyword">enum</span> cache_type <span class="title function_">get_cache_type</span><span class="params">(<span class="type">int</span> level)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> clidr;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (level &gt; MAX_CACHE_LEVEL)</span><br><span class="line">    <span class="keyword">return</span> CACHE_TYPE_NOCACHE;</span><br><span class="line">  clidr = read_sysreg(clidr_el1);</span><br><span class="line">  <span class="keyword">return</span> CLIDR_CTYPE(clidr, level);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 获取每一级cache的way和set</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 从树莓派官网可以知道：</span></span><br><span class="line"><span class="comment"> * https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2711/README.md</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Caches: 32 KB data + 48 KB instruction L1 cache per core. 1MB L2 cache.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">get_cache_set_way</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> level, <span class="type">unsigned</span> <span class="type">int</span> ind)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> val;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> line_size, <span class="built_in">set</span>, way;</span><br><span class="line">  <span class="type">int</span> tmp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* 1. 先写CSSELR_EL1寄存器(Cache Size Selection Register)，告知要查询哪个cache</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="comment">// 写入level和缓存类型（0b0 data cache or unified cache 还是0b1 instruction</span></span><br><span class="line">  <span class="comment">// cache）</span></span><br><span class="line">  tmp = (level - <span class="number">1</span>) &lt;&lt; CSSELR_LEVEL_SHIFT | ind;</span><br><span class="line">  write_sysreg(tmp, CSSELR_EL1);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">   * 2.</span></span><br><span class="line"><span class="comment">   * 读取CCSIDR_EL1寄存器的值，当没有实现ARMv8.3-CCIDX时，这个寄存器只有低32为有效。</span></span><br><span class="line"><span class="comment">   * 注意这个寄存器有两种layout的方式。</span></span><br><span class="line"><span class="comment">   * */</span></span><br><span class="line">  val = read_sysreg(CCSIDR_EL1);</span><br><span class="line">  <span class="comment">// NumSets位域,描述cache的set数</span></span><br><span class="line">  <span class="built_in">set</span> = (val &amp; CCSIDR_NUMSETS_MASK) &gt;&gt; CCSIDR_NUMSETS_SHIFT;</span><br><span class="line">  <span class="built_in">set</span> += <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// Associativity位域,描述cache的way数</span></span><br><span class="line">  way = (val &amp; CCSIDR_ASS_MASK) &gt;&gt; CCSIDR_ASS_SHIFT;</span><br><span class="line">  way += <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// CCSIDR_EL1的LineSize位域</span></span><br><span class="line">  <span class="comment">// line_size_bytes = 1 &lt;&lt; (LineSize + 4)</span></span><br><span class="line">  line_size = (val &amp; CCSIDR_LINESIZE_MASK);</span><br><span class="line">  line_size = <span class="number">1</span> &lt;&lt; (line_size + <span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">  printk(<span class="string">&quot;          %s: set %u way %u line_size %u size %uKB\n&quot;</span>,</span><br><span class="line">         ind ? <span class="string">&quot;i-cache&quot;</span> : <span class="string">&quot;d/u cache&quot;</span>, <span class="built_in">set</span>, way, line_size,</span><br><span class="line">         (line_size * way * <span class="built_in">set</span>) / <span class="number">1024</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">init_cache_info</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="type">int</span> level;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> ctype;</span><br><span class="line"></span><br><span class="line">  printk(<span class="string">&quot;parse cache info:\n&quot;</span>);</span><br><span class="line">  <span class="comment">// 遍历每一级cache</span></span><br><span class="line">  <span class="keyword">for</span> (level = <span class="number">1</span>; level &lt;= MAX_CACHE_LEVEL; level++) &#123;</span><br><span class="line">    <span class="comment">/* 获取cache type */</span></span><br><span class="line">    ctype = get_cache_type(level);</span><br><span class="line">    <span class="comment">/* 如果cache type为NONCACHE，则退出循环 */</span></span><br><span class="line">    <span class="keyword">if</span> (ctype == CACHE_TYPE_NOCACHE) &#123;</span><br><span class="line">      level--;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    printk(<span class="string">&quot;   L%u: %s, cache line size(CWG) %u\n&quot;</span>, level,</span><br><span class="line">           cache_type_string[ctype], cache_line_size());</span><br><span class="line">    <span class="keyword">if</span> (ctype == CACHE_TYPE_SEPARATE) &#123;</span><br><span class="line">      get_cache_set_way(level, <span class="number">1</span>);</span><br><span class="line">      get_cache_set_way(level, <span class="number">0</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ctype == CACHE_TYPE_UNIFIED)</span><br><span class="line">      get_cache_set_way(level, <span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">   * 获取ICB，LOUU，LOC和LOUIS</span></span><br><span class="line"><span class="comment">   * ICB: Inner cache boundary</span></span><br><span class="line"><span class="comment">   * LOUU: 单核处理器PoU的cache边界。</span></span><br><span class="line"><span class="comment">   * LOC: PoC的cache边界</span></span><br><span class="line"><span class="comment">   * LOUIS:PoU for inner share的cache边界。</span></span><br><span class="line"><span class="comment">   * */</span></span><br><span class="line">  <span class="type">unsigned</span> clidr = read_sysreg(clidr_el1);</span><br><span class="line">  printk(<span class="string">&quot;   IBC:%u LOUU:%u LoC:%u LoUIS:%u\n&quot;</span>, CLIDR_ICB(clidr),</span><br><span class="line">         CLIDR_LOUU(clidr), CLIDR_LOC(clidr), CLIDR_LOUIS(clidr));</span><br><span class="line"></span><br><span class="line">  <span class="type">unsigned</span> ctr = read_sysreg(ctr_el0);</span><br><span class="line">  printk(<span class="string">&quot;   Detected %s I-cache\n&quot;</span>, icache_policy_str[CTR_L1IP(ctr)]);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> level;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="相关寄存器"><a href="#相关寄存器" class="headerlink" title="相关寄存器"></a>相关寄存器</h4><h5 id="CSSELR-EL1"><a href="#CSSELR-EL1" class="headerlink" title="CSSELR_EL1"></a>CSSELR_EL1</h5><blockquote>
+<p>Cache Size Selection Register</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001200813032.png" alt="CSSELR_EL1" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>63:5</td>
+<td><strong>RES0</strong></td>
+<td>保留位，读写无意义</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>TnD</strong></td>
+<td><strong>Allocation Tag not Data</strong>：是否选择单独的 Allocation Tag cache <br />      0b0 → 数据、指令或统一缓存  <br />      0b1 → 单独 Allocation Tag cache<br />注意：当 <code>InD = 1</code>（指令缓存）时，这个位为 RES0（无效）</td>
+</tr>
+<tr>
+<td>3:1</td>
+<td><strong>Level</strong></td>
+<td>要查询的缓存级别（Cache Level）<br />     0b000 → L1<br />     0b001 → L2<br />     0b010 → L3<br />     0b011 → L4<br />     0b100 → L5<br />     0b101 → L6<br />     0b110 → L7<br />其他值保留注意：如果选择了未实现的缓存级别，读取 CSSELR_EL1 返回值是不确定的</td>
+</tr>
+<tr>
+<td>0</td>
+<td><strong>InD</strong></td>
+<td><strong>Instruction not Data</strong>：缓存类型: <br />    0b0 → 数据或统一缓存 ( <strong>Data Cache or Unified Cache</strong> )<br />    0b1 → 指令缓存 ( <strong>Instruction Cache</strong> )<br/>如果选择未实现的缓存级别，读取 CSSELR_EL1 的 Level 和 InD 返回值是不确定的</td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001201006377.png" alt="TnD" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001201032409.png" alt="Level" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001201048212.png" alt="InD" loading="lazy"></p>
+<h5 id="CCSIDR-EL1"><a href="#CCSIDR-EL1" class="headerlink" title="CCSIDR_EL1"></a>CCSIDR_EL1</h5><blockquote>
+<p>Current Cache Size ID Register </p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001203428403.png" alt="CCSIDR_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001203446704.png" alt="Note" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>63:56</td>
+<td><strong>RES0</strong></td>
+<td>保留位</td>
+</tr>
+<tr>
+<td>55:32</td>
+<td><strong>NumSets</strong></td>
+<td>Cache 中的 set 数减 1 → 实际 set 数 &#x3D; NumSets + 1注意：set 数不一定是 2 的幂</td>
+</tr>
+<tr>
+<td>31:24</td>
+<td><strong>RES0</strong></td>
+<td>保留位</td>
+</tr>
+<tr>
+<td>23:3</td>
+<td><strong>Associativity</strong></td>
+<td>描述 cache 的 <strong>way 数</strong>，Cache 的关联度（ways）减 1 → 实际 associativity &#x3D; Associativity + 1注意：不一定是 2 的幂</td>
+</tr>
+<tr>
+<td>2:0</td>
+<td><strong>LineSize</strong></td>
+<td>Cache line 大小的 log2 减 4计算公式：<code>line_size_bytes = 1 &lt;&lt; (LineSize + 4)</code></td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001205609945.png" alt="Accessing the CCSIDR_EL1" loading="lazy"></p>
+<p>如果<strong>ARMv8.5-MemTag</strong> is <strong>implemented</strong> and enabed</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001203536572.png" alt="if ARMv8.5-MemTag is implemented and enabled" loading="lazy"></p>
+<h5 id="CCSIDR2-EL1"><a href="#CCSIDR2-EL1" class="headerlink" title="CCSIDR2_EL1"></a>CCSIDR2_EL1</h5><blockquote>
+<p>Current Cache Size ID Register 2</p>
+</blockquote>
+<p><strong>ARMv8.3-CCIDX is implemented</strong>才有效</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001202608768.png" alt="CCSIDR2_EL1" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>63:24</td>
+<td>RES0</td>
+<td>保留位，读写无意义</td>
+</tr>
+<tr>
+<td>23:0</td>
+<td>NumSets</td>
+<td>Cache 中的 set 数目减 1<strong>计算方法</strong>：<code>NumSets + 1</code> 得到实际的 set 数<strong>注意</strong>：set 数不一定是 2 的幂</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>用途</strong>：查询指定 cache 的 <strong>set 数量</strong>。</li>
+<li>该寄存器一般与 <strong>CSSELR_EL1</strong> 配合使用：<ol>
+<li>写 CSSELR_EL1 选择 Cache Level 和类型（数据&#x2F;指令&#x2F;Tag）</li>
+<li>读 CCSIDR2_EL1 得到该 cache 的 set 数</li>
+</ol>
+</li>
+<li><strong>NumSets &#x3D; 0</strong> 表示 <strong>1 个 set</strong></li>
+<li><strong>NumSets &gt; 0</strong> 表示 <strong>实际 set 数 &#x3D; NumSets + 1</strong></li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001202632041.png" alt="NumSets" loading="lazy"></p>
+<p>读取CCSIDR2_EL1注意事项：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001202712689.png" alt="accessing CCSIDR2_EL1" loading="lazy"></p>
+<h5 id="CLIDR-EL1"><a href="#CLIDR-EL1" class="headerlink" title="CLIDR_EL1"></a>CLIDR_EL1</h5><blockquote>
+<p>Cache Level ID Register</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001210043310.png" alt="CLIDR_EL1" loading="lazy"></p>
+<ul>
+<li><strong>用途</strong>：<ul>
+<li>标识处理器每一级 cache 的类型（Instruction&#x2F;Data&#x2F;Unified&#x2F;Tag）。</li>
+<li>指出可以使用 <strong>Set&#x2F;Way cache maintenance instructions</strong> 管理的 cache。</li>
+<li>提供 <strong>缓存层次的一致性与共享级别信息</strong>（LoC、LoU、LoUIS）。</li>
+<li>支持最多 7 级缓存。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>63:47</td>
+<td>RES0</td>
+<td>保留位</td>
+</tr>
+<tr>
+<td>46:35</td>
+<td>Ttype（n&#x3D;1..7）</td>
+<td>Tag Cache 类型 <br/>    0b00: 无 Tag Cache<br />    0b01: Separate Allocation Tag Cache<br />    0b10: Unified Allocation Tag + Data (同一行)<br />    0b11: Unified Allocation Tag + Data (分行)</td>
+</tr>
+<tr>
+<td>34:32</td>
+<td>ICB</td>
+<td>Inner Cache Boundary（内部缓存边界）<br/>    0b000: Not disclosed by this mechanism.<br />    0b001: L1 is the highest <strong>Inner Cacheable</strong> level<br />    0b010: L2 is the highest <strong>Inner Cacheable</strong> level<br />    …….<br />    0b110: L6 is the highest <strong>Inner Cacheable</strong> level<br />    0b111: L7 is the highest <strong>Inner Cacheable</strong> level</td>
+</tr>
+<tr>
+<td>31:29</td>
+<td>LoUU</td>
+<td>Level of Unification Uniprocessor</td>
+</tr>
+<tr>
+<td>28:26</td>
+<td>LoC</td>
+<td>Level of Coherence</td>
+</tr>
+<tr>
+<td>25:23</td>
+<td>LoUIS</td>
+<td>Level of Unification Inner Shareable</td>
+</tr>
+<tr>
+<td>22:0</td>
+<td>Ctype（n&#x3D;1..7）</td>
+<td>Cache Type（每一级缓存类型）<br />     0b000: <strong>No cache</strong><br />     0b001: <strong>Instruction cache</strong> only<br />     0b010: <strong>Data cache</strong> only<br />     0b011: <strong>Seprate instruction and data cache</strong><br />     0b100: <strong>Unified cache</strong></td>
+</tr>
+</tbody></table>
+<h5 id="CTR-EL0"><a href="#CTR-EL0" class="headerlink" title="CTR_EL0"></a>CTR_EL0</h5><blockquote>
+<p>Cache Type Regiser</p>
+</blockquote>
+<p>作用是提供cache的架构信息</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001195323638.png" alt="CTR_EL0" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>位域</th>
+<th>Bits</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>63-38</td>
+<td><strong>RES0</strong></td>
+<td>Reserved</td>
+<td>保留，读出为 0</td>
+</tr>
+<tr>
+<td>37-32</td>
+<td><strong>TimeLine</strong></td>
+<td>Tag minimum Line</td>
+<td>Tag 最小 line 粒度，表示 Allocation Tag 覆盖的最小 cache line 的大小（log2(以 word&#x3D;4B 为单位))与**Memory Tagging Extension (MTE)**有关</td>
+</tr>
+<tr>
+<td>31</td>
+<td><strong>RES1</strong></td>
+<td>Reserved</td>
+<td>保留，固定为 1</td>
+</tr>
+<tr>
+<td>30</td>
+<td><strong>RES0</strong></td>
+<td>Reserved</td>
+<td>保留，固定为 0</td>
+</tr>
+<tr>
+<td>29</td>
+<td><strong>DIC</strong></td>
+<td><strong>Instruction cache invalidation requirements for data to instruction coherence</strong></td>
+<td>决定是否需要做 I-cache invalidate 来保证数据写入对 I-cache 可见<br/>      0 &#x3D; 数据写入后，必须 invalidate I-cache 才能让指令取到最新数据。<br/>      1 &#x3D; 不需要 invalidate I-cache。</td>
+</tr>
+<tr>
+<td>28</td>
+<td><strong>IDC</strong></td>
+<td><strong>Data cache clean requirements for instruction to data coherence</strong></td>
+<td>决定是否需要清理（clean）D-cache 来保证 I&#x2F;D 一致性<br/>      0 &#x3D; 数据 cache 需要 clean 到 PoU 才能保证 I&#x2F;D 一致性。<br/>      1 &#x3D; 不需要 D-cache clean。<br />      通常现代核都置 1，表示硬件自动保证一致性</td>
+</tr>
+<tr>
+<td>27-24</td>
+<td><strong>CWG</strong></td>
+<td><strong>Cache Writeback Granule</strong></td>
+<td><strong>Cache Writeback Granule</strong>，缓存写回的最大粒度（log2(以 word&#x3D;4B 为单位)）。表示当一个 cache line 写回时，可能影响的最大内存块大小（以 word&#x3D;4B 为单位）。<br/>例如 CWG&#x3D;0b0100 → 2^(4) &#x3D; 16 words &#x3D; 64 bytes。</td>
+</tr>
+<tr>
+<td>23-20</td>
+<td><strong>ERG</strong></td>
+<td><strong>Exclusives reservation granule</strong></td>
+<td><strong>Exclusive Reservation Granule</strong>，原子指令（LDXR&#x2F;STXR）的最大 reservation 范围粒度（log2(以 word&#x3D;4B 为单位)）</td>
+</tr>
+<tr>
+<td>19-16</td>
+<td><strong>DminLine</strong></td>
+<td><strong>D minline</strong></td>
+<td>Data cache 最小 line 大小（log2(以 word&#x3D;4B 为单位)）</td>
+</tr>
+<tr>
+<td>15-14</td>
+<td><strong>L1IP</strong></td>
+<td><strong>Level 1 Instruction cache policy</strong></td>
+<td>L1 指令缓存寻址策略：<br/>    0 &#x3D; <strong>VPIPT</strong><br />    1 &#x3D; <strong>Reserved</strong><br />    2 &#x3D; <strong>VIPT</strong><br />    3 &#x3D; <strong>PIPT</strong></td>
+</tr>
+<tr>
+<td>13-12</td>
+<td><strong>RES1</strong></td>
+<td>Reserved</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>3-0</td>
+<td><strong>IMINLINE &#x2F; DMINLINE</strong></td>
+<td><strong>Instruction minline &#x2F; Data minline</strong></td>
+<td>Instruction cache 最小 line 大小（log2(以 word&#x3D;4B 为单位)）</td>
+</tr>
+</tbody></table>
+<p><strong>L1Ip</strong>  </p>
+<p>表示L1 Instrucion Cache的类型：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001195429878.png" alt="L1Ip" loading="lazy"></p>
+<p><strong>Instruction cache invalidation requirements for data to instruction coherence</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001214717643.png" alt="DIC" loading="lazy"></p>
+<p><strong>Data cache clean requirements from instruction to data coherence</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001214810306.png" alt="IDC" loading="lazy"></p>
+<p><strong>Cache Writeback Granule</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251001215853347.png" alt="CWG" loading="lazy"></p>
+<p>通常情况下，<strong>CWG &#x3D; 最大 cache line 大小</strong>，因为写回是以整行（cache line）为单位的。</p>
+<p>但是，ARM 规范允许微架构不同：</p>
+<ol>
+<li><strong>CWG ≥ cache line size</strong>：有些实现可能在写回时会把多个 cache line 合并成更大的突发写（burst），比如 128B。</li>
+<li><strong>CWG &#x3D; cache line size</strong>：常见情况，比如 line&#x3D;64B → CWG&#x3D;0b0100（16 words）。</li>
+<li><strong>CWG 未提供</strong> (<code>0b0000</code>)：必须假设<strong>最大写回粒度是 2KB</strong>，或者自己去读 Cache Size ID Registers 推算。</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2510250/">https://even629.com/posts/2510250/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ARM/">ARM</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E5%86%85%E9%83%A8%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">1.</span> <span class="toc-text">Cache内部架构图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">Cache的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E6%98%A0%E5%B0%84%E6%96%B9%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">Cache映射方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E6%98%A0%E5%B0%84"><span class="toc-number">3.1.</span> <span class="toc-text">直接映射</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E7%9B%B8%E8%81%94"><span class="toc-number">3.2.</span> <span class="toc-text">全相联</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%84%E7%9B%B8%E8%81%94"><span class="toc-number">3.3.</span> <span class="toc-text">组相联</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%A9%E7%90%86%E9%AB%98%E9%80%9F%E7%BC%93%E5%AD%98"><span class="toc-number">4.</span> <span class="toc-text">物理高速缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E9%AB%98%E9%80%9F%E7%BC%93%E5%AD%98"><span class="toc-number">5.</span> <span class="toc-text">虚拟高速缓存</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%AB%E5%90%8D%E9%97%AE%E9%A2%98-Aliasing"><span class="toc-number">5.1.</span> <span class="toc-text">别名问题(Aliasing)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%8C%E5%90%8D%E9%97%AE%E9%A2%98-Homonyms"><span class="toc-number">5.2.</span> <span class="toc-text">同名问题(Homonyms)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E9%80%9F%E7%BC%93%E5%AD%98%E5%88%86%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">高速缓存分类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#VIPT%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B"><span class="toc-number">6.1.</span> <span class="toc-text">VIPT工作过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#VIPT%E5%88%AB%E5%90%8D%E9%97%AE%E9%A2%98"><span class="toc-number">6.2.</span> <span class="toc-text">VIPT别名问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E5%B1%82%E7%BA%A7"><span class="toc-number">7.</span> <span class="toc-text">Cache层级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BA%A7cache%E7%9A%84%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">8.</span> <span class="toc-text">多级cache的处理流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BA%A7cache%E7%9A%84%E8%AE%BF%E9%97%AE%E5%BB%B6%E8%BF%9F"><span class="toc-number">9.</span> <span class="toc-text">多级cache的访问延迟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E7%9A%84%E7%AD%96%E7%95%A5%EF%BC%88Cache-Policies%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">Cache的策略（Cache Policies）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Write-Back%E5%92%8CWrite-Through"><span class="toc-number">10.1.</span> <span class="toc-text">Write Back和Write Through</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inner-%E5%92%8C-Outer-Shareability"><span class="toc-number">10.2.</span> <span class="toc-text">Inner 和 Outer Shareability</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E5%8F%96%E6%8C%87%E4%BB%A4"><span class="toc-number">11.</span> <span class="toc-text">预取指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F"><span class="toc-number">11.1.</span> <span class="toc-text">指令格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">11.2.</span> <span class="toc-text">示例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%A2%84%E5%8F%96%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E5%88%B0-L1%EF%BC%8C%E4%BF%9D%E7%95%99%E5%9C%A8%E7%BC%93%E5%AD%98"><span class="toc-number">11.2.1.</span> <span class="toc-text">预取读取数据到 L1，保留在缓存</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%A2%84%E5%8F%96%E4%B8%80%E6%AC%A1%E6%80%A7%E8%AF%BB%E5%8F%96%EF%BC%88%E6%B5%81%E5%BC%8F%E8%AE%BF%E9%97%AE%EF%BC%89"><span class="toc-number">11.2.2.</span> <span class="toc-text">预取一次性读取（流式访问）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AD%89%E4%BB%B7%E7%AB%8B%E5%8D%B3%E6%95%B0%E5%86%99%E6%B3%95"><span class="toc-number">11.2.3.</span> <span class="toc-text">等价立即数写法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Point-of-Unification-PoU-%E5%92%8CPoint-of-Coherency-PoC"><span class="toc-number">12.</span> <span class="toc-text">Point of Unification(PoU)和Point of Coherency(PoC)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PoU%E5%92%8CPoC%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">12.1.</span> <span class="toc-text">PoU和PoC的区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E7%BB%B4%E6%8A%A4"><span class="toc-number">13.</span> <span class="toc-text">Cache维护</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Cache%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F"><span class="toc-number">13.1.</span> <span class="toc-text">Cache指令格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%901"><span class="toc-number">13.2.</span> <span class="toc-text">例子1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%902"><span class="toc-number">13.3.</span> <span class="toc-text">例子2</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache-discovery"><span class="toc-number">14.</span> <span class="toc-text">Cache discovery</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E5%AE%9E%E9%AA%8C%E4%B8%80%EF%BC%9Acache%E7%9A%84%E6%9E%9A%E4%B8%BE-Cache-Discovery"><span class="toc-number">15.</span> <span class="toc-text">Cache实验一：cache的枚举 Cache Discovery</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-number">15.1.</span> <span class="toc-text">代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">15.2.</span> <span class="toc-text">相关寄存器</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#CSSELR-EL1"><span class="toc-number">15.2.1.</span> <span class="toc-text">CSSELR_EL1</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#CCSIDR-EL1"><span class="toc-number">15.2.2.</span> <span class="toc-text">CCSIDR_EL1</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#CCSIDR2-EL1"><span class="toc-number">15.2.3.</span> <span class="toc-text">CCSIDR2_EL1</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#CLIDR-EL1"><span class="toc-number">15.2.4.</span> <span class="toc-text">CLIDR_EL1</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#CTR-EL0"><span class="toc-number">15.2.5.</span> <span class="toc-text">CTR_EL0</span></a></li></ol></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'c21518e0b1922ef3bb1592c8416e1aae'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

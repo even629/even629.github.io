@@ -1,0 +1,637 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux热插拔 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux热插拔">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux热插拔">
+<meta property="og:url" content="https://even629.com/posts/2512023/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Linux热插拔">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2025-12-02T12:31:13.000Z">
+<meta property="article:modified_time" content="2025-12-02T12:31:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2512023/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux热插拔',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux热插拔</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-02T12:31:13.000Z" title="发表于 2025-12-02 20:31:13">2025-12-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-02T12:31:13.000Z" title="更新于 2025-12-02 20:31:13">2025-12-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">7.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>29分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2512023/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-02</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h2 id="热插拔"><a href="#热插拔" class="headerlink" title="热插拔"></a>热插拔</h2><p><strong>热插拔是指在设备运行的情况下，能够安全地插入或拔出硬件设备，而无需关闭或重启系统</strong>。这意味着你可以在计算机或其他电子设备上插入或拔出硬件组件（比如 USB 设备，扩展卡，硬件驱动器等），而无需关机或中断正在进行的操作。</p>
+<p>热插拔的主要目的是提供方便性和灵活性。通过热插拔，你可以快速更换或添加硬件设备，而无需停止正在进行的任务。这在许多场景下非常有用，比如：</p>
+<ol>
+<li>USB 设备：你可以随时插入或拔出 USB 设备，比如鼠标，键盘，打印机，存储设备等，而无需重新启动系统。</li>
+<li>硬盘驱动器：在某些服务器或存储系统中，你可以在运行时添加或替换硬盘驱动器，以扩展存储容量或替换故障驱动器。</li>
+<li>扩展卡：你可以在计算机上插入或拔出显卡，网卡或声卡等扩展卡，以满足不同的需求或升级硬件性能。</li>
+</ol>
+<p>为了支持热插拔功能，硬件设备和系统必须具备相应的支持。硬件方面，设备接口必须设计成可以插入和拔出而不会损坏设备或系统。系统需要提供相应的驱动程序和管理功能，以便在插入和拔出设备时进行正确的配置和识别。</p>
+<h2 id="热插拔的机制"><a href="#热插拔的机制" class="headerlink" title="热插拔的机制"></a>热插拔的机制</h2><p><strong>热插拔是内核和用户空间之间，通过调用用户空间程序（如 hotplug、udev 和 mdev）的交互。当需要通知用户内核发生了某种热插拔事件时，内核才调用这个用户空间程序来实现交互。</strong></p>
+<p>在 Linux 内核中，热插拔机制支持 USB 设备、PCI 设备甚至 CPU 等部件的动态插入和拔出。这个机制实现了底层硬件、内核空间和用户空间程序之间的连接，并且一直在不断演变和改进。设备文件系统是用来管理设备文件的一种机制，在 Linux 中有三种常见的设备文件系统：devfs、mdev 和 udev。</p>
+<ul>
+<li>devfs：devfs 是基于内核的动态设备文件系统，最早出现在 Linux 2.3.46 内核中。它通过动态创建和管理设备节点的方式来处理设备文件。然而，devfs 存在一些限制和性能问题，从 Linux 2.6.13 版本开始被移除。</li>
+<li><strong>mdev</strong>：mdev 是一个轻量级的热插拔设备文件系统，通常用于嵌入式 Linux 系统。它是 udev的简化版本，<strong>使用 uevent_helper 机制</strong>来处理设备的插入和拔出事件。mdev 在设备插入时调用相应的用户程序来创建设备节点。</li>
+<li><strong>udev</strong>：udev 是目前在 PC 机上广泛使用的热插拔设备文件系统。它<strong>基于 netlink 机制</strong>，监听内核发送的 uevent 来处理设备的插入和拔出。udev 能够动态创建和管理设备节点，并在设备插入时加载适当的驱动程序。它提供了丰富的配置选项，使用户能够灵活地管理设备文件。</li>
+</ul>
+<h2 id="内核发送事件到用户空间"><a href="#内核发送事件到用户空间" class="headerlink" title="内核发送事件到用户空间"></a>内核发送事件到用户空间</h2><p><code>kobject_uevent</code> 是 Linux 内核中的一个函数，用于生成和发送 uevent 事件。它是 udev 和其他设备管理工具与内核通信的一种方式。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lib/kboject_uevent.c</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * kobject_uevent - notify userspace by sending an uevent</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @kobj: struct kobject that the action is happening to</span></span><br><span class="line"><span class="comment"> * @action: action that is happening</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Returns 0 if kobject_uevent() is completed with success or the</span></span><br><span class="line"><span class="comment"> * corresponding error when it fails.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">kobject_uevent</span><span class="params">(<span class="keyword">struct</span> kobject *kobj, <span class="keyword">enum</span> kobject_action action)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> kobject_uevent_env(kobj, action, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(kobject_uevent);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<ul>
+<li><strong>kobj</strong> : 要发送 uevent 事件的内核对象（kobject）</li>
+<li><strong>action</strong>: 表示触发 uevent 的动作，可以是设备的插入，拔出，属性变化等。以下是一些常见的 action 参数值。这些动作类型用于描述设备发生的不同事件，通过将相应的动作类型作为action 参数传递给 kobject_uevent 函数，可以触发相应的 uevent 事件，通知用户空间的 udev进行相应的操作。<ul>
+<li><strong>KOBJ_ADD</strong>：表示设备的添加或插入操作，表示添加一个对象到内核对象系统中。</li>
+<li><strong>KOBJ_REMOVE</strong>：表示设备的移除或拔出操作，表示从内核对象系统中删除一个对象。</li>
+<li><strong>KOBJ_CHANGE</strong>：表示设备属性的修改操作，表示对内核对象进行更改，例如属性修改等。</li>
+<li><strong>KOBJ_MOVE</strong>：表示设备的移动操作，即设备从一个位置移动到另一个位置。</li>
+<li><strong>KOBJ_ONLINE</strong>：表示设备的上线操作，即设备从离线状态变为在线状态，使其可以被访问。</li>
+<li><strong>KOBJ_OFFLINE</strong>：表示设备的离线操作，即设备从在线状态变为离线状态，使其不可以被访问。</li>
+<li><strong>KOBJ_BIND</strong>：表示将一个设备连接到内核对象上</li>
+<li><strong>KOBJ_UNBIND</strong>: 表示从内核对象上将一个设备解绑</li>
+<li><strong>KOBJ_MAX</strong>:表示枚举类型的最大值，通常用于表示没有任何操作行为。</li>
+</ul>
+</li>
+</ul>
+<p>kobject_uevent 函数的主要作用是在内核中生成 uevent 事件，并通过 netlink 机制将该事件发送给用户空间的 udev。在调用该函数时，内核会将相关的设备信息和事件类型封装为 uevent消息，并通过 netlink 套接字将消息发送给用户空间。</p>
+<p>用户空间的 udev 会接收到这些 uevent 消息，并根据消息中的设备信息和事件类型来执行相应的操作，例如创建或删除设备节点，加载或卸载驱动程序等</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/slab.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/configfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kobject.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kobject</span> *<span class="title">mykobject01</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kset</span> *<span class="title">mykset</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kobj_type</span> <span class="title">mytype</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块的初始化函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">mykobj_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建并添加一个kset</span></span><br><span class="line">    mykset = kset_create_and_add(<span class="string">&quot;mykset&quot;</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分配并初始化一个kobject</span></span><br><span class="line">    mykobject01 = kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> kobject), GFP_KERNEL);</span><br><span class="line">    mykobject01-&gt;kset = mykset;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化并添加kobject到kset</span></span><br><span class="line">    ret = kobject_init_and_add(mykobject01, &amp;mytype, <span class="literal">NULL</span>, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;mykobject01&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 触发一个uevent事件，表示kobject的属性发生了变化</span></span><br><span class="line">    ret = kobject_uevent(mykobject01, KOBJ_CHANGE);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块退出函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">mykobj_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 释放kobject</span></span><br><span class="line">    kobject_put(mykobject01);</span><br><span class="line">    kset_unregister(mykset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(mykobj_init);  <span class="comment">// 指定模块的初始化函数</span></span><br><span class="line">module_exit(mykobj_exit);  <span class="comment">// 指定模块的退出函数</span></span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);    <span class="comment">// 模块使用的许可证</span></span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;topeet&quot;</span>);  <span class="comment">// 模块的作者</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="udevadm-命令"><a href="#udevadm-命令" class="headerlink" title="udevadm 命令"></a>udevadm 命令</h3><p>udevadm 是一个用于与 udev 设备管理器进行交互的命令行工具。它提供了一系列的子命令，用于查询和管理设备、触发 uevent 事件以及执行其他与 udev 相关的操作。一些常见的udevadm 子命令及其功能如下：</p>
+<ol>
+<li><strong>udevadm info</strong>：用于获取设备的详细信息，包括设备路径、属性、驱动程序等。</li>
+<li><strong>udevadm monitor</strong>：用于监视和显示当前系统中的 uevent 事件。它会实时显示设备的插入、拔出以及其他相关事件。</li>
+<li><strong>udevadm trigger</strong>：用于手动触发设备的 uevent 事件。可以使用该命令模拟设备的插入、拔出等操作，以便触发相应的事件处理。</li>
+<li><strong>udevadm settle</strong>：用于等待 udev 处理所有已排队的 uevent 事件。它会阻塞直到 udev 完成当前所有的设备处理操作。</li>
+<li><strong>udevadm control</strong>：用于与 udev 守护进程进行交互，控制其行为。例如，可以使用该命令重新加载 udev 规则、设置日志级别等。</li>
+<li><strong>udevadm test</strong>：用于测试 udev 规则的匹配和执行过程。可以通过该命令测试特定设备是否能够正确触发相应的规则。</li>
+</ol>
+<h3 id="kobject-uevent"><a href="#kobject-uevent" class="headerlink" title="kobject_uevent()"></a><code>kobject_uevent()</code></h3><p>去掉了创建 kset 的步骤，则用户空间无法收到事件，分析如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * kobject_uevent_env - send an uevent with environmental data</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @kobj: struct kobject that the action is happening to</span></span><br><span class="line"><span class="comment"> * @action: action that is happening</span></span><br><span class="line"><span class="comment"> * @envp_ext: pointer to environmental data</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Returns 0 if kobject_uevent_env() is completed with success or the</span></span><br><span class="line"><span class="comment"> * corresponding error when it fails.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">kobject_uevent_env</span><span class="params">(<span class="keyword">struct</span> kobject *kobj, <span class="keyword">enum</span> kobject_action action,</span></span><br><span class="line"><span class="params">		       <span class="type">char</span> *envp_ext[])</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kobj_uevent_env</span> *<span class="title">env</span>;</span><span class="comment">//指向 kobj_uevent_env 结构体的指针，用于存储发送的事件和环境变量</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *action_string = kobject_actions[action];<span class="comment">//事件的类型</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *devpath = <span class="literal">NULL</span>;<span class="comment">//存放 kobject 的路径</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *subsystem;<span class="comment">//存放所属子系统的名称</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kobject</span> *<span class="title">top_kobj</span>;</span><span class="comment">//指向顶层 top_kobj 的 kobject 指针</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kset</span> *<span class="title">kset</span>;</span><span class="comment">//指向 kset 的指针，表示 kobject 所属的 kset</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">kset_uevent_ops</span> *<span class="title">uevent_ops</span>;</span><span class="comment">//指向 struct kset_uevent_ops 结构体的指针</span></span><br><span class="line">	<span class="type">int</span> i = <span class="number">0</span>;<span class="comment">//计数器 i,用来编译环境变量数组</span></span><br><span class="line">	<span class="type">int</span> retval = <span class="number">0</span>;<span class="comment">//表示函数的执行结果，也就是返回值</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Mark &quot;remove&quot; event done regardless of result, for some subsystems</span></span><br><span class="line"><span class="comment">	 * do not want to re-trigger &quot;remove&quot; event via automatic cleanup.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (action == KOBJ_REMOVE)<span class="comment">//检查action是否为KOBJ_REMOVE， 如果是 ， 则设置kobj-&gt;state_remove_uevent_sent 为 1，表示“remove”事件已发送。</span></span><br><span class="line">		kobj-&gt;state_remove_uevent_sent = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	pr_debug(<span class="string">&quot;kobject: &#x27;%s&#x27; (%p): %s\n&quot;</span>,</span><br><span class="line">		 kobject_name(kobj), kobj, __func__);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* search the kset we belong to */</span></span><br><span class="line">	top_kobj = kobj;</span><br><span class="line">	<span class="keyword">while</span> (!top_kobj-&gt;kset &amp;&amp; top_kobj-&gt;parent)<span class="comment">// 通过循环查找 kobj 所属的 kset,直到找到具体有效 kset 的顶层 kobj，即 kset 的根节点。</span></span><br><span class="line">		top_kobj = top_kobj-&gt;parent;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!top_kobj-&gt;kset) &#123;<span class="comment">// 如果kobj没有kset,直接返回</span></span><br><span class="line">		pr_debug(<span class="string">&quot;kobject: &#x27;%s&#x27; (%p): %s: attempted to send uevent &quot;</span></span><br><span class="line">			 <span class="string">&quot;without kset!\n&quot;</span>, kobject_name(kobj), kobj,</span><br><span class="line">			 __func__);</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	kset = top_kobj-&gt;kset;</span><br><span class="line">	uevent_ops = kset-&gt;uevent_ops;<span class="comment">// 顶层kset的uevent_ops结构体</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* skip the event, if uevent_suppress is set*/</span></span><br><span class="line">	<span class="keyword">if</span> (kobj-&gt;uevent_suppress) &#123;<span class="comment">// 检 查 kobj-&gt;uevent_suppress 是 否 为 1 ， 如 果 设 置kobj-&gt;uevent_suppress，则输出调试信息表示该事件被跳过</span></span><br><span class="line">		pr_debug(<span class="string">&quot;kobject: &#x27;%s&#x27; (%p): %s: uevent_suppress &quot;</span></span><br><span class="line">				 <span class="string">&quot;caused the event to drop!\n&quot;</span>,</span><br><span class="line">				 kobject_name(kobj), kobj, __func__);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/* skip the event, if the filter returns zero. */</span></span><br><span class="line">	<span class="keyword">if</span> (uevent_ops &amp;&amp; uevent_ops-&gt;filter)</span><br><span class="line">		<span class="keyword">if</span> (!uevent_ops-&gt;filter(kset, kobj)) &#123;</span><br><span class="line">			pr_debug(<span class="string">&quot;kobject: &#x27;%s&#x27; (%p): %s: filter function &quot;</span></span><br><span class="line">				 <span class="string">&quot;caused the event to drop!\n&quot;</span>,</span><br><span class="line">				 kobject_name(kobj), kobj, __func__);</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* originating subsystem */</span></span><br><span class="line">    <span class="comment">// 根据 uevent_ops 中的 name 字段获取原始子系统的名称。如果 uevent_ops-&gt;name 存在，则调用 uevent_ops-&gt;name(kset, kobj)函数获取子系统名称，否则使用 kset 的名称作为子系统名称。</span></span><br><span class="line">	<span class="keyword">if</span> (uevent_ops &amp;&amp; uevent_ops-&gt;name)</span><br><span class="line">		subsystem = uevent_ops-&gt;name(kset, kobj);</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		subsystem = kobject_name(&amp;kset-&gt;kobj);</span><br><span class="line">	<span class="keyword">if</span> (!subsystem) &#123;</span><br><span class="line">		pr_debug(<span class="string">&quot;kobject: &#x27;%s&#x27; (%p): %s: unset subsystem caused the &quot;</span></span><br><span class="line">			 <span class="string">&quot;event to drop!\n&quot;</span>, kobject_name(kobj), kobj,</span><br><span class="line">			 __func__);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* environment buffer */</span></span><br><span class="line">	env = kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> kobj_uevent_env), GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (!env)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* complete object path */</span></span><br><span class="line">	devpath = kobject_get_path(kobj, GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (!devpath) &#123;</span><br><span class="line">		retval = -ENOENT;</span><br><span class="line">		<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* default keys */</span></span><br><span class="line">	retval = add_uevent_var(env, <span class="string">&quot;ACTION=%s&quot;</span>, action_string);</span><br><span class="line">	<span class="keyword">if</span> (retval)</span><br><span class="line">		<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">	retval = add_uevent_var(env, <span class="string">&quot;DEVPATH=%s&quot;</span>, devpath);</span><br><span class="line">	<span class="keyword">if</span> (retval)</span><br><span class="line">		<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">	retval = add_uevent_var(env, <span class="string">&quot;SUBSYSTEM=%s&quot;</span>, subsystem);</span><br><span class="line">	<span class="keyword">if</span> (retval)</span><br><span class="line">		<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* keys passed in from the caller */</span></span><br><span class="line">	<span class="keyword">if</span> (envp_ext) &#123;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; envp_ext[i]; i++) &#123;</span><br><span class="line">			retval = add_uevent_var(env, <span class="string">&quot;%s&quot;</span>, envp_ext[i]);</span><br><span class="line">			<span class="keyword">if</span> (retval)</span><br><span class="line">				<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* let the kset specific function add its stuff */</span></span><br><span class="line">	<span class="keyword">if</span> (uevent_ops &amp;&amp; uevent_ops-&gt;uevent) &#123;</span><br><span class="line">		retval = uevent_ops-&gt;uevent(kset, kobj, env);</span><br><span class="line">		<span class="keyword">if</span> (retval) &#123;</span><br><span class="line">			pr_debug(<span class="string">&quot;kobject: &#x27;%s&#x27; (%p): %s: uevent() returned &quot;</span></span><br><span class="line">				 <span class="string">&quot;%d\n&quot;</span>, kobject_name(kobj), kobj,</span><br><span class="line">				 __func__, retval);</span><br><span class="line">			<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> (action) &#123;</span><br><span class="line">	<span class="keyword">case</span> KOBJ_ADD:</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * Mark &quot;add&quot; event so we can make sure we deliver &quot;remove&quot;</span></span><br><span class="line"><span class="comment">		 * event to userspace during automatic cleanup. If</span></span><br><span class="line"><span class="comment">		 * the object did send an &quot;add&quot; event, &quot;remove&quot; will</span></span><br><span class="line"><span class="comment">		 * automatically generated by the core, if not already done</span></span><br><span class="line"><span class="comment">		 * by the caller.</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		kobj-&gt;state_add_uevent_sent = <span class="number">1</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">case</span> KOBJ_UNBIND:</span><br><span class="line">		zap_modalias_env(env);</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	mutex_lock(&amp;uevent_sock_mutex);</span><br><span class="line">	<span class="comment">/* we will send an event, so request a new sequence number */</span></span><br><span class="line">    <span class="comment">// 将一个名为 &quot;SEQNUM&quot; 的环境变量添加到 uevent 环境变量列表中，并将其值</span></span><br><span class="line"> 	<span class="comment">//设置为 uevent_seqnum 的值加 1。其中，add_uevent_var 是一个内部函数，用于将一个键值</span></span><br><span class="line">	<span class="comment">//对添加到 uevent 环境变量列表中。如果添加失败，函数将返回一个非零值，同时会释放</span></span><br><span class="line">	<span class="comment">//uevent_sock_mutex 互斥锁并跳转到 exit 标签处进行清理操作。这个函数的主要作用是为</span></span><br><span class="line">	<span class="comment">//uevent 事件添加一个唯一的序列号，以便在处理 uevent 事件时可以识别它们的顺序。通俗</span></span><br><span class="line">	<span class="comment">//的话讲就是每次发送一个事件,都要有它的事件号,该事件号不能重复，也会被加到环境变量里面。</span></span><br><span class="line">	retval = add_uevent_var(env, <span class="string">&quot;SEQNUM=%llu&quot;</span>, ++uevent_seqnum);</span><br><span class="line">	<span class="keyword">if</span> (retval) &#123;</span><br><span class="line">		mutex_unlock(&amp;uevent_sock_mutex);</span><br><span class="line">		<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	retval = kobject_uevent_net_broadcast(kobj, env, action_string,</span><br><span class="line">					      devpath);<span class="comment">// 内核广播一个uevent事件</span></span><br><span class="line">	mutex_unlock(&amp;uevent_sock_mutex);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_UEVENT_HELPER</span></span><br><span class="line">	<span class="comment">/* call uevent_helper, usually only enabled during early boot */</span></span><br><span class="line">	<span class="keyword">if</span> (uevent_helper[<span class="number">0</span>] &amp;&amp; !kobj_usermode_filter(kobj)) &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">subprocess_info</span> *<span class="title">info</span>;</span></span><br><span class="line"></span><br><span class="line">		retval = add_uevent_var(env, <span class="string">&quot;HOME=/&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span> (retval)</span><br><span class="line">			<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">		retval = add_uevent_var(env,</span><br><span class="line">					<span class="string">&quot;PATH=/sbin:/bin:/usr/sbin:/usr/bin&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span> (retval)</span><br><span class="line">			<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">		retval = init_uevent_argv(env, subsystem);</span><br><span class="line">		<span class="keyword">if</span> (retval)</span><br><span class="line">			<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line"></span><br><span class="line">		retval = -ENOMEM;</span><br><span class="line">		info = call_usermodehelper_setup(env-&gt;argv[<span class="number">0</span>], env-&gt;argv,</span><br><span class="line">						 env-&gt;envp, GFP_KERNEL,</span><br><span class="line">						 <span class="literal">NULL</span>, cleanup_uevent_env, env);</span><br><span class="line">		<span class="keyword">if</span> (info) &#123;</span><br><span class="line">			retval = call_usermodehelper_exec(info, UMH_NO_WAIT);</span><br><span class="line">			env = <span class="literal">NULL</span>;	<span class="comment">/* freed by cleanup_uevent_env */</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span>:</span><br><span class="line">	kfree(devpath);</span><br><span class="line">	kfree(env);</span><br><span class="line">	<span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(kobject_uevent_env);</span><br></pre></td></tr></table></figure>
+
+<p>因为 uevent 是通过 netlink socket 发送给用户空间的应用程序的，而netlink socket 是基于 kset 的。</p>
+<p><code>kobject_uevent_net_broadcast</code> 是一个内核函数，用于将一个 uevent 事件发送到系统中所有的网络命名空间中。它的参数包括 kobj，env，action_string 和 devpath。</p>
+<ul>
+<li><strong>kobj</strong> 是与uevent 事件相关的内核对象</li>
+<li><strong>env</strong> 是一个包含 uevent 环境变量的列表</li>
+<li><strong>action_string</strong> 是一个字符串，表示 uevent 事件的类型</li>
+<li><strong>devpath</strong> 是一个字符串，表示与 uevent 事件相关的设备路径。</li>
+</ul>
+<p>该函数会遍历系统中所有的网络命名空间，并将 uevent 事件发送到每个网络命名空间中。这个函数的主要作用是在内核中广播一个 uevent 事件，以便用户空间的应用程序可以接收并处理这些事件。</p>
+<p>在内核中调用用户空间的 uevent_helper 程序来处理 uevent 事件。uevent_helper 是一个用 户 空 间 程 序 ， 它 可 以 在 内 核 空 间 生 成uevent事 件 时 被 调 用 。 如果<strong>CONFIG_UEVENT_HELPER</strong> 宏 被 定 义 ， 那 么 内 核 会 在 生 成uevent事 件 时 调用 uevent_helper 程序，以便在用户空间中处理这些事件。在上述代码中，如果 uevent_helper 变量不为空且 <code>kobj_usermode_filter</code> 函数返回 false，那么就会调用 <code>call_usermodehelper_setup</code> 函数来启动一个用户空间进程，并将 env 中的参数传递给该进程。在这个过程中，env 中的参数将会被转换成环境变量，并被传递给用户空间进程。</p>
+<h3 id="完善kset-uevent-ops结构体"><a href="#完善kset-uevent-ops结构体" class="headerlink" title="完善kset_uevent_ops结构体"></a>完善kset_uevent_ops结构体</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/slab.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/configfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kobject.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kobject</span> *<span class="title">mykobject01</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kobject</span> *<span class="title">mykobject02</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kset</span> *<span class="title">mykset</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kobj_type</span> <span class="title">mytype</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个回调函数，返回kset的名称</span></span><br><span class="line"><span class="type">const</span> <span class="type">char</span> *<span class="title function_">myname</span><span class="params">(<span class="keyword">struct</span> kset *kset, <span class="keyword">struct</span> kobject *kobj)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;my_kset&quot;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个回调函数，处理kset的uevent事件</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">myevent</span><span class="params">(<span class="keyword">struct</span> kset *kset, <span class="keyword">struct</span> kobject *kobj, <span class="keyword">struct</span> kobj_uevent_env *env)</span></span><br><span class="line">&#123;</span><br><span class="line">    add_uevent_var(env, <span class="string">&quot;MYDEVICE=%s&quot;</span>, <span class="string">&quot;TOPEET&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个回调函数，用于过滤kset中的kobject</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">myfilter</span><span class="params">(<span class="keyword">struct</span> kset *kset, <span class="keyword">struct</span> kobject *kobj)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">strcmp</span>(kobj-&gt;name, <span class="string">&quot;mykobject01&quot;</span>) == <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">// 返回0表示通过过滤</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>; <span class="comment">// 返回1表示过滤掉</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kset_uevent_ops</span> <span class="title">my_uevent_ops</span> =</span> &#123;</span><br><span class="line">    .filter = myfilter,</span><br><span class="line">    .uevent = myevent,</span><br><span class="line">    .name = myname,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块的初始化函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">mykobj_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建并添加一个kset</span></span><br><span class="line">    mykset = kset_create_and_add(<span class="string">&quot;mykset&quot;</span>, &amp;my_uevent_ops, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分配并初始化一个kobject</span></span><br><span class="line">    mykobject01 = kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> kobject), GFP_KERNEL);</span><br><span class="line">    mykobject01-&gt;kset = mykset;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化并添加kobject到kset</span></span><br><span class="line">    ret = kobject_init_and_add(mykobject01, &amp;mytype, <span class="literal">NULL</span>, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;mykobject01&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分配并初始化一个kobject</span></span><br><span class="line">    mykobject02 = kzalloc(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> kobject), GFP_KERNEL);</span><br><span class="line">    mykobject02-&gt;kset = mykset;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化并添加kobject到kset</span></span><br><span class="line">    ret = kobject_init_and_add(mykobject02, &amp;mytype, <span class="literal">NULL</span>, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;mykobject02&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 触发一个uevent事件，表示mykobject01的属性发生了变化</span></span><br><span class="line">    ret = kobject_uevent(mykobject01, KOBJ_CHANGE);</span><br><span class="line">    <span class="comment">// 触发一个uevent事件，表示mykobject02被添加</span></span><br><span class="line">    ret = kobject_uevent(mykobject02, KOBJ_ADD);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块退出函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">mykobj_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 释放kobject</span></span><br><span class="line">    kobject_put(mykobject01);</span><br><span class="line">    kobject_put(mykobject02);</span><br><span class="line">    kset_unregister(mykset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(mykobj_init); <span class="comment">// 指定模块的初始化函数</span></span><br><span class="line">module_exit(mykobj_exit); <span class="comment">// 指定模块的退出函数</span></span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);   <span class="comment">// 模块使用的许可证</span></span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;topeet&quot;</span>); <span class="comment">// 模块的作者</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="netlink监听广播信息"><a href="#netlink监听广播信息" class="headerlink" title="netlink监听广播信息"></a>netlink监听广播信息</h3><p>Netlink 是 Linux 内核中<strong>用于内核和用户空间之间进行双工通信的机制</strong>。它<strong>基于 socket 通信机制</strong>，并提供了一种可靠的、异步的、多播的、有序的通信方式。</p>
+<p>Netlink 机制的主要特点包括：</p>
+<ol>
+<li>双工通信：Netlink 允许内核和用户空间之间进行双向通信，使得内核可以向用户空间发送消息，同时也可以接收来自用户空间的消息。</li>
+<li>可靠性：Netlink 提供了可靠的消息传递机制，保证消息的完整性和可靠性。它使用了确认和重传机制，以确保消息的可靠传输。</li>
+<li>异步通信：Netlink 支持异步通信，即内核和用户空间可以独立地发送和接收消息，无需同步等待对方的响应。</li>
+<li>多播支持：Netlink 允许向多个进程或套接字广播消息，以实现一对多的通信。</li>
+<li>有序传输：Netlink 保证消息的有序传输，即发送的消息按照发送的顺序在接收端按序接收。</li>
+</ol>
+<p>Netlink 的应用广泛，常见的应用包括：</p>
+<ol>
+<li>系统管理工具：如 ifconfig、ip 等工具使用 Netlink 与内核通信来获取和配置网络接口的信息。</li>
+<li>进程间通信：进程可以使用 Netlink 进行跨进程通信，实现进程间的数据交换和协调。</li>
+<li>内核模块和用户空间应用程序的通信：内核模块可以通过 Netlink 向用户空间应用程序发送通知或接收用户空间应用程序的指令。</li>
+</ol>
+<h3 id="netlink的使用"><a href="#netlink的使用" class="headerlink" title="netlink的使用"></a>netlink的使用</h3><h4 id="创建socket"><a href="#创建socket" class="headerlink" title="创建socket"></a>创建socket</h4><p>在 Linux socket 编程中，创建套接字是构建网络应用程序的第一步。套接字可以理解为应用程序和网络之间的桥梁，用于在网络上进行数据的收发和处理。该系统调用的原型和所需头文件如下所示:</p>
+<table>
+<thead>
+<tr>
+<th>头文件</th>
+<th>函数原型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#include&lt;sys/types.h&gt;</code><br /><code>#include&lt;sys/socket.h&gt;</code></td>
+<td><code>int socket(int domain, int type, int protocol);</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>domain</strong> 参数指定了套接字的协议族</li>
+</ul>
+<p>协议族指定了套接字所使用的协议类型，常用的协议族包括 AF_INET、AF_INET6、AF_UNIX等。其中，AF_INET 表示 IPv4 协议族，AF_INET6 表示 IPv6 协议族，AF_UNIX 表示 Unix 域协议族，这里的协议族为 netlink，所以该参数要在程序中设置为 AF_ NETLINK。</p>
+<ul>
+<li><strong>type</strong> 参数指定了套接字的类型</li>
+</ul>
+<p>套接字类型指定了套接字的数据传输方式，常用的套接字类型包括 SOCK_STREAM、SOCK_DGRAM、SOCK_RAW 等。其中，SOCK_STREAM 表示面向连接的流套接字，主要用于可靠传输数据，例如 TCP 协议。SOCK_DGRAM 表示无连接的数据报套接字，主要用于不可靠传输数据，例如 UDP 协议。在本实验中该参数要设置为 SOCK_RAW 表示原始套接字，可以直接访问底层网络协议。</p>
+<ul>
+<li><strong>protocol</strong> 参数指定了套接字所使用的具体协议。下面分别介绍这三个参数的含义：</li>
+</ul>
+<p>协议类型指定了套接字所使用的具体协议类型，常用的协议类型包括 IPPROTO_TCP、IPPROTO_UDP、IPPROTO_ICMP 等。其中，IPPROTO_TCP 表示 TCP 协议，IPPROTO_UDP 表示 UDP协议，IPPROTO_ICMP 表示 ICMP 协议，在本实验中，我们要设置为 <code>NETLINK_ _KOBJECT_ UEVENT</code></p>
+<p>将使用以下代码创建一个新的套接字</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> socket_fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_KOBJECT_UEVENT);</span><br></pre></td></tr></table></figure>
+
+<p>AF_NETLINK：指定了使用 Netlink 协议族。Netlink 协议族是一种 Linux 特定的协议族，用于内核和用户空间之间的通信</p>
+<p>SOCK_RAW：指定了创建原始套接字，这种套接字类型可以直接访问底层协议，而不需要进行协议栈处理。在这种情况下，我们可以直接使用 Netlink 协议进行通信。</p>
+<p>NETLINK_KOBJECT_UEVENT：指定了 Netlink 协议的一种类型，即 kobject uevent 类型。kobjectuevent 用于内核对象相关的事件通知，当内核中的 kobject 对象发生变化时，会通过此类型的Netlink 消息通知用户空间。</p>
+<h4 id="绑定套接字"><a href="#绑定套接字" class="headerlink" title="绑定套接字"></a>绑定套接字</h4><table>
+<thead>
+<tr>
+<th>所需头文件</th>
+<th>函数原型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#include&lt;sys/types.h&gt;</code><br /><code>#include&lt;sys/socket.h&gt;</code></td>
+<td><code>int bind(int sockfd, const struct sockaddr *addr,socklen_t addrlen);</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><p><strong>sockfd</strong> 参数指定了需要绑定的套接字描述符，</p>
+</li>
+<li><p><strong>addr</strong> 参数指定了需要绑定的地址信息，这里使用 sockaddr_nl 结构体，sockaddr_nl 结构体的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_nl</span> &#123;</span></span><br><span class="line">	<span class="type">sa_family_t</span> nl_family; <span class="comment">// AF_NETLINK</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span> nl_pad; <span class="comment">// zero</span></span><br><span class="line">	<span class="type">uint32_t</span> nl_pid; <span class="comment">// port ID</span></span><br><span class="line">	<span class="type">uint32_t</span> nl_groups;<span class="comment">// multicast groups mask</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>nl_family：表示地址族，此处固定为 AF_NETLINK，指示使用 Netlink 协议族。</li>
+<li>nl_pad：填充字段，设置为 0。在结构体中进行字节对齐时使用。</li>
+<li>nl_pid：端口 ID，表示进程的标识符。可以将其设置为当前进程的 PID，也可以设为 0，表示不加入任何多播组。</li>
+<li>nl_groups：多播组掩码，用于指定感兴趣的多播组。当设置为 1 时，表示用户空间进程只会接收内核事件的基本组的内核事件。这意味着，用户空间进程将只接收到属于基本组的内核事件，而不会接收其他多播组的事件。</li>
+</ul>
+</li>
+<li><p><strong>addrlen</strong> 参数：addrlen 参数是一个整数，指定了 addr 所指向的结构体对应的字节长度。它用于确保正确解析传递给 addr 参数的结构体的大小</p>
+</li>
+</ul>
+<p>示例</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_nl</span> <span class="title">nl</span>;</span> <span class="comment">// 定义一个指向 struct sockaddr_nl 结构体的指针 nl</span></span><br><span class="line">bzero(&amp;nl, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_nl));<span class="comment">// 将 nl 指向的内存区域清零，确保结构体的字段初始化为 0</span></span><br><span class="line">nl.nl_family = AF_NETLINK;<span class="comment">// 设置 nl 结构体的 nl_family 字段为 AF_NETLINK，指定地址族为Netlink</span></span><br><span class="line">nl.nl_pid = <span class="number">0</span>;<span class="comment">// 设置 nl 结构体的 nl_pid 字段为 0，表示目标进程 ID 为 0，即广播给所有进程</span></span><br><span class="line">nl.nl_groups = <span class="number">1</span>;<span class="comment">// 设置 nl 结构体的 nl_groups 字段为 1，表示只接收基本组的内核事件</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 bind 函数将 socket_fd 套接字与 nl 地址结构体绑定在一起</span></span><br><span class="line">ret = bind(socket_fd, (<span class="keyword">struct</span> sockaddr *)&amp;nl, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_nl));</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;bind error\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a>接收数据</h4><p>Netlink 套接字在接收数据时不需要调用 listen 函数，而是可以直接使用 recv 函数进行接收。</p>
+<table>
+<thead>
+<tr>
+<th>所需头文件</th>
+<th>函数原型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#include&lt;sys/types.h&gt;</code><br /><code>#include&lt;sys/socket.h&gt;</code></td>
+<td><code>ssize_t recv(int sockfd, void *buf, size_t len, int flags);</code></td>
+</tr>
+</tbody></table>
+<p>函数参数：</p>
+<ul>
+<li>sockfd：指定套接字描述符，即要接收数据的 Netlink 套接字。</li>
+<li>buf：指向数据接收缓冲区的指针，用于存储接收到的数据。</li>
+<li>len：指定要读取的数据的字节大小。</li>
+<li>flags：指定一些标志，用于控制数据的接收方式。通常情况下，可以将其设置为 0。</li>
+</ul>
+<p>返回值：</p>
+<ul>
+<li>成功情况下，返回实际读取到的字节数。</li>
+<li>如果返回值为 0，表示对方已经关闭了连接。</li>
+<li>如果返回值为-1，表示发生了错误，可以通过查看 errno 变量来获取具体的错误代码。</li>
+</ul>
+<p>使用 recv 函数可以从指定的 Netlink 套接字中接收数据，并将其存储在提供的缓冲区中。函数的返回值表示实际读取到的字节数，可以根据返回值来判断是否成功接收到数据。</p>
+<p>示例代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">	bzero(buf, <span class="number">4096</span>); <span class="comment">// 将缓冲区 buf 清零，确保数据接收前的初始化</span></span><br><span class="line">	len = recv(socket_fd, &amp;buf, <span class="number">4096</span>, <span class="number">0</span>);<span class="comment">// 从 socket_fd 套接字接收数据，存储到缓冲区 buf 中，最大接收字节数为 4096</span></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (*(buf + i) == <span class="string">&#x27;\0&#x27;</span>) &#123;<span class="comment">// 如果接收到的数据中有 &#x27;\0&#x27; 字符，将其替换为 &#x27;\n&#x27;，以便在打印时换行显示</span></span><br><span class="line">			buf[i] = <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, buf);<span class="comment">// 打印接收到的数据</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;strings.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/netlink.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_nl</span> <span class="title">nl</span>;</span>  </span><br><span class="line">    <span class="type">int</span> len = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> buf[<span class="number">4096</span>] = &#123;<span class="number">0</span>&#125;;  </span><br><span class="line">    <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    bzero(&amp;nl, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_nl));  </span><br><span class="line">    nl.nl_family = AF_NETLINK;  </span><br><span class="line">    nl.nl_pid = <span class="number">0</span>;  </span><br><span class="line">    nl.nl_groups = <span class="number">1</span>;  </span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> socket_fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_KOBJECT_UEVENT);  </span><br><span class="line">    <span class="keyword">if</span> (socket_fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;socket error\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ret = bind(socket_fd, (<span class="keyword">struct</span> sockaddr *)&amp;nl, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_nl));  </span><br><span class="line">    <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;bind error\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        bzero(buf, <span class="number">4096</span>);  </span><br><span class="line">        len = recv(socket_fd, &amp;buf, <span class="number">4096</span>, <span class="number">0</span>);  </span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (*(buf + i) == <span class="string">&#x27;\0&#x27;</span>) &#123;  </span><br><span class="line">                buf[i] = <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, buf);  </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="uevent-helper"><a href="#uevent-helper" class="headerlink" title="uevent_helper"></a>uevent_helper</h3><p>在<code>kobject_uevent()</code>中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_UEVENT_HELPER</span></span><br><span class="line">	<span class="comment">/* call uevent_helper, usually only enabled during early boot */</span></span><br><span class="line">	<span class="keyword">if</span> (uevent_helper[<span class="number">0</span>] &amp;&amp; !kobj_usermode_filter(kobj)) &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">subprocess_info</span> *<span class="title">info</span>;</span></span><br><span class="line"></span><br><span class="line">		retval = add_uevent_var(env, <span class="string">&quot;HOME=/&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span> (retval)</span><br><span class="line">			<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">		retval = add_uevent_var(env,</span><br><span class="line">					<span class="string">&quot;PATH=/sbin:/bin:/usr/sbin:/usr/bin&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span> (retval)</span><br><span class="line">			<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">		retval = init_uevent_argv(env, subsystem);</span><br><span class="line">		<span class="keyword">if</span> (retval)</span><br><span class="line">			<span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line"></span><br><span class="line">		retval = -ENOMEM;</span><br><span class="line">		info = call_usermodehelper_setup(env-&gt;argv[<span class="number">0</span>], env-&gt;argv,</span><br><span class="line">						 env-&gt;envp, GFP_KERNEL,</span><br><span class="line">						 <span class="literal">NULL</span>, cleanup_uevent_env, env);</span><br><span class="line">		<span class="keyword">if</span> (info) &#123;</span><br><span class="line">			retval = call_usermodehelper_exec(info, UMH_NO_WAIT);</span><br><span class="line">			env = <span class="literal">NULL</span>;	<span class="comment">/* freed by cleanup_uevent_env */</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>第 3 行为一个 if 表达式，它检查 uevent_helper 数组的第一个元素是否为真。并调用 <code>kobj_usermode_filter</code> 函数进行用户模式过滤，uevent_helper定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> uevent_helper[UEVENT_HELPER_PATH_LEN] = CONFIG_UEVENT_HELPER_PATH;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>CONFIG_UEVENT_HELPER_PATH</code>是 一 个 宏 定 义 在 内 核 源 码 的<code>include/generated/autoconf.h</code>文件中，如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CONFIG_UEVENT_HELPER_PATH <span class="string">&quot;&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>该宏为空 ，所以为了使能 uevent_helper 功能需要在图形配置界面使能<code>CONFIG_UEVENT_HELPER</code> 和 <code>CONFIG_UEVENT_HELPER_PATH</code> 两个宏：</p>
+<p><strong>配置方法 1：</strong></p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Device Drivers</span><br><span class="line">	<span class="keyword">Generic</span> Driver Options</span><br><span class="line">		[*] Support <span class="keyword">for</span> uevent <span class="keyword">helper</span><span class="comment">//选中</span></span><br><span class="line">		(/sbin/mdev) path <span class="keyword">to</span> uevent <span class="keyword">helper</span><span class="comment">//设置 mdev 路径</span></span><br><span class="line">		</span><br><span class="line"><span class="keyword">File</span> systems</span><br><span class="line">	Pseudo filesystems.</span><br><span class="line">		[*]/proc <span class="keyword">file</span> system support<span class="comment">//选中</span></span><br><span class="line">		[*] Sysctl support(/proc/sys)<span class="comment">//选中</span></span><br><span class="line"></span><br><span class="line">[*]Networking support<span class="comment">//选中</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>在上面的配置 1 中设置了 uevent helper 和相对应的路径，这就是配置方法 1，但是这种方式需要重新编译内核，使用起来较为麻烦，除了方法一之外还有更快捷的方法 2 和方法 3：</p>
+<p><strong>配置方法 2</strong>：<br>无论是否配置了 <code>CONFIG_UEVENT_HELPER_PATH</code>，在系统启动后，可以使用以下命令来设置 uevent_helper：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> /sbin/mdev &gt; /sys/kernel/uevent_helper</span><br></pre></td></tr></table></figure>
+
+<p>这将把 uevent_helper 设置为<code>/sbin/mdex</code>。</p>
+<p><strong>配置方法 3</strong>：</p>
+<p>无论是否配置了 <code>CONFIG_UEVENT_HELPER_PATH</code>，在系统启动后，可以使用以下命令来设置 uevent_helper：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> /sbin/mdev &gt; /proc/sys/kernel/hotplug</span><br></pre></td></tr></table></figure>
+
+<p>这将把 uevent_helper 设置为<code>/sbin/mdev</code>。</p>
+<p>需要注意的是配置方法 2 和配置方法 3 依赖于上面的配置的<code>File systems</code>和<code>Networking</code>选项，并且可以通过配置方法 2 和配置方法 3 修改配置方法 1 中已经写好的值。对<code>/proc/sys/kernel/hotplug</code> 和<code>/sys/kernel/uevent_helper</code> 进行读写都是为了对 uevent_helper属性进行读写操作。</p>
+<p><code>/sys/kernel/uevent_helper</code> 是 sysfs 文件系统中的一个文件，它是 uevent_helper 属性的接口。通过对该文件进行读写操作，可以读取或修改 uevent_helper 属性的值。在内核源码的<code>kernel/ksysfs.c</code> 目录下可以找到对 uevent_helper 属性的定义和相关操作的实现，具体内容如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/ksysfs.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_UEVENT_HELPER</span></span><br><span class="line"><span class="comment">/* uevent helper program, used during early boot */</span></span><br><span class="line"><span class="type">static</span> <span class="type">ssize_t</span> <span class="title function_">uevent_helper_show</span><span class="params">(<span class="keyword">struct</span> kobject *kobj,</span></span><br><span class="line"><span class="params">				  <span class="keyword">struct</span> kobj_attribute *attr, <span class="type">char</span> *buf)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">sprintf</span>(buf, <span class="string">&quot;%s\n&quot;</span>, uevent_helper);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">static</span> <span class="type">ssize_t</span> <span class="title function_">uevent_helper_store</span><span class="params">(<span class="keyword">struct</span> kobject *kobj,</span></span><br><span class="line"><span class="params">				   <span class="keyword">struct</span> kobj_attribute *attr,</span></span><br><span class="line"><span class="params">				   <span class="type">const</span> <span class="type">char</span> *buf, <span class="type">size_t</span> count)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (count+<span class="number">1</span> &gt; UEVENT_HELPER_PATH_LEN)</span><br><span class="line">		<span class="keyword">return</span> -ENOENT;</span><br><span class="line">	<span class="built_in">memcpy</span>(uevent_helper, buf, count);</span><br><span class="line">	uevent_helper[count] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">	<span class="keyword">if</span> (count &amp;&amp; uevent_helper[count<span class="number">-1</span>] == <span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">		uevent_helper[count<span class="number">-1</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">	<span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br><span class="line">KERNEL_ATTR_RW(uevent_helper);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>uevent_helper_show 函数用于将 uevent_helper 的值写入 buf 中，并返回写入的字符数。</p>
+</li>
+<li><p>uevent_helper_store 函数用于将 buf 中的值复制到 uevent_helper 中，并根据需要进行处理，然后返回写入的字符数。</p>
+</li>
+</ul>
+<p><code>/proc/sys/kernel/hotplug</code> 是一个虚拟文件，用于配置内核中的热插拔事件处理程序。通过对该文件进行写操作，可以设置 uevent_helper 属性的值。在内核源码的 <code>kernel/sysctl.c</code> 文件中，可以看到对 hotplug 操作其实是对 uevent_helper 进行操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/sysctl.c`</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_UEVENT_HELPER</span></span><br><span class="line">	&#123;</span><br><span class="line">		.procname	= <span class="string">&quot;hotplug&quot;</span>,</span><br><span class="line">		.data		= &amp;uevent_helper,</span><br><span class="line">		.maxlen		= UEVENT_HELPER_PATH_LEN,</span><br><span class="line">		.mode		= <span class="number">0644</span>,</span><br><span class="line">		.proc_handler	= proc_dostring,</span><br><span class="line">	&#125;,</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这段代码定义了一个名为 hotplug 的文件，用于处理 uevent 事件。它与 uevent_helper 属性相关联。</p>
+<ul>
+<li><code>.procname</code> 表示文件名，即<code>/proc/hotplug</code>。</li>
+<li><code>.data</code> 是一个指向 uevent_helper 结构体的指针，用于保存与该文件相关的数据。该指针指向 uevent_helper 结构体，用于处理 uevent 事件。</li>
+<li><code>.maxlen</code> 表示文件的最大长度，即文件内容的最大长度。该值为 UEVENT_HELPER_PATH_LEN，表示文件内容的最大长度为 UEVENT_HELPER_PATH_LEN。</li>
+<li><code>.mode</code> 表示文件的访问权限。该值为 0644，表示该文件的权限为 <code>-rw-r--r--</code>，即所有用户都可以读取该文件，但只有 root 用户可以写入该文件。</li>
+</ul>
+<p><strong>测试</strong>：</p>
+<p>在内核中调用用户空间的 uevent_helper 程序来处理 uevent 事件。</p>
+<p>uevent_helper 是一个用 户 空 间 程 序 ， 它 可 以 在 内 核 空 间 生 成uevent事 件 时 被 调 用 。 如果<strong>CONFIG_UEVENT_HELPER</strong> 宏 被 定 义 ， 那 么 内 核 会 在 生 成uevent事 件 时 调用 uevent_helper 程序，以便在用户空间中处理这些事件。在<code>kobject_uevent_env()</code>函数中，如果 uevent_helper 变量不为空且 <code>kobj_usermode_filter</code> 函数返回 false，那么就会调用 <code>call_usermodehelper_setup</code> 函数来启动一个用户空间进程，并将 env 中的参数传递给该进程。在这个过程中，env 中的参数将会被转换成环境变量，并被传递给用户空间进程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> fd = open(<span class="string">&quot;/dev/ttyFIQ0&quot;</span>, O_WRONLY);</span><br><span class="line">	dup2(fd, STDOUT_FILENO);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;SUBSYSTEM is %s\n&quot;</span>, getenv(<span class="string">&quot;SUBSYSTEM&quot;</span>));</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aarch64-linux-gnu-gcc -o mdev mdev.c</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用-udev-挂载-U-盘和-T-卡"><a href="#使用-udev-挂载-U-盘和-T-卡" class="headerlink" title="使用 udev 挂载 U 盘和 T 卡"></a>使用 udev 挂载 U 盘和 T 卡</h2><p>想使用 udev 来实现 U 盘的自动挂载，还需在<code>/etc/udev/rules.d</code> 目录下创建相应的规则文件</p>
+<h2 id="使用-mdev-挂载-U-盘和-T-卡"><a href="#使用-mdev-挂载-U-盘和-T-卡" class="headerlink" title="使用 mdev 挂载 U 盘和 T 卡"></a>使用 mdev 挂载 U 盘和 T 卡</h2><p>跟 udev 相同，mdev 也需要添加相应的规则，不同的是 mdev 使用&#x2F;etc&#x2F;mdev.conf 文件来配置 mdev 工具的规则和行为，要想使用 mdev 自动挂载 U 盘需要向&#x2F;etc&#x2F;mdev.conf 文件中添加以下两条规则</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sd[a-z][0-9] 0:0 666 @/etc/mdev/usb_insert.sh</span><br><span class="line">sd[a-z] 0:0 666 $/etc/mdev/usb_remove.sh</span><br></pre></td></tr></table></figure>
+
+
+
+<p>这两个规则用于处理 U 盘的热插拔事件，并执行相应的操作。在 &#x2F;etc&#x2F;mdev.conf 文件中，每一行都是一个规则，具有以下格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;设备节点正则表达式&gt; &lt;设备的所有者:设备的所属组&gt; &lt;设备的权限&gt; &lt;设备插入或移除时需要执行的命令&gt;</span><br></pre></td></tr></table></figure>
+
+<p>下面是对上述两个规则的详细介绍：</p>
+<ul>
+<li><code>sd[a-z][0-9]</code> 是一个正则表达式模式，用于匹配以 “sd” 开头，后跟一个小写字母和一个数字的设备节点，例如&#x2F;dev&#x2F;sda1、&#x2F;dev&#x2F;sdb2 等。</li>
+<li><code>0:0 666</code> 表示设置设备节点的所有者和权限。0:0 表示所有者和所属组的用户ID和组 ID 均为 0，即 root 用户。666 表示权限为可读可写。</li>
+<li><code>@/etc/mdev/usb_insert.sh</code> 表示当符合规则的设备插入时，mdev 会执行 <code>/etc/mdev/usb_insert.sh</code> 脚本。@ 符号表示执行的是一个 shell 命令。</li>
+<li><code>$/etc/mdev/usb_remove.sh</code> 表示当符合规则的设备移除时，mdev 会执行 <code>/etc/mdev/usb_remove.sh</code> 脚本。$ 符号表示执行的是一个内部命令。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2512023/">https://even629.com/posts/2512023/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%83%AD%E6%8F%92%E6%8B%94"><span class="toc-text">热插拔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%83%AD%E6%8F%92%E6%8B%94%E7%9A%84%E6%9C%BA%E5%88%B6"><span class="toc-text">热插拔的机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6%E5%88%B0%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4"><span class="toc-text">内核发送事件到用户空间</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#udevadm-%E5%91%BD%E4%BB%A4"><span class="toc-text">udevadm 命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kobject-uevent"><span class="toc-text">kobject_uevent()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E5%96%84kset-uevent-ops%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-text">完善kset_uevent_ops结构体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#netlink%E7%9B%91%E5%90%AC%E5%B9%BF%E6%92%AD%E4%BF%A1%E6%81%AF"><span class="toc-text">netlink监听广播信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#netlink%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">netlink的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAsocket"><span class="toc-text">创建socket</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%91%E5%AE%9A%E5%A5%97%E6%8E%A5%E5%AD%97"><span class="toc-text">绑定套接字</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A5%E6%94%B6%E6%95%B0%E6%8D%AE"><span class="toc-text">接收数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="toc-text">示例代码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#uevent-helper"><span class="toc-text">uevent_helper</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-udev-%E6%8C%82%E8%BD%BD-U-%E7%9B%98%E5%92%8C-T-%E5%8D%A1"><span class="toc-text">使用 udev 挂载 U 盘和 T 卡</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-mdev-%E6%8C%82%E8%BD%BD-U-%E7%9B%98%E5%92%8C-T-%E5%8D%A1"><span class="toc-text">使用 mdev 挂载 U 盘和 T 卡</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '509f7fab8d535ff7c02f3d201e7cb9cb'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

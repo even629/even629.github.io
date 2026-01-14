@@ -1,0 +1,1039 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM Memory Management | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Arm64 Memory Management">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM Memory Management">
+<meta property="og:url" content="https://even629.com/posts/2510241/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Arm64 Memory Management">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-10-24T15:15:13.000Z">
+<meta property="article:modified_time" content="2025-10-24T15:15:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2510241/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARM Memory Management',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">ARM Memory Management</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-24T15:15:13.000Z" title="发表于 2025-10-24 23:15:13">2025-10-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-24T15:15:13.000Z" title="更新于 2025-10-24 23:15:13">2025-10-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/arm64/">arm64</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>20分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2510241/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-24</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<p>参考文档：</p>
+<div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>
+
+<h2 id="内存管理的基本知识和概念"><a href="#内存管理的基本知识和概念" class="headerlink" title="内存管理的基本知识和概念"></a>内存管理的基本知识和概念</h2><p><strong>直接使用物理内存的缺点</strong></p>
+<ul>
+<li>进程地址空间保护问题。所有的用户进程都可以访问全部的物理内存，所以恶意程序可以修改其他程序的内存数据</li>
+<li>内存使用效率低。如果即将要运行的进程所需要的内存空间不足，就需要选择一个进程进行整体换出，这种机制导致有大量的数据需要换入和换出，效率非常低下</li>
+<li>程序运行地址重定位问题</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831232611336.png" alt="地址空间抽象" loading="lazy"></p>
+<h2 id="分页机制的基本概念"><a href="#分页机制的基本概念" class="headerlink" title="分页机制的基本概念"></a>分页机制的基本概念</h2><ul>
+<li>虚拟存储器(Virtual Memory)</li>
+<li>虚拟地址空间(Virtual Address)</li>
+<li>物理存储器(Physical Memory)</li>
+<li>页帧(Page Frame)</li>
+<li>虚拟页帧号(Virtual Page Frame Number)</li>
+<li>物理页帧号(Physical Frame Number)</li>
+<li>页表(Page Table, PT)</li>
+<li>页表项(Page Table Entry, PTE)</li>
+</ul>
+<h2 id="虚拟地址到物理地址映射的过程"><a href="#虚拟地址到物理地址映射的过程" class="headerlink" title="虚拟地址到物理地址映射的过程"></a>虚拟地址到物理地址映射的过程</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831233733816.png" alt="虚拟地址到物理地址的映射的过程" loading="lazy"></p>
+<h3 id="一级页表"><a href="#一级页表" class="headerlink" title="一级页表"></a>一级页表</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831233838656.png" alt="一级页表" loading="lazy"></p>
+<p><strong>采用一级页表的缺点</strong></p>
+<ul>
+<li>处理器采用一级页表，虚拟地址空间位宽32位，寻址范围是4GB大小，物理地址空间位宽也是32bit，最大支持4GB物理内存，另外页面大小是4KB。为了能映射整个4GB地址空间，需要4GB&#x2F;4KB &#x3D; 1MB个页表项，每个页表项占用4字节，共需要4MB大小的物理内存来存放这张页表</li>
+<li>**每个进程拥有一套属于自己的页表，在进程切换时需要切换页表基地址。**如上述的一级页表，每个进程需要为其分配4MB的连续物理内存来存储页表，这是不能接受的，因为这样太浪费内存了。</li>
+<li>多级页表：按需一级一级映射，不用一次全部映射所有地址空间</li>
+</ul>
+<h3 id="二级页表"><a href="#二级页表" class="headerlink" title="二级页表"></a>二级页表</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831235240724.png" alt="二级页表" loading="lazy"></p>
+<h2 id="VMSA"><a href="#VMSA" class="headerlink" title="VMSA"></a>VMSA</h2><blockquote>
+<p>Virtual Memory System Architecture</p>
+</blockquote>
+<ul>
+<li>VMSA提供了MMU硬件单元<ul>
+<li>虚拟地址到物理地址的转换</li>
+<li>访问权限</li>
+<li>内存属性检查</li>
+</ul>
+</li>
+<li>MMU硬件单元用来实现VA到PA的转换<ul>
+<li>硬件遍历页表table walking</li>
+<li>TTBR寄存器保存了页表基地址</li>
+<li>TLB保存了最近的转换页表项</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831235512374.png" alt="VMSA" loading="lazy"></p>
+<p>没有虚拟化场景的情况下，翻译只有一个阶段，由VA映射到PA</p>
+<p>在有虚拟化场景的情况下，翻译需要先转换为IPA</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250912181044741.png" alt="The AArch64 translation regimes" loading="lazy"></p>
+<p><strong>TTBR0_ELx</strong> 用于每个进程的地址空间</p>
+<p>**TTBR1_ELx **用于内核空间，所有进程共享</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921185018516.png" alt="TTBR0_ELx&#x2F;TTBR1_ELx" loading="lazy"></p>
+<h2 id="ARMv8的页表"><a href="#ARMv8的页表" class="headerlink" title="ARMv8的页表"></a>ARMv8的页表</h2><ul>
+<li><p><strong>aarch64仅仅支持Long Descriptor的页表格式</strong></p>
+</li>
+<li><p>AArch32支持两种页表格式</p>
+<ul>
+<li>Armv7-A Short Descriptor format</li>
+<li>Armv7-A (<strong>LPAE</strong>) Long Descriptor format</li>
+</ul>
+</li>
+<li><p>AArch64支持三种不同的页大小：4KB，16KB，64KB</p>
+<ul>
+<li><p>大粒度page size可以减少页表的体积</p>
+</li>
+<li><p>地址总线位宽支持48位或者52位</p>
+</li>
+<li><p>52位宽：ARMv8.2-LVA is implemented and the 64 KB translation granule</p>
+</li>
+<li><p>以48位总线位宽为例</p>
+</li>
+<li><p><strong>虚拟地址VA被划分为两个空间</strong>，<strong>每个空间最大支持256TB</strong></p>
+<ul>
+<li><strong>低位虚拟地址空间位于0x0000_0000_0000_0000到0x0000_FFFF_FFFF_FFFF</strong></li>
+<li><strong>高位的虚拟地址空间位于0xFFFF_0000_0000_0000到0xFFFF_FFFF_FFFF_FFFF</strong></li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901095610466.png" alt="虚拟空间地址划分" loading="lazy"></p>
+<p>（<strong>Fault是非规范区域，CPU不能访问</strong>）</p>
+<p><strong>四级页表</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901105744774.png" alt="4级别页表" loading="lazy"></p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="AArch64的页表描述符"><a href="#AArch64的页表描述符" class="headerlink" title="AArch64的页表描述符"></a>AArch64的页表描述符</h3><p>下面的都是48位虚拟地址，4KB大小页面</p>
+<h4 id="L0-L2的页表描述符"><a href="#L0-L2的页表描述符" class="headerlink" title="L0~L2的页表描述符"></a>L0~L2的页表描述符</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901110008780.png" alt="L0~L2页表的描述符" loading="lazy"></p>
+<p><strong>块类型</strong>表示描述的是一块非常大的内存</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250912180502711.png" alt="ARMv8文档中的描述" loading="lazy"></p>
+<h4 id="L3页表描述符"><a href="#L3页表描述符" class="headerlink" title="L3页表描述符"></a>L3页表描述符</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901122347242.png" alt="L3页表描述符" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250912180422209.png" alt="ARMv8文档中的描述" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250904214429165.png" alt="Block descriptor" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250904214445492.png" alt="Table descriptor" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250904214646426.png" alt="Page descriptor" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>层级 (Level)</th>
+<th>对应 Linux 抽象</th>
+<th>描述符可能的类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>L0 (可选)</td>
+<td><strong>PGD</strong></td>
+<td><strong>Table &#x2F; Fault</strong></td>
+</tr>
+<tr>
+<td>L1</td>
+<td><strong>PUD</strong></td>
+<td><strong>Block (1GB, granule&#x3D;4K) &#x2F; Table &#x2F; Fault</strong></td>
+</tr>
+<tr>
+<td>L2</td>
+<td><strong>PMD</strong></td>
+<td><strong>Block (2MB, granule&#x3D;4K) &#x2F; Table &#x2F; Fault</strong></td>
+</tr>
+<tr>
+<td>L3</td>
+<td><strong>PTE</strong></td>
+<td><strong>Page (4KB, granule&#x3D;4K) &#x2F; Fault</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意：</p>
+<ul>
+<li><strong>Block entry</strong> 只能出现在中间层（L1&#x2F;L2），表示大页映射，映射一大段物理地址空间，相当于最后一级页表了。</li>
+<li><strong>PTE (L3)</strong> 不能是 Block，只能是 Page 或 Fault。</li>
+<li>输出地址是下一级页表的<strong>PA</strong>即物理地址</li>
+</ul>
+</blockquote>
+<h3 id="页表属性"><a href="#页表属性" class="headerlink" title="页表属性"></a>页表属性</h3><blockquote>
+<p>只有指向 <strong>最终物理页（block&#x2F;page）</strong> 的表项，才需要页表属性</p>
+</blockquote>
+<p>Armv8.6 <strong>D5.3.3</strong>章</p>
+<ul>
+<li><strong>bit[0]</strong> → 是否有效：<ul>
+<li><code>0</code> &#x3D; Invalid (Fault entry)</li>
+<li><code>1</code> &#x3D; 有效 (Valid entry)</li>
+</ul>
+</li>
+<li><strong>bit[1]</strong> → 类型（只在有效时才有意义）：<ul>
+<li><code>0</code> &#x3D; Block entry （块映射，大页映射）</li>
+<li><code>1</code> &#x3D; Table entry （指向下一级页表；到最后一级时变成 Page entry）</li>
+</ul>
+</li>
+</ul>
+<p>所以：block和page的页表属性</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901234053981.png" alt="VMSAv8-64 translation table format descriptors" loading="lazy"></p>
+<p><strong>高位属性和低位属性</strong></p>
+<p>只描述<strong>Block</strong>和<strong>Page</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250904022421615.png" alt="高位属性和低位属性" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901235625513.png" alt="高位属性和低位属性" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901234250544.png" alt="页表属性1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901234854341.png" alt="页表属性2" loading="lazy"></p>
+<h4 id="Share-Domain"><a href="#Share-Domain" class="headerlink" title="Share Domain"></a>Share Domain</h4><p><strong>Non-shareable</strong></p>
+<p>This represents <strong>memory accessible only by a single processor or other agent,</strong> so <strong>memory accesses never need to be synchronized with other processors</strong>. This domain is not typically used in SMP systems.</p>
+<p><strong>Inner shareable</strong></p>
+<p>This represents <strong>a shareability domain that can be shared by multiple processors</strong>, but not necessarily all of the agents in the system. A system might have multiple Inner Shareable domains. An operation that affects one Inner Shareable domain does not affect other Inner Shareable domains in the system. An example of such a domain might be a quad-core Cortex-A57 cluster.</p>
+<p><strong>Outer shareable</strong></p>
+<p>An outer shareable (OSH) domain re-order is <strong>shared by multiple agents and can consist of one or more inner shareable domains.</strong> An operation that affects an outer shareable domain also implicitly affects all inner shareable domains inside it.<br>However, it does not otherwise behave as an inner shareable operation.</p>
+<p><strong>Full system</strong></p>
+<p>An operation on the full system (SY) <strong>affects all observers in the system</strong>.</p>
+<h4 id="Contiguous-Block-entries"><a href="#Contiguous-Block-entries" class="headerlink" title="Contiguous Block entries"></a>Contiguous Block entries</h4><ul>
+<li>ARMv8<strong>利用TLB进行的一个优化</strong>：利用<strong>一个TLB entry来完成多个连续的page的VA到PA的转换</strong></li>
+<li><strong>使用Contiguous bit的条件</strong><ul>
+<li><strong>页面对应的VA必须是连续的</strong></li>
+<li><strong>对于4KB的页面，16个连续的page</strong></li>
+<li><strong>对于16KB的页面，32或128个连续的page</strong></li>
+<li><strong>对于64KB的页面，32个连续的page</strong></li>
+<li><strong>连续的页面必须有相同的属性</strong></li>
+<li><strong>起始地址必须以页面对齐</strong></li>
+</ul>
+</li>
+</ul>
+<h4 id="4KB页表"><a href="#4KB页表" class="headerlink" title="4KB页表"></a>4KB页表</h4><ul>
+<li>4级页表</li>
+<li>48bit虚拟地址</li>
+<li><strong>每级页表使用9bit来做索引(512 entries)</strong></li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902001655479.png" alt="4KB页表" loading="lazy"></p>
+<h4 id="16KB页表"><a href="#16KB页表" class="headerlink" title="16KB页表"></a>16KB页表</h4><ul>
+<li><p>4级页表</p>
+</li>
+<li><p>48bit虚拟地址</p>
+</li>
+<li><p>L0页表只有两个entry</p>
+</li>
+<li><p>L1，L2，L3页表使用11bit来做索引（2048 entries）</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902002342487.png" alt="16KB页表" loading="lazy"></p>
+<h4 id="64KB页表"><a href="#64KB页表" class="headerlink" title="64KB页表"></a>64KB页表</h4><ul>
+<li>3级页表</li>
+<li>48bit虚拟地址</li>
+<li>L1页表只有64个entry</li>
+<li>L2和L3页表使用13bit</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902005851821.png" alt="64KB页表" loading="lazy"></p>
+<h3 id="分离的两套页表设计"><a href="#分离的两套页表设计" class="headerlink" title="分离的两套页表设计"></a>分离的两套页表设计</h3><ul>
+<li>用户空间(EL0)和内核空间(EL1)采用两套分离的页表基地址设计<ul>
+<li><strong>虚拟地址的高16位为1时选择TTBR1_EL1</strong></li>
+<li><strong>虚拟地址的高16位为0时选择TTBR0_EL0</strong></li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902010728593.png" alt="分离的两套页表设计" loading="lazy"></p>
+<h3 id="查找地址的例子"><a href="#查找地址的例子" class="headerlink" title="查找地址的例子"></a>查找地址的例子</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261824276.png" alt="查找地址的例子" loading="lazy"></p>
+<p>在一个简单的地址转换中，只涉及一个层次的查找。假设我们使用的是一个 64KB 的颗粒，有一个 42 位的虚<br>拟地址。MMU 映射虚拟地址的方法如下:</p>
+<ol>
+<li>如果 VA[63:42] &#x3D; 1，则 TTBR1 用于第一页表的基地址。当 VA[63:42] &#x3D; 0 时，TTBR0 用于第一页表的<br> 基地址。</li>
+<li>页表包含 8192 个 64 位页表条目，并使用 VA[41:29] 进行索引。MMU 从表中读取相关的 2 级表格条目。</li>
+<li>MMU 检查页面表条目的有效性，以及是否允许请求的内存访问。假设它有效，则允许内存访问。</li>
+<li>在图 12-7 中，页表条目指的是 512MB 的页面（它是一个块描述符）。</li>
+<li>Bit[47:29] 取自此页面表条目，并形成物理地址的 Bit[47:29]。</li>
+<li>由于我们有一个 512MB 的页面，VA 的 Bit[28:0] 被取为 PA[28:0]。请参阅第 12-15 页颗粒大小对映射表<br> 的影响。</li>
+<li>返回完整的 PA[47:0]，以及页面表条目中的其他信息。</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202510261825393.png" alt="3级页表" loading="lazy"></p>
+<p>假设了一个 64KB 的颗粒和 42 位的虚拟地址空间。</p>
+<ol>
+<li>如果 VA[63:42] &#x3D; 1，则 TTBR1 用于第一页表的基地址。当 VA[63:42] &#x3D; 0 时，TTBR0 用于第一页表的<br> 基地址。</li>
+<li>页面表包含 8192 个 64 位页面表条目，并通过 VA[41:29] 进行索引。MMU 从表中读取相关的二级表格<br> 条目。</li>
+<li>MMU 检查二级页面表条目的有效性，以及是否允许请求的内存访问。假设它有效，则允许内存访问</li>
+<li>在图 12-8 中，二级页表条目是指三级页表的地址（它是一个表描述符）。</li>
+<li>Bit[47:16] 取自二级页表条目，形成三级页表的基地址。</li>
+<li>VA 的 Bit[28:16] 用于索引 3 级页面表条目。MMU 从表格中读取相关的 3 级表格条目。</li>
+<li>MMU 检查三级页面表条目的有效性，以及是否允许请求的内存访问。假设它有效，则允许内存访问。</li>
+<li>在图 12-8 中，三级页面表条目指的是 64KB 页面（它是一个页面描述符）。</li>
+<li>Bit[47:16] 取自三级页面表条目，用于形成 PA[47:16]。</li>
+<li>由于我们有一个 64KB 页面，VA[15:0] 被取为 PA[15:0]。</li>
+<li>返回完整的 PA[47:0]，以及页面表条目中的其他信息。</li>
+</ol>
+<h3 id="与页表相关的系统寄存器"><a href="#与页表相关的系统寄存器" class="headerlink" title="与页表相关的系统寄存器"></a>与页表相关的系统寄存器</h3><h4 id="TCR-EL1"><a href="#TCR-EL1" class="headerlink" title="TCR_EL1"></a>TCR_EL1</h4><blockquote>
+<p>Translation Control Register</p>
+<p>配置地址空间大小和页表粒度</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902011041721.png" alt="TCR_EL1寄存器" loading="lazy"></p>
+<p><strong>配置地址空间大小和页表粒度</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902011102577.png" alt="配置地址空间大小和页表粒度" loading="lazy"></p>
+<ul>
+<li><strong>IPS</strong>：Intermediate Physical Address Size，用来配置物理地址大小，例如48bit，256TB大小的物理空间</li>
+<li><strong>TG1</strong>和<strong>TG0</strong>：配置页表粒度的大小，例如4KB，16KB，64KB</li>
+<li><strong>T1SZ</strong>：用来配置TTBR_EL1页表能管辖的大小，计算公式为2^(64-T1SZ)个字节</li>
+<li><strong>T0SZ</strong>：用来配置TTBR_EL0页表能管辖的大小，计算公式为2^(64-T0SZ)个字节</li>
+</ul>
+<blockquote>
+<p>在 ARM64 中，虚拟地址的高位并不是随便用的，而是受 <strong>TCR_EL1.T0SZ &#x2F; T1SZ</strong> 限制。</p>
+</blockquote>
+<p><strong>与Cache相关的字段</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902012554941.png" alt="与Cache相关的字段" loading="lazy"></p>
+<ul>
+<li><strong>SH1</strong>：设置内存相关的cache属性，这些内存是通过TTBR_EL1页表来访问的。例如Non-shareable, Outer Shareable，Inner Shareable</li>
+<li><strong>SH0</strong>：设置内存相关的cache属性，这些内存是通过TTBR_EL0页表来访问的</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921173931770.png" alt="SH1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921174050978.png" alt="SH0" loading="lazy"></p>
+<ul>
+<li><strong>ORGN1</strong>：设置Outer Shareable的相关属性</li>
+<li><strong>ORGN0</strong>:  设置Outer Shareable的相关属性</li>
+<li><strong>IRGN1</strong>： 设置Inner Shareable 的相关属性</li>
+<li><strong>IRGN0</strong>： 设置Inner Shareable 的相关属性</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921173907036.png" alt="ORGN1&#x2F;IRGN1" loading="lazy"></p>
+<blockquote>
+<p>TCR_EL1 中 <strong>SH0&#x2F;SH1、IRGN0&#x2F;IRGN1、ORGN0&#x2F;ORGN1</strong> 的字段，它们<strong>仅用于未进行地址翻译的内存区域</strong>（即当 MMU 被禁用时），或者在某些特殊上下文中作为“默认”属性。<strong>一旦 MMU 启用，内存属性完全由页表项 + MAIR_EL1 决定</strong>。</p>
+</blockquote>
+<h4 id="SCTLR-EL1"><a href="#SCTLR-EL1" class="headerlink" title="SCTLR_EL1"></a>SCTLR_EL1</h4><blockquote>
+<p>System Control Register (EL1)</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902013042637.png" alt="SCTLR_EL1寄存器" loading="lazy"></p>
+<ul>
+<li>M：打开和关闭MMU</li>
+<li>I：打开指令cache</li>
+<li>C：打开data cache</li>
+</ul>
+<h4 id="TTBR0-EL1"><a href="#TTBR0-EL1" class="headerlink" title="TTBR0_EL1"></a>TTBR0_EL1</h4><blockquote>
+<p>指向TTBR0页表的基地址，通常用于EL1&#x2F;EL0的页表映射</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902013247666.png" alt="TTBR0_EL1" loading="lazy"></p>
+<h4 id="TTBR1-EL1"><a href="#TTBR1-EL1" class="headerlink" title="TTBR1_EL1"></a>TTBR1_EL1</h4><blockquote>
+<p>指向TTBR1页表的基地址，通常用于EL1&#x2F;EL0的页表映射</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902013328537.png" alt="TTBR1_EL1" loading="lazy"></p>
+<h4 id="MAIR-EL1"><a href="#MAIR-EL1" class="headerlink" title="MAIR_EL1"></a>MAIR_EL1</h4><blockquote>
+<p>Memory Attribute Indirection Register</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919153741608.png" alt="MAIR_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919153824935.png" alt="MAIR_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919153907126.png" alt="Attrx meaning" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919153920520.png" alt="dd" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919154058311.png" alt="oooo" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919154116988.png" alt="iii" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919154133551.png" alt="R or W" loading="lazy"></p>
+<p>ARM 架构设计者认为：<strong>在绝大多数系统中，8 种内存类型已经足够覆盖所有使用场景</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Linux内核中典型的MAIR配置</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAIR_EL1_SET							\</span></span><br><span class="line"><span class="meta">	(MAIR_ATTRIDX(MAIR_ATTR_DEVICE_nGnRnE, MT_DEVICE_nGnRnE) |	\</span></span><br><span class="line"><span class="meta">	 MAIR_ATTRIDX(MAIR_ATTR_DEVICE_nGnRE, MT_DEVICE_nGnRE) |		\</span></span><br><span class="line"><span class="meta">	 MAIR_ATTRIDX(MAIR_ATTR_DEVICE_GRE, MT_DEVICE_GRE) |		\</span></span><br><span class="line"><span class="meta">	 MAIR_ATTRIDX(MAIR_ATTR_NORMAL_NC, MT_NORMAL_NC) |		\</span></span><br><span class="line"><span class="meta">	 MAIR_ATTRIDX(MAIR_ATTR_NORMAL, MT_NORMAL) |			\</span></span><br><span class="line"><span class="meta">	 MAIR_ATTRIDX(MAIR_ATTR_NORMAL_WT, MT_NORMAL_WT) |		\</span></span><br><span class="line"><span class="meta">	 MAIR_ATTRIDX(MAIR_ATTR_NORMAL, MT_NORMAL_TAGGED))</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 写入MAIR_EL1寄存器</span></span><br><span class="line"><span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;msr mair_el1, %0&quot;</span> :: <span class="string">&quot;r&quot;</span> (MAIR_EL1_SET))</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="ID-AA64MMFR0-EL1"><a href="#ID-AA64MMFR0-EL1" class="headerlink" title="ID_AA64MMFR0_EL1"></a>ID_AA64MMFR0_EL1</h4><blockquote>
+<p>AArch64 Memory Model Feature Register 0，报告处理器对 <strong>页表、地址范围和内存特性的支持情况</strong></p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919163924002.png" alt="ID_AA64MMFR0_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919163948258.png" alt="ID_AA64MMFR0_EL1" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PARANGE</td>
+<td>[3:0]</td>
+<td>支持的物理地址位宽</td>
+</tr>
+<tr>
+<td>ASID</td>
+<td>[7:4]</td>
+<td>支持的 ASID（Address Space ID）位数</td>
+</tr>
+<tr>
+<td>BIGENDEL</td>
+<td>[11:8]</td>
+<td>支持 EL1&#x2F;EL0 大页扩展</td>
+</tr>
+<tr>
+<td>SNSMEM</td>
+<td>[15:12]</td>
+<td>是否支持安全内存访问</td>
+</tr>
+<tr>
+<td>BIGENDEL0</td>
+<td>[19:16]</td>
+<td>支持 EL0 大页扩展</td>
+</tr>
+<tr>
+<td>TGRAN16</td>
+<td>[23:20]</td>
+<td>支持 16KB 页</td>
+</tr>
+<tr>
+<td>TGRAN64</td>
+<td>[27:24]</td>
+<td>支持 64KB 页</td>
+</tr>
+<tr>
+<td>TGRAN4</td>
+<td>[31:28]</td>
+<td>支持 4KB 页</td>
+</tr>
+</tbody></table>
+<h4 id="CPACR-EL1"><a href="#CPACR-EL1" class="headerlink" title="CPACR_EL1"></a>CPACR_EL1</h4><blockquote>
+<p>Architectural Feature Access Control Register</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919152141812.png" alt="CPACR_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919152257188.png" alt="CPACR_EL1" loading="lazy"></p>
+<p><strong>FPEN 字段（CPACR_EL1[21:20]）</strong></p>
+<blockquote>
+<p> FPEN &#x3D; Floating-point Enable controls，控制 <strong>EL0&#x2F;EL1 对 SVE、Advanced SIMD、浮点寄存器的访问是否被 EL1&#x2F;EL2 捕获（trapped）</strong>。</p>
+</blockquote>
+<ul>
+<li><strong>寄存器影响</strong>：<ul>
+<li><strong>AArch64</strong>:<ul>
+<li>FPCR、FPSR</li>
+<li>SIMD&#x2F;Floating-point 寄存器 <code>V0-V31</code>（含 D0-D31 &#x2F; S0-S31 视图）</li>
+</ul>
+</li>
+<li><strong>AArch32 &#x2F; Advanced SIMD</strong>:<ul>
+<li>FPSCR</li>
+<li>Q0-Q15（含 D0-D31 &#x2F; S0-S31 视图）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>异常报告</strong>：<ul>
+<li>EL0&#x2F;EL1 捕获 → EC syndrome &#x3D; <code>0x07</code></li>
+<li>EL2 捕获 → EC syndrome &#x3D; <code>0x00</code>（当 EL2 启用且 <code>HCR_EL2.TGE = 1</code>）</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>FPEN</th>
+<th>行为描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0b00</td>
+<td><strong>EL0 和 EL1 的指令都会被捕获</strong>，除非 CPACR_EL1.ZEN 已经捕获它们</td>
+</tr>
+<tr>
+<td>0b01</td>
+<td><strong>仅 EL0 的指令会被捕获</strong>，EL1 不捕获</td>
+</tr>
+<tr>
+<td>0b10</td>
+<td><strong>EL0 和 EL1 的指令都会被捕获</strong>（与 0b00 相同）</td>
+</tr>
+<tr>
+<td>0b11</td>
+<td><strong>不捕获任何指令</strong>（寄存器可自由访问）</td>
+</tr>
+</tbody></table>
+<p><strong>简单来说</strong>：</p>
+<ul>
+<li><p>FPEN 控制了 <strong>用户态 (EL0) 或内核态 (EL1) 是否可以直接使用浮点&#x2F;SIMD&#x2F;SVE 寄存器</strong>。<strong>开启MMU前通常要打开</strong></p>
+</li>
+<li><p>配合 CPACR_EL1.ZEN，可以对不同级别的访问做精细控制。</p>
+</li>
+<li><p>常用配置：</p>
+<ul>
+<li><p><strong>0b11</strong> → 不捕获，允许所有 EL0&#x2F;EL1 指令访问 FP&#x2F;SIMD。</p>
+</li>
+<li><p><strong>0b00&#x2F;0b10</strong> → 捕获，通常用于安全或虚拟化场景。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919152424128.png" alt="FPEN" loading="lazy"></p>
+<h4 id="MDSCR-EL1"><a href="#MDSCR-EL1" class="headerlink" title="MDSCR_EL1"></a>MDSCR_EL1</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919153102235.png" alt="MDSCR_EL1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919153306784.png" alt="MDSCR_EL1" loading="lazy"></p>
+<p><strong>TDCC</strong></p>
+<ul>
+<li><p><strong>TDCC &#x3D; 0</strong> → 用户态 EL0 可以直接读写 DCC 寄存器。</p>
+</li>
+<li><p><strong>TDCC &#x3D; 1</strong> → EL0 访问 DCC 寄存器会被 trap 到 EL1&#x2F;EL2，常用于 <strong>安全&#x2F;虚拟化&#x2F;调试控制</strong>。</p>
+</li>
+</ul>
+<blockquote>
+<p>DCC 是 <strong>调试通信通道（Debug Communication Channel）</strong>，它提供了 <strong>CPU 与调试器（Debug Host）之间的数据传输接口</strong>，打开后才能使用Jtag</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250919153337564.png" alt="TDCC" loading="lazy"></p>
+<h2 id="开启MMU"><a href="#开启MMU" class="headerlink" title="开启MMU"></a>开启MMU</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">// enable_mmu.S</span><br><span class="line">// AArch64 汇编：设置 TTBR0/TTBR1、TCR_EL1 并启用 MMU（SCTLR_EL1.M = 1）</span><br><span class="line">// 约定：</span><br><span class="line">//   Input registers:</span><br><span class="line">//     X0 = TTBR0 base (physical address of level-translation table for TTBR0)</span><br><span class="line">//     X1 = TTBR1 base (physical address of level-translation table for TTBR1)</span><br><span class="line">//     X2 = TCR_EL1 value to program (caller constructs合适的值)</span><br><span class="line">//   Returns: no return value; executes ISB after enabling MMU.</span><br><span class="line">//</span><br><span class="line">// 使用示例：在 C 代码中准备好 X0/X1/X2，然后跳到此例程或以内联汇编调用。</span><br><span class="line"></span><br><span class="line">    .text</span><br><span class="line">    .align  4</span><br><span class="line">    .global enable_mmu_el1</span><br><span class="line">    .type   enable_mmu_el1, %function</span><br><span class="line"></span><br><span class="line">// 为可读性把一些注释放在指令附近，详见每行注释。</span><br><span class="line">enable_mmu_el1:</span><br><span class="line">    // 1) 写入页表基址到 TTBR0/TTBR1</span><br><span class="line">    //    TTBR0_EL1 用于低地址空间（由 T0SZ 控制的 VA 范围）</span><br><span class="line">    //    TTBR1_EL1 用于高地址空间（由 T1SZ 控制的 VA 范围）</span><br><span class="line">    //    X0/X1 必须包含页表基地址（aligned），通常是物理地址 &gt;&gt; translation_granule_shift</span><br><span class="line">    MSR     TTBR0_EL1, X0        // TTBR0_EL1 &lt;- X0</span><br><span class="line">    MSR     TTBR1_EL1, X1        // TTBR1_EL1 &lt;- X1</span><br><span class="line"></span><br><span class="line">    // 2) 写入 TCR_EL1（Translation Control Register）</span><br><span class="line">    //    X2 必须由调用者构造为合适的 TCR 值（例如: 4KB granule, 48-bit VA 等）。</span><br><span class="line">    //    TCR 控制：T0SZ/T1SZ（VA 宽度），TG0/TG1（granule），IRGN/ORGN/SH 等内存属性。</span><br><span class="line">    MSR     TCR_EL1, X2          // TCR_EL1 &lt;- X2</span><br><span class="line"></span><br><span class="line">    // 3) ISB — 确保刚写入的 TTBR/TCR 在后续启用 MMU 前对指令流可见</span><br><span class="line">    //    ISB 保证之前写系统寄存器的效果在后续指令之前生效（同步上下文）。</span><br><span class="line">    ISB</span><br><span class="line"></span><br><span class="line">    // （可选/建议）在启用 MMU 之前清除所有 TLB 条目。</span><br><span class="line">    // 这在有旧翻译时很有用，但在首次启用 MMU 且页表是全新构造时可视平台选择性执行。</span><br><span class="line">    // TLBI VMALLE1 // inval all translation for EL1 stage1 by VA/ASID (虚拟化相关)</span><br><span class="line">    // MRS X3, CNTVCT_EL0 </span><br><span class="line">    // TLBI VMALLE1</span><br><span class="line">    // DSB SY</span><br><span class="line">    // ISB</span><br><span class="line"></span><br><span class="line">    // 4) 读取 SCTLR_EL1（System Control Register）</span><br><span class="line">    MRS     X3, SCTLR_EL1        // X3 = current SCTLR_EL1</span><br><span class="line"></span><br><span class="line">    // 5) 设置 SCTLR_EL1 的 M 位 (bit0) 以启用 MMU</span><br><span class="line">    //    另外：通常需要同时设置/检查其他位，例如 C (data cache enable), I (instruction cache enable),</span><br><span class="line">    //    SA/SP/EE 等位 根据平台需要调整。这里只开启 MMU（M=1）。</span><br><span class="line">    //    Caller 如果希望同时开启缓存，应在此处或之前设置 C/I 位。</span><br><span class="line">    ORR     X3, X3, #1           // X3 = X3 | 0x1  -&gt; set M bit</span><br><span class="line"></span><br><span class="line">    // 6) 写回 SCTLR_EL1</span><br><span class="line">    MSR     SCTLR_EL1, X3        // SCTLR_EL1 &lt;- X3</span><br><span class="line"></span><br><span class="line">    // 7) ISB — 确保 MMU 配置和寄存器改变对随后执行的指令立即生效</span><br><span class="line">    ISB</span><br><span class="line"></span><br><span class="line">    RET</span><br><span class="line"></span><br><span class="line">    .size   enable_mmu_el1, .-enable_mmu_el1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="TBI（Top-Byte-Ignore）"><a href="#TBI（Top-Byte-Ignore）" class="headerlink" title="TBI（Top Byte Ignore）"></a>TBI（Top Byte Ignore）</h2><p><strong>ARMv8-A 架构里的 TBI（Top Byte Ignore）功能</strong>，也叫<strong>顶部字节忽略</strong>，它允许你把<strong>虚拟地址的最高 8 个 bit（[63:56]）用来存储额外信息，而不会影响内存访问</strong>。这个机制也叫 <strong>Tagged Pointers（标签指针）</strong>，是 ARM 提供给编程语言和运行时系统的一个功能。</p>
+<p><strong>正常情况下地址必须合法</strong></p>
+<p>在 64 位系统中，寄存器是 64 位的，但虚拟地址并不是全 64 位——ARMv8 通常支持 <strong>48 位或 52 位虚拟地址</strong>。所以虚拟地址<strong>最上面的 16 位必须是符号扩展</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>虚拟地址类型</th>
+<th>高 16 位必须是</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户态内存</td>
+<td>0x0000</td>
+</tr>
+<tr>
+<td>内核高地址</td>
+<td>0xFFFF</td>
+</tr>
+</tbody></table>
+<p>如果你把 <code>[63:48]</code> 写成任意其他值，CPU 会触发<strong>地址异常（Address size fault）</strong>。</p>
+<p>在 <strong>TCR_EL1 中开启 TBI</strong> 后（分别有 <code>TBI0</code> 和 <code>TBI1</code> 控制），CPU 会<strong>忽略地址的最高 8 位 <code>[63:56]</code></strong>，也就是说你可以随便往这 8 位写标记数据，用来<strong>存附加信息，不影响内存访问</strong>！</p>
+<blockquote>
+<p>注意：内核&#x2F;用户地址仍然由 VA[55] 决定，为1表示内核地址，为0表示用户地址空间。</p>
+</blockquote>
+<p>在 <code>TCR_EL1</code> 中有两个字段：</p>
+<ul>
+<li><code>TBI0</code> → 控制 <strong>EL0 使用 TTBR0 地址访问</strong> 时是否开启指针标签</li>
+<li><code>TBI1</code> → 控制 <strong>EL1 使用 TTBR1 地址访问</strong> 时是否开启指针标签</li>
+</ul>
+<h2 id="内存属性"><a href="#内存属性" class="headerlink" title="内存属性"></a>内存属性</h2><h3 id="ARMv8定义的内存属性"><a href="#ARMv8定义的内存属性" class="headerlink" title="ARMv8定义的内存属性"></a>ARMv8定义的内存属性</h3><ul>
+<li><p>ARMv8架构处理器提供两种内存属性</p>
+<ul>
+<li><p>普通内存(Normal Memory)</p>
+<blockquote>
+<p>普通内存是弱一致性的(weakly ordered)，没有其他额外约束，提供最高的内存访问性能</p>
+</blockquote>
+</li>
+<li><p>设备内存(Device Memory)</p>
+<blockquote>
+<p>处理器访问设备内存会有很多限制，比如不能进行预测访问等。设备内存是严格按照指令顺序来执行的。ARMv8架构定义了多种设备内存的属性</p>
+</blockquote>
+<ul>
+<li><strong>Device-nGnRnE</strong>   (不支持聚合操作，不支持指令重排，不支持提前写应答)</li>
+<li><strong>Device-nGnRE</strong>     (不支持聚合操作，不支持指令重排，支持提前写应答)</li>
+<li><strong>Device-nGRE</strong>        (不支持聚合操作，支持指令重排，支持提前写应答)</li>
+<li><strong>Device-GRE</strong>           (支持聚合操作，支持指令重排，支持提前写应答)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Gathering or non Gathering (G or nG)</strong> </p>
+<blockquote>
+<p>此属性确定是否可以<strong>将多个访问合并到此内存区域的单个总线事务中</strong>。</p>
+</blockquote>
+<ul>
+<li>如果地址被标记为非聚合 (nG)，那么<strong>内存总线上对该位置执行的访问次数和大小必须与代码中显式访问的次数和大小完全匹配</strong>。</li>
+<li>如果地址被标记为 Gathering (G)，则处理器可以<strong>例如将两个字节写入合并为单个半字写入</strong>。对于标记为 Gathering 的区域，还可以<strong>合并对同一内存位置的多个内存访问</strong>。</li>
+</ul>
+<p>例如，如果程序读取同一个位置两次，核心只需要执行一次读取，就可以返回两条指令的结果相同。对于从标记为非 Gathering 的区域读取，数据值必须来自终端设备。不能从写缓冲区或其他位置窥探它。</p>
+</li>
+<li><p><strong>Re-ordering (R or nR)</strong> </p>
+<blockquote>
+<p>这决定了<strong>对同一设备的访问是否可以相互重新排序</strong>。<strong>如果地址被标记为非重新排序 (nR)，则同一块内的访问始终按程序顺序出现在总线上</strong>。这个块的大小是实现定义(IMPLEMENTATION DEFINED)的。如果这个块的大小很大，它可以跨越几个表条目。在这种情况下，对于也标记为 nR 的任何其他访问，都遵守排序规则。</p>
+</blockquote>
+</li>
+<li><p><strong>Early Write Acknowledgement (E or nE)</strong> </p>
+<blockquote>
+<p>这确定<strong>是否允许处理器和正被访问的从设备之间的中间写缓冲区发送写完成的确认</strong>。在现代 SoC（系统级芯片）中，处理器（如 CPU）通过互连（Interconnect）访问外设或内存。为了提高性能，互连中通常会包含<strong>写缓冲区（Write Buffer）</strong>，用来暂存尚未真正写入目标设备的数据。</p>
+<p>但某些场景下，<strong>必须确保数据真的到达了目标设备之后才认为写操作完成</strong>（比如写寄存器触发硬件动作），而另一些场景则可以<strong>提前确认写入完成</strong>以提升吞吐量（比如写普通内存）。</p>
+<p>这就引出了 <strong>E（Early）和 nE（not Early）</strong> 的区别。</p>
+<ul>
+<li><p>如果地址被标记为非早期写确认 (nE)，则写响应必须来自外设，即<strong>禁止</strong>提前确认。写完成信号<strong>必须由目标外设本身发出</strong>，即数据<strong>真正被外设接收后</strong>，才通知处理器写操作完成。</p>
+</li>
+<li><p>如果地址被标记为早期写入确认 (E)，则<strong>允许互连逻辑中的缓冲区在终端设备实际接收到写入之前发出写入接受信号</strong>。这本质上是给外部存储系统的信息允许互连中的写缓冲区在<strong>数据尚未真正送达目标外设</strong>时，就向处理器发送“写完成”的确认信号。</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p><strong>Linux内核中定义</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902165725691.png" alt="Linux内核中定义的内存属性" loading="lazy"></p>
+<p><strong>内存属性并没有存放在页表的页表项中</strong>，而是存放在<strong>MAIR_ELn</strong>寄存器（<strong>Memory Attribute Indirection Register</strong>）。</p>
+<p><strong>页表项中有一个3位的索引值（AttrInx[2:0]）来查找MAIR_ELn寄存器</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902165739744.png" alt="MAIR_ELn" loading="lazy"></p>
+<h3 id="Linux内核中定义的内存属性"><a href="#Linux内核中定义的内存属性" class="headerlink" title="Linux内核中定义的内存属性"></a>Linux内核中定义的内存属性</h3><ul>
+<li>操作系统（Linux系统）根据armv8的定义的内存属性，以及内存的读写等属性，定义一些列属性<ul>
+<li><strong>PAGE_KERNEL</strong>：内存最普通的内存页面</li>
+<li><strong>PAGE_KERNEL_RO</strong>：内核中只读的普通内存页面</li>
+<li><strong>PAGE_KERNEL_ROX</strong>：内核中只读可执行的普通页面</li>
+<li><strong>PAGE_KERNEL_EXEC</strong>：内核中可执行的普通页面</li>
+<li><strong>PAGE_KERNEL_EXEC_CONT</strong>：内核中可执行的普通页面，并且是物理连续的多个页面</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902171041351.png" alt="pgtable-prot.h" loading="lazy"></p>
+<h2 id="Linux5-0中的创建页表的例子"><a href="#Linux5-0中的创建页表的例子" class="headerlink" title="Linux5.0中的创建页表的例子"></a>Linux5.0中的创建页表的例子</h2><ul>
+<li>全局目录项 <strong>PGD</strong> （<strong>Page Global Directory</strong>）对应arm64的L0页表</li>
+<li>上级目录项 <strong>PUD</strong> （<strong>Page Upper Directory</strong>）对应arm64的L1页表</li>
+<li>中间目录项 <strong>PMD</strong> （<strong>Page Middle Directory</strong>）对应arm64的L2页表</li>
+<li>页表项（<strong>Page Table Entry</strong>）对应arm64的L3页表</li>
+</ul>
+<p>arch&#x2F;arm64&#x2F;mm&#x2F;mmu.c</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902215605967.png" alt="arch&#x2F;arm64&#x2F;mm&#x2F;mmu.c" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902221410257.png" alt="arch&#x2F;arm64&#x2F;mm&#x2F;mmu.c" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902221747829.png" alt="arch&#x2F;arm64&#x2F;mm&#x2F;mmu.c" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902221924509.png" alt="arch&#x2F;arm64&#x2F;mm&#x2F;mmu.c" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902222005482.png" alt="arch&#x2F;arm64&#x2F;mm&#x2F;mmu.c" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902222126787.png" alt="arch&#x2F;arm64&#x2F;mm&#x2F;mmu.c" loading="lazy"></p>
+<ol>
+<li>通过地址addr查找PGD表项</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902230149054.png" alt="通过addr查找PGD表项" loading="lazy"></p>
+<ol start="2">
+<li>通过addr找到对应pgd的管辖范围的结束地址</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902230219912.png" alt="通过addr找到对应的pgd的管辖范围的结束地址" loading="lazy"></p>
+<ol start="3">
+<li>设置pgd页表项</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902230227931.png" alt="设置pgd表项" loading="lazy"></p>
+<ol start="4">
+<li>通过地址addr查找PUD的表项</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902230235914.png" alt="通过地址addr查找PUD的表项" loading="lazy"></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="实验一：建立恒等映射"><a href="#实验一：建立恒等映射" class="headerlink" title="实验一：建立恒等映射"></a>实验一：建立恒等映射</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250902230426760.png" alt="实验一" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250901105744774.png" alt="以4KB大小的页面和48位地址宽为例" loading="lazy"></p>
+<p>ARM64 使用 <strong>4级页表</strong>（PGD → PUD → PMD → PTE），每级使用 <strong>9 位索引</strong>（512 项），页大小为 <strong>4KB</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>名称</th>
+<th>索引位</th>
+<th>映射范围</th>
+<th>表项数</th>
+<th>表大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>L0</td>
+<td>PGD</td>
+<td>[47:39]</td>
+<td>512 GB</td>
+<td>512</td>
+<td>4KB</td>
+</tr>
+<tr>
+<td>L1</td>
+<td>PUD</td>
+<td>[38:30]</td>
+<td>1 GB</td>
+<td>512</td>
+<td>4KB</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>PMD</td>
+<td>[29:21]</td>
+<td>2 MB</td>
+<td>512</td>
+<td>4KB</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>PTE</td>
+<td>[20:12]</td>
+<td>4 KB</td>
+<td>512</td>
+<td>4KB</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注：若某级页表项标记为 <strong>SECTION（块映射）</strong>，则跳过下一级，直接映射大块内存。</p>
+</blockquote>
+<hr>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200447372.png" alt="get_free_page" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200359611.png" alt="early_pgtable_alloc" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920195827243.png" alt="paging_init" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200006833.png" alt="__create_identical_mapping" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200053467.png" alt="__create_pgd_mapping" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200225287.png" alt="pud_set_section" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200204862.png" alt="alloc_init_pud" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200137344.png" alt="alloc_init_pud" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200310102.png" alt="pmd_set_section" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200246974.png" alt="alloc_init_pmd" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920200334498.png" alt="alloc_init_pte" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920195849461.png" alt="enable_mmu" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920195936345.png" alt="cpu_init" loading="lazy"></p>
+<p><strong>为什么要恒等映射</strong></p>
+<p>为了打开MMU不会出问题：</p>
+<ol>
+<li>在关闭MMU情况下，处理器访问的地址都是物理地址。<strong>当MMU打开时，处理器访问地址变为虚拟地址</strong></li>
+<li>现代处理器都是<strong>多级流水线架构</strong>，<strong>处理器会提前预取多条指令到流水线中</strong>。当打开MMU时，处理器已经提前预取了多条指令，并且这些指令是以物理地址来进行预取的。当打开MMU指令执行完成，处理器的MMU功能生效。因此，这里是为了<strong>保证处理器在开启MMU前后可以连续取指令</strong>。</li>
+</ol>
+<h3 id="实验二：为什么MMU跑不起来"><a href="#实验二：为什么MMU跑不起来" class="headerlink" title="实验二：为什么MMU跑不起来"></a>实验二：为什么MMU跑不起来</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250903200428924.png" alt="实验2" loading="lazy"></p>
+<p>很明显，_text_boot到_etext的内存属性应该映射成PAGE_KERNEL_ROX</p>
+<p>从_etext到TOTAL_MEMORY才是映射成PAGE_KERNEL</p>
+<h3 id="实验三：实现一个MMU页表dump的功能"><a href="#实验三：实现一个MMU页表dump的功能" class="headerlink" title="实验三：实现一个MMU页表dump的功能"></a>实验三：实现一个MMU页表dump的功能</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250920201518274.png" alt="实验3" loading="lazy"></p>
+<h3 id="实验四：修改页面属性导致的系统宕机"><a href="#实验四：修改页面属性导致的系统宕机" class="headerlink" title="实验四：修改页面属性导致的系统宕机"></a>实验四：修改页面属性导致的系统宕机</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921164535873.png" alt="实验4" loading="lazy"></p>
+<p>小明同学做了这个实验，他在链接脚本里text段申请了一个4KB的只读页面，然后实现了一个walk_pgtable()的函数去遍历页表和查找对应的PTE，发现怎么设置都没法让页面设置为可写</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921164645740.png" alt="kenel_panic" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921165259831.png" alt="Descriptor encodings" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921165333901.png" alt="PMD_TYPE" loading="lazy"></p>
+<p>问题出在这里</p>
+<p>​	<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921165417892.png" alt="问题" loading="lazy"></p>
+<p>应改成</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921165555291.png" alt="修改" loading="lazy"></p>
+<h3 id="实验五：验证ldxr和stxr指令"><a href="#实验五：验证ldxr和stxr指令" class="headerlink" title="实验五：验证ldxr和stxr指令"></a>实验五：验证ldxr和stxr指令</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921170210342.png" alt="实验6" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921170511374.png" alt="ldxr指令的限制" loading="lazy"></p>
+<p>原因是我们没有设置sharable属性</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921170554115.png" alt="sharable属性" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921174407321.png" alt="配置sharable属性" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921174420561.png" alt="sctlr_el1" loading="lazy"></p>
+<h3 id="实验六：地址转换AT指令"><a href="#实验六：地址转换AT指令" class="headerlink" title="实验六：地址转换AT指令"></a>实验六：地址转换AT指令</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921181449858.png" alt="实验6" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921181554709.png" alt="AT指令" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250921181609567.png" alt="PAR_EL1" loading="lazy"></p>
+<h3 id="MMU芯片手册阅读"><a href="#MMU芯片手册阅读" class="headerlink" title="MMU芯片手册阅读"></a>MMU芯片手册阅读</h3><p>TODO</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2510241/">https://even629.com/posts/2510241/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ARM/">ARM</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E5%92%8C%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">内存管理的基本知识和概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text">分页机制的基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80%E5%88%B0%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">虚拟地址到物理地址映射的过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="toc-number">3.1.</span> <span class="toc-text">一级页表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="toc-number">3.2.</span> <span class="toc-text">二级页表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VMSA"><span class="toc-number">4.</span> <span class="toc-text">VMSA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ARMv8%E7%9A%84%E9%A1%B5%E8%A1%A8"><span class="toc-number">5.</span> <span class="toc-text">ARMv8的页表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AArch64%E7%9A%84%E9%A1%B5%E8%A1%A8%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">5.1.</span> <span class="toc-text">AArch64的页表描述符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#L0-L2%E7%9A%84%E9%A1%B5%E8%A1%A8%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">5.1.1.</span> <span class="toc-text">L0~L2的页表描述符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#L3%E9%A1%B5%E8%A1%A8%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">5.1.2.</span> <span class="toc-text">L3页表描述符</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B5%E8%A1%A8%E5%B1%9E%E6%80%A7"><span class="toc-number">5.2.</span> <span class="toc-text">页表属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Share-Domain"><span class="toc-number">5.2.1.</span> <span class="toc-text">Share Domain</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Contiguous-Block-entries"><span class="toc-number">5.2.2.</span> <span class="toc-text">Contiguous Block entries</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4KB%E9%A1%B5%E8%A1%A8"><span class="toc-number">5.2.3.</span> <span class="toc-text">4KB页表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#16KB%E9%A1%B5%E8%A1%A8"><span class="toc-number">5.2.4.</span> <span class="toc-text">16KB页表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#64KB%E9%A1%B5%E8%A1%A8"><span class="toc-number">5.2.5.</span> <span class="toc-text">64KB页表</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%A6%BB%E7%9A%84%E4%B8%A4%E5%A5%97%E9%A1%B5%E8%A1%A8%E8%AE%BE%E8%AE%A1"><span class="toc-number">5.3.</span> <span class="toc-text">分离的两套页表设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE%E5%9C%B0%E5%9D%80%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-number">5.4.</span> <span class="toc-text">查找地址的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E9%A1%B5%E8%A1%A8%E7%9B%B8%E5%85%B3%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">5.5.</span> <span class="toc-text">与页表相关的系统寄存器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#TCR-EL1"><span class="toc-number">5.5.1.</span> <span class="toc-text">TCR_EL1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SCTLR-EL1"><span class="toc-number">5.5.2.</span> <span class="toc-text">SCTLR_EL1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TTBR0-EL1"><span class="toc-number">5.5.3.</span> <span class="toc-text">TTBR0_EL1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TTBR1-EL1"><span class="toc-number">5.5.4.</span> <span class="toc-text">TTBR1_EL1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MAIR-EL1"><span class="toc-number">5.5.5.</span> <span class="toc-text">MAIR_EL1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ID-AA64MMFR0-EL1"><span class="toc-number">5.5.6.</span> <span class="toc-text">ID_AA64MMFR0_EL1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPACR-EL1"><span class="toc-number">5.5.7.</span> <span class="toc-text">CPACR_EL1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MDSCR-EL1"><span class="toc-number">5.5.8.</span> <span class="toc-text">MDSCR_EL1</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%90%AFMMU"><span class="toc-number">6.</span> <span class="toc-text">开启MMU</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TBI%EF%BC%88Top-Byte-Ignore%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">TBI（Top Byte Ignore）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%B1%9E%E6%80%A7"><span class="toc-number">8.</span> <span class="toc-text">内存属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ARMv8%E5%AE%9A%E4%B9%89%E7%9A%84%E5%86%85%E5%AD%98%E5%B1%9E%E6%80%A7"><span class="toc-number">8.1.</span> <span class="toc-text">ARMv8定义的内存属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux%E5%86%85%E6%A0%B8%E4%B8%AD%E5%AE%9A%E4%B9%89%E7%9A%84%E5%86%85%E5%AD%98%E5%B1%9E%E6%80%A7"><span class="toc-number">8.2.</span> <span class="toc-text">Linux内核中定义的内存属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux5-0%E4%B8%AD%E7%9A%84%E5%88%9B%E5%BB%BA%E9%A1%B5%E8%A1%A8%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-number">9.</span> <span class="toc-text">Linux5.0中的创建页表的例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C"><span class="toc-number">10.</span> <span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E4%B8%80%EF%BC%9A%E5%BB%BA%E7%AB%8B%E6%81%92%E7%AD%89%E6%98%A0%E5%B0%84"><span class="toc-number">10.1.</span> <span class="toc-text">实验一：建立恒等映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E4%BA%8C%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88MMU%E8%B7%91%E4%B8%8D%E8%B5%B7%E6%9D%A5"><span class="toc-number">10.2.</span> <span class="toc-text">实验二：为什么MMU跑不起来</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E4%B8%89%EF%BC%9A%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAMMU%E9%A1%B5%E8%A1%A8dump%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="toc-number">10.3.</span> <span class="toc-text">实验三：实现一个MMU页表dump的功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%9B%9B%EF%BC%9A%E4%BF%AE%E6%94%B9%E9%A1%B5%E9%9D%A2%E5%B1%9E%E6%80%A7%E5%AF%BC%E8%87%B4%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%AE%95%E6%9C%BA"><span class="toc-number">10.4.</span> <span class="toc-text">实验四：修改页面属性导致的系统宕机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E4%BA%94%EF%BC%9A%E9%AA%8C%E8%AF%81ldxr%E5%92%8Cstxr%E6%8C%87%E4%BB%A4"><span class="toc-number">10.5.</span> <span class="toc-text">实验五：验证ldxr和stxr指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%85%AD%EF%BC%9A%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2AT%E6%8C%87%E4%BB%A4"><span class="toc-number">10.6.</span> <span class="toc-text">实验六：地址转换AT指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MMU%E8%8A%AF%E7%89%87%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB"><span class="toc-number">10.7.</span> <span class="toc-text">MMU芯片手册阅读</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '081b50d110d668aa2f89f7a026d69594'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

@@ -1,0 +1,1937 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux CAN | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux CAN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux CAN">
+<meta property="og:url" content="https://even629.com/posts/2601093/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Linux CAN">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2026-01-09T07:56:00.000Z">
+<meta property="article:modified_time" content="2026-01-09T07:56:00.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2601093/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux CAN',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux CAN</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-09T07:56:00.000Z" title="更新于 2026-01-09 15:56:00">2026-01-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">21.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>73分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2601093/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-01-09</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h1 id="CAN-总线介绍"><a href="#CAN-总线介绍" class="headerlink" title="CAN 总线介绍"></a>CAN 总线介绍</h1><p><strong>CAN</strong>（Controller Area Network）是由博世（Bosch）公司于 1986 年推出的串行通信协议，专为汽车电子系统设计，旨在减少车辆中线束数量，实现多个电子控制单元（ECU）之间的高效通信。</p>
+<p><strong>核心特点</strong></p>
+<ul>
+<li>CAN 总线支持多主通信，所有节点（ECU）均可主动发送数据，无需依赖中心控制器。</li>
+<li>其采用非破坏性仲裁机制，通过 ID 优先级解决总线冲突，确保高优先级数据优先传输。</li>
+<li>总线具备高可靠性，内置 CRC 校验、错误检测与恢复机制，同时采用差分信号增强抗电磁干扰能力。</li>
+<li>CAN 总线通过简化布线和降低系统复杂度，实现了低成本的优势。</li>
+</ul>
+<p><strong>应用领域</strong></p>
+<ul>
+<li>汽车电子：发动机控制、车身模块（灯光&#x2F;门窗）、诊断系统（OBD-II）等。</li>
+<li>工业自动化：PLC、传感器网络、机器人控制。</li>
+<li>其他领域：医疗设备、航空航天、智能楼宇。</li>
+</ul>
+<p><strong>发展历程</strong></p>
+<ul>
+<li>1983 年：Bosch 启动汽车网络技术研究。</li>
+<li>1986 年：正式发布 CAN 协议。</li>
+<li>1987 年：英特尔与飞利浦推出首款 CAN 控制器芯片。</li>
+<li>1991 年：CAN 2.0 规范发布，首次应用于奔驰 S 级轿车。</li>
+<li>1993 年：成为国际标准（ISO 11898）。</li>
+<li>2015 年：CAN FD（Flexible Data Rate）标准化（支持更高速率与 64 字节数据）</li>
+<li>2020 年：下一代 CAN XL 发布，带宽进一步提升。</li>
+</ul>
+<h2 id="CAN-硬件连接"><a href="#CAN-硬件连接" class="headerlink" title="CAN 硬件连接"></a>CAN 硬件连接</h2><p>在 CAN 硬件连接中，有 CPU 自带 CAN 控制器和 CPU 没有 CAN 控制器需外设转接（如 SPI转 CAN）这两种情况</p>
+<h3 id="CPU-自带-CAN-控制器"><a href="#CPU-自带-CAN-控制器" class="headerlink" title="CPU 自带 CAN 控制器"></a>CPU 自带 CAN 控制器</h3><p>CPU 自带 CAN 控制器连接图如下所示，CPU 通过集成的 CAN 控制器直接与 CAN 收发器进行通信，CAN 收发器负责将数字信号转换为适合 CAN 总线传输的差分信号（CAN_H 和 CAN_L）。<strong>CPU 可以直接与 CAN 总线进行通信</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155708706.png" alt="CPU自带CAN控制器" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CPU与CAN控制器</strong></td>
+<td>每个CPU都通过CAN控制器与CAN总线通信。CPU负责处理控制逻辑和数据处理任务，而CAN控制器则负责管理CAN协议的通信细节。</td>
+</tr>
+<tr>
+<td><strong>CAN Tx</strong></td>
+<td>发送数据的信号线。CPU通过CAN控制器将数据发送到CAN总线上，该信号线用于传输发送的数据。</td>
+</tr>
+<tr>
+<td><strong>CAN Rx</strong></td>
+<td>接收数据的信号线。CPU通过CAN控制器从CAN总线接收数据，该信号线用于接收来自总线的数据。</td>
+</tr>
+<tr>
+<td><strong>CAN收发器</strong></td>
+<td>CAN收发器连接在CPU的CAN控制器和CAN总线之间，其主要作用是：<br />将CPU输出的数字信号转换为适合在CAN总线上传输的差分电平信号（电平转换）；<br />同时将总线上的差分信号转换回CPU可识别的数字信号。</td>
+</tr>
+<tr>
+<td><strong>CAN H 和 CAN L</strong></td>
+<td>这是CAN总线的两条主要物理信号线：<br />CAN H：用于传输高电平信号； <br />CAN L：用于传输低电平信号。 <br />通过这两条线之间的电压差来实现数据传输（差分信号），提高了抗干扰能力。</td>
+</tr>
+<tr>
+<td><strong>120Ω 电阻</strong></td>
+<td>在CAN总线的两端各接一个120Ω的终端电阻，目的是： • 防止信号在总线末端发生反射（阻抗匹配）； • 保证信号完整性，提高通信稳定性。 尤其在长距离或多个设备连接的情况下，这些终端电阻非常重要。</td>
+</tr>
+</tbody></table>
+<h3 id="CPU-没有-CAN-控制器"><a href="#CPU-没有-CAN-控制器" class="headerlink" title="CPU 没有 CAN 控制器"></a>CPU 没有 CAN 控制器</h3><p>CPU 没有 CAN 控制器的连接示意图如下所示，<strong>CPU 通过 SPI 控制器与 SPI 转 CAN 模块进行通信</strong>，后者将 SPI 数据转换为 CAN 总线所需的格式。</p>
+<p>通过这种结构，CPU 可以通过 SPI 协议与CAN 总线进行通信，适用于需要在没有直接 CAN 控制器的情况下与 CAN 网络连接的应用场景。总线两端的终端电阻确保了 CAN 通信的稳定性。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155709501.png" alt="CPU内部没有CAN控制器" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CPU与SPI控制器</strong></td>
+<td>CPU 通过 SPI 控制器与 SPI 接口的外围设备通信。SPI（Serial Peripheral Interface）是一种同步串行通信协议，常用于微控制器与传感器、存储器等外设之间的高速数据交换。</td>
+</tr>
+<tr>
+<td><strong>SPI到CAN转换器</strong></td>
+<td>这是一个关键的桥接模块，连接在 SPI 控制器和 CAN 总线之间。 它的作用是：将 SPI 协议的数据格式转换为 CAN 协议格式，使得原本只能使用 SPI 通信的设备能够通过 CAN 总线与其他节点通信。</td>
+</tr>
+<tr>
+<td><strong>CAN Tx</strong></td>
+<td>发送数据的信号线，用于将从 SPI 转 CAN 模块接收到的数据发送到 CAN 总线上。</td>
+</tr>
+<tr>
+<td><strong>CAN Rx</strong></td>
+<td>接收数据的信号线，用于从 CAN 总线接收数据，并将其传送给 SPI 转 CAN 模块进行处理。</td>
+</tr>
+<tr>
+<td><strong>CAN收发器</strong></td>
+<td>连接在 CAN 总线和 SPI 转 CAN 模块之间，负责：<br />将逻辑电平信号（来自转换器）转换为适合 CAN 总线传输的差分信号； <br />同时将总线上的差分信号还原为逻辑电平信号传回模块。</td>
+</tr>
+<tr>
+<td><strong>CAN H 和 CAN L</strong></td>
+<td>CAN 总线的两条差分信号线： <br />CAN H：高电平信号线； <br />CAN L：低电平信号线。 通过两者之间的电压差来传输数据，具有较强的抗干扰能力。</td>
+</tr>
+<tr>
+<td><strong>120Ω 电阻</strong></td>
+<td>在 CAN 总线两端各接入一个 120Ω 的终端电阻，目的是： <br />阻抗匹配，防止信号反射； <br />提高通信稳定性，尤其是在长距离或多个节点连接的情况下。</td>
+</tr>
+</tbody></table>
+<h2 id="CAN-电器属性"><a href="#CAN-电器属性" class="headerlink" title="CAN 电器属性"></a>CAN 电器属性</h2><p><strong>CAN 总线使用差分信号传输数据。</strong></p>
+<ol>
+<li><strong>CAN 信号电平</strong></li>
+</ol>
+<p>CAN 总线使用两条信号线进行数据传输：CAN_H（高电平）和 CAN_L（低电平）。</p>
+<p>CAN_H和 CAN_L 之间的电压差异决定了逻辑信号的状态。这使得 CAN 总线具有更好的抗干扰能力，尤其适合在噪声较大的环境中工作。</p>
+<ul>
+<li><strong>CAN_H：高电平信号线，通常电压范围为 2.5V 至 3.5V。</strong></li>
+<li><strong>CAN_L：低电平信号线，通常电压范围为 1.5V 至 2.5V。</strong></li>
+</ul>
+<ol start="2">
+<li><strong>差分信号和抗干扰</strong></li>
+</ol>
+<p>CAN 总线通过差分信号进行数据传输，这意味着信息的传输依赖于 CAN_H 与 CAN_L 之间的电压差，而不是单独的电压值。差分信号的特性使得 CAN 总线在噪声环境中具有极强的抗干扰能力。</p>
+<p><strong>差分信号的优点</strong>：</p>
+<ol>
+<li>噪声通常同时影响 CAN_H 和 CAN_L，但由于差分信号依赖于两者的电压差，<strong>噪声对两者的影响会相互抵消</strong>，从而保持信号的完整性。</li>
+<li>这种特性使得 CAN 总线在汽车、工业控制等噪声较大的环境中表现出色。</li>
+</ol>
+<h3 id="电气属性和工作状态"><a href="#电气属性和工作状态" class="headerlink" title="电气属性和工作状态"></a>电气属性和工作状态</h3><p>CAN 总线的电气属性决定了其工作状态，具体表现为隐性状态和显性状态。</p>
+<ul>
+<li><strong>隐性状态（逻辑”1”）</strong>：<u>当 CAN_H 与 CAN_L 的电压相等（通常为 2.5V）</u>，表示<strong>总线处于空闲状态</strong>。此时，总线没有数据传输，所有设备都在等待通信。隐性状态也被称为“空闲电平”或“逻辑 1”。</li>
+<li><strong>显性状态（逻辑”0”）</strong>：<u>当 CAN_H 与 CAN_L 的电压差为 2V 时</u>，表示<strong>数据正在传输</strong>。具体来说，CAN_H 为 3.5V，CAN_L 为 1.5V，表示逻辑“0”。显性状态表示总线正在传输数据，且<strong>具有较高的优先级</strong>。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155713825.png" alt="隐性电平与显性电平" loading="lazy"></p>
+<h2 id="iTOP-RK3568-开发板-can-接口"><a href="#iTOP-RK3568-开发板-can-接口" class="headerlink" title="iTOP-RK3568 开发板 can 接口"></a>iTOP-RK3568 开发板 can 接口</h2><p>RK3568 这颗 SOC 至多可以使用 3 个 CAN 接口</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155716182.png" alt="CAN1" loading="lazy"></p>
+<p>其中 <strong>TJA1040T</strong> 是一款由恩智浦（NXP）公司生产的高速 CAN 收发器芯片。负责将 CPU 的数字信号转换为适合 CAN 总线传输的信号并且接收总线上的数据，而根据网络标号可以得到开发板使用的是 CAN1</p>
+<table>
+<thead>
+<tr>
+<th>CAN接口</th>
+<th>pinctrl function</th>
+<th>网络标号</th>
+<th>对应的GPIO</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CAN0</td>
+<td>CAN0_TX_M0</td>
+<td>I2C1_SCL_TP</td>
+<td>GPIO0_B3_u</td>
+<td>MIPI屏幕触摸I2C</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN0_RX_M0</td>
+<td>I2C1_SDA_TP</td>
+<td>GPIO0_B4_u</td>
+<td>MIPI屏幕触摸I2C</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN0_TX_M1</td>
+<td>SDMMC0_CMD</td>
+<td>GPIO2_A1</td>
+<td>TF卡 CMD引脚</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN0_RX_M1</td>
+<td>SDMMC0_CLK</td>
+<td>GPIO2_A2</td>
+<td>TF卡时钟引脚</td>
+</tr>
+<tr>
+<td>CAN1</td>
+<td>CAN1_TX_M0</td>
+<td>I2C3_SCL_M0</td>
+<td>GPIO1_A1_u</td>
+<td>底板背面20pinGPIO</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN1_RX_M0</td>
+<td>I2C3_SDA_M0</td>
+<td>GPIO1_A0_u</td>
+<td>底板背面20pinGPIO</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN1_TX_M1</td>
+<td>HDMI_RX_INT_L_GPIO4_C3</td>
+<td>GPIO4_C3_d</td>
+<td>CAN TX</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN1_RX_M1</td>
+<td>4G_DISABLE_GPIO4_C2</td>
+<td>GPIO4_C2_d</td>
+<td>CAN RX</td>
+</tr>
+<tr>
+<td>CAN2</td>
+<td>CAN2_TX_M0</td>
+<td>I2C2_SCL_M1</td>
+<td>GPIO4_B5_d</td>
+<td>MIPI屏幕触摸I2C</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN2_RX_M0</td>
+<td>I2C2_SDA_M1</td>
+<td>GPIO4_B4_d</td>
+<td>MIPI屏幕触摸I2C</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN2_TX_M1</td>
+<td>WIFI_WAKE_HOST_H_GPIO2_B2</td>
+<td>GPIO2_B2_u</td>
+<td>底板引出未使用</td>
+</tr>
+<tr>
+<td></td>
+<td>CAN2_RX_M1</td>
+<td>WIFI_REG_ON_H_GPIO2_B1</td>
+<td>GPIO2_B1_u</td>
+<td>底板引出未使用</td>
+</tr>
+</tbody></table>
+<h1 id="CAN-协议帧结构"><a href="#CAN-协议帧结构" class="headerlink" title="CAN 协议帧结构"></a>CAN 协议帧结构</h1><h2 id="帧的种类"><a href="#帧的种类" class="headerlink" title="帧的种类"></a>帧的种类</h2><p>帧是 CAN 通信中数据传输的基本单位，在 CAN 通信中使用了五种不同类型的帧来实现不同的功能。以下是每种帧的简要说明及其用途：</p>
+<ul>
+<li><strong>数据帧（Data Frame）</strong>：数据帧是 CAN 通信中最常用的帧类型，用于发送单元向接收单元传递数据。数据帧有两种格式：<ul>
+<li>标准格式（11 位标识符）适用于较简单的网络</li>
+<li>扩展格式（29 位标识符）适用于更复杂的网络。</li>
+</ul>
+</li>
+<li><strong>遥控帧（Remote Frame）</strong>：遥控帧用于接收单元向发送单元请求数据。它不包含数据段，而是通过标识符（ID）告诉发送单元“我需要这个 ID 对应的数据”。遥控帧也有标准格式和扩展格式两种，其结构与数据帧类似，但缺少数据段。</li>
+<li><strong>错误帧（Error Frame）</strong>：错误帧用于当节点检测到错误时，向其他节点通知错误的发生。它是一种特殊的帧，用于中断当前通信并重新启动。错误帧由错误标志（6 个连续显性或隐性位）和错误界定符组成，触发条件包括位错误、填充错误、CRC 错误等。</li>
+<li><strong>过载帧（Overload Frame）</strong>：过载帧用于接收单元通知发送单元其尚未做好接收准备。它通常出现在接收节点需要更多时间处理前一帧的情况下。过载帧只能在帧间隔期间发送，其结构类似于错误帧，由过载标志和过载界定符组成。</li>
+<li><strong>帧间隔（Interframe Space）</strong>：帧间隔用于将数据帧或遥控帧与前面的帧分离开来。它是一个时间间隔，确保网络中的节点能够正确识别下一帧的开始。对于数据帧和遥控帧，帧间隔通常为 3 个位时间；对于错误帧和过载帧，帧间隔可能有所不同。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>帧类型</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据帧</td>
+<td>发送单元向接收单元传送数据的帧。</td>
+</tr>
+<tr>
+<td>遥控帧</td>
+<td>接收单元向具有相同ID的发送单元请求数据的帧。</td>
+</tr>
+<tr>
+<td>错误帧</td>
+<td>当检测出错误时，向其他单元通知错误的帧。</td>
+</tr>
+<tr>
+<td>过载帧</td>
+<td>接收单元通知其尚未做好接收准备的帧。</td>
+</tr>
+<tr>
+<td>帧间隔</td>
+<td>将数据帧及遥控帧与前面的帧分离开来的帧。</td>
+</tr>
+</tbody></table>
+<h3 id="数据帧"><a href="#数据帧" class="headerlink" title="数据帧"></a>数据帧</h3><p>数据帧是最核心的帧类型，负责承载实际的数据内容，并在发送单元和接收单元之间实现高效的信息传递。</p>
+<p>在早期的 CAN 通信中，<strong>标准数据帧采用 11 位标识符</strong>，能够满足当时较为简单的网络架构需求。然而，随着车辆功能的复杂化（如高级驾驶辅助系统、动力总成控制、车身电子等），11 位标识符的地址空间逐渐显得不足，难以支持更大规模的节点和更精细的通信需求。为此，CAN 协议引入了<strong>扩展数据帧</strong>，通过 <strong>29 位标识符</strong>提供了更大的地址空间，显著提升了网络的灵活性和扩展性。</p>
+<p><strong>标准数据帧</strong></p>
+<p>标准数据帧是 CAN 通信协议中用于传输数据的基本结构。它包含多个字段，字段的作用各有不同，确保了数据能够高效、安全地传输。数据帧的组成框图如下所示</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155740655.png" alt="标准数据帧" loading="lazy"></p>
+<p>从上图可以得到标准数据帧由以下 7 个主要字段组成</p>
+<ul>
+<li><p><strong>帧起始（Start of Frame）</strong></p>
+<ul>
+<li><u>帧起始由一个固定的显性位（逻辑 0）组成，用于标识数据帧的开始</u>。</li>
+</ul>
+<blockquote>
+<p>它不仅通知接收设备准备接收数据，还起到同步发送端和接收端时钟的作用，确保后续数据的正确解析。</p>
+</blockquote>
+</li>
+<li><p><strong>仲裁字段</strong>（Arbitration Field）</p>
+<ul>
+<li><strong>ID</strong>（11位标识符）主要用于区分报文类型、优先级以及确定发送顺序。标识符值越小，优先级越高；</li>
+<li><strong>RTR 位</strong>（1位，远程传输请求）则用于区分数据帧（显性 0）和远程帧（隐性 1）。此外，仲裁字段中禁止高 7位全为隐性，以避免仲裁错误。</li>
+</ul>
+</li>
+<li><p><strong>控制字段</strong>（Control Field）</p>
+<ul>
+<li><strong>IDE 位</strong>（1位）用于区分标准帧（显性 0）和扩展格式</li>
+<li><strong>RO 位</strong>（1位保留位），保留位固定为显性 0 以备未来扩展</li>
+<li><strong>DLC 位</strong>（4位）则指示数据字段中包含的字节数（范围为 0 到 8 字节）。</li>
+</ul>
+</li>
+<li><p><strong>数据字段</strong>（Data Field）</p>
+<ul>
+<li>数据字段<strong>最多包含 8 字节（64 位）</strong>，是数据帧的核心部分，用于承载实际通信数据内容。</li>
+<li>其<strong>长度由控制字段中的 DLC 位指定</strong>，范围从 0 字节（无数据）到8 字节（最大数据量）。该字段的内容是通信的实际信息，可能包括传感器数据、控制指令等。</li>
+</ul>
+</li>
+<li><p><strong>CRC 校验字段</strong>（CRC Field）</p>
+<ul>
+<li><strong>CRC 校验码（15位）</strong></li>
+<li><strong>CRC 界定符组成（1位）</strong>，固定为隐性 1，用于明确 CRC 字段的结束位置。</li>
+<li>接收设备通过重新计算 CRC 并与接收到的 CRC校验码进行比对，验证数据完整性。</li>
+</ul>
+</li>
+<li><p><strong>ACK 字段</strong>（Acknowledgment Field）</p>
+<ul>
+<li><strong>ACK 槽（1位）</strong>，当接收设备成功接收到数据帧后，会在 ACK 槽中返回一个显性位作为确认信号，表示数据帧已正确接收</li>
+<li><strong>ACK 界定符（1位）</strong>，ACK 界定符固定为隐性 1，用于标识 ACK 字段的结束。</li>
+</ul>
+</li>
+<li><p><strong>帧结束</strong>（End of Frame）</p>
+<ul>
+<li><strong>由 7 位连续的隐性位（逻辑 1）组成</strong>，用于明确标识数据帧的结束。</li>
+<li>它不仅告诉接收设备数据帧已经传输完毕，还提供了额外的时间用于信号同步，确保下一帧的正确接收。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>组成</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>帧起始</strong></td>
+<td>1位显性0</td>
+<td>标识数据帧的开始，并用于同步发送端和接收端时钟，确保后续数据的正确解析。</td>
+</tr>
+<tr>
+<td><strong>仲裁字段</strong></td>
+<td>11位标识 + 1位RTR位</td>
+<td>区分报文类型（数据帧或远程帧）、优先级及发送顺序；标识符值越小优先级越高；RTR位区分数据帧（显性0）和远程帧（隐性1）；禁止高7位全为隐性。</td>
+</tr>
+<tr>
+<td><strong>控制字段</strong></td>
+<td>1位IDE位 + 1位RO保留位 + 4位DLC位</td>
+<td>IDE位区分标准帧（显性0）和扩展帧（隐性1）；保留位固定为显性0以备未来扩展；DLC位指示数据字段长度（0-8字节）。</td>
+</tr>
+<tr>
+<td><strong>数据字段</strong></td>
+<td>最多8字节（64位）</td>
+<td>承载实际通信数据内容，长度由DLC位指定；数据字段是通信的核心部分，可能包含传感器数据、控制指令等实际信息。</td>
+</tr>
+<tr>
+<td><strong>CRC校验字段</strong></td>
+<td>15位CRC校验码 + 1位CRC界定符</td>
+<td>检测数据传输过程中的错误，接收设备通过重新计算CRC与接收到的CRC校验码比对验证数据完整性；CRC界定符固定为隐性1，标识CRC字段的结束。</td>
+</tr>
+<tr>
+<td><strong>ACK字段</strong></td>
+<td>1位ACK槽 + 1位ACK界定符</td>
+<td>接收设备在ACK槽中返回显性位确认数据帧成功接收；ACK界定符固定为隐性1，标识ACK字段的结束。</td>
+</tr>
+<tr>
+<td><strong>帧结束</strong></td>
+<td>7位隐性1</td>
+<td>明确标识数据帧的结束，通知接收设备数据帧已传输完毕，并提供额外时间用于信号同步，确保下一帧的正确接收。</td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155719592.png" alt="标准格式和扩展格式" loading="lazy"></p>
+<p><strong>SRR 位作用</strong></p>
+<p>SRR 位在 CAN 协议中用于替代标准帧的 RTR 位，位于扩展帧仲裁段中原 RTR 位的位置。</p>
+<p>其作用是强制设置为隐性电平（1），以确保在标准帧与扩展帧同时竞争总线时，标准帧因 RTR 位显性（0）而具有更高的优先级。当标准帧和扩展帧同时发送时，总线通过仲裁逻辑检测到显性电平（0），从而使标准帧胜出。</p>
+<p><strong>IDE 位</strong><br>IDE 位是标识符扩展标志，用于区分帧类型：<strong>显性（0）表示当前帧为标准帧，隐性（1）表示扩展帧</strong>。</p>
+<p>在扩展帧中，IDE 位不仅存在于仲裁段以标识帧类型，还出现在控制段中，进一步明确帧结构并实现对扩展帧与标准帧的区分。</p>
+<h3 id="遥控帧"><a href="#遥控帧" class="headerlink" title="遥控帧"></a>遥控帧</h3><p><strong>遥控帧（Remote Frame）<strong>是 CAN 协议中</strong>用于主动请求数据的特殊帧类型</strong>。</p>
+<blockquote>
+<p>当一个节点需要获取其他节点的数据时，可通过发送遥控帧向总线发起请求，目标节点收到请求后返回对应的数据帧。</p>
+</blockquote>
+<p><strong>数据帧去掉数据段就是遥控帧</strong>，当然和遥控帧一样，遥控帧也分标准遥控帧和扩展遥控帧，他们各自的构成如下所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155719691.png" alt="遥控帧" loading="lazy"></p>
+<ul>
+<li><strong>帧起始（Start of Frame）</strong><ul>
+<li>帧起始由 1 位显性 0 组成，与数据帧相同，用于标识遥控帧的开始。</li>
+<li>它不仅通知接收设备准备接收数据，还起到同步发送端和接收端时钟的作用，确保后续数据解析的准确性。</li>
+</ul>
+</li>
+<li><strong>仲裁字段（Arbitration Field）</strong>：<ul>
+<li>11 位标识符（ID）</li>
+<li>1位 RTR 位（隐性 1）组成，</li>
+<li>用于指定请求的数据帧类型，同时通过 RTR 位隐性 1 与数据帧（显性 0）区分，确保优先级低于同 ID 的数据帧。在扩展遥控帧中，仲裁字段扩展为 29 位标识符（ID）、SRR 位（隐性 1）、IDE 位（隐性 1）和 RTR 位（隐性 1）。其中，SRR 位替代标准帧的 RTR 位，确保扩展帧在仲裁时优先级低于标准数据帧；IDE 位隐性 1 则用于标识该帧为扩展帧。</li>
+</ul>
+</li>
+<li><strong>控制字段（Control Field）</strong>：与标准数据帧和扩展数据帧中的控制字段相同。</li>
+<li><strong>数据字段（Data Field）</strong>：遥控帧<strong>无数据字段</strong>，这是其与数据帧的核心区别。通过省略数据字段，明确表示该帧为请求而非数据传输，从而触发目标节点发送对应 ID 的数据帧。</li>
+<li><strong>CRC 校验字段（CRC Field）</strong>：<ul>
+<li>15 位 CRC 校验码</li>
+<li>1 位隐性 CRC 界定符</li>
+<li>用于验证遥控帧在传输过程中是否发生错误。接收设备通过重新计算 CRC 并与接收到的 CRC 校验码进行比对，确保请求的可靠性。</li>
+</ul>
+</li>
+<li>**ACK 字段（Acknowledgment Field）**ACK 字段由 1 位 ACK 槽和 1 位隐性 ACK 界定符组成。当接收节点成功接收到遥控帧后，会在 ACK 槽中返回一个显性位作为确认信号，表明遥控帧已被正确接收，而 ACK 界定符固定为隐性 1 以标识 ACK 字段的结束。</li>
+<li><strong>帧结束（End of Frame）</strong><ul>
+<li>帧结束由 7 位连续的隐性 1 组成，与数据帧相同，用于明确标识遥控帧的结束。它不仅告诉接收设备遥控帧已经传输完毕，还提供了额外的时间用于信号同步，确保下一帧的正确接收。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">字段名称</th>
+<th align="center">组成</th>
+<th align="center">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">帧起始</td>
+<td align="center">1 位显性 0</td>
+<td align="center">标识遥控帧的开始，同步发送端与接收端时钟，保障后续数据解析的准确性。</td>
+</tr>
+<tr>
+<td align="center">仲裁字段</td>
+<td align="center">标准帧：11 位 ID + RTR（隐性 1）扩展帧：29 位 ID + SRR（隐性 1）+ IDE（隐性 1）+ RTR（隐性 1）</td>
+<td align="center">指定请求的数据帧类型，RTR 隐性 1 区分于数据帧；扩展帧通过 SRR、IDE 位兼容标准帧，优先级低于同 ID 的数据帧。</td>
+</tr>
+<tr>
+<td align="center">控制字段</td>
+<td align="center">标准帧：IDE+R0+4 位 DLC 位扩展帧：R1+R0+4 位 DLC 位</td>
+<td align="center">DLC 位指示目标数据帧的字节数（0-8 字节），但遥控帧本身不携带数据；IDE 位区分扩展帧与标准帧。</td>
+</tr>
+<tr>
+<td align="center">数据字段</td>
+<td align="center">无</td>
+<td align="center">明确遥控帧为请求帧，不进行数据传输。</td>
+</tr>
+<tr>
+<td align="center">CRC 校验字段</td>
+<td align="center">15 位 CRC 校验码 + 1 位隐性 CRC 界定符</td>
+<td align="center">验证遥控帧传输过程的正确性，保障请求的可靠性。</td>
+</tr>
+<tr>
+<td align="center">ACK 字段</td>
+<td align="center">1 位 ACK 槽（接收节点填显性位） + 1 位隐性 ACK 界定符</td>
+<td align="center">接收节点通过 ACK 槽确认遥控帧已正确接收，ACK 界定符标识该字段结束。</td>
+</tr>
+<tr>
+<td align="center">帧结束</td>
+<td align="center">7 位隐性 1</td>
+<td align="center">标识遥控帧结束，提供信号同步时间，确保下一帧的正确接收。</td>
+</tr>
+</tbody></table>
+<h3 id="错误帧"><a href="#错误帧" class="headerlink" title="错误帧"></a>错误帧</h3><p>错误帧是 CAN 总线中用于标识通信过程中发生错误的特殊帧，其结构与其他帧（如数据帧或遥控帧）不同，主要用于通知网络中的所有节点当前传输存在错误。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155720858.png" alt="错误帧组成" loading="lazy"></p>
+<ul>
+<li><strong>错误标志（Error Flag）</strong><ul>
+<li><strong>6 位连续的显性位（逻辑 0）或隐性位（逻辑 1）</strong>，分为主动错误标志和被动错误标志。</li>
+<li><strong>主动错误标志</strong>由检测到错误的节点发送，强制中断当前帧的传输，通知网络中所有节点错误的发生；</li>
+<li><strong>被动错误标志</strong>则由处于被动错误状态的节点发送，避免干扰其他节点的正常通信。</li>
+</ul>
+</li>
+<li><strong>错误界定符（Error Delimiter）</strong><ul>
+<li>8 位连续的隐性位（逻辑 1）组成，用于标识错误帧的结束。它确保所有节点能够明确识别错误帧的边界，并在错误处理完成后恢复正常的通信流程。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">字段名称</th>
+<th align="center">组成</th>
+<th align="center">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">错误标志</td>
+<td align="center">主动错误标志：6 位显性位被动错误标志：6 位隐性位</td>
+<td align="center">主动错误标志强制中断当前帧传输，通知网络节点错误；被动错误标志避免干扰其他节点通信。</td>
+</tr>
+<tr>
+<td align="center">错误界定符</td>
+<td align="center">8 位隐性位</td>
+<td align="center">标识错误帧结束，帮助所有节点识别错误帧边界并恢复正常通信。</td>
+</tr>
+</tbody></table>
+<h3 id="过载帧"><a href="#过载帧" class="headerlink" title="过载帧"></a>过载帧</h3><p>过载帧是 CAN 总线中用于通知网络中的其他节点当前接收设备需要更多时间来处理数据的特殊帧。它通常在接收节点无法及时处理接收到的数据时发送，以请求发送节点延迟下一帧的传输。过载帧的组成如下所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155755317.png" alt="过载帧" loading="lazy"></p>
+<ul>
+<li><strong>过载标志（Overload Flag）</strong><ul>
+<li><strong>6 位连续的显性位（逻辑 0）组成</strong>，由接收节点发送，用于通知网络中的其他节点当前接收设备需要更多时间来处理数据，从而请求延迟下一帧的传输。</li>
+<li>多个节点可以同时发送过载标志，这些标志会叠加在一起，形成一个更长的显性位序列。</li>
+</ul>
+</li>
+<li><strong>过载界定符（Overload Delimiter）</strong><ul>
+<li><strong>8 位连续的隐性位（逻辑 1）组成</strong>，用于标识过载帧的结束。</li>
+<li>它确保所有节点能够明确识别过载帧的边界，并在过载处理完成后恢复正常的通信流程。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">字段名称</th>
+<th align="center">组成</th>
+<th align="center">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">过载标志</td>
+<td align="center">6 位连续显性位</td>
+<td align="center">由接收节点发送，告知网络其他节点自身需更多时间处理数据，请求延迟下一帧传输。</td>
+</tr>
+<tr>
+<td align="center">过载界定符</td>
+<td align="center">8 位连续隐性位</td>
+<td align="center">标识过载帧的结束，帮助所有节点识别其边界，从而恢复正常通信流程。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>过载帧通过<strong>过载标志</strong>和<strong>过载界定符</strong>两个字段实现对接收节点处理能力不足的标识和处理。</p>
+<p>当接收节点无法及时处理数据时，会发送过载标志（6 位显性位），通知网络中其他节点延迟下一帧的传输；随后通过过载界定符（8 位隐性位）明确标识过载帧的结束。</p>
+<p>过载帧的设计确保了网络中的节点能够在高负载情况下协调通信，避免数据丢失或错误。</p>
+</blockquote>
+<h2 id="位填充"><a href="#位填充" class="headerlink" title="位填充"></a>位填充</h2><p>位填充是 CAN 协议中用于确保数据传输过程中信号同步的重要机制。</p>
+<p>位填充通过在连续 5 个相同极性位后插入一个反向极性的填充位，确保总线上始终有电平变化，从而维持发送端和接收端的同步。</p>
+<p>填充仅在帧起始到 CRC 字段之间进行，避免对其他部分造成干扰。接收方在检测到填充位后会自动移除填充位，还原出原始数据。这种机制对于防止信号同步问题、提高 CAN 总线通信的可靠性至关重要。</p>
+<p><strong>核心目的</strong></p>
+<p>通过在连续 5 个相同极性位后插入一个反向极性的填充位，避免长时间的“0”或“1”电平导致总线同步问题，从而提高通信的可靠性。</p>
+<p><strong>位填充规则</strong></p>
+<p>当数据中出现 5 个连续的相同极性位时，在第 6 位插入一个与这些位极性相反的填充位。</p>
+<p>这一机制通过打破可能出现的长串相同电平，确保总线上始终有电平变化，从而维持发送端和接收端的同步。</p>
+<p><strong>填充范围</strong></p>
+<p><strong>从帧起始部分到 CRC 字段之间进行</strong>，<emp>CRC 字段之后的数据（如 ACK 字段和帧结束）不进行填充</emp>。这种设计限制了填充范围，避免对不需要同步的部分造成干扰，同时保证关键数据段的同步性。</p>
+<ul>
+<li>示例 1：<ul>
+<li>原始数据：110000011</li>
+<li>分析：未出现 5 个连续的相同极性位，因此无需填充。</li>
+<li>实际发送数据：1100000111</li>
+<li>接收方直接恢复原始数据：110000011</li>
+</ul>
+</li>
+<li>示例 2：<ul>
+<li>原始数据：0111111</li>
+<li>分析：出现 5 个连续的“1”，在第 6 位插入一个“0”。</li>
+<li>实际发送数据：01111101</li>
+<li>接收方检测并移除填充位，恢复原始数据：0111111</li>
+</ul>
+</li>
+<li>示例 3：<ul>
+<li>原始数据：1000001111</li>
+<li>分析：出现 5 个连续的“0”，在第 6 位插入一个“1”，插入 1 之后，又出现了五个连续的“1”，所以在最后一位需要补 0。</li>
+<li>实际发送数据：100000111110</li>
+<li>接收方检测并移除填充位，恢复原始数据：1000001111</li>
+</ul>
+</li>
+</ul>
+<h2 id="CAN-波形实例分析"><a href="#CAN-波形实例分析" class="headerlink" title="CAN 波形实例分析"></a>CAN 波形实例分析</h2><h3 id="标准数据帧"><a href="#标准数据帧" class="headerlink" title="标准数据帧"></a>标准数据帧</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155723352.png" alt="实例1" loading="lazy"></p>
+<blockquote>
+<p>CAN 通信是由一对差分信号线决定的，但上面的 CAN 波形就只有一个，这是因为上述波形是由逻辑分析仪采集得到的，逻辑分析仪会自动将差分信号转换为逻辑信号。然后来对波形进行分析。</p>
+</blockquote>
+<p><strong>帧起始</strong></p>
+<p>首先是帧起始，帧起始由一个固定的显性位（逻辑 0）组成，用于标识数据帧的开始</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155723875.png" alt="帧起始" loading="lazy"></p>
+<p><strong>仲裁字段</strong></p>
+<p>接下来是 12 位的仲裁字段，其中前 11 位为标识符（ID）最后一位是远程传输请求 RTR 位，标识图如下所示，其中红色×的位表示填充位，所以在实际分析的时候需要忽略对应的位，最后一位的 RTR 位为显性位（逻辑 0），所以当前传输的帧为数据帧</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155726119.png" alt="仲裁字段" loading="lazy"></p>
+<p><strong>控制字段</strong></p>
+<p>仲裁字段后面是六位的控制字段（Control Field），包括 1 位 IDE 位、1 位保留位（R0）和4 位数据长度码（DLC），标识图如下所示，IDE 位为显性位（逻辑 0），所以当前帧为标准帧，保留位 R0 默认为显性位（逻辑 0），后四位的 DLC 位为 0001,表示后面会发送 8 位的数据</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155629400.png" alt="控制字段" loading="lazy"></p>
+<p><strong>数据字段</strong></p>
+<p>接下来是 8 位的数据字段，它用于承载实际通信数据内容，标识图如下所示，要发送的数据为 00000001，然后继续向下分析</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155629243.png" alt="数据字段" loading="lazy"></p>
+<p><strong>CRC校验字段</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155628956.png" alt="CRC校验字段" loading="lazy"></p>
+<p><strong>ACK字段</strong></p>
+<p>接下来的两位是 ACK 字段（Acknowledgment Field），ACK 字段由 2 位组成，包括 1 位 ACK槽和 1 位 ACK 界定符。当接收设备成功接收到数据帧后，会在 ACK 槽中返回一个显性位作为确认信号，表示数据帧已正确接收，ACK 界定符固定为隐性 1，用于标识 ACK 字段的结束，标识图如下所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155629172.png" alt="ACK字段" loading="lazy"></p>
+<p>最后是由 7 位连续的隐性位（逻辑 1）组成的帧结束，用于明确标识数据帧的结束。</p>
+<h3 id="标准遥控帧"><a href="#标准遥控帧" class="headerlink" title="标准遥控帧"></a>标准遥控帧</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155629352.png" alt="遥控帧" loading="lazy"></p>
+<p><strong>帧起始</strong></p>
+<p>首先是帧起始，帧起始由一个固定的显性位（逻辑 0）组成，用于标识数据帧的开始，在下图中已经标出</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155629443.png" alt="帧起始" loading="lazy"></p>
+<p><strong>仲裁字段</strong></p>
+<p>接下来是 12 位的仲裁字段，其中前 11 位为标识符（ID）最后一位是远程传输请求 RTR 位组成，标识图如下所示，其中红色×的位表示填充位，所以在实际分析的时候需要忽略对应的位，最后一位的 RTR 位为隐性位（逻辑 1），并且通过观察可以得到后面没有要传输的数据位，所以当前传输的帧为遥控帧</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155635391.png" alt="image-20260109104015402" loading="lazy"></p>
+<p><strong>控制字段</strong></p>
+<p>仲裁字段后面是六位的控制字段（Control Field），包括 1 位 IDE 位、1 位保留位（R0）和4 位数据长度码（DLC），标识图如下所示，IDE 位为隐性位（逻辑 1），所以当前帧为标准遥控帧，保留位 R0 默认为显性位（逻辑 0），后四位的 DLC 位为 0001,但当前帧是遥控帧，并不会发送数据</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155636065.png" alt="控制字段" loading="lazy"></p>
+<p><strong>CRC 校验字段</strong></p>
+<p>CRC 校验字段由 15 位 CRC 校验码和 1 位 CRC 界定符组成，用于检测数据传输过程中是否发生错误，标识图如下所示，最后一位的 CRC 界定符固定为隐性 1，用于明确 CRC 字段的结束位置。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155640560.png" alt="CRC校验字段" loading="lazy"></p>
+<p><strong>ACK字段</strong></p>
+<p>接下来的两位是 ACK 字段（Acknowledgment Field），ACK 字段由 2 位组成，包括 1 位 ACK槽和 1 位 ACK 界定符。当接收设备成功接收到数据帧后，会在 ACK 槽中返回一个显性位作为确认信号，表示数据帧已正确接收，ACK 界定符固定为隐性 1，用于标识 ACK 字段的结束，标识图如下所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155641428.png" alt="ACK字段" loading="lazy"></p>
+<p>最后是由 7 位连续的隐性位（逻辑 1）组成的帧结束</p>
+<h3 id="扩展数据帧"><a href="#扩展数据帧" class="headerlink" title="扩展数据帧"></a>扩展数据帧</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155643912.png" alt="扩展数据帧" loading="lazy"></p>
+<p><strong>帧起始</strong></p>
+<p>首先是帧起始，帧起始由一个固定的显性位（逻辑 0）组成，用于标识数据帧的开始，在下图中已经标出</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155644331.png" alt="帧起始" loading="lazy"></p>
+<p><strong>扩展帧</strong></p>
+<p>根据波形长度以及上方黄色标识可以得到，该帧为扩展帧，所以在接下来的 12 位中，前11 位为标识符（ID），最后一位是 SRR 位，标识图如下所示，其中红色×的位表示填充位，所以在实际分析的时候需要忽略对应的位，SRR 位为隐形位(逻辑 1)</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155811068.png" alt="扩展帧" loading="lazy"></p>
+<p>接下来的后面是 1 位 IDE 位，IDE 位为隐性位（逻辑 1），所以当前帧为扩展帧，但具体是扩展遥控帧还是扩展数据帧，还需要继续向下分析</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155649206.png" alt="扩展帧" loading="lazy"></p>
+<p>接下来 19 位中的前 18 位也是 ID 位，最后一位为 RTR 位，标识图如下所示，最后一位的RTR 位为显性位（逻辑 0），所以当前传输的帧为扩展数据帧，然后继续向下分析：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155649698.png" alt="扩展帧" loading="lazy"></p>
+<p><strong>控制字段</strong></p>
+<p>接下来的六位是控制字段（Control Field），包括 2 位保留位（R1 和 R0）和 4 位数据长度码（DLC），标识图如下所示，后四位的 DLC 位为 0001,表示后面会发送 8 位的数据</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155652326.png" alt="控制字段" loading="lazy"></p>
+<p><strong>数据字段</strong></p>
+<p>接下来是 8 位的数据字段，它用于承载实际通信数据内容，标识图如下所示，要发送的数据为 00000001</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155652870.png" alt="数据字段" loading="lazy"></p>
+<p><strong>CRC 校验字段</strong></p>
+<p>CRC 校验字段由 15 位 CRC 校验码和 1 位 CRC 界定符组成，用于检测数据传输过程中是否发生错误，标识图如下所示，最后一位的 CRC 界定符固定为隐性 1，用于明确 CRC 字段的结束位置</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155653873.png" alt="CRC校验字段" loading="lazy"></p>
+<p><strong>ACK 字段</strong></p>
+<p>接下来的两位是 ACK 字段（Acknowledgment Field），ACK 字段由 2 位组成，包括 1 位 ACK 槽和 1 位 ACK 界定符。当接收设备成功接收到数据帧后，会在 ACK 槽中返回一个显性位作为确认信号，表示数据帧已正确接收，ACK 界定符固定为隐性 1，用于标识 ACK 字段的结束，标识图如下所示</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155654030.png" alt="ACK字段" loading="lazy"></p>
+<p>最后是由 7 位连续的隐性位（逻辑 1）组成的帧结束，用于明确标识数据帧的结束。</p>
+<h1 id="CAN总线核心机制与通信原理"><a href="#CAN总线核心机制与通信原理" class="headerlink" title="CAN总线核心机制与通信原理"></a>CAN总线核心机制与通信原理</h1><h2 id="位时间"><a href="#位时间" class="headerlink" title="位时间"></a>位时间</h2><p>在 CAN 总线通讯中，**位时间是指传输一个逻辑位所需的时间，**是 CAN 协议实现可靠数据传输的核心概念之一，直接影响通讯的波特率和信号同步精度。作为异步通讯的基础，所有节点通过约定好的位时间来保持同步。</p>
+<p>CAN 协议将位时间划分为多个时间段，这些时间段共同决定了信号的采样和同步机制。具体包括以下几个部分：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155657017.png" alt="位时间划分" loading="lazy"></p>
+<ul>
+<li><strong>同步段（Sync Segment）</strong></li>
+</ul>
+<p>同步段是位时间的第一个部分，<strong>固定为 1 个时间量子</strong>（<strong>TQ 时间量子是位时间的基本单位，所有时间段都以时间量子为基准进行划分</strong>），主要用于检测信号边沿并实现硬同步。</p>
+<p>在帧起始（SOF，Start of Frame）阶段，接收节点会根据总线信号的下降沿强制调整自己的时钟，与总线信号对齐，从而确保所有节点在通讯初始阶段保持同步。</p>
+<ul>
+<li><strong>传播段（Propagation Segment）</strong></li>
+</ul>
+<p>传播段用于补偿信号在总线上的传播延迟以及输入比较器的响应时间，其长度通常为 1 到 8 个时间量子（TQ），具体值由配置决定。这</p>
+<p>段时间允许信号在物理介质上传播，并确保所有节点能够接收到稳定的信号，从而避免因传播延迟导致的采样误差。</p>
+<ul>
+<li><strong>相位缓冲段 1（Phase Segment 1）</strong></li>
+</ul>
+<p>相位缓冲段 1 是位时间中可配置的部分，通常为 1到 8 个时间量子（TQ），<strong>主要用于调整采样点的位置，确保采样点位于信号稳定区域</strong>。</p>
+<u>如果检测到信号边沿提前到达，可以通过缩短相位缓冲段 1 实现重同步，从而动态补偿时钟偏差或信号抖动带来的影响。</u>
+
+<ul>
+<li><strong>相位缓冲段 2（Phase Segment 2）</strong></li>
+</ul>
+<p>相位缓冲段 2 类似于相位缓冲段 1，也是位时间中可配置的部分，通常为 1 到 8 个时间量子（TQ）。</p>
+<u>它主要用于处理信号边沿延迟到达的情况。如果信号边沿延迟，可以通过延长相位缓冲段 2 实现重同步，从而确保接收节点能够在正确的时间采样信号，提高数据传输的可靠性。</u>
+
+
+
+<p><strong>位时间的作用</strong></p>
+<ol>
+<li>保证同步：通过划分时间段，CAN 节点能够在信号边沿出现时动态调整采样点，补偿时钟偏差和信号延迟，从而实现多节点间的同步。</li>
+<li>提高抗干扰能力：将采样点设置在信号稳定区域（如位时间的 87.5% 处），避免因信号边沿抖动或干扰导致的误判。</li>
+<li>支持灵活配置：通过调整各时间段的长度（如传播段、相位缓冲段等），可以适应不同的波特率和网络环境。</li>
+</ol>
+<h2 id="硬同步和再同步"><a href="#硬同步和再同步" class="headerlink" title="硬同步和再同步"></a>硬同步和再同步</h2><p>在 CAN 通信中，由于采用异步通信方式且没有独立时钟线，各节点依赖本地晶振进行数据传输，但晶振的时钟漂移会导致节点间时序逐渐偏移，最终引发采样错误。为解决这一问题，CAN 协议通过硬同步和再同步两大机制实现动态时序调整：</p>
+<ol>
+<li><strong>硬同步在帧起始阶段强制对齐所有节点的时钟，消除初始相位偏差</strong>；</li>
+<li><strong>再同步则在数据传输过程中根据信号边沿的实时检测，动态调整相位缓冲段长度以补偿时钟漂移</strong>。</li>
+</ol>
+<p>这两种机制协同工作，结合位时间划分（同步段、传播段、相位段 I&#x2F;II）和时间量子（Tq）的量化管理，确保所有节点在采样点时刻准确读取总线电平，从而在无独立时钟线的异步通信中实现高可靠性的数据传输。在本小节将对硬同步和再同步进行详细的讲解。</p>
+<h3 id="硬同步"><a href="#硬同步" class="headerlink" title="硬同步"></a>硬同步</h3><p>在 CAN 通信中，硬同步是确保所有节点初始时序一致的重要机制。它的核心作用是<strong>在帧起始（SOF）阶段强制对齐各节点的时序，从而消除因本地晶振差异导致的初始相位差</strong>。</p>
+<p>硬同步的触发条件是<strong>当总线从空闲状态检测到显性电平（逻辑 0）的下降沿时（即 SOF 位的边沿），节点会立即调整自身时序，将当前位的同步段对齐到该边沿</strong>。</p>
+<p>这一过程可以分为以下几个步骤：</p>
+<ul>
+<li>节点在<strong>总线空闲期间持续监测电平变化</strong>；</li>
+<li>当<strong>检测到 SOF 下降沿且该边沿落在同步段内时，硬同步被触发</strong>；</li>
+<li><strong>节点强制调整时序，将当前位的同步段起点对齐到该边沿，并重新开始后续位时间的计数</strong>。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155700355.png" alt="硬同步" loading="lazy"></p>
+<p>然而，<strong>硬同步的作用范围有限，它仅在消息帧的起始阶段生效，且只能解决初始相位偏差问题</strong>。</p>
+<emp>对于通信过程中由于时钟漂移或信号干扰引发的动态相位误差，硬同步无能为力，这些问题需要依赖后续的重同步机制来处理</emp>
+
+<h3 id="再同步"><a href="#再同步" class="headerlink" title="再同步"></a>再同步</h3><p>在 CAN 通信中，<strong>再同步是解决通信过程中因时钟漂移或信号干扰导致的动态相位误差的关键机制</strong>。</p>
+<p>与硬同步不同，再同步并非仅限于帧起始阶段，而是<strong>在整个数据传输过程中持续发挥作用</strong>。<u>它的核心作用是通过动态调整采样点的位置，确保接收节点能够在正确的时间读取总线电平，从而维持通讯的可靠性</u>。</p>
+<p>具体来说，<strong>再同步的触发条件是当检测到信号边沿（如显性电平到隐性电平的变化）与预期位置存在偏差时</strong>。</p>
+<ul>
+<li><strong>如果信号边沿提前到达，说明发送节点的时钟快于接收节点，此时接收节点会通过缩短相位缓冲段 1 来提前采样点；</strong></li>
+<li><strong>反之，如果信号边沿延迟到达，则说明发送节点的时钟慢于接收节点，接收节点会通过延长相位缓冲段 2 来推迟采样点。</strong></li>
+</ul>
+<p>这种动态调整的过程依赖于<strong>同步跳转宽度（SJW, Synchronization Jump Width）</strong>，它定义了<emp>每次再同步调整的最大范围</emp>，以防止过度调整引发新的误差。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155819841.png" alt="隐形电平到显性电平的边沿出现在PTS和PBS1之间" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155703141.png" alt="隐形电平到显性电平的边沿出现在PBS2中时" loading="lazy"></p>
+<p>再同步的优势在于其灵活性和实时性，能够有效应对通信过程中因时钟漂移或信号传播延迟带来的挑战。</p>
+<p>然而，<u>再同步的调整范围受限于 SJW 的配置，若相位误差超出 SJW 的限制，则可能导致采样错误，进而影响通讯的可靠性</u>。</p>
+<p>因此，再同步与硬同步协同工作，共同构成了CAN 协议中完整的同步机制：硬同步为通讯提供初始对齐，而再同步则在后续传输中动态补偿误差，确保数据传输的准确性和稳定性。</p>
+<h2 id="仲裁规则"><a href="#仲裁规则" class="headerlink" title="仲裁规则"></a>仲裁规则</h2><p>在 CAN 总线通信中，由于多个节点共享同一条总线，同一时刻只能传输一个数据帧，因此需要一套高效的仲裁机制来保证数据的有序传输。</p>
+<p>CAN 协议通过载波侦听、非破坏性仲裁和回读机制共同协作，实现了多节点间的高效、无冲突通信。</p>
+<h3 id="载波侦听"><a href="#载波侦听" class="headerlink" title="载波侦听"></a>载波侦听</h3><p>在<strong>发送数据之前，每个节点会首先侦听总线的状态</strong>，只有当总线处于空闲状态（即没有其他节点正在发送数据）时，节点才允许开始发送数据。</p>
+<p>这种机制类似于以太网中的“载波侦听多路访问（CSMA）”，可以有效避免多个节点同时抢占总线的情况。</p>
+<u>如果两个或多个节点几乎同时检测到总线空闲并开始发送数据，则进入非破坏性仲裁阶段。</u>
+
+<h3 id="非破坏性仲裁"><a href="#非破坏性仲裁" class="headerlink" title="非破坏性仲裁"></a>非破坏性仲裁</h3><p>非破坏性仲裁是 CAN 总线仲裁机制的核心，其核心原则是<strong>基于线与机制</strong></p>
+<ul>
+<li>当所有节点都发送隐性电平（逻辑 1）时，总线表现为隐性；</li>
+<li>只要有一个节点发送显性电平（逻辑 0），总线就表现为显性。</li>
+</ul>
+<p>这种机制确保了即使多个节点同时发送数据，总线上的信号也不会被破坏，而是由显性电平主导，仲裁过程如下所示：</p>
+<ul>
+<li>每个数据帧的标识符（ID）字段用于仲裁优先级，<strong>ID 越小，优先级越高</strong>。</li>
+<li>当多个节点同时发送数据时，它们会逐位比较自己发送的 ID 与总线上的实际电平，<ul>
+<li>如果某个节点发送的是隐性电平（1），但检测到总线上为显性电平（0），说明有更高优先级的节点正在发送数据，该节点会立即停止发送并进入监听模式，等待下一次总线空闲时重新尝试发送。</li>
+<li>如果某个节点发送的是显性电平（0），且总线上也为显性电平（0），则该节点继续发送，表明它当前具有最高优先级。</li>
+</ul>
+</li>
+</ul>
+<h3 id="回读机制"><a href="#回读机制" class="headerlink" title="回读机制"></a>回读机制</h3><p>为了确保仲裁的正确性和数据传输的可靠性，CAN 节点<strong>在发送数据的同时会不断回读总线上的信号</strong>，<strong>并将其与自身发送的数据进行比较</strong></p>
+<emp>如果发送节点发现回读到的数据与自身发送的数据不一致（例如发送隐性电平但回读到显性电平）</emp>，则说明发生了仲裁冲突，该节点会立即**停止发送并切换到监听模式**。
+
+<p>这种机制确保了低优先级节点能够及时退出发送，避免干扰高优先级节点的通信</p>
+<h2 id="错误状态"><a href="#错误状态" class="headerlink" title="错误状态"></a>错误状态</h2><p>在 CAN 协议中，节点的错误状态是根据**发送错误计数器（TEC）<strong>和</strong>接收错误计数器（REC）**的值动态调整的。</p>
+<p>通过三种不同的错误状态主动错误状态 、被动错误状态 和总线关闭态 ，</p>
+<p>CAN 协议实现了对故障节点的有效管理和隔离，同时确保了通信的可靠性和稳定性。</p>
+<h3 id="主动错误状态"><a href="#主动错误状态" class="headerlink" title="主动错误状态"></a>主动错误状态</h3><p><strong>当节点的发送错误计数器（TEC）和接收错误计数器（REC）均小于或等于 127 时，节点处于主动错误状态 。</strong></p>
+<p>在此状态下，节点能够正常参与总线通信，并在检测到错误时主动发送主动错误标志（显性位）。这种显性标志会强制覆盖总线信号，通知其他节点当前存在错误。</p>
+<p>由于显性位具有更高的优先级，这种机制能够快速传播错误信息，从而确保错误被及时处理，维护总线通信的可靠性。</p>
+<h3 id="被动错误状态"><a href="#被动错误状态" class="headerlink" title="被动错误状态"></a>被动错误状态</h3><p><strong>如果节点的发送错误计数器（TEC）或接收错误计数器（REC）超过 127（通常由 TEC 触发），节点将进入被动错误状态。</strong></p>
+<p>在这一状态下，节点仍可参与通信，但其行为受到限制：它不能主动发送显性错误标志，而是发送被动错误标志（隐性位），以避免对总线造成干扰。此外，每次发送后需插入 8 个隐性位的延迟才能再次尝试通信。</p>
+<p>值得注意的是，如果仅被动错误状态的节点检测到错误，而其他主动节点未检测到，则总线被视为无错误，通信继续进行。</p>
+<p>这种设计既限制了低可靠性节点对总线的影响，又保证了高可靠性节点的通信效率。</p>
+<h3 id="总线关闭态"><a href="#总线关闭态" class="headerlink" title="总线关闭态"></a>总线关闭态</h3><p><strong>当节点的发送错误计数器（TEC）超过 255 时，节点进入总线关闭态 。</strong></p>
+<p>在这种状态下，节点完全禁止通信，既不能发送也不能接收数据，以防止其对总线造成进一步干扰。</p>
+<p>要恢复通信，节点需要检测到 128 次连续的 11 个隐性位（即总线空闲足够长时间），随后重置 TEC 和REC 为 0，从而恢复为主动错误状态并重新加入总线通信。</p>
+<p>这种机制旨在隔离严重故障节点，同时为其提供重新加入总线的机会。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155703719.png" alt="错误状态状态机" loading="lazy"></p>
+<p>更具体的接收错误计数值（REC）和发送错误计数值（TEC)的变动条件如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">序号</th>
+<th align="center">接受和发送错误计数值的变动条件</th>
+<th align="center">发送错误计数值（TEC）</th>
+<th align="center">接收错误计数值（REC）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">接收单元检测出错错误时。例外：接收单元在发送错误标志或过载标志中检测出 “位错误” 时，接收错误计数值不增加。</td>
+<td align="center">—</td>
+<td align="center">+1</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">接收单元在发送完错误标志后检测到的第一个位为显性电平时。</td>
+<td align="center">—</td>
+<td align="center">+8</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">发送单元在输出错误标志时。</td>
+<td align="center">+8</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">发送单元在发送主动错误标志或过载标志时，检测出位错误。</td>
+<td align="center">+8</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">接收单元在发送主动错误标志或过载标志时，检测出位错误。</td>
+<td align="center">—</td>
+<td align="center">+8</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">各单元从主动错误标志、过载标志的最开始检测出连续 14 个位的显性位时。之后，每检测出连续的 8 个位的显性位时。</td>
+<td align="center">发送时 + 8</td>
+<td align="center">接收时 + 8</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td align="center">检测出在被动错误标志后追加的连续 8 个位的显性位时。</td>
+<td align="center">发送时 + 8</td>
+<td align="center">接收时 + 8</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">发送单元正常发送数据结束时（返回 ACK 且到帧结束也未检测出错误时）。</td>
+<td align="center">TEC&#x3D;0 时 ±0否则 - 1</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">9</td>
+<td align="center">接收单元正常接收数据结束时（到 CRC 未检测出错误且正常返回 ACK 时）。</td>
+<td align="center">—</td>
+<td align="center">1≤REC≤127 时 - 1REC&#x3D;0 时 ±0REC&gt;127 时设 REC&#x3D;127</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">处于总线关闭态的单元，检测到 128 次连续 11 个位的隐性位。</td>
+<td align="center">TEC&#x3D;0</td>
+<td align="center">REC&#x3D;0</td>
+</tr>
+</tbody></table>
+<h2 id="错误检测机制"><a href="#错误检测机制" class="headerlink" title="错误检测机制"></a>错误检测机制</h2><p>CAN（Controller Area Network）协议通过多种错误检测手段，有效提升了通信的可靠性。</p>
+<p>错误检测机制可以分为以下五种：位错误、填充错误、CRC 错误、格式错误和 ACK 错误。</p>
+<h3 id="位错误"><a href="#位错误" class="headerlink" title="位错误"></a>位错误</h3><p>位错误是指<strong>发送单元在通信过程中比较自身输出电平与总线电平（不包括填充位）时，发现两者不一致所检测到的错误</strong>。</p>
+<p>这种错误通常表明发送节点与总线上的信号存在冲突或干扰。</p>
+<u>位错误可以发生在数据帧、遥控帧、错误帧以及过载帧的任意段内（从 SOF 到 EOF）。</u>
+
+<p>由于位错误是由发送单元自身检测到的，因此其检测单元为发送单元。</p>
+<h3 id="填充错误"><a href="#填充错误" class="headerlink" title="填充错误"></a>填充错误</h3><p>填充错误是指<strong>在需要位填充的段内，接收单元连续检测到 6 位相同电平时所触发的错误</strong>。</p>
+<p>CAN 协议规定，在位填充段中，每连续 5 个相同电平后必须插入一个相反电平的填充位，以确保信号的直流平衡。</p>
+<p>如果接收单元检测到连续 6 位相同的电平，则认为发生了填充错误。</p>
+<u>填充错误主要发生在数据帧和遥控帧的任意段内（从 SOF 到 EOF），其检测单元为接收单元。</u>
+
+<h3 id="CRC-错误"><a href="#CRC-错误" class="headerlink" title="CRC 错误"></a>CRC 错误</h3><p>CRC 错误是指<strong>接收单元根据接收到的数据计算出的 CRC 校验值与帧中实际接收到的 CRC顺序不一致</strong>时所检测到的错误。</p>
+<p>CRC 校验是 CAN 协议中用于验证数据完整性的关键机制，若校验失败，则表明数据在传输过程中可能发生了损坏或丢失。</p>
+<u>CRC 错误通常发生在数据帧和遥控帧的 CRC 段内，其检测单元为接收单元。</u>
+
+<h3 id="格式错误"><a href="#格式错误" class="headerlink" title="格式错误"></a>格式错误</h3><p>格式错误是指<strong>接收单元在解析帧时检测到与固定格式的位段相反的格式时所触发的错误</strong>。例如，CRC 界定符、ACK 界定符或 EOF 的非法值均可能导致格式错误。</p>
+<p>这种错误通常表明帧结构不符合 CAN 协议的规范。</p>
+<u>格式错误可以发生在数据帧和遥控帧的 CRC 界定符、ACK 界定符、EOF 段，以及错误界定符和过载界定符中，其检测单元为接收单元。</u>
+
+<h3 id="ACK-错误"><a href="#ACK-错误" class="headerlink" title="ACK 错误"></a>ACK 错误</h3><p>ACK 错误是指<strong>发送单元在 ACK 槽（ACK Slot）中检测到隐性电平时所触发的错误</strong>。</p>
+<p>在 CAN 协议中，<strong>当发送单元完成数据帧或遥控帧的发送后，会在 ACK 槽等待其他节点的确认信号（显性电平）</strong>。</p>
+<p>如果发送单元未检测到显性电平，则认为未收到确认信号，从而触发 ACK 错误。</p>
+<u>ACK 错误主要发生在数据帧和遥控帧的 ACK 槽段内，其检测单元为发送单元。</u>
+
+
+
+
+
+<h2 id="CAN-总线协议和标准规格"><a href="#CAN-总线协议和标准规格" class="headerlink" title="CAN 总线协议和标准规格"></a>CAN 总线协议和标准规格</h2><p>在现代通信系统中，ISO 七层网络模型是描述和标准化网络通信过程的经典框架。它将网络通信划分为七个层次，从底层的物理信号传输到高层的应用服务，每一层都具有特定的功能和作用。</p>
+<p>CAN 协议的设计虽然并未完全遵循 ISO 七层网络模型，但其功能可以映射到该模型的部分层次 。</p>
+<p>CAN 协议主要集中在<strong>物理层</strong>、<strong>数据链路层</strong>和<strong>传输层</strong>的部分功能。</p>
+<h3 id="ISO-七层网络模型"><a href="#ISO-七层网络模型" class="headerlink" title="ISO 七层网络模型"></a>ISO 七层网络模型</h3><ol>
+<li><p><strong>物理层（Physical Layer）</strong><br>物理层负责设备间的物理信号传输，定义了通信所需的电气信号、硬件规格和通信介质。它涵盖了通信方式（如单工、半双工、全双工）、信号电平（如高低电平表示逻辑 0 和 1）、硬件规格（如电缆、连接器、收发器）以及位时序条件（如位同步、采样点），从而确保数据能够在物理媒介上可靠传输。</p>
+</li>
+<li><p><strong>数据链路层（Data Link Layer）</strong><br>数据链路层将物理层接收到的位序列组织成有意义的数据帧，并提供错误检测与控制功能。其具体项目包括数据帧的格式（如帧起始、标识符、数据字段、CRC 校验）、访问控制方法（如 CSMA&#x2F;CD、CSMA&#x2F;CA）以及错误检测与纠正机制（如 CRC 校验、ACK 应答），以确保数据在链路上传输的准确性和完整性。</p>
+</li>
+<li><p><strong>网络层（Network Layer）</strong><br>网络层负责数据包的路由选择和中继，确保数据能够从源设备高效传输到目标设备。它通过路由选择（如静态路由、动态路由）、地址管理（如 IP 地址分配）以及数据包的分段与重组等功能，实现跨网络的数据传输，为复杂网络环境中的通信提供支持。</p>
+</li>
+<li><p><strong>传输层（Transport Layer）</strong><br>传输层确保数据传输的可靠性，控制数据顺序、错误恢复和流量控制。它通过数据传输顺序控制（如序列号、确认机制）、错误恢复（如重传机制）以及流量控制（如滑动窗口协议）等机制，保障数据在端到端传输过程中的一致性、完整性和高效性。</p>
+</li>
+<li><p><strong>会话层（Session Layer）</strong><br>会话层管理通信会话的建立、维护和终止，确保数据能够在会话期间正确传输。它通过会话建立与终止（如握手协议）、会话同步（如检查点机制）以及会话恢复（如断点续传）等功能，协调应用程序之间的交互，提高通信的稳定性和效率。</p>
+</li>
+<li><p><strong>表示层（Presentation Layer）</strong><br>表示层负责数据的表现形式转换，确保不同系统间的数据兼容性。它通过数据格式转换（如文本编码、图像格式）、数据加密与解密以及数据压缩与解压缩等功能，使数据能够在不同平台和应用之间进行无缝交换和处理。</p>
+</li>
+<li><p><strong>应用层（Application Layer）</strong><br>应用层为应用程序提供网络服务接口，实现具体的应用功能。它通过应用程序协议（如 HTTP、FTP、SMTP）、用户接口（如浏览器、邮件客户端）以及数据服务（如文件传输、电子邮件）等功能，直接服务于最终用户，满足多样化的网络应用需求。</p>
+</li>
+</ol>
+<h3 id="CAN-协议物理层和数据链路层"><a href="#CAN-协议物理层和数据链路层" class="headerlink" title="CAN 协议物理层和数据链路层"></a>CAN 协议物理层和数据链路层</h3><p>CAN 协议主要集中在重物理层和数据链路层</p>
+<ul>
+<li><strong>can 协议中的物理层</strong></li>
+</ul>
+<p>物理层负责定义信号的实际发送方式，采用 NRZ（非归零）编码，并在每 6 个位后插入填充位。</p>
+<p>它还规定了位时序和采样数，用户可以根据需求进行选择。</p>
+<p>同步通过同步段（SS）实现，并具备再同步功能。然而，信号电平、通信速度、采样点、驱动器和总线的电气特性以及连接器的形态等具体细节未在协议中定义，需要用户根据系统需求自行确定。</p>
+<ul>
+<li><strong>can 协议中的数据链路层</strong><ul>
+<li>**MAC 子层（介质访问控制子层）**负责将数据组织成帧，包括数据帧、遥控帧、错误帧和过载帧。它还处理数据冲突时的仲裁，根据优先级决定哪个消息继续发送，并通过 ACK（确认）和 NACK（否定确认）进行应答。此外，MAC 子层检测并报告 CRC 错误、填充位错误、位错误、ACK 错误和格式错误，同时具备故障扩散抑制功能，能够自动区分暂时错误和持续错误，并排除故障节点。</li>
+<li>**LLC 子层（逻辑链路控制子层）**则负责接收消息的选择，支持点到点连接、广播和组播它还提供错误恢复功能，在检测到错误时进行重发控制，确保数据的可靠传输</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155805985.png" alt="CAN" loading="lazy"></p>
+<p>CAN 协议经过 ISO 标准化后，分为 ISO11898 和 ISO11519-2 两种标准。</p>
+<p>这两个标准在数据链路层的定义是相同的，但在物理层有所不同：</p>
+<ul>
+<li>ISO11898 是通信速度为 125kbps-1Mbps的 CAN 高速通信标准</li>
+<li>ISO11519-2 则是通信速度为 125kbps 以下的 CAN 低速通信标准。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155704268.png" alt=" ISO11898 和 ISO11519-2 两种标准" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155708078.png" alt="两种标准的对比" loading="lazy"></p>
+<h1 id="启用-CAN"><a href="#启用-CAN" class="headerlink" title="启用 CAN"></a>启用 CAN</h1><h2 id="设备树"><a href="#设备树" class="headerlink" title="设备树"></a>设备树</h2><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">can0:</span> <span class="title class_">can@fe570000</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;rockchip,rk3568-can-2.0&quot;</span><span class="punctuation">;</span> <span class="comment">// 指定设备兼容性字符串，用于匹配驱动程序</span></span><br><span class="line">	<span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x0</span> <span class="number">0xfe570000</span> <span class="number">0x0</span> <span class="number">0x1000</span>&gt;</span><span class="punctuation">;</span> <span class="comment">// 定义寄存器地址范围：基地址为 0xfe570000，长度为 0x1000 字节</span></span><br><span class="line">	<span class="attr">interrupts</span> <span class="operator">=</span> <span class="params">&lt;GIC_SPI <span class="number">1</span> IRQ_TYPE_LEVEL_HIGH&gt;</span><span class="punctuation">;</span> <span class="comment">// 定义中断信息：使用 GIC 的 SPI 中断，中断号为 1，触发类型为高电平</span></span><br><span class="line">	<span class="attr">clocks</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;cru</span> CLK_CAN0&gt;</span>, <span class="params">&lt;<span class="variable">&amp;cru</span> PCLK_CAN0&gt;</span><span class="punctuation">;</span> <span class="comment">// 定义时钟源：引用 CRU 节点中的 CLK_CAN0（波特率时钟）和 PCLK_CAN0（APB 总线时钟）</span></span><br><span class="line">	<span class="attr">clock-names</span> <span class="operator">=</span> <span class="string">&quot;baudclk&quot;</span>, <span class="string">&quot;apb_pclk&quot;</span><span class="punctuation">;</span> <span class="comment">// 为时钟信号命名：分别为波特率时钟和 APB 总线时钟</span></span><br><span class="line">	<span class="attr">resets</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;cru</span> SRST_CAN0&gt;</span>, <span class="params">&lt;<span class="variable">&amp;cru</span> SRST_P_CAN0&gt;</span><span class="punctuation">;</span><span class="comment">// 定义复位信号：引用 CRU 节点中的 SRST_CAN0（主复位）和 SRST_P_CAN0（APB 复位）</span></span><br><span class="line">	<span class="attr">reset-names</span> <span class="operator">=</span> <span class="string">&quot;can&quot;</span>, <span class="string">&quot;can-apb&quot;</span><span class="punctuation">;</span> <span class="comment">// 为复位信号命名：分别为 CAN 主复位和 APB 复位</span></span><br><span class="line">	<span class="attr">tx-fifo-depth</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">1</span>&gt;</span><span class="punctuation">;</span> <span class="comment">// 定义发送 FIFO 深度：深度为 1，即一次只能存储一个待发送的消息</span></span><br><span class="line">	<span class="attr">rx-fifo-depth</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">6</span>&gt;</span><span class="punctuation">;</span> <span class="comment">// 定义接收 FIFO 深度：深度为 6，即可以同时存储 6 个接收到的消息</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;disabled&quot;</span><span class="punctuation">;</span> <span class="comment">// 定义设备初始状态：默认禁用，启动时不会启用该设备</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br><span class="line"><span class="symbol"></span></span><br><span class="line"><span class="symbol">can1:</span> <span class="title class_">can@fe580000</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;rockchip,rk3568-can-2.0&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x0</span> <span class="number">0xfe580000</span> <span class="number">0x0</span> <span class="number">0x1000</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">interrupts</span> <span class="operator">=</span> <span class="params">&lt;GIC_SPI <span class="number">2</span> IRQ_TYPE_LEVEL_HIGH&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">clocks</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;cru</span> CLK_CAN1&gt;</span>, <span class="params">&lt;<span class="variable">&amp;cru</span> PCLK_CAN1&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">clock-names</span> <span class="operator">=</span> <span class="string">&quot;baudclk&quot;</span>, <span class="string">&quot;apb_pclk&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">resets</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;cru</span> SRST_CAN1&gt;</span>, <span class="params">&lt;<span class="variable">&amp;cru</span> SRST_P_CAN1&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">reset-names</span> <span class="operator">=</span> <span class="string">&quot;can&quot;</span>, <span class="string">&quot;can-apb&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">tx-fifo-depth</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">1</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">rx-fifo-depth</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">6</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;disabled&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br><span class="line"><span class="symbol"></span></span><br><span class="line"><span class="symbol">can2:</span> <span class="title class_">can@fe590000</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;rockchip,rk3568-can-2.0&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x0</span> <span class="number">0xfe590000</span> <span class="number">0x0</span> <span class="number">0x1000</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">interrupts</span> <span class="operator">=</span> <span class="params">&lt;GIC_SPI <span class="number">3</span> IRQ_TYPE_LEVEL_HIGH&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">clocks</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;cru</span> CLK_CAN2&gt;</span>, <span class="params">&lt;<span class="variable">&amp;cru</span> PCLK_CAN2&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">clock-names</span> <span class="operator">=</span> <span class="string">&quot;baudclk&quot;</span>, <span class="string">&quot;apb_pclk&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">resets</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;cru</span> SRST_CAN2&gt;</span>, <span class="params">&lt;<span class="variable">&amp;cru</span> SRST_P_CAN2&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">reset-names</span> <span class="operator">=</span> <span class="string">&quot;can&quot;</span>, <span class="string">&quot;can-apb&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">tx-fifo-depth</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">1</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">rx-fifo-depth</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">6</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;disabled&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
+
+<p>虽然这里有着 3 个 CAN 设备节点，但是在迅为的底板上因为引脚复用问题只有一个 CAN接口，对应的原理图部分如下所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260109155708618.png" alt="topeet RK3568 CAN1" loading="lazy"></p>
+<p>可以看到在开发板上使用的是 CAN1，而在 <code>rk3568.dtsi</code> 设备树中 can1 节点的 status 设置的是 disabled，表示不使能，所以肯定是在其他设备树中有对该节点的追加:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//can接口</span></span><br><span class="line"><span class="variable">&amp;can1</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span><span class="comment">// 指定设备兼容性字符串</span></span><br><span class="line">        <span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;rockchip,rk3568-can-2.0&quot;</span><span class="punctuation">;</span><span class="comment">// 设置设备状态为 &quot;okay&quot;，表示启用该设备</span></span><br><span class="line">        <span class="attr">assigned-clocks</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;cru</span> CLK_CAN1&gt;</span><span class="punctuation">;</span><span class="comment">// 分配时钟源：引用 CRU（Clock and Reset Unit）节点中的 CLK_CAN1。</span></span><br><span class="line">        <span class="attr">assigned-clock-rates</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">150000000</span>&gt;</span><span class="punctuation">;</span>  <span class="comment">//If can bitrate lower than 3M,the clock-rates should set 100M,else set 200M. // 设置分配的时钟频率为 150MHz，如果 CAN 波特率低于3Mbps，则建议将时钟频率设置为 100MHz；否则设置为 200MHz。</span></span><br><span class="line">        <span class="attr">pinctrl-names</span> <span class="operator">=</span> <span class="string">&quot;default&quot;</span><span class="punctuation">;</span><span class="comment">// 定义引脚控制状态的名称，默认状态为 &quot;default&quot;。</span></span><br><span class="line">        pinctrl<span class="number">-0</span> = <span class="params">&lt;<span class="variable">&amp;can1m1_pins</span>&gt;</span><span class="punctuation">;</span><span class="comment">// 引用引脚配置节点 &amp;can1m1_pins，定义 CAN1 的引脚复用和电气属性。</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
+
+<p>了设备树的使能之外，在内核配置文件种也要使能对应的驱动，具体路径如下所示：</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="type">Networking</span> sup<span class="keyword">port</span></span><br><span class="line">	&gt; <span class="type">CAN</span> bus subsystem sup<span class="keyword">port</span></span><br><span class="line">		&gt; <span class="type">CAN</span> <span class="type">Device</span> <span class="type">Drivers</span></span><br><span class="line">		&lt;*&gt; <span class="type">Platform</span> <span class="type">CAN</span> drivers with <span class="type">Netlink</span> sup<span class="keyword">port</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="CAN工具的移植和使用"><a href="#CAN工具的移植和使用" class="headerlink" title="CAN工具的移植和使用"></a>CAN工具的移植和使用</h1><p><code>iproute2</code> 和 <code>can-utils</code> 是两个必不可少的工具。它们分别提供了对 CAN 接口的基础管理和高级操作功能，帮助我们轻松实现 CAN 总线的配置、测试和调试。</p>
+<h2 id="iproute2-工具移植"><a href="#iproute2-工具移植" class="headerlink" title="iproute2 工具移植"></a>iproute2 工具移植</h2><p>iproute2 是一个用于网络管理的工具集，包含 ip、ss、tc 等命令，对应的源码压缩包可以在官网 进行下载</p>
+<div class="tag link"><a class="link-card" title="iproute2" target="_blank" rel="noopener" href="https://www.kernel.org/pub/linux/utils/net/iproute2/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://www.kernel.org/theme/images/logos/favicon.png"/></div><div class="right"><p class="text">iproute2</p><p class="url">https://www.kernel.org/pub/linux/utils/net/iproute2/</p></div></a></div>
+
+<p>编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line"><span class="comment"># 修改configure生成的Makefile，修改下面这样为lib ip即编译使用ip这个工具</span></span><br><span class="line">SUBDIRS=lib ip</span><br><span class="line"></span><br><span class="line">make CC=/path/to/linux_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x8</span><br><span class="line">6_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc</span><br></pre></td></tr></table></figure>
+
+<p>编译完成之后在 ip 目录下就会生成对应的可执行文件，将该文件拷贝到开发板上即可</p>
+<h2 id="can-utils-工具移植"><a href="#can-utils-工具移植" class="headerlink" title="can utils 工具移植"></a>can utils 工具移植</h2><p>canutils 是一个常用的 CAN 通信测试工具包，包含 5 个独立的程序：canconfig、candump、canecho、cansend 和 cansequence，每个工具的介绍如下所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">工具名称</th>
+<th align="center">功能描述</th>
+<th align="center">主要配置项 &#x2F; 附加功能 &#x2F; 用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>canconfig</strong></td>
+<td align="center">用于配置 CAN 总线接口的参数。</td>
+<td align="center">波特率（Bitrate）<br />工作模式（Mode），如回环模式（Loopback）或正常模式（Normal）。</td>
+</tr>
+<tr>
+<td align="center"><strong>candump</strong></td>
+<td align="center">从 CAN 总线接口接收数据，并以十六进制形式打印到标准输出。</td>
+<td align="center">可以将接收到的数据保存到指定文件中。</td>
+</tr>
+<tr>
+<td align="center"><strong>canecho</strong></td>
+<td align="center">将从 CAN 总线接口接收到的所有数据重新发送回 CAN 总线接口。</td>
+<td align="center">用于测试 CAN 总线的回环功能。</td>
+</tr>
+<tr>
+<td align="center"><strong>cansend</strong></td>
+<td align="center">向指定的 CAN 总线接口发送指定的数据。</td>
+<td align="center">数据以 CAN 帧格式发送，包括帧 ID 和帧数据。</td>
+</tr>
+<tr>
+<td align="center"><strong>cansequence</strong></td>
+<td align="center">向指定的 CAN 总线接口自动发送递增的数字序列；支持接收模式，可以校验接收到的递增数字是否正确。</td>
+<td align="center">用于测试 CAN 总线的数据传输完整性和稳定性。</td>
+</tr>
+</tbody></table>
+<p>由于 canutils 依赖于 libsocketcan 库，因此需要先编译 libsocketcan，然后再编译 canutils，libsocketcan对应源码链接：</p>
+ <div class="tag link"><a class="link-card" title="libsocketcan" target="_blank" rel="noopener" href="http://www.pengutronix.de/software/libsocketcan/download/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://public.pengutronix.de/favicon.ico"/></div><div class="right"><p class="text">libsocketcan</p><p class="url">http://www.pengutronix.de/software/libsocketcan/download/</p></div></a></div>
+
+<p>编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">export</span> ARCH=arm64</span><br><span class="line">$ <span class="built_in">export</span> CROSS_COMPILE=/path/to/linux_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x8</span><br><span class="line">6_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-</span><br><span class="line">$ <span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/path/to/linux_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x8</span><br><span class="line">6_64_aarch64-linux-gnu/bin/</span><br><span class="line"></span><br><span class="line">$ ./configure --host=aarch64-linux-gnu --prefix=/home/topeet/can/libsocketcan-0.0.12/out</span><br><span class="line"></span><br><span class="line">$ make &amp;&amp; make install</span><br><span class="line"><span class="comment"># 编译完成之后会在当前目录的 out 目录下生成对应的文件</span></span><br><span class="line">$ <span class="built_in">ls</span> out</span><br><span class="line">include lib share</span><br></pre></td></tr></table></figure>
+
+
+
+<p>canutils 源码下载地址为</p>
+ <div class="tag link"><a class="link-card" title="canutils" target="_blank" rel="noopener" href="https://public.pengutronix.de/software/socket-can/canutils/v4.0/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://public.pengutronix.de/favicon.ico"/></div><div class="right"><p class="text">canutils</p><p class="url">https://public.pengutronix.de/software/socket-can/canutils/v4.0/</p></div></a></div>
+
+<p>解压后进入到对应的目录下，对 <code>config/autoconf/config.sub</code> 文件进行修改，分别添加以下内容，增加对 aarch64 的支持，修改完成如下所示：</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">| <span class="type">aarch64</span> | <span class="type">aarch64_be</span> \</span><br><span class="line">| <span class="type">aarch64</span>-* | <span class="type">aarch64_be</span>-* \</span><br></pre></td></tr></table></figure>
+
+<p>然后对 configure 配置文件进行修改，将 2604 行编译器修改为 aarch64-linux-gnu-gcc，修改完成如下所示：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">at_ct_CC</span>=aarch64-linux-gnu-gcc</span><br></pre></td></tr></table></figure>
+
+<p>编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">export</span> ARCH=arm64</span><br><span class="line">$ <span class="built_in">export</span> CROSS_COMPILE=/path/to/linux_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-</span><br><span class="line">$ <span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/home/topeet/work/linux_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/</span><br><span class="line"></span><br><span class="line">$ ./configure \</span><br><span class="line">	--host=aarch64-linux-gnu \</span><br><span class="line">	--prefix=/path/to/canutils-4.0.6/out \</span><br><span class="line">	libsocketcan_LIBS=<span class="string">&quot;-L/path/to/libsocketcan-0.0.12/out/lib -lsocketcan&quot;</span> \</span><br><span class="line">	libsocketcan_LDFLAGS=<span class="string">&quot;-L/path/to/libsocketcan-0.0.12/out/lib&quot;</span> \</span><br><span class="line">	libsocketcan_CFLAGS=<span class="string">&quot;-I/path/to/libsocketcan-0.0.12/out/include&quot;</span> \</span><br><span class="line">	CFLAGS=<span class="string">&quot;-I/path/to/libsocketcan-0.0.12/out/include</span></span><br><span class="line"><span class="string">	</span></span><br><span class="line"><span class="string">$ make &amp;&amp; make install</span></span><br><span class="line"><span class="string">$ ls out/bin/</span></span><br><span class="line"><span class="string">candump canecho cansend cansequence</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="can工具使用"><a href="#can工具使用" class="headerlink" title="can工具使用"></a>can工具使用</h2><h3 id="设置-CAN-接囗的波特率"><a href="#设置-CAN-接囗的波特率" class="headerlink" title="设置 CAN 接囗的波特率"></a>设置 CAN 接囗的波特率</h3><p>CAN 接口的波特率可以通过 ip 命令设置,例如可以通过以下命令设置 CAN0 接口的波特率为250 k：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip <span class="built_in">link</span> <span class="built_in">set</span> can0 <span class="built_in">type</span> can bitrate 250000</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动和关闭-CAN-接口"><a href="#启动和关闭-CAN-接口" class="headerlink" title="启动和关闭 CAN 接口"></a>启动和关闭 CAN 接口</h3><p>配置完 CAN 接口波特率之后，需要启动 CAN 接口才能使用。</p>
+<ol>
+<li>方法 1：使用 ifconfig 命令</li>
+</ol>
+<p>ifconfig 是传统的网络接口配置工具，可以通过以下命令启动 CAN 接口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig can0 up</span><br></pre></td></tr></table></figure>
+
+<p>关闭 CAN 接口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig can0 down</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>方法 2：使用 ip 命令</li>
+</ol>
+<p>启动 CAN 接口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip <span class="built_in">link</span> <span class="built_in">set</span> can0 up</span><br></pre></td></tr></table></figure>
+
+<p>关闭 CAN 接口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip <span class="built_in">link</span> <span class="built_in">set</span> can0 down</span><br></pre></td></tr></table></figure>
+
+<h3 id="检查-CAN-接口状态"><a href="#检查-CAN-接口状态" class="headerlink" title="检查 CAN 接口状态"></a>检查 CAN 接口状态</h3><p>启动 CAN 接口后，可以使用 ifconfig 命令和 ip 命令检查其状态，</p>
+<ol>
+<li>使用 ifconfig 检查</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig can0</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用 ip 命令检查</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip -details <span class="built_in">link</span> show can0</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-CAN-工具测试通信"><a href="#使用-CAN-工具测试通信" class="headerlink" title="使用 CAN 工具测试通信"></a>使用 CAN 工具测试通信</h3><h4 id="使用-candump-接收数据"><a href="#使用-candump-接收数据" class="headerlink" title="使用 candump 接收数据"></a><strong>使用 candump 接收数据</strong></h4><p>candump 用于从 CAN 总线接口接收数据，并以十六进制形式打印到标准输出。</p>
+<p>命令格式：<code>candump &lt;接口&gt; [选项]</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candump can0 -L &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="设置过滤规则"><a href="#设置过滤规则" class="headerlink" title="设置过滤规则"></a>设置过滤规则</h5><p>基本过滤公式分为两种：</p>
+<ul>
+<li><p><code>&lt;can id&gt;:&lt;can mask&gt;</code> 匹配特定的CAN帧</p>
+<ul>
+<li>表示当接收到的 CAN ID 满足条件 <code>&lt;received can id&gt; &amp; mask == can id &amp; mask</code> 时匹配。</li>
+<li>mask 决定了哪些位需要参与匹配，只有对应位为 1 的部分才会被检查</li>
+<li>can id 则是期望匹配的目标 ID。这种规则通常用于筛选符合特定 ID 和格式的帧，例如只接收某个标准帧或扩展帧。</li>
+</ul>
+</li>
+<li><p><code>&lt;can id&gt;~&lt;can mask&gt;</code> 排除特定的CAN帧，与<code>&lt;can id&gt;:&lt;can mask&gt;</code> 正好相反，即忽略满足<br>条件的帧，而接收其他所有帧。</p>
+<ul>
+<li>表示当接收到的 CAN ID 满足条件<code>&lt;received can id&gt; &amp; mask != can id &amp; mask</code> 时匹配。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><p>标准帧的 CAN ID 长度为 11 位，范围是 0x000 到 0x7FF，在过滤规则中，mask 的高 18 位通常设置为 0，表示不关<br>心扩展帧部分；</p>
+</li>
+<li><p>扩展帧的 CAN ID 长度为 29 位，范围是 0x00000000 到 0x1FFFFFFF，其过滤规则中，mask 的低 11 位可以灵活设置为 0 或 1，以决定是否同时匹配标准帧</p>
+</li>
+</ul>
+</blockquote>
+<p><strong>示例</strong></p>
+<hr>
+<p><strong>匹配特定扩展帧</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candump can0,12345678:1FFFFFFF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>含义：只接收扩展帧，且 CAN ID 精确匹配 0x12345678。</li>
+<li>解析：<ul>
+<li>can id &#x3D; 0x12345678。</li>
+<li>mask &#x3D; 0x1FFFFFFF（匹配所有 29 位，且要求是扩展帧）</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>匹配特定标准帧</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candump can0,123:C00007FF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>含义：只接收标准帧，且 CAN ID 精确匹配 0x123。</li>
+<li>解析：<ul>
+<li>can id &#x3D; 0x123。</li>
+<li>mask &#x3D; 0xC00007FF：高 18 位为 0xC0000（忽略扩展帧部分），低 11 位为 0x7FF（精确匹配标准帧 ID）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>匹配标准帧和远程帧</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candump can0,123:800007FF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>含义：只接收标准帧或远程帧，且 CAN ID 精确匹配 0x123。</li>
+<li>解析：<ul>
+<li>can id &#x3D; 0x123</li>
+<li>mask &#x3D; 0x800007FF：高 18 位为 0x80000（允许远程帧），低 11 位为 0x7FF（精确匹配标准帧 ID）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>排除特定扩展帧</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candump can0,12345678~1FFFFFFF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>含义：排除扩展帧，且 CAN ID 精确匹配 0x12345678。</li>
+<li>解析：<ul>
+<li>can id &#x3D; 0x12345678。</li>
+<li>mask &#x3D; 0x1FFFFFFF（匹配所有 29 位，且要求是扩展帧）。使用~表示排除匹配</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>多条匹配规则</strong></p>
+<p>如果想要应用多条匹配规则，只需要通过逗号追加即可，例如只接收标准帧，且 CAN ID 精确匹配 0x123 和 0x456</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candump can0,123:C00007FF,456:C00007FF</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="使用-cansend-发送数据"><a href="#使用-cansend-发送数据" class="headerlink" title="使用 cansend 发送数据"></a><strong>使用 cansend 发送数据</strong></h4><p>cansend 用于向 CAN 总线接口发送不同的帧，发送不同帧的示例如下</p>
+<ul>
+<li><strong>发送标准数据帧</strong></li>
+<li>命令格式：<code>cansend &lt;接口&gt; &lt;帧 ID&gt;#&lt;数据&gt;</code><ul>
+<li><code>&lt;接口&gt;</code>：CAN 接口名称（如 can0）。</li>
+</ul>
+</li>
+<li><code>&lt;帧 ID&gt;</code>：CAN 帧的 ID（11 位，十六进制）。<ul>
+<li><code>&lt;数据&gt;</code>：CAN 帧的数据（十六进制）。</li>
+</ul>
+</li>
+<li>示例：can0 发送一个标准数据帧，ID 为 0x123，数据为 DE AD BE EF。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cansend can0 123#DEADBEE</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>发送远程帧</strong><ul>
+<li>命令格式：<code>cansend &lt;接口&gt; &lt;帧 ID&gt;#R</code></li>
+<li><code>R</code>：表示远程帧。</li>
+<li>示例：向 can0 发送一个标准远程帧，ID 为 0x123。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cansend can0 123#R</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>发送扩展数据帧</strong><ul>
+<li>命令格式：<code>cansend &lt;接口&gt; &lt;帧 ID&gt;#&lt;数据&gt;</code></li>
+<li><code>&lt;帧 ID&gt;</code>：CAN 帧的 ID（29 位，十六进制）。</li>
+<li>示例：向 can0 发送一个扩展数据帧，ID 为 0x00000123，数据为 12 34 56 78。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cansend can0 00000123#12345678</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>发送扩展远程帧</strong><ul>
+<li>命令格式：<code>cansend &lt;接口&gt; &lt;帧 ID&gt;#R</code></li>
+<li>R：表示远程帧。</li>
+<li>示例：向 can0 发送一个扩展远程帧，ID 为 0x00000123</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cansend can0 00000123#R</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="CAN应用编程"><a href="#CAN应用编程" class="headerlink" title="CAN应用编程"></a>CAN应用编程</h1><h2 id="创建socket套接字"><a href="#创建socket套接字" class="headerlink" title="创建socket套接字"></a>创建socket套接字</h2><p>socket 函数是网络编程中最基础的函数之一，用于创建一个套接字（socket）。</p>
+<p><strong>套接字是网络通信的基本单元，它提供了进程间通信的机制</strong>。通过套接字，应用程序可以发送和接收数据包，从而实现网络通信。</p>
+<p><code>socket()</code> 用于创建一个套接字（Socket），是进行网络通信的<strong>第一步</strong>。创建成功后返回的套接字描述符用于后续的 <code>bind</code>、<code>listen</code>、<code>connect</code>、<code>send</code>、<code>recv</code> 等操作。</p>
+<p><strong>头文件</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>函数原型</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">socket</span><span class="params">(<span class="type">int</span> domain, <span class="type">int</span> type, <span class="type">int</span> protocol)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>返回值</strong></p>
+<ul>
+<li><strong>成功</strong>：返回一个非负整数，表示套接字描述符（socket fd）</li>
+<li><strong>失败</strong>：返回 <code>-1</code>，并设置 <code>errno</code></li>
+</ul>
+<p><strong>参数说明</strong></p>
+<ol>
+<li><code>domain</code> 协议族（地址族）</li>
+</ol>
+<p>指定通信所使用的协议族，决定<strong>地址格式和通信范围</strong>。常用取值：</p>
+<table>
+<thead>
+<tr>
+<th align="center">协议族</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">AF_UNIX</td>
+<td align="center">用于本地通信（同一台机器上的进程间通信），也称为 AF_LOCAL。</td>
+</tr>
+<tr>
+<td align="center">AF_INET</td>
+<td align="center">IPv4 互联网协议族，用于基于 IPv4 的网络通信。</td>
+</tr>
+<tr>
+<td align="center">AF_INET6</td>
+<td align="center">IPv6 互联网协议族，用于基于 IPv6 的网络通信。</td>
+</tr>
+<tr>
+<td align="center">AF_IPX</td>
+<td align="center">Novell 的 IPX&#x2F;SPX 协议族，用于 Novell 网络。</td>
+</tr>
+<tr>
+<td align="center">AF_NETLINK</td>
+<td align="center">内核与用户空间之间的通信，用于接收内核事件通知。</td>
+</tr>
+<tr>
+<td align="center">AF_X25</td>
+<td align="center">ITU-T X.25&#x2F;ISO-8208 协议族，用于分组交换网络。</td>
+</tr>
+<tr>
+<td align="center">AF_AX25</td>
+<td align="center">业余无线电 AX.25 协议族，用于业余无线电通信。</td>
+</tr>
+<tr>
+<td align="center">AF_ATMPVC</td>
+<td align="center">用于访问原始 ATM PVCs（永久虚拟电路），ATM 是一种高速网络通信技术。</td>
+</tr>
+<tr>
+<td align="center">AF_APPLETALK</td>
+<td align="center">AppleTalk 协议族，用于连接 Mac 电脑和其他设备。</td>
+</tr>
+<tr>
+<td align="center">AF_PACKET</td>
+<td align="center">低级数据包接口，允许应用程序直接访问网络设备，发送和接收原始数据包。</td>
+</tr>
+<tr>
+<td align="center">AF_ALG</td>
+<td align="center">内核加密 API 的接口，允许应用程序使用内核提供的加密服务。</td>
+</tr>
+<tr>
+<td align="center">PF_CAN</td>
+<td align="center">用于 CAN（Controller Area Network）通信的协议族。</td>
+</tr>
+</tbody></table>
+<ol start="2">
+<li><code>type</code> 套接字类型</li>
+</ol>
+<p>指定数据传输方式。常用取值：</p>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SOCK_STREAM</td>
+<td align="center">流式套接字，提供面向连接的、可靠的、双向的字节流通信（如 TCP）。</td>
+</tr>
+<tr>
+<td align="center">SOCK_DGRAM</td>
+<td align="center">数据报套接字，提供无连接的、不可靠的、固定长度的数据报通信（如 UDP）。</td>
+</tr>
+<tr>
+<td align="center">SOCK_RAW</td>
+<td align="center">原始套接字，允许直接访问底层协议（如 IP、ICMP）。</td>
+</tr>
+<tr>
+<td align="center">SOCK_SEQPACKET</td>
+<td align="center">提供面向连接的、可靠的、固定长度的数据报通信。</td>
+</tr>
+</tbody></table>
+<ol start="3">
+<li><code>protocol</code> 协议类型</li>
+</ol>
+<p>指定具体使用的协议，通常设置为 <strong>0</strong>，由系统根据 <code>domain</code> 和 <code>type</code> 自动选择。常用取值：</p>
+<table>
+<thead>
+<tr>
+<th align="center">协议</th>
+<th align="center">描述</th>
+<th align="center">对应的 domain 和 type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">IPPROTO_TCP</td>
+<td align="center">TCP 协议，用于 SOCK_STREAM 类型</td>
+<td align="center">AF_INET 或 AF_INET6, SOCK_STREAM</td>
+</tr>
+<tr>
+<td align="center">IPPROTO_UDP</td>
+<td align="center">UDP 协议，用于 SOCK_DGRAM 类型</td>
+<td align="center">AF_INET 或 AF_INET6, SOCK_DGRAM</td>
+</tr>
+<tr>
+<td align="center">IPPROTO_RAW</td>
+<td align="center">原始协议，用于 SOCK_RAW 类型</td>
+<td align="center">AF_INET 或 AF_INET6, SOCK_RAW</td>
+</tr>
+<tr>
+<td align="center">CAN_RAW</td>
+<td align="center">原始 CAN 协议，用于 CAN 总线通信</td>
+<td align="center">PF_CAN, SOCK_RAW</td>
+</tr>
+<tr>
+<td align="center">CAN_BCM</td>
+<td align="center">广播管理协议，用于更复杂的 CAN 通信</td>
+<td align="center">PF_CAN, SOCK_DGRAM</td>
+</tr>
+</tbody></table>
+<p><strong>常见组合示例</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TCP IPv4 套接字</span></span><br><span class="line"><span class="type">int</span> fd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// UDP IPv4 套接字</span></span><br><span class="line"><span class="type">int</span> fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 本地进程通信</span></span><br><span class="line"><span class="type">int</span> fd = socket(AF_UNIX, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 原始 CAN 套接字（最常用）</span></span><br><span class="line"><span class="type">int</span> fd = socket(PF_CAN, SOCK_RAW, CAN_RAW);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 广播管理（BCM）CAN 套接字</span></span><br><span class="line"><span class="type">int</span> fd = socket(PF_CAN, SOCK_DGRAM, CAN_BCM);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ISO-TP（CAN 上的传输层）</span></span><br><span class="line"><span class="type">int</span> fd = socket(PF_CAN, SOCK_DGRAM, CAN_ISOTP);</span><br><span class="line"></span><br><span class="line"><span class="comment">// J1939（商用车协议）</span></span><br><span class="line"><span class="type">int</span> fd = socket(PF_CAN, SOCK_DGRAM, CAN_J1939);</span><br></pre></td></tr></table></figure>
+
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can/raw.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="type">int</span> sockfd;</span><br><span class="line">	<span class="comment">// 创建 CAN 套接字</span></span><br><span class="line">	sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW);</span><br><span class="line">	<span class="keyword">if</span> (sockfd == <span class="number">-1</span>) &#123;</span><br><span class="line">		perror(<span class="string">&quot;Socket creation failed&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;CAN socket created successfully\n&quot;</span>);</span><br><span class="line">	<span class="comment">// 关闭套接字（可选）</span></span><br><span class="line">	close(sockfd);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="bind-绑定套接字"><a href="#bind-绑定套接字" class="headerlink" title="bind 绑定套接字"></a>bind 绑定套接字</h2><p><strong>函数介绍</strong></p>
+<p><code>bind()</code> 用于将一个套接字绑定到<strong>指定的本地地址</strong>。</p>
+<p> 在网络编程中，它通常用于绑定 <strong>IP 地址和端口号</strong>； 在 <strong>CAN 通信</strong> 中，<code>bind()</code> 的主要作用是将套接字绑定到<strong>指定的 CAN 接口</strong>（如 <code>can0</code>），从而确定数据通过哪个 CAN 控制器进行收发。</p>
+<p><code>bind()</code> 是 CAN Socket 通信的<strong>基础配置步骤之一</strong>，在进行数据收发前必须调用。</p>
+<p><strong>头文件</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>函数原型</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">bind</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">const</span> <span class="keyword">struct</span> sockaddr *addr, <span class="type">socklen_t</span> addrlen)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>返回值</strong></p>
+<ul>
+<li><strong>成功</strong>：返回 <code>0</code></li>
+<li><strong>失败</strong>：返回 <code>-1</code>，并设置 <code>errno</code></li>
+</ul>
+<p><strong>参数说明</strong></p>
+<ul>
+<li><code>sockfd</code> 套接字描述符</li>
+</ul>
+<p>由 <code>socket()</code> 函数创建的套接字文件描述符，表示需要绑定的套接字。</p>
+<ul>
+<li><p><code>addr</code> 地址结构指针：指向要绑定的地址信息的结构体指针。在不同通信场景下，实际使用的结构体不同：</p>
+<ul>
+<li><p><strong>IPv4</strong>：<code>struct sockaddr_in</code></p>
+</li>
+<li><p><strong>IPv6</strong>：<code>struct sockaddr_in6</code></p>
+</li>
+<li><p><strong>CAN</strong>：<code>struct sockaddr_can</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>在调用 <code>bind()</code> 时，需要将其强制转换为 <code>struct sockaddr *</code> 类型。</p>
+<ul>
+<li><p><code>addrlen</code> 地址结构长度：表示 <code>addr</code> 所指向地址结构的大小，通常使用 <code>sizeof()</code> 计算：</p>
+<ul>
+<li><p>IPv4：<code>sizeof(struct sockaddr_in)</code></p>
+</li>
+<li><p>IPv6：<code>sizeof(struct sockaddr_in6)</code></p>
+</li>
+<li><p>CAN：<code>sizeof(struct sockaddr_can)</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>CAN 通信中的 bind 示例</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_can</span> <span class="title">addr</span>;</span></span><br><span class="line"></span><br><span class="line">addr.can_family  = AF_CAN;</span><br><span class="line">addr.can_ifindex = if_nametoindex(<span class="string">&quot;can0&quot;</span>);</span><br><span class="line"></span><br><span class="line">bind(fd, (<span class="keyword">struct</span> sockaddr *)&amp;addr, <span class="keyword">sizeof</span>(addr));</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>说明：</strong></p>
+<ul>
+<li><code>can_family</code>：必须设置为 <code>AF_CAN</code></li>
+<li><code>can_ifindex</code>：指定 CAN 接口索引（如 <code>can0</code>）</li>
+<li>绑定后，该套接字只会在指定的 CAN 接口上通信</li>
+</ul>
+</blockquote>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;net/if.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can/raw.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">	<span class="type">int</span> sockfd; <span class="comment">// 套接字描述符</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_can</span> <span class="title">addr</span>;</span> <span class="comment">// CAN 地址结构体</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">ifreq</span> <span class="title">ifr</span>;</span> <span class="comment">// 用于获取网络接口信息</span></span><br><span class="line">    </span><br><span class="line">	<span class="comment">// 创建 CAN 套接字</span></span><br><span class="line">	sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW);</span><br><span class="line">	<span class="keyword">if</span> (sockfd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Socket creation failed&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 指定要绑定的 CAN 接口名称</span></span><br><span class="line">	<span class="built_in">strncpy</span>(ifr.ifr_name, <span class="string">&quot;can0&quot;</span>, IFNAMSIZ - <span class="number">1</span>);</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 使用 ioctl 获取 CAN 接口的索引号</span></span><br><span class="line">	ioctl(sockfd, SIOCGIFINDEX, &amp;ifr)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置 CAN 地址结构体</span></span><br><span class="line">	addr.can_family = AF_CAN; <span class="comment">// CAN 地址族</span></span><br><span class="line">	addr.can_ifindex = ifr.ifr_ifindex; <span class="comment">// CAN 接口索引号</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定套接字到指定的 CAN 接口</span></span><br><span class="line">	bind(sockfd, (<span class="keyword">struct</span> sockaddr *)&amp;addr, <span class="keyword">sizeof</span>(addr))</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭套接字（实际应用中可以继续发送/接收数据）</span></span><br><span class="line">	close(s);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码使用 ioctl 系统调用通过 <code>SIOCGIFINDEX</code> 宏获取 CAN 接口的索引号，除了 <code>SIOCGIFINDEX</code> 宏之外，在网络设备中还有其他功能的宏，具体如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">命令</th>
+<th align="center">功能描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>SIOCGIFADDR</strong></td>
+<td align="center">获取网络接口的 IP 地址</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCSIFADDR</strong></td>
+<td align="center">设置网络接口的 IP 地址</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCGIFNETMASK</strong></td>
+<td align="center">获取网络接口的子网掩码</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCSIFNETMASK</strong></td>
+<td align="center">设置网络接口的子网掩码</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCGIFBRDADDR</strong></td>
+<td align="center">获取网络接口的广播地址</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCSIFBRDADDR</strong></td>
+<td align="center">设置网络接口的广播地址</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCGIFDSTADDR</strong></td>
+<td align="center">获取网络接口的目的地址（点对点接口的对端地址）</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCSIFDSTADDR</strong></td>
+<td align="center">设置网络接口的目的地址</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCGIFHWADDR</strong></td>
+<td align="center">获取网络接口的硬件地址（如 MAC 地址）</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCSIFHWADDR</strong></td>
+<td align="center">设置网络接口的硬件地址（通常不常用，因硬件地址多为固定）</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCGIFINDEX</strong></td>
+<td align="center">获取网络接口的索引号（系统分配的唯一标识）</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCSIFMTU</strong></td>
+<td align="center">设置网络接口的最大传输单元（MTU）</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCGIFFLAGS</strong></td>
+<td align="center">获取网络接口的标志（如是否启用、是否为广播接口等）</td>
+</tr>
+<tr>
+<td align="center"><strong>SIOCSIFFLAGS</strong></td>
+<td align="center">设置网络接口的标志</td>
+</tr>
+</tbody></table>
+<h2 id="发送-接收数据"><a href="#发送-接收数据" class="headerlink" title="发送&#x2F;接收数据"></a>发送&#x2F;接收数据</h2><p>CAN 数据并不能直接发送，在发送之前需要进行封包的操作</p>
+<h3 id="struct-can-frame"><a href="#struct-can-frame" class="headerlink" title="struct can_frame"></a>struct can_frame</h3><p>CAN 数据帧通常通过 <code>struct can_frame</code> 结构体来表示。这个结构体定义在<code>&lt;linux/can.h&gt;</code>头文件中，用于封装要发送的 CAN 数据。该结构体内容如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">can_frame</span> &#123;</span></span><br><span class="line">	<span class="type">canid_t</span> can_id; <span class="comment">// CAN 标识符（ID）</span></span><br><span class="line">	__u8 can_dlc; <span class="comment">// 数据长度码（DLC），表示数据字段的长度（0 到 8 字节）</span></span><br><span class="line">	__u8 data[<span class="number">8</span>]; <span class="comment">// 数据字段，最多 8 字节</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>can_id</code>：can_id 是一个 32 位无符号整数字段，用于表示 CAN 标识符（ID）。<ul>
+<li>对于标准帧，can_id 的低 11 位表示标识符；</li>
+<li>对于扩展帧，低 29 位表示标识符。</li>
+<li>第 30 位用于标识是否为远程帧（通过 CAN_RTR_FLAG 标志）。</li>
+<li>最高位（第 31 位）用于标识是否为扩展帧（通过 CAN_EFF_FLAG 标志），</li>
+</ul>
+</li>
+<li><code>can_dlc</code>：can_dlc 是一个 8 位无符号整数字段，表示 CAN 数据帧中数据字段的长度。其取值范围为 0 到 8，对应经典 CAN 协议中最多支持的 8 字节数据长度。<ul>
+<li>对于 CAN FD（Flexible Data-rate CAN），can_dlc 可以支持更大的数据长度（如 64 字节）。该字段决定了实际发送或接收的数据字节数，未使用的部分会被忽略。</li>
+</ul>
+</li>
+<li><code>data</code>：data 是一个 8 字节数组字段，用于存储实际要发送或接收的数据内容。<ul>
+<li>数据的实际长度由 can_dlc 字段决定，最大为 8 字节（经典 CAN）或更大（CAN FD）。</li>
+<li>数组中未使用的部分不会被传输，因此在封装数据时只需填充有效字节即可。</li>
+</ul>
+</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">can_frame</span> <span class="title">frame</span>[3];</span> <span class="comment">// CAN 帧数组</span></span><br><span class="line"></span><br><span class="line"><span class="type">unsigned</span> <span class="type">char</span> data[<span class="number">2</span>] = &#123;<span class="number">0x01</span>, <span class="number">0x02</span>&#125;; <span class="comment">// 数据内容</span></span><br><span class="line"></span><br><span class="line">frame[<span class="number">0</span>].can_id = <span class="number">0x11</span>; <span class="comment">// 标准帧 ID</span></span><br><span class="line">frame[<span class="number">0</span>].can_dlc = <span class="number">2</span>; <span class="comment">// 数据长度（2 字节）</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">memcpy</span>(frame[<span class="number">0</span>].data, data, <span class="number">2</span>); <span class="comment">// 填充数据</span></span><br><span class="line">frame[<span class="number">1</span>].can_id = <span class="number">0x11</span> | CAN_EFF_FLAG; <span class="comment">// 扩展帧 ID</span></span><br><span class="line">frame[<span class="number">1</span>].can_dlc = <span class="number">2</span>; <span class="comment">// 数据长度（2 字节）</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">memcpy</span>(frame[<span class="number">1</span>].data, data, <span class="number">2</span>);<span class="comment">// 填充数据</span></span><br><span class="line"></span><br><span class="line">frame[<span class="number">2</span>].can_id = <span class="number">0x11</span> | CAN_RTR_FLAG; <span class="comment">// 远程帧 ID</span></span><br><span class="line">frame[<span class="number">2</span>].can_dlc = <span class="number">2</span>;<span class="comment">// 数据长度（2 字节）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><h4 id="发送数据"><a href="#发送数据" class="headerlink" title="发送数据"></a>发送数据</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;net/if.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can/raw.h&gt;</span> <span class="comment">// 包含 CAN_RAW 相关定义</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="type">int</span> sockfd; <span class="comment">// 套接字描述符</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_can</span> <span class="title">addr</span>;</span> <span class="comment">// CAN 地址结构体</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifreq</span> <span class="title">ifr</span>;</span> <span class="comment">// 用于获取网络接口信息</span></span><br><span class="line">    <span class="type">int</span> ret; <span class="comment">// 用于存储系统调用返回值</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建 CAN 套接字</span></span><br><span class="line">    sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW);</span><br><span class="line">    <span class="keyword">if</span> (sockfd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Socket creation failed&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指定要绑定的 CAN 接口名称</span></span><br><span class="line">    <span class="built_in">strncpy</span>(ifr.ifr_name, <span class="string">&quot;can0&quot;</span>, IFNAMSIZ - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用 ioctl 获取 CAN 接口的索引号</span></span><br><span class="line">    <span class="keyword">if</span> (ioctl(sockfd, SIOCGIFINDEX, &amp;ifr) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ioctl failed&quot;</span>);</span><br><span class="line">        close(sockfd);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置 CAN 地址结构体</span></span><br><span class="line">    addr.can_family = AF_CAN; <span class="comment">// CAN 地址族</span></span><br><span class="line">    addr.can_ifindex = ifr.ifr_ifindex; <span class="comment">// CAN 接口索引号</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定套接字到指定的 CAN 接口</span></span><br><span class="line">    <span class="keyword">if</span> (bind(sockfd, (<span class="keyword">struct</span> sockaddr *)&amp;addr, <span class="keyword">sizeof</span>(addr)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Bind failed&quot;</span>);</span><br><span class="line">        close(sockfd);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义 CAN 帧数组</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">can_frame</span> <span class="title">frame</span>[3];</span> <span class="comment">// CAN 帧数组</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> data[<span class="number">2</span>] = &#123;<span class="number">0x01</span>, <span class="number">0x02</span>&#125;; <span class="comment">// 数据内容</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化标准帧</span></span><br><span class="line">    frame[<span class="number">0</span>].can_id = <span class="number">0x11</span>; <span class="comment">// 标准帧 ID</span></span><br><span class="line">    frame[<span class="number">0</span>].can_dlc = <span class="number">2</span>;   <span class="comment">// 数据长度（2 字节）</span></span><br><span class="line">    <span class="built_in">memcpy</span>(frame[<span class="number">0</span>].data, data, <span class="number">2</span>); <span class="comment">// 填充数据</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化扩展帧</span></span><br><span class="line">    frame[<span class="number">1</span>].can_id = <span class="number">0x11</span> | CAN_EFF_FLAG; <span class="comment">// 扩展帧 ID</span></span><br><span class="line">    frame[<span class="number">1</span>].can_dlc = <span class="number">2</span>;                 <span class="comment">// 数据长度（2 字节）</span></span><br><span class="line">    <span class="built_in">memcpy</span>(frame[<span class="number">1</span>].data, data, <span class="number">2</span>);       <span class="comment">// 填充数据</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化远程帧</span></span><br><span class="line">    frame[<span class="number">2</span>].can_id = <span class="number">0x11</span> | CAN_RTR_FLAG; <span class="comment">// 远程帧 ID</span></span><br><span class="line">    frame[<span class="number">2</span>].can_dlc = <span class="number">2</span>;                 <span class="comment">// 数据长度（2 字节）</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环发送 CAN 帧</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 发送标准帧</span></span><br><span class="line">        ret = write(sockfd, &amp;frame[<span class="number">0</span>], <span class="keyword">sizeof</span>(frame[<span class="number">0</span>]));</span><br><span class="line">        <span class="keyword">if</span> (ret != <span class="keyword">sizeof</span>(frame[<span class="number">0</span>])) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;write (标准帧)&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;标准帧发送成功！\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 发送扩展帧</span></span><br><span class="line">        ret = write(sockfd, &amp;frame[<span class="number">1</span>], <span class="keyword">sizeof</span>(frame[<span class="number">1</span>]));</span><br><span class="line">        <span class="keyword">if</span> (ret != <span class="keyword">sizeof</span>(frame[<span class="number">1</span>])) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;write (扩展帧)&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;扩展帧发送成功！\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 发送远程帧</span></span><br><span class="line">        ret = write(sockfd, &amp;frame[<span class="number">2</span>], <span class="keyword">sizeof</span>(frame[<span class="number">2</span>]));</span><br><span class="line">        <span class="keyword">if</span> (ret != <span class="keyword">sizeof</span>(frame[<span class="number">2</span>])) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;write (远程帧)&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;远程帧发送成功！\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 延时 1 秒</span></span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭套接字</span></span><br><span class="line">    close(sockfd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a>接收数据</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;net/if.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can/raw.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUF_SIZE 128 <span class="comment">// 缓冲区大小</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> sockfd; <span class="comment">// 套接字文件描述符</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_can</span> <span class="title">addr</span>;</span> <span class="comment">// CAN 地址结构体</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifreq</span> <span class="title">ifr</span>;</span> <span class="comment">// 网络接口请求结构体</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">can_frame</span> <span class="title">frame</span>;</span> <span class="comment">// CAN 帧结构体</span></span><br><span class="line">    <span class="type">char</span> buf[BUF_SIZE]; <span class="comment">// 格式化输出缓冲区</span></span><br><span class="line">    <span class="type">int</span> ret, n, i, err;</span><br><span class="line">    FILE *out = <span class="built_in">stdout</span>; <span class="comment">// 输出文件流（标准输出）</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建 CAN 套接字</span></span><br><span class="line">    sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指定 CAN 接口名称</span></span><br><span class="line">    <span class="built_in">strcpy</span>(ifr.ifr_name, <span class="string">&quot;can0&quot;</span>);</span><br><span class="line">    ioctl(sockfd, SIOCGIFINDEX, &amp;ifr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置地址信息</span></span><br><span class="line">    addr.can_family = AF_CAN;</span><br><span class="line">    addr.can_ifindex = ifr.ifr_ifindex;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定 CAN 接口</span></span><br><span class="line">    bind(sockfd, (<span class="keyword">struct</span> sockaddr *)&amp;addr, <span class="keyword">sizeof</span>(addr));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环接收 CAN 帧</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 接收 CAN 帧</span></span><br><span class="line">        ret = read(sockfd, &amp;frame, <span class="keyword">sizeof</span>(frame));</span><br><span class="line">        <span class="keyword">if</span> (ret &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;read&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 格式化输出 CAN 帧信息</span></span><br><span class="line">        <span class="keyword">if</span> (frame.can_id &amp; CAN_EFF_FLAG) &#123;</span><br><span class="line">            <span class="comment">// 扩展帧</span></span><br><span class="line">            n = <span class="built_in">snprintf</span>(buf, BUF_SIZE, <span class="string">&quot;&lt;0x%08x&gt;&quot;</span>, frame.can_id &amp; CAN_EFF_MASK);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 标准帧</span></span><br><span class="line">            n = <span class="built_in">snprintf</span>(buf, BUF_SIZE, <span class="string">&quot;&lt;0x%03x&gt;&quot;</span>, frame.can_id &amp; CAN_SFF_MASK);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加数据长度</span></span><br><span class="line">        n += <span class="built_in">snprintf</span>(buf + n, BUF_SIZE - n, <span class="string">&quot;[%d]&quot;</span>, frame.can_dlc);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加数据内容</span></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; frame.can_dlc; i++) &#123;</span><br><span class="line">            n += <span class="built_in">snprintf</span>(buf + n, BUF_SIZE - n, <span class="string">&quot; %02x&quot;</span>, frame.data[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果是远程帧</span></span><br><span class="line">        <span class="keyword">if</span> (frame.can_id &amp; CAN_RTR_FLAG) &#123;</span><br><span class="line">            n += <span class="built_in">snprintf</span>(buf + n, BUF_SIZE - n, <span class="string">&quot; remote request&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 输出到标准输出</span></span><br><span class="line">        <span class="built_in">fprintf</span>(out, <span class="string">&quot;%s\n&quot;</span>, buf);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 刷新输出缓冲区</span></span><br><span class="line">        err = fflush(out);</span><br><span class="line">        <span class="keyword">if</span> (err &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;fflush&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭套接字</span></span><br><span class="line">    close(sockfd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="过滤规则的设置"><a href="#过滤规则的设置" class="headerlink" title="过滤规则的设置"></a>过滤规则的设置</h2><p>CAN 应用程序中的过滤规则设置需要用到 <code>setsockopt</code> 函数，<code>setsockopt</code> 的主要作用是配置CAN 套接字的过滤规则或其他特定选项。</p>
+<p>通过设置这些选项，用户可以控制套接字的行为，例如筛选特定的 CAN 数据帧或调整通信模式。这是 CAN 通信中实现高效数据处理的重要步骤之一。</p>
+<h3 id="setsockopt"><a href="#setsockopt" class="headerlink" title="setsockopt()"></a>setsockopt()</h3><p><code>setsockopt()</code> 用于为套接字设置各种<strong>协议相关选项</strong>。在 <strong>CAN Socket 通信</strong> 中，它主要用于：</p>
+<ul>
+<li>设置 <strong>CAN 帧过滤规则</strong></li>
+<li>控制是否接收错误帧</li>
+<li>配置本地回环等行为</li>
+</ul>
+<p>其中最常用、也是 CAN 通信的核心配置之一是 <strong><code>CAN_RAW_FILTER</code></strong>，用于指定套接字<strong>接收哪些 CAN 帧</strong>。</p>
+<p><strong>头文件</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>函数原型</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">setsockopt</span><span class="params">(<span class="type">int</span> sockfd,</span></span><br><span class="line"><span class="params">               <span class="type">int</span> level,</span></span><br><span class="line"><span class="params">               <span class="type">int</span> optname,</span></span><br><span class="line"><span class="params">               <span class="type">const</span> <span class="type">void</span> *optval,</span></span><br><span class="line"><span class="params">               <span class="type">socklen_t</span> optlen)</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>返回值</strong></p>
+<ul>
+<li><strong>成功</strong>：返回 <code>0</code></li>
+<li><strong>失败</strong>：返回 <code>-1</code>，并设置 <code>errno</code></li>
+</ul>
+<p><strong>参数说明</strong></p>
+<ul>
+<li><p><code>sockfd</code> 套接字描述符，由 <code>socket()</code> 创建的 CAN 套接字文件描述符，表示要配置的套接字。</p>
+</li>
+<li><p><code>level</code> 选项级别，指定选项所属的协议层级。CAN 通信中固定使用<code>SOL_CAN_RAW</code> 表示设置的是 <strong>原始 CAN 协议（CAN_RAW）相关选项</strong>。</p>
+</li>
+<li><p><code>optname</code> 具体选项名称，指定要设置的 CAN 套接字选项，常用选项包括：</p>
+<ul>
+<li><p><code>CAN_RAW_FILTER</code>，设置 CAN 数据帧的<strong>过滤规则</strong>（本章重点）</p>
+</li>
+<li><p><code>CAN_RAW_ERR_FILTER</code>，设置是否接收错误帧</p>
+</li>
+<li><p><code>CAN_RAW_LOOPBACK</code>，设置是否启用本地回环模式</p>
+</li>
+</ul>
+</li>
+<li><p><code>optval</code>选项值指针，指向选项数据的缓冲区。</p>
+<ul>
+<li>对于 <code>CAN_RAW_FILTER</code>，类型为 <code>struct can_filter *</code><ul>
+<li>可为 <strong>单个过滤规则</strong></li>
+<li>也可为 <strong>过滤规则数组</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>optlen</code>选项值长度：表示 <code>optval</code> 缓冲区大小（字节数）：</p>
+<ul>
+<li><p>单个过滤规则：<code>sizeof(struct can_filter)</code></p>
+</li>
+<li><p>多个过滤规则：<code>sizeof(struct can_filter) * 规则数量</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>示例：</p>
+<p><strong>只接收 ID 为 0x123 的标准帧</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">can_filter</span> <span class="title">filter</span>;</span></span><br><span class="line"></span><br><span class="line">filter.can_id   = <span class="number">0x123</span>;</span><br><span class="line">filter.can_mask = CAN_SFF_MASK;</span><br><span class="line"></span><br><span class="line">setsockopt(fd, SOL_CAN_RAW,</span><br><span class="line">           CAN_RAW_FILTER,</span><br><span class="line">           &amp;filter, <span class="keyword">sizeof</span>(filter));</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>设置多个过滤规则</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">can_filter</span> <span class="title">filters</span>[2] =</span> &#123;</span><br><span class="line">    &#123; .can_id = <span class="number">0x100</span>, .can_mask = CAN_SFF_MASK &#125;,</span><br><span class="line">    &#123; .can_id = <span class="number">0x200</span>, .can_mask = CAN_SFF_MASK &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">setsockopt(fd, SOL_CAN_RAW,</span><br><span class="line">           CAN_RAW_FILTER,</span><br><span class="line">           filters, <span class="keyword">sizeof</span>(filters));</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>接收所有 CAN 帧（关闭过滤）</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setsockopt(fd, SOL_CAN_RAW,</span><br><span class="line">           CAN_RAW_FILTER,</span><br><span class="line">           <span class="literal">NULL</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="struct-can-filter"><a href="#struct-can-filter" class="headerlink" title="struct can_filter"></a>struct can_filter</h3><p>CAN 过滤规则结构体</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">can_filter</span> &#123;</span></span><br><span class="line">    <span class="type">canid_t</span> can_id;    <span class="comment">// CAN ID + 标志位</span></span><br><span class="line">    <span class="type">canid_t</span> can_mask;  <span class="comment">// 掩码，决定哪些位参与匹配</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>can_id</code></p>
+<ul>
+<li><p>表示期望匹配的 CAN ID</p>
+</li>
+<li><p>可包含：</p>
+<ul>
+<li>标准帧 ID（11 位）</li>
+<li>扩展帧 ID（29 位）</li>
+<li>标志位（如 <code>CAN_EFF_FLAG</code>、<code>CAN_RTR_FLAG</code>）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>can_mask</code></p>
+<ul>
+<li><p>用于指定 <strong>哪些位需要参与匹配</strong></p>
+</li>
+<li><p>某一位为：</p>
+<ul>
+<li><code>1</code>：该位必须匹配</li>
+<li><code>0</code>：该位忽略</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="常用-CAN-掩码宏"><a href="#常用-CAN-掩码宏" class="headerlink" title="常用 CAN 掩码宏"></a>常用 CAN 掩码宏</h3><table>
+<thead>
+<tr>
+<th align="center">掩码值</th>
+<th align="center">含义</th>
+<th align="center">示例代码与用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">CAN_SFF_MASK</td>
+<td align="center">匹配标准帧的低 11 位（0x7FF），忽略扩展帧部分</td>
+<td align="center"><code>can_id=0x123, can_mask=CAN_SFF_MASK</code><br />仅接收标准帧且 ID 精确匹配 0x123</td>
+</tr>
+<tr>
+<td align="center">CAN_EFF_MASK</td>
+<td align="center">匹配扩展帧的所有 29 位（0x1FFFFFFF）</td>
+<td align="center"><code>can_id=0x12345678, can_mask=CAN_EFF_MASK</code><br />仅接收扩展帧且 ID 精确匹配 0x12345678</td>
+</tr>
+<tr>
+<td align="center">CAN_EFF_FLAG</td>
+<td align="center">匹配扩展帧标志位（第 30 位）</td>
+<td align="center"><code>can_mask=CAN_EFF_FLAG</code><br />区分标准帧 &#x2F; 扩展帧，仅关注是否为扩展帧</td>
+</tr>
+<tr>
+<td align="center">CAN_RTR_FLAG</td>
+<td align="center">匹配远程帧标志位（第 31 位）</td>
+<td align="center"><code>can_mask=CAN_RTR_FLAG</code><br />区分数据帧 &#x2F; 远程帧，仅关注是否为远程帧</td>
+</tr>
+<tr>
+<td align="center">CAN_SFF_MASK | CAN_EFF_FLAG</td>
+<td align="center">匹配标准帧低 11 位，区分是否为扩展帧</td>
+<td align="center">&#96;can_id&#x3D;0x123, can_mask&#x3D;CAN_SFF_MASK</td>
+</tr>
+<tr>
+<td align="center">CAN_EFF_MASK | CAN_RTR_FLAG</td>
+<td align="center">匹配扩展帧 29 位，区分是否为远程帧</td>
+<td align="center">&#96;can_id&#x3D;0x12345678, can_mask&#x3D;CAN_EFF_MASK</td>
+</tr>
+<tr>
+<td align="center">CAN_SFF_MASK | CAN_RTR_FLAG</td>
+<td align="center">匹配标准帧低 11 位，区分是否为远程帧</td>
+<td align="center">&#96;can_id&#x3D;0x123, can_mask&#x3D;CAN_SFF_MASK</td>
+</tr>
+<tr>
+<td align="center">CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG</td>
+<td align="center">匹配标准帧低 11 位，区分是否为扩展帧和远程帧</td>
+<td align="center">&#96;can_id&#x3D;0x123, can_mask&#x3D;CAN_SFF_MASK</td>
+</tr>
+<tr>
+<td align="center">0xFFFFFFFF</td>
+<td align="center">匹配所有 32 位（含标准帧、扩展帧、远程帧标志位）</td>
+<td align="center"><code>can_id=0x123, can_mask=0xFFFFFFFF</code><br />精确匹配某个完整 CAN ID 和帧类型</td>
+</tr>
+<tr>
+<td align="center">0x0</td>
+<td align="center">忽略所有位，匹配所有帧（无过滤规则）</td>
+<td align="center"><code>can_mask=0x0</code><br />接收所有帧，无过滤</td>
+</tr>
+</tbody></table>
+<h3 id="示例-3"><a href="#示例-3" class="headerlink" title="示例"></a>示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;net/if.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/can/raw.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUF_SIZE 128 <span class="comment">// 缓冲区大小</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> sockfd; <span class="comment">// 套接字文件描述符</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_can</span> <span class="title">addr</span>;</span> <span class="comment">// CAN 地址结构体</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifreq</span> <span class="title">ifr</span>;</span> <span class="comment">// 网络接口请求结构体</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">can_frame</span> <span class="title">frame</span>;</span> <span class="comment">// CAN 帧结构体</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">can_filter</span> <span class="title">rfilter</span>[2];</span> <span class="comment">// 过滤规则数组</span></span><br><span class="line">    <span class="type">char</span> buf[BUF_SIZE]; <span class="comment">// 格式化输出缓冲区</span></span><br><span class="line">    <span class="type">int</span> i, n;</span><br><span class="line">    FILE *out = <span class="built_in">stdout</span>; <span class="comment">// 输出文件流（标准输出）</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建 CAN 套接字</span></span><br><span class="line">    <span class="keyword">if</span> ((sockfd = socket(PF_CAN, SOCK_RAW, CAN_RAW)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;Socket creation failed&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指定 CAN 接口名称</span></span><br><span class="line">    <span class="built_in">strcpy</span>(ifr.ifr_name, <span class="string">&quot;can0&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (ioctl(sockfd, SIOCGIFINDEX, &amp;ifr) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;ioctl failed&quot;</span>);</span><br><span class="line">        close(sockfd);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置地址信息</span></span><br><span class="line">    addr.can_family = AF_CAN;</span><br><span class="line">    addr.can_ifindex = ifr.ifr_ifindex;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定 CAN 接口</span></span><br><span class="line">    <span class="keyword">if</span> (bind(sockfd, (<span class="keyword">struct</span> sockaddr *)&amp;addr, <span class="keyword">sizeof</span>(addr)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;Bind failed&quot;</span>);</span><br><span class="line">        close(sockfd);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置过滤规则</span></span><br><span class="line">    <span class="comment">// 第一条规则：只接收标准帧的数据帧，且 ID 精确匹配 0x123</span></span><br><span class="line">    rfilter[<span class="number">0</span>].can_id = <span class="number">0x123</span>; <span class="comment">// 目标 CAN ID</span></span><br><span class="line">    rfilter[<span class="number">0</span>].can_mask = CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG; <span class="comment">// 匹配标准帧，排除扩展帧和远程帧</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第二条规则：只接收扩展帧的数据帧，且 ID 精确匹配 0x456</span></span><br><span class="line">    rfilter[<span class="number">1</span>].can_id = <span class="number">0x456</span>; <span class="comment">// 目标 CAN ID</span></span><br><span class="line">    rfilter[<span class="number">1</span>].can_mask = CAN_EFF_MASK | CAN_RTR_FLAG; <span class="comment">// 匹配扩展帧，排除远程帧</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 应用过滤规则</span></span><br><span class="line">    <span class="keyword">if</span> (setsockopt(sockfd, SOL_CAN_RAW, CAN_RAW_FILTER, &amp;rfilter, <span class="keyword">sizeof</span>(rfilter)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;setsockopt failed&quot;</span>);</span><br><span class="line">        close(sockfd);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环接收 CAN 帧</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 接收 CAN 帧</span></span><br><span class="line">        <span class="keyword">if</span> (read(sockfd, &amp;frame, <span class="keyword">sizeof</span>(frame)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;Read failed&quot;</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 格式化输出 CAN 帧信息</span></span><br><span class="line">        <span class="keyword">if</span> (frame.can_id &amp; CAN_EFF_FLAG) &#123;</span><br><span class="line">            <span class="comment">// 扩展帧</span></span><br><span class="line">            n = <span class="built_in">snprintf</span>(buf, BUF_SIZE, <span class="string">&quot;&lt;0x%08x&gt;&quot;</span>, frame.can_id &amp; CAN_EFF_MASK);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 标准帧</span></span><br><span class="line">            n = <span class="built_in">snprintf</span>(buf, BUF_SIZE, <span class="string">&quot;&lt;0x%03x&gt;&quot;</span>, frame.can_id &amp; CAN_SFF_MASK);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加数据长度</span></span><br><span class="line">        n += <span class="built_in">snprintf</span>(buf + n, BUF_SIZE - n, <span class="string">&quot;[%d]&quot;</span>, frame.can_dlc);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加数据内容</span></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; frame.can_dlc; i++) &#123;</span><br><span class="line">            n += <span class="built_in">snprintf</span>(buf + n, BUF_SIZE - n, <span class="string">&quot; %02x&quot;</span>, frame.data[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果是远程帧</span></span><br><span class="line">        <span class="keyword">if</span> (frame.can_id &amp; CAN_RTR_FLAG) &#123;</span><br><span class="line">            n += <span class="built_in">snprintf</span>(buf + n, BUF_SIZE - n, <span class="string">&quot; remote request&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 输出到标准输出</span></span><br><span class="line">        <span class="built_in">fprintf</span>(out, <span class="string">&quot;%s\n&quot;</span>, buf);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 刷新输出缓冲区</span></span><br><span class="line">        fflush(out);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭套接字</span></span><br><span class="line">    close(sockfd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2601093/">https://even629.com/posts/2601093/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CAN-%E6%80%BB%E7%BA%BF%E4%BB%8B%E7%BB%8D"><span class="toc-text">CAN 总线介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CAN-%E7%A1%AC%E4%BB%B6%E8%BF%9E%E6%8E%A5"><span class="toc-text">CAN 硬件连接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU-%E8%87%AA%E5%B8%A6-CAN-%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-text">CPU 自带 CAN 控制器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU-%E6%B2%A1%E6%9C%89-CAN-%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-text">CPU 没有 CAN 控制器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CAN-%E7%94%B5%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">CAN 电器属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B5%E6%B0%94%E5%B1%9E%E6%80%A7%E5%92%8C%E5%B7%A5%E4%BD%9C%E7%8A%B6%E6%80%81"><span class="toc-text">电气属性和工作状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#iTOP-RK3568-%E5%BC%80%E5%8F%91%E6%9D%BF-can-%E6%8E%A5%E5%8F%A3"><span class="toc-text">iTOP-RK3568 开发板 can 接口</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAN-%E5%8D%8F%E8%AE%AE%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="toc-text">CAN 协议帧结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%A7%E7%9A%84%E7%A7%8D%E7%B1%BB"><span class="toc-text">帧的种类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%B8%A7"><span class="toc-text">数据帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%81%A5%E6%8E%A7%E5%B8%A7"><span class="toc-text">遥控帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E5%B8%A7"><span class="toc-text">错误帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%87%E8%BD%BD%E5%B8%A7"><span class="toc-text">过载帧</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%8D%E5%A1%AB%E5%85%85"><span class="toc-text">位填充</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CAN-%E6%B3%A2%E5%BD%A2%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90"><span class="toc-text">CAN 波形实例分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E6%95%B0%E6%8D%AE%E5%B8%A7"><span class="toc-text">标准数据帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E9%81%A5%E6%8E%A7%E5%B8%A7"><span class="toc-text">标准遥控帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E6%95%B0%E6%8D%AE%E5%B8%A7"><span class="toc-text">扩展数据帧</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAN%E6%80%BB%E7%BA%BF%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6%E4%B8%8E%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86"><span class="toc-text">CAN总线核心机制与通信原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%8D%E6%97%B6%E9%97%B4"><span class="toc-text">位时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A1%AC%E5%90%8C%E6%AD%A5%E5%92%8C%E5%86%8D%E5%90%8C%E6%AD%A5"><span class="toc-text">硬同步和再同步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E5%90%8C%E6%AD%A5"><span class="toc-text">硬同步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%8D%E5%90%8C%E6%AD%A5"><span class="toc-text">再同步</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%B2%E8%A3%81%E8%A7%84%E5%88%99"><span class="toc-text">仲裁规则</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%BD%E6%B3%A2%E4%BE%A6%E5%90%AC"><span class="toc-text">载波侦听</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E7%A0%B4%E5%9D%8F%E6%80%A7%E4%BB%B2%E8%A3%81"><span class="toc-text">非破坏性仲裁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9E%E8%AF%BB%E6%9C%BA%E5%88%B6"><span class="toc-text">回读机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E7%8A%B6%E6%80%81"><span class="toc-text">错误状态</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E5%8A%A8%E9%94%99%E8%AF%AF%E7%8A%B6%E6%80%81"><span class="toc-text">主动错误状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A2%AB%E5%8A%A8%E9%94%99%E8%AF%AF%E7%8A%B6%E6%80%81"><span class="toc-text">被动错误状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E5%85%B3%E9%97%AD%E6%80%81"><span class="toc-text">总线关闭态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E6%A3%80%E6%B5%8B%E6%9C%BA%E5%88%B6"><span class="toc-text">错误检测机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E9%94%99%E8%AF%AF"><span class="toc-text">位错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A1%AB%E5%85%85%E9%94%99%E8%AF%AF"><span class="toc-text">填充错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CRC-%E9%94%99%E8%AF%AF"><span class="toc-text">CRC 错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%BC%E5%BC%8F%E9%94%99%E8%AF%AF"><span class="toc-text">格式错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ACK-%E9%94%99%E8%AF%AF"><span class="toc-text">ACK 错误</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CAN-%E6%80%BB%E7%BA%BF%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%A0%87%E5%87%86%E8%A7%84%E6%A0%BC"><span class="toc-text">CAN 总线协议和标准规格</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ISO-%E4%B8%83%E5%B1%82%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B"><span class="toc-text">ISO 七层网络模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CAN-%E5%8D%8F%E8%AE%AE%E7%89%A9%E7%90%86%E5%B1%82%E5%92%8C%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82"><span class="toc-text">CAN 协议物理层和数据链路层</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%AF%E7%94%A8-CAN"><span class="toc-text">启用 CAN</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">设备树</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAN%E5%B7%A5%E5%85%B7%E7%9A%84%E7%A7%BB%E6%A4%8D%E5%92%8C%E4%BD%BF%E7%94%A8"><span class="toc-text">CAN工具的移植和使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#iproute2-%E5%B7%A5%E5%85%B7%E7%A7%BB%E6%A4%8D"><span class="toc-text">iproute2 工具移植</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#can-utils-%E5%B7%A5%E5%85%B7%E7%A7%BB%E6%A4%8D"><span class="toc-text">can utils 工具移植</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#can%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8"><span class="toc-text">can工具使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE-CAN-%E6%8E%A5%E5%9B%97%E7%9A%84%E6%B3%A2%E7%89%B9%E7%8E%87"><span class="toc-text">设置 CAN 接囗的波特率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E5%92%8C%E5%85%B3%E9%97%AD-CAN-%E6%8E%A5%E5%8F%A3"><span class="toc-text">启动和关闭 CAN 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5-CAN-%E6%8E%A5%E5%8F%A3%E7%8A%B6%E6%80%81"><span class="toc-text">检查 CAN 接口状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-CAN-%E5%B7%A5%E5%85%B7%E6%B5%8B%E8%AF%95%E9%80%9A%E4%BF%A1"><span class="toc-text">使用 CAN 工具测试通信</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-candump-%E6%8E%A5%E6%94%B6%E6%95%B0%E6%8D%AE"><span class="toc-text">使用 candump 接收数据</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E8%BF%87%E6%BB%A4%E8%A7%84%E5%88%99"><span class="toc-text">设置过滤规则</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-cansend-%E5%8F%91%E9%80%81%E6%95%B0%E6%8D%AE"><span class="toc-text">使用 cansend 发送数据</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAN%E5%BA%94%E7%94%A8%E7%BC%96%E7%A8%8B"><span class="toc-text">CAN应用编程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAsocket%E5%A5%97%E6%8E%A5%E5%AD%97"><span class="toc-text">创建socket套接字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bind-%E7%BB%91%E5%AE%9A%E5%A5%97%E6%8E%A5%E5%AD%97"><span class="toc-text">bind 绑定套接字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E9%80%81-%E6%8E%A5%E6%94%B6%E6%95%B0%E6%8D%AE"><span class="toc-text">发送&#x2F;接收数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-can-frame"><span class="toc-text">struct can_frame</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2"><span class="toc-text">示例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%91%E9%80%81%E6%95%B0%E6%8D%AE"><span class="toc-text">发送数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A5%E6%94%B6%E6%95%B0%E6%8D%AE"><span class="toc-text">接收数据</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E8%A7%84%E5%88%99%E7%9A%84%E8%AE%BE%E7%BD%AE"><span class="toc-text">过滤规则的设置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#setsockopt"><span class="toc-text">setsockopt()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-can-filter"><span class="toc-text">struct can_filter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8-CAN-%E6%8E%A9%E7%A0%81%E5%AE%8F"><span class="toc-text">常用 CAN 掩码宏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-3"><span class="toc-text">示例</span></a></li></ol></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'dbadb42be1cc37b4b8f30d7d58ab3dba'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

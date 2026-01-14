@@ -1,0 +1,1237 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM64 Virtualization | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ARM64 Virtualization Support">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM64 Virtualization">
+<meta property="og:url" content="https://even629.com/posts/2512050/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="ARM64 Virtualization Support">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-12-05T13:12:13.000Z">
+<meta property="article:modified_time" content="2025-12-05T13:31:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="ARM">
+<meta property="article:tag" content="virtualization">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2512050/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARM64 Virtualization',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">ARM64 Virtualization</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-05T13:12:13.000Z" title="发表于 2025-12-05 21:12:13">2025-12-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-05T13:31:13.000Z" title="更新于 2025-12-05 21:31:13">2025-12-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/virtualization/">virtualization</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">7.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>28分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2512050/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-05</p>
+</div></div><div class='timeline-item-content'><ol>
+<li>init</li>
+</ol>
+</div></div></div>
+<hr>
+<h1 id="ARM64虚拟化"><a href="#ARM64虚拟化" class="headerlink" title="ARM64虚拟化"></a>ARM64虚拟化</h1><h2 id="芯片手册"><a href="#芯片手册" class="headerlink" title="芯片手册"></a>芯片手册</h2><ul>
+<li><strong>Arm Architecture Reference Manual Armv8, for Armv8-A architecture profile, v8.6</strong><ul>
+<li>关于虚拟化的内容：D1.5</li>
+<li>关于异常的内容：<ul>
+<li>D1.1 Exception levels</li>
+<li>D1.2 Exception terminology</li>
+<li>D1.10 Exception entry</li>
+<li>D1.11 Exception return</li>
+<li>D1.12 Synchronous exception types, routing and priorities</li>
+<li>D1.13 Asynchronous exception types, routing, masking and priorities</li>
+<li>D13.2.37 ESR_EL2, Exception Syndrome Register(EL2)</li>
+<li>D13.2.138 VBAR_EL2, Vector Base Address Register(EL2)</li>
+<li>D13.2.47 HCR_EL2, Hypervisor Configuration Register</li>
+<li>FAR_EL2 Fault Address Register(EL2)</li>
+<li>D13.2.53 HPFAR_EL2, Hypervisor IPA Fault Address Register</li>
+</ul>
+</li>
+<li>关于内存管理的内容<ul>
+<li>D5.2.3 Controlling address translation stages</li>
+<li>D5.2.6 Overview of the VMSAv8-64 address translation stages</li>
+<li>D5.2.7 The VMSAv8-64 translation table format</li>
+<li>D5.3 VMSAv8-64 translation table format descriptors</li>
+<li>D13.2.61 ID_AA64MMFR0_EL1, AArch64 Memory Model Feature Register 0</li>
+<li>D13.2.146 VTTBR_EL2, Virtualization Translation Table Base Register</li>
+<li>D13.2.145 VTCR_EL2, Virtualization Translation Control Register</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Armv8-A virtualization</strong></li>
+<li><strong>ARM Generic Interrupt Controller Architecture version 2.0, Architecture Specification</strong></li>
+</ul>
+<h2 id="虚拟化介绍"><a href="#虚拟化介绍" class="headerlink" title="虚拟化介绍"></a>虚拟化介绍</h2><h3 id="虚拟化技术"><a href="#虚拟化技术" class="headerlink" title="虚拟化技术"></a>虚拟化技术</h3><p>虚拟化技术作为一种资源管理技术，能对计算机的各种物理资源（比如CPU、内存、I&#x2F;O设备等）进行抽象组合并分配给多个虚拟机</p>
+<ul>
+<li><strong>平台虚拟化</strong>（<strong>platform virtualization</strong>）：针对计算机和操作系统的虚拟化，例如KVM等。</li>
+<li><strong>资源虚拟化</strong>（<strong>resource virtualization</strong>）：针对特定系统资源的虚拟化，包括内存、存储器、网络资源等，例如容器技术。</li>
+<li><strong>应用程序虚拟化</strong>（<strong>application virtualization</strong>）：包括仿真、模拟、解释技术等，如Java 虚拟机。</li>
+</ul>
+<h3 id="虚拟化应用场景"><a href="#虚拟化应用场景" class="headerlink" title="虚拟化应用场景"></a>虚拟化应用场景</h3><ul>
+<li>桌面虚拟化</li>
+<li>服务器虚拟化</li>
+<li>嵌入式虚拟化</li>
+</ul>
+<h3 id="虚拟化技术的重要理论基础"><a href="#虚拟化技术的重要理论基础" class="headerlink" title="虚拟化技术的重要理论基础"></a>虚拟化技术的重要理论基础</h3><p>1974年：论文”Formal Requirements for Virtualizable Third Generation Architectures”</p>
+<p>实现虚拟化的3个必要的要素：</p>
+<ul>
+<li>资源控制（resource control）。VMM必须能够管理所有的系统资源。</li>
+<li>等价性（equivalence）。客户机的运行行为与在裸机上一致。</li>
+<li>效率性（efficiency）。客户机运行的程序不受VMM的干涉。</li>
+</ul>
+<p>x86架构在实现虚拟化的过程中遇到了一些挑战，特别是不能满足上述第二个条件。计算机架构里包含两种指令。</p>
+<ul>
+<li>敏感指令：操作某些特权资源的指令，比如访问、修改虚拟机模式或机器状态的指令。</li>
+<li>特权指令：具有特殊权限的指令。这类指令只用于操作系统或其他系统软件，一般不<br>直接提供给用户使用。</li>
+</ul>
+<h3 id="硬件辅助虚拟化技术"><a href="#硬件辅助虚拟化技术" class="headerlink" title="硬件辅助虚拟化技术"></a>硬件辅助虚拟化技术</h3><ul>
+<li>2005年，Intel开始在CPU中引入硬件虚拟化技术，这项技术称为VT（virtualization technology）。</li>
+<li>VT的基本思想是创建可以运行虚拟机的容器。在使能了VT的CPU里有两种操作模式——根（VMX root）模式和非根（VMX non-root）模式。这两种操作模式都支持Ring 0～Ring 3这4个特权级别，因此虚拟机管理程序和虚拟机都可以自由选择它们期望的运行级别。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212256307.png" alt="Intel根模式与非跟模式" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212825262.png" alt="Intel Rring0-Ring3" loading="lazy"></p>
+<h3 id="全虚拟化与半虚拟化"><a href="#全虚拟化与半虚拟化" class="headerlink" title="全虚拟化与半虚拟化"></a>全虚拟化与半虚拟化</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212256147.png" alt="全虚拟化与半虚拟化" loading="lazy"></p>
+<p>目前主要用硬件辅助虚拟化技术，这两项技术都不怎么用了</p>
+<h3 id="虚拟机的分类"><a href="#虚拟机的分类" class="headerlink" title="虚拟机的分类"></a>虚拟机的分类</h3><ul>
+<li><p><strong>Hypervisor</strong>：虚拟机管理程序，也叫做VMM（Virtual Machine Manager），Hypervisor位于计算机硬件和虚拟机之间，负责管理和分配计算机资源给各个虚拟机。</p>
+<ul>
+<li>Type1：第一类虚拟机管理程序就像小型操作系统，目的就是管理所有的虚拟机，常见的虚拟化软件有Xen、ACRN等。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212306100.png" alt="Type1 Hypeervisor" loading="lazy"></p>
+<ul>
+<li>Type2：第二类虚拟机管理程序依赖于Windows、Linux等操作系统来分配和管理调度资源，常见的虚拟化软件有VMware Player、KVM以及Virtual Box等。</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212309782.png" alt="Type2 Hypervisor" loading="lazy"></p>
+<h3 id="内存虚拟化"><a href="#内存虚拟化" class="headerlink" title="内存虚拟化"></a>内存虚拟化</h3><ul>
+<li><p>软件模拟：影子页表（Shadow Page）</p>
+<ul>
+<li>效率低</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212315030.png" alt="影子页表" loading="lazy"></p>
+<ul>
+<li><p>硬件内存虚拟化技术—</p>
+<ul>
+<li>Intel: 扩展页表（Extended Page Table，EPT）技术</li>
+<li>ARM: stage1 &amp; stage2页表</li>
+</ul>
+</li>
+<li><p>虚拟化用到的4种地址</p>
+<ul>
+<li>GVA（Guest Virtual Address）：客户机虚拟地址。</li>
+<li>GPA（Guest Physical Address）：客户机物理地址。</li>
+<li>HVA（Host Virtual Address）：宿主机虚拟地址。</li>
+<li>HPA（Host Physical Address）：宿主机物理地址</li>
+</ul>
+</li>
+</ul>
+<h3 id="IO虚拟化"><a href="#IO虚拟化" class="headerlink" title="IO虚拟化"></a>IO虚拟化</h3><ul>
+<li><p><strong>软件模拟设备</strong>。以磁盘为例，虚拟机管理程序可以在实际的磁盘上创建一个文件或一块区域来模拟虚拟磁盘，并把它传递给客户机。</p>
+</li>
+<li><p><strong>设备透传</strong>（Device Pass Through）。虚拟机管理程序把物理设备直接分配给特定的虚拟机。</p>
+</li>
+<li><p><strong>SR-IOV</strong>（Single Root I&#x2F;O Virtualization）技术</p>
+</li>
+</ul>
+<h2 id="CPU虚拟化"><a href="#CPU虚拟化" class="headerlink" title="CPU虚拟化"></a>CPU虚拟化</h2><h3 id="vCPU与VM概念"><a href="#vCPU与VM概念" class="headerlink" title="vCPU与VM概念"></a>vCPU与VM概念</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212017068.png" alt="vCPU与VM概念" loading="lazy"></p>
+<ul>
+<li>ARMv8&#x2F;v9的CPU虚拟化技术构建在不同的异常等级上</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212017357.png" alt="ARMv8&#x2F;v9的CPU虚拟化技术构建在不同的异常等级上" loading="lazy"></p>
+<h3 id="创建多个vCPU"><a href="#创建多个vCPU" class="headerlink" title="创建多个vCPU"></a>创建多个vCPU</h3><p>一个物理CPU可能创建多个vCPU，利用OS的多进程&#x2F;多线程机制</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212017164.png" alt="创建多个vCPU" loading="lazy"></p>
+<p>一个物理CPU可以运行多个进程&#x2F;线程，hypervisor可以分时复用地调度它们运行。当进程从EL2切入到EL1之后，vCPU就创建了。</p>
+<h3 id="ARMv8-v9异常处理"><a href="#ARMv8-v9异常处理" class="headerlink" title="ARMv8&#x2F;v9异常处理"></a>ARMv8&#x2F;v9异常处理</h3><ul>
+<li><strong>非虚拟化场景</strong>：异常的处理集中在EL1，比如异常向量表，异常处理，中断处理，系统调用等</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212017117.png" alt="非虚拟化场景" loading="lazy"></p>
+<ul>
+<li><p><strong>虚拟化场景</strong>：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212331373.png" alt="虚拟化场景" loading="lazy"></p>
+<ul>
+<li><strong>对于hypervisor</strong>：需要处理来自hypervisor本身的异常，来自VM的异常，来自VM的系统调用，来自VM的中断等等。</li>
+<li><strong>对于VM</strong>：VM本身也需要处理 来自VM的异常和系统调用等（GuestOS处理app的异常和系统调用）</li>
+</ul>
+</li>
+</ul>
+<h3 id="Hyervisor进入VM"><a href="#Hyervisor进入VM" class="headerlink" title="Hyervisor进入VM"></a>Hyervisor进入VM</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212340396.png" alt="进入虚拟机" loading="lazy"></p>
+<ol>
+<li><strong>设置HCR_EL2.RW，让cpu运行在aarch64中</strong></li>
+<li>暂时关闭vCPU的MMU功能（可选项）</li>
+<li><strong>设置SPSR_EL2，当eret指令之后，让CPU跳转到EL1</strong></li>
+<li><strong>设置ELR_EL2寄存器，执行eret之后跳转到vm_entry函数中执行执行eret指令，进行处理器模式转换，让CPU进入EL1</strong></li>
+<li><strong>设置SP_EL1栈，让vCPU指向一个新的栈空间</strong></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">.global jump_to_vm</span><br><span class="line">jump_to_vm:</span><br><span class="line">	/* 设置 EL1 执行状态为 AArch64 */</span><br><span class="line">	ldr x0, =HCR_HOST_NVHE_FLAGS  //NVHE（Non-Virtualized Host Environment）</span><br><span class="line">	msr hcr_el2, x0</span><br><span class="line">	</span><br><span class="line">	/*  禁用 EL1 的 MMU */</span><br><span class="line">	ldr x0, =SCTLR_VALUE_MMU_DISABLED</span><br><span class="line">    msr sctlr_el1, x0</span><br><span class="line">    </span><br><span class="line">    /* 设置 SPSR_EL2，使返回时进入 EL1h（64位）*/</span><br><span class="line">    ldr x0, =SPSR_EL1</span><br><span class="line">    msr spsr_el2, x0</span><br><span class="line">    </span><br><span class="line">    /* 设置虚拟机入口地址（ELR_EL2）*/</span><br><span class="line">    adr x0, vm_entry</span><br><span class="line">    msr elr_el2, x0</span><br><span class="line">	</span><br><span class="line">	/* 设置虚拟机栈指针（SP_EL1）*/</span><br><span class="line">	adr x2, vm_sp</span><br><span class="line">    add x2, x2, #4096</span><br><span class="line">    msr sp_el1, x2</span><br><span class="line">    </span><br><span class="line">    eret</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="从VM退出到Hypervisor"><a href="#从VM退出到Hypervisor" class="headerlink" title="从VM退出到Hypervisor"></a>从VM退出到Hypervisor</h3><ul>
+<li><strong>VM的Guest OS主动调用HVC</strong></li>
+<li><strong>VM发生了异常（EL1中处理不了，比如GPA缺页异常）</strong></li>
+<li><strong>发生了硬件中断</strong></li>
+</ul>
+<h4 id="HVC系统调用"><a href="#HVC系统调用" class="headerlink" title="HVC系统调用"></a>HVC系统调用</h4><ul>
+<li><p>SVC系统调用：运行在EL0的 app 请求 进入到EL1的OS。</p>
+</li>
+<li><p>HVC系统调用：运行在EL1中的 VM，请求进入到EL2的hypervisor中。</p>
+</li>
+<li><p>SMC系统调用：运行在hypervisor或者VM的软件，请求进入EL3的安全固件中</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212021128.png" alt="hvc的指令格式" loading="lazy"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> HVC_CALL(which, arg0, arg1, arg2) (&#123; \</span></span><br><span class="line"><span class="meta">    register unsigned long a0 asm (<span class="string">&quot;x0&quot;</span>) = (unsigned long)(arg0); \</span></span><br><span class="line"><span class="meta">    register unsigned long a1 asm (<span class="string">&quot;x1&quot;</span>) = (unsigned long)(arg1); \</span></span><br><span class="line"><span class="meta">    register unsigned long a2 asm (<span class="string">&quot;x2&quot;</span>) = (unsigned long)(arg2); \</span></span><br><span class="line"><span class="meta">    register unsigned long a8 asm (<span class="string">&quot;x8&quot;</span>) = (unsigned long)(which); \</span></span><br><span class="line"><span class="meta">    asm volatile (<span class="string">&quot;hvc #0&quot;</span> \</span></span><br><span class="line"><span class="meta">                  : <span class="string">&quot;+r&quot;</span> (a0), <span class="string">&quot;r&quot;</span> (a1), <span class="string">&quot;r&quot;</span> (a2), <span class="string">&quot;r&quot;</span> (a8) \</span></span><br><span class="line"><span class="meta">                  : <span class="string">&quot;memory&quot;</span>); \</span></span><br><span class="line"><span class="meta">    a0; \</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HVC_CALL_0(which) HVC_CALL(which, 0, 0, 0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HVC_CALL_1(which, arg0) HVC_CALL(which, arg0, 0, 0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HVC_CALL_2(which, arg0, arg1) HVC_CALL(which, arg0, arg1, 0)</span></span><br></pre></td></tr></table></figure>
+
+<p>遵循ARM64标准函数调用规范</p>
+<ul>
+<li><code>x0</code>: 返回值 &#x2F; 第一个参数</li>
+<li><code>x1</code>, <code>x2</code>: 参数</li>
+<li><code>x8</code>: HVC 的功能号（即 <code>which</code>）</li>
+</ul>
+<h4 id="异常综合信息寄存器ESR-EL2"><a href="#异常综合信息寄存器ESR-EL2" class="headerlink" title="异常综合信息寄存器ESR_EL2"></a>异常综合信息寄存器ESR_EL2</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212024763.png" alt="image-20251204212443966" loading="lazy"></p>
+<p>ESR寄存器一共包含4个字段（域），其中：</p>
+<ul>
+<li>Bit 32~63，是保留的比特位。</li>
+<li>Bit 26~31，EC（<strong>Exception Class</strong>），这个字段指示发生异常的类型，同时用来索引ISS域。</li>
+<li>Bit 25，<strong>IL</strong>（<strong>Instruction Length for synchronous exceptions</strong>），表示同步异常的指令长度。</li>
+<li>Bit 0~24，<strong>ISS</strong>（<strong>Instruction Specific Syndrome</strong>）具体的异常指令编码。这个异常指令编码表依赖不同的异常类型，不同的异常类型有不同的编码格式。</li>
+</ul>
+<p><strong>Exception Class</strong></p>
+<ul>
+<li><strong>范围划分</strong>：<ul>
+<li><code>0x00–0x2C</code>：保留用于 <strong>同步异常</strong></li>
+<li><code>0x2D–0x3F</code>：保留用于 <strong>同步或异步异常</strong></li>
+</ul>
+</li>
+<li><strong>保留（Reserved）</strong>：<ul>
+<li><strong><code>0x02</code>, <code>0x0A–0x0B</code>, <code>0x0F</code>, <code>0x10</code>, <code>0x14</code>, <code>0x1B</code>, <code>0x1D–0x1F</code>, <code>0x23</code>, <code>0x27</code>, <code>0x29–0x2E</code>, <code>0x36–0x37</code>, <code>0x39</code>, <code>0x3B</code>, <code>0x3D–0x3F</code></strong></li>
+<li>编程为这些值会导致 <strong>CONSTRAINED UNPREDICTABLE</strong> 行为</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>EC 值 (二进制)</th>
+<th>EC 值 (十六进制)</th>
+<th>异常类型说明</th>
+<th>是否依赖 AArch32 &#x2F; 特性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0b000000</code></td>
+<td><code>0x00</code></td>
+<td><strong>Unknown reason</strong>（未知原因）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b000001</code></td>
+<td><code>0x01</code></td>
+<td><strong>Trapped WFI&#x2F;WFE</strong>（被陷阱的 WFI 或 WFE 指令）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b000011</code></td>
+<td><code>0x03</code></td>
+<td><strong>MCR&#x2F;MRC (coproc&#x3D;0b1111)</strong>（AArch32 协处理器访问）</td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b000100</code></td>
+<td><code>0x04</code></td>
+<td><strong>MCRR&#x2F;MRRC (coproc&#x3D;0b1111)</strong></td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b000101</code></td>
+<td><code>0x05</code></td>
+<td><strong>MCR&#x2F;MRC (coproc&#x3D;0b1110)</strong></td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b000110</code></td>
+<td><code>0x06</code></td>
+<td><strong>LDC&#x2F;STC</strong>（调试数据传输指令）</td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b000111</code></td>
+<td><code>0x07</code></td>
+<td><strong>FP&#x2F;SVE 被 CPACR&#x2F;CPTx.FPEN 禁用</strong>（浮点&#x2F;SVE 访问被禁）</td>
+<td>通用（需 FP&#x2F;SVE）</td>
+</tr>
+<tr>
+<td><code>0b001000</code></td>
+<td><code>0x08</code></td>
+<td><strong>VMRS（ID group trap）</strong></td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b001001</code></td>
+<td><code>0x09</code></td>
+<td><strong>Pointer Authentication 指令被禁</strong>（HCR_EL2.API&#x3D;0 等）</td>
+<td>需 ARMv8.3-PAuth</td>
+</tr>
+<tr>
+<td><code>0b001100</code></td>
+<td><code>0x0C</code></td>
+<td><strong>MRRC (coproc&#x3D;0b1110)</strong></td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b001101</code></td>
+<td><code>0x0D</code></td>
+<td><strong>Branch Target Exception (BTI)</strong></td>
+<td>需 ARMv8.5-BTI</td>
+</tr>
+<tr>
+<td><code>0b001110</code></td>
+<td><code>0x0E</code></td>
+<td><strong>Illegal Execution state</strong>（非法执行状态）或 PC 对齐错误</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b010001</code></td>
+<td><code>0x11</code></td>
+<td><strong>SVC in AArch32</strong>（仅当 HCR_EL2.TGE&#x3D;1 时上报到 EL2）</td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b010010</code></td>
+<td><code>0x12</code></td>
+<td><strong>HVC in AArch32</strong>（HVC 未被禁用）</td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b010011</code></td>
+<td><code>0x13</code></td>
+<td><strong>SMC in AArch32</strong>（仅当 HCR_EL2.TSC&#x3D;1 时上报到 EL2）</td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b010101</code></td>
+<td><code>0x15</code></td>
+<td><strong>SVC in AArch64</strong></td>
+<td>需 AArch64 支持</td>
+</tr>
+<tr>
+<td><code>0b010110</code></td>
+<td><code>0x16</code></td>
+<td><strong>HVC in AArch64</strong>（HVC 未被禁用）</td>
+<td>需 AArch64 支持</td>
+</tr>
+<tr>
+<td><code>0b010111</code></td>
+<td><code>0x17</code></td>
+<td><strong>SMC in AArch64</strong>（仅当 HCR_EL2.TSC&#x3D;1 时上报到 EL2）</td>
+<td>需 AArch64 支持</td>
+</tr>
+<tr>
+<td><code>0b011000</code></td>
+<td><code>0x18</code></td>
+<td><strong>Trapped MSR&#x2F;MRS&#x2F;System 指令</strong>（AArch64 系统寄存器访问）</td>
+<td>需 AArch64 支持</td>
+</tr>
+<tr>
+<td><code>0b011001</code></td>
+<td><code>0x19</code></td>
+<td><strong>SVE 被 CPACR&#x2F;CPTx.ZEN 禁用</strong></td>
+<td>需 SVE 支持</td>
+</tr>
+<tr>
+<td><code>0b011010</code></td>
+<td><code>0x1A</code></td>
+<td><strong>Trapped ERET&#x2F;ERETAA&#x2F;ERETAB</strong></td>
+<td>需 ARMv8.3-PAuth + NV</td>
+</tr>
+<tr>
+<td><code>0b011100</code></td>
+<td><code>0x1C</code></td>
+<td><strong>Pointer Auth 认证失败</strong></td>
+<td>需 ARMv8.3-FPAC</td>
+</tr>
+<tr>
+<td><code>0b100000</code></td>
+<td><code>0x20</code></td>
+<td><strong>Instruction Abort from lower EL</strong>（来自低异常级的指令取指异常）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b100001</code></td>
+<td><code>0x21</code></td>
+<td><strong>Instruction Abort at same EL</strong>（同级异常的指令取指异常）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b100010</code></td>
+<td><code>0x22</code></td>
+<td><strong>PC alignment fault</strong>（程序计数器未对齐）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b100100</code></td>
+<td><code>0x24</code></td>
+<td><strong>Data Abort from lower EL</strong>（来自低异常级的数据访问异常）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b100101</code></td>
+<td><code>0x25</code></td>
+<td><strong>Data Abort at same EL</strong>（含嵌套虚拟化 VNCR 相关）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b100110</code></td>
+<td><code>0x26</code></td>
+<td><strong>SP alignment fault</strong>（栈指针未对齐）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b101000</code></td>
+<td><code>0x28</code></td>
+<td><strong>Trapped FP exception (AArch32)</strong></td>
+<td>需 AArch32 + FP trap 支持</td>
+</tr>
+<tr>
+<td><code>0b101100</code></td>
+<td><code>0x2C</code></td>
+<td><strong>Trapped FP exception (AArch64)</strong></td>
+<td>需 AArch64 + FP trap 支持</td>
+</tr>
+<tr>
+<td><code>0b101111</code></td>
+<td><code>0x2F</code></td>
+<td><strong>SError interrupt</strong>（同步外部错误中断）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b110000</code></td>
+<td><code>0x30</code></td>
+<td><strong>Breakpoint from lower EL</strong></td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b110001</code></td>
+<td><code>0x31</code></td>
+<td><strong>Breakpoint at same EL</strong></td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b110010</code></td>
+<td><code>0x32</code></td>
+<td><strong>Software Step from lower EL</strong></td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b110011</code></td>
+<td><code>0x33</code></td>
+<td><strong>Software Step at same EL</strong></td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b110100</code></td>
+<td><code>0x34</code></td>
+<td><strong>Watchpoint from lower EL</strong></td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b110101</code></td>
+<td><code>0x35</code></td>
+<td><strong>Watchpoint at same EL</strong>（含 VNCR）</td>
+<td>通用</td>
+</tr>
+<tr>
+<td><code>0b111000</code></td>
+<td><code>0x38</code></td>
+<td><strong>BKPT instruction (AArch32)</strong></td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b111010</code></td>
+<td><code>0x3A</code></td>
+<td><strong>Vector Catch (AArch32)</strong></td>
+<td>需 AArch32 支持</td>
+</tr>
+<tr>
+<td><code>0b111100</code></td>
+<td><code>0x3C</code></td>
+<td><strong>BRK instruction (AArch64)</strong></td>
+<td>需 AArch64 支持</td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.global hvc_call</span><br><span class="line">hvc_call:</span><br><span class="line">	hvc 0x0</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+
+<p>退出到VM，hvc系统调用，10保存到x0</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hvc_call(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>触发Lower EL using AArch64 同步异常，下面是异常向量表</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/ * Lower EL using AArch64 */</span><br><span class="line">vtentry __do_vcpu_exit</span><br><span class="line">vtentry __invalid</span><br><span class="line">vtentry __invalid</span><br><span class="line">vtentry __invalid</span><br></pre></td></tr></table></figure>
+
+<p>触发异常后跳转到异常向量表<code>__do_vcpu_exit</code>函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">_do_vcpu_exit:</span><br><span class="line">    vm_exit 1                 </span><br><span class="line">    mrs x25, esr_el2          // 读取 ESR_EL2寄存器Exception Syndrome Register，保存在x25</span><br><span class="line">    lsr x24, x25, #ESR_ELX_EC_SHIFT   // 右移获取 EC 字段（[31:26]），即 Exception Class</span><br><span class="line">    cmp x24, #ESR_ELX_EC_HVC64       // 比较是否为 HVC64 异常（EC == 0b010110）</span><br><span class="line">    b.eq vm_hvc                // 如果相等，则跳转到 vm_hvc 处理 HVC</span><br><span class="line"></span><br><span class="line">    mov x0, sp                 // 设置参数：x0 = 当前栈指针</span><br><span class="line">    mov x1, #BAD_SYNC          // 设置错误码：BAD_SYNC（表示同步异常）</span><br><span class="line">    mrs x2, esr_el2            // 再次读取 ESR_EL2 作为上下文信息</span><br><span class="line">    bl bad_mode                // 跳转到 bad_mode 处理未知/非法异常</span><br><span class="line"></span><br><span class="line">vm_hvc:</span><br><span class="line">    mov x0, sp                 // 设置参数：x0 = 栈指针</span><br><span class="line">    bl vm_hvc_handler         // 调用 HVC 处理函数</span><br><span class="line">    vm_entry 1                // 返回继续运行虚拟机（进入 VM）</span><br></pre></td></tr></table></figure>
+
+<p><code>vm_exit</code>和<code>vm_entry</code>宏实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">#define S_FRAME_SIZE 272 /* sizeof(struct pt_regs)	// */</span><br><span class="line">#define S_X0 0 /* offsetof(struct pt_regs, regs[0])	// */</span><br><span class="line">#define S_X1 8 /* offsetof(struct pt_regs, regs[1])	// */</span><br><span class="line">#define S_X2 16 /* offsetof(struct pt_regs, regs[2])	// */</span><br><span class="line">#define S_X3 24 /* offsetof(struct pt_regs, regs[3])	// */</span><br><span class="line">#define S_X4 32 /* offsetof(struct pt_regs, regs[4])	// */</span><br><span class="line">#define S_X5 40 /* offsetof(struct pt_regs, regs[5])	// */</span><br><span class="line">#define S_X6 48 /* offsetof(struct pt_regs, regs[6])	// */</span><br><span class="line">#define S_X7 56 /* offsetof(struct pt_regs, regs[7])	// */</span><br><span class="line">#define S_X8 64 /* offsetof(struct pt_regs, regs[8])	// */</span><br><span class="line">#define S_X10 80 /* offsetof(struct pt_regs, regs[10])	// */</span><br><span class="line">#define S_X12 96 /* offsetof(struct pt_regs, regs[12])	// */</span><br><span class="line">#define S_X14 112 /* offsetof(struct pt_regs, regs[14])	// */</span><br><span class="line">#define S_X16 128 /* offsetof(struct pt_regs, regs[16])	// */</span><br><span class="line">#define S_X18 144 /* offsetof(struct pt_regs, regs[18])	// */</span><br><span class="line">#define S_X20 160 /* offsetof(struct pt_regs, regs[20])	// */</span><br><span class="line">#define S_X22 176 /* offsetof(struct pt_regs, regs[22])	// */</span><br><span class="line">#define S_X24 192 /* offsetof(struct pt_regs, regs[24])	// */</span><br><span class="line">#define S_X26 208 /* offsetof(struct pt_regs, regs[26])	// */</span><br><span class="line">#define S_X28 224 /* offsetof(struct pt_regs, regs[28])	// */</span><br><span class="line">#define S_FP 232 /* offsetof(struct pt_regs, regs[29])	// */</span><br><span class="line">#define S_LR 240 /* offsetof(struct pt_regs, regs[30])	// */</span><br><span class="line">#define S_SP 248 /* offsetof(struct pt_regs, sp)	// */</span><br><span class="line">#define S_PC 256 /* offsetof(struct pt_regs, pc)	// */</span><br><span class="line">#define S_PSTATE 264 /* offsetof(struct pt_regs, pstate)	// */</span><br><span class="line"></span><br><span class="line">#define BAD_SYNC  0</span><br><span class="line">#define BAD_IRQ   1</span><br><span class="line">#define BAD_FIQ   2</span><br><span class="line">#define BAD_ERROR 3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.macro kernel_exit el</span><br><span class="line">   // load ELR ,SPSR, 将PC的值和pstate的值恢复</span><br><span class="line">   ldp x21, x22, [sp, #S_PC]</span><br><span class="line">   .if \el == 1</span><br><span class="line">   		ldr x23, [sp, #S_SP]</span><br><span class="line">   		msr sp_el1, x23</span><br><span class="line">   .endif</span><br><span class="line">   </span><br><span class="line">   msr elr_el2, x21</span><br><span class="line">   msr spsr_el2, x22</span><br><span class="line"></span><br><span class="line">   ldp x0, x1, [sp, #16 * 0]</span><br><span class="line">   ldp x2, x3, [sp, #16 * 1]</span><br><span class="line">   ldp x4, x5, [sp, #16 * 2]</span><br><span class="line">   ldp x6, x7, [sp, #16 * 3]</span><br><span class="line">   ldp x8, x9, [sp, #16 * 4]</span><br><span class="line">   ldp x10, x11, [sp, #16 * 5]</span><br><span class="line">   ldp x12, x13, [sp, #16 * 6]</span><br><span class="line">   ldp x14, x15, [sp, #16 * 7]</span><br><span class="line">   ldp x16, x17, [sp, #16 * 8]</span><br><span class="line">   ldp x18, x19, [sp, #16 * 9]</span><br><span class="line">   ldp x20, x21, [sp, #16 * 10]</span><br><span class="line">   ldp x22, x23, [sp, #16 * 11]</span><br><span class="line">   ldp x24, x25, [sp, #16 * 12]</span><br><span class="line">   ldp x26, x27, [sp, #16 * 13]</span><br><span class="line">   ldp x28, x29, [sp, #16 * 14]</span><br><span class="line"></span><br><span class="line">   ldr lr, [sp, #S_LR]</span><br><span class="line">   // restore sp</span><br><span class="line">   add sp, sp, #S_FRAME_SIZE</span><br><span class="line">   eret</span><br><span class="line">.endm</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.macro kernel_entry el</span><br><span class="line">   sub sp, sp, #S_FRAME_SIZE</span><br><span class="line">   stp x0, x1, [sp, #16 * 0]</span><br><span class="line">   stp x2, x3, [sp, #16 * 1]</span><br><span class="line">   stp x4, x5, [sp, #16 * 2]</span><br><span class="line">   stp x6, x7, [sp, #16 * 3]</span><br><span class="line">   stp x8, x9, [sp, #16 * 4]</span><br><span class="line">   stp x10, x11, [sp, #16 * 5]</span><br><span class="line">   stp x12, x13, [sp, #16 * 6]</span><br><span class="line">   stp x14, x15, [sp, #16 * 7]</span><br><span class="line">   stp x16, x17, [sp, #16 * 8]</span><br><span class="line">   stp x18, x19, [sp, #16 * 9]</span><br><span class="line">   stp x20, x21, [sp, #16 * 10]</span><br><span class="line">   stp x22, x23, [sp, #16 * 11]</span><br><span class="line">   stp x24, x25, [sp, #16 * 12]</span><br><span class="line">   stp x26, x27, [sp, #16 * 13]</span><br><span class="line">   stp x28, x29, [sp, #16 * 14]</span><br><span class="line"></span><br><span class="line">   .if \el == 1</span><br><span class="line">   		msr x21, sp_el1</span><br><span class="line">   .else</span><br><span class="line">      	// x21栈顶的位置</span><br><span class="line">   		add x21, sp, #S_FRAME_SIZE</span><br><span class="line">   .endif</span><br><span class="line"></span><br><span class="line">   mrs x22, elr_el2</span><br><span class="line">   mrs x23, spsr_el2</span><br><span class="line">   // lr和sp保存到sp+#S_LR(pt_regs-&gt;regs[30])和sp+#S_LR+8(pt_regs-&gt;sp)的位置</span><br><span class="line">   stp lr, x21, [sp, #S_LR]</span><br><span class="line">   // 保存elr_eln和spsr_eln到sp+#S_PC(pt_regs-&gt;PC)和sp+#S_PC+8(pt_regs-&gt;pstate)</span><br><span class="line">   // 这里elr_eln是PC是因为进入异常时，硬件会自动把异常前的PC和PSTATE保存到ELR_ELn</span><br><span class="line">   // 和SPSR_ELn(The Saved Program Status Register)</span><br><span class="line">   stp x22, x23, [sp, #S_PC]</span><br><span class="line"></span><br><span class="line">.endm</span><br></pre></td></tr></table></figure>
+
+<p><code>vm_hvc_handler</code>实现</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vm_hvc_handler</span><span class="params">(<span class="keyword">struct</span> pt_regs *regs)</span>&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> el = read_sysreg(CurrentEL)&gt;&gt;<span class="number">2</span>;</span><br><span class="line">    printk(<span class="string">&quot;%s jump into hypervisor(el=%d), hvccall num: %d\n&quot;</span>, __func__, el, regs-&gt;regs[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="内存虚拟化-1"><a href="#内存虚拟化-1" class="headerlink" title="内存虚拟化"></a>内存虚拟化</h2><h3 id="ARM64页表映射"><a href="#ARM64页表映射" class="headerlink" title="ARM64页表映射"></a>ARM64页表映射</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212025197.png" alt="非虚拟化场景" loading="lazy"></p>
+<p>仅有一阶段地址映射Stage 1，将虚拟地址转换为物理地址</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212028344.png" alt="虚拟化场景下" loading="lazy"></p>
+<p>两阶段地址映射：</p>
+<ul>
+<li><strong>Stage1：VM里面的GVA -&gt; GPA</strong></li>
+<li><strong>Stage2：hypervisor里面的HVA到HPA</strong></li>
+</ul>
+<p>每一阶段映射都要经过一个3级或4级页表</p>
+<p><strong>从系统角度看</strong></p>
+<p>虚拟化的2阶段的地址转换</p>
+<ol>
+<li><strong>VA (Virtual Address) -&gt; IPA (Intermediate Physical Address)</strong>（ARM手册术语）</li>
+<li><strong>IPA-&gt; PA(Intermediate Physical Address)</strong></li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212410958.png" alt="从系统角度看页表映射" loading="lazy"></p>
+<p>hypervisor本身也有内存访问需求，使用TTBR0_EL2，是另一套页表，也就说一共三套页表</p>
+<h3 id="2-Stage-页表转换"><a href="#2-Stage-页表转换" class="headerlink" title="2 Stage 页表转换"></a>2 Stage 页表转换</h3><ul>
+<li>2 Stage需要消耗更多的内存</li>
+<li>VA-&gt;IPA-&gt;PA的转换：可能要多达16次的内存访问过程</li>
+<li>Stage1和stage2都可以缓存到TLB</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212029804.png" alt="2 Stage 页表转换" loading="lazy"></p>
+<h4 id="Stage-1页表映射"><a href="#Stage-1页表映射" class="headerlink" title="Stage 1页表映射"></a>Stage 1页表映射</h4><ul>
+<li><p>非虚拟化：VA -&gt; PA</p>
+</li>
+<li><p>虚拟化：VA -&gt; IPA</p>
+</li>
+</ul>
+<p><strong>影响页表映射的几大因素</strong></p>
+<ul>
+<li>Input address size：由TCR_ELx.TxSZ来确定，指定VA的范围，也确定采用几级页表。通常48bits</li>
+<li>Output address size：由ID_AA64MMFR0_EL1.PARange来确定，系统支持的最大物理内存，填入到TCR_ELx.{I}PS中</li>
+<li>页面粒度：由TCR_Elx中的TG0和TG1来指定</li>
+</ul>
+<h4 id="Stage-2页表映射"><a href="#Stage-2页表映射" class="headerlink" title="Stage 2页表映射"></a>Stage 2页表映射</h4><ul>
+<li>虚拟化：IPA(GPA) -&gt; PA</li>
+</ul>
+<p><strong>影响页表映射的几大因素</strong></p>
+<ul>
+<li>Input address size：IPA的最大值 受到系统PA的约束，PA由ID_AA64MMFR0_EL1.PARange来确定。</li>
+</ul>
+<blockquote>
+<p> VM里的GPA不可能超过物理内存size。</p>
+</blockquote>
+<ul>
+<li>Output address size：由ID_AA64MMFR0_EL1.PARange来确定，系统支持的最大物理内存，填入到VTCR_EL2.PS中</li>
+<li>页面粒度：由VTCR_El2中的TG0来指定</li>
+</ul>
+<p>Stage 2页表映射支持 4级或者3级页表映射</p>
+<ul>
+<li>Input address size （PA size）</li>
+<li>页表粒度（4KB? 16KB? 64KB?）</li>
+<li>从哪一级开始遍历页表？（VTCR_EL2.SL0）</li>
+</ul>
+<p><strong>怎么知道PA?</strong></p>
+<p>以Cortex-A72处理器为例，查询Cortex-A72 Technical Reference Manual，可知<strong>Physical Address range最大支持44bits</strong>，16TB。<br>比较新的IP如，Cortex-A77, A78，X2等，PA最大支持40bits，1TB。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212030664.png" alt="PA Size" loading="lazy"></p>
+<p>T0SZ 是 64 - <code>Support PA size</code></p>
+<p>以4KB页面粒度为例</p>
+<ul>
+<li>当PA为44bits，支持4级页表映射</li>
+<li>当PA为42bits, 40bits，36bits，32bits，支持3级页表映射</li>
+</ul>
+<p>当PA为42bits和40bits时，可以使用S2 concatenated（串联）页表，把4级页表压缩到3级</p>
+<h4 id="S2-contatenated-页表"><a href="#S2-contatenated-页表" class="headerlink" title="S2 contatenated 页表"></a>S2 contatenated 页表</h4><p>以40bits+4KB为例</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212032754.png" alt="S2 concatenated页表: 以40bits+4KB为例" loading="lazy"></p>
+<p>多出来一个bit位39，用于L0页表，有两个页表项，每一个指向一个L1页表</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212033365.png" alt="串联页表" loading="lazy"></p>
+<p>使用concatenated页表之后，原来L0页表的两个页表项指向的两个L1页表被串联在一起，这样L1页表相当于原来的2倍。</p>
+<ul>
+<li>L1索引范围也 变成原来的2倍</li>
+<li>MMU直接从L1页表开始索引，这样4级页表 变成 3级页表</li>
+</ul>
+<p><strong>好处</strong>：可以避免额外的一级翻译所带来的开销。</p>
+<ul>
+<li>最大支持串联的表的数量为16。</li>
+<li>VTCR_EL2.SL0字段用来指示：从哪一级页表开始索引</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212036363.png" alt="VTCR_EL2.SL0" loading="lazy"></p>
+<ul>
+<li>IA: Input Address，IA[47:12]-IA[39:12]表示使用40~48bit的虚拟地址</li>
+<li>第一行Tables表示可以串联的table数量，最大为16，1表示没有串联，2表示两个页表串联</li>
+<li>第一列Inital lookup level（SL0 value）表示硬件从哪一级页表开始遍历，通过设置VTCR_EL2.SL0</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212038373.png" alt="S2 concatenated页表" loading="lazy"></p>
+<p>以43bits + 4KB页面粒度为例，使用S2 concatenated页表的话，L1页表将由16个表 串联而成</p>
+<h4 id="S2页表属性"><a href="#S2页表属性" class="headerlink" title="S2页表属性"></a>S2页表属性</h4><p>S2页表属性与S1页表属性 略有不同</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212429600.png" alt="S2页表属性" loading="lazy"></p>
+<h5 id="MemAttr"><a href="#MemAttr" class="headerlink" title="MemAttr"></a>MemAttr</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212039755.png" alt="S2页表属性MemAttr" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212040944.png" alt="S2页表属性MemAttr" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212439328.png" alt="S2页表属性MemAttr" loading="lazy"></p>
+<h5 id="S2AP属性"><a href="#S2AP属性" class="headerlink" title="S2AP属性"></a>S2AP属性</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212043740.png" alt="S2页表属性S2AP" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212045369.png" alt="S2页表属性S2AP" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212045574.png" alt="S2页表属性S2AP" loading="lazy"></p>
+<h4 id="S2页表相关的寄存器"><a href="#S2页表相关的寄存器" class="headerlink" title="S2页表相关的寄存器"></a>S2页表相关的寄存器</h4><ul>
+<li><p>页表基地址寄存器：<strong>VTTBR_EL2</strong></p>
+</li>
+<li><p>S2页表转换控制寄存器：<strong>VTCR_EL2</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212046859.png" alt="VTCR_EL2" loading="lazy"></p>
+<ul>
+<li><p>PS表示物理内存最大值</p>
+</li>
+<li><p>TG0表示页面粒度4KB，16KB，64KB</p>
+</li>
+<li><p>SL0表示MMU从哪一级页表中开始查询</p>
+</li>
+<li><p>T0SZ 用来指定IPA的范围，这个值受PA约束。它表示IPA的范围$ 2^{64-\text T0SZ}$</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Hypervisor配置寄存器：<strong>HCR_EL2。</strong></p>
+<ul>
+<li>VM字段：开启S2页表映射</li>
+</ul>
+<h3 id="实验3：创建4级页表的S2映射"><a href="#实验3：创建4级页表的S2映射" class="headerlink" title="实验3：创建4级页表的S2映射"></a>实验3：创建4级页表的S2映射</h3><p>实验目的：了解ARM64架构的S2页表</p>
+<p>实验要求：在实验2的基础上，打开HCR_EL2_VM字段，使能S2 MMU页表，会发生什么情况？请分析</p>
+<p>本实验采用 “IPA 44Bits + 4KB页面 + 4级映射“ 的方式来创建S2页表。开启S2页表映射之后， 跳转到 VM时，执行第一条指令会触发 缺页异常，因为第一条指令 并没有建立 映射。本实验 采用缺页异常处理的方式来 一页一页得建立S2页表</p>
+<p>TODO</p>
+<h3 id="实验4：创建S2-concatenated页表-with-43-bits-IPA"><a href="#实验4：创建S2-concatenated页表-with-43-bits-IPA" class="headerlink" title="实验4：创建S2 concatenated页表 with 43 bits IPA"></a>实验4：创建S2 concatenated页表 with 43 bits IPA</h3><p>实验目的：了解ARM64架构的S2 concatenated页表</p>
+<p>实验要求：在上个实验的基础上，本实验要创建S2 concatenated页表，并且IPA bits 为43，页面粒度为4KB。画出该映射的结构示意图。</p>
+<p>TODO</p>
+<h3 id="实验5：创建S2-concatenated页表-with-40-bits-IPA"><a href="#实验5：创建S2-concatenated页表-with-40-bits-IPA" class="headerlink" title="实验5：创建S2 concatenated页表 with 40 bits IPA"></a>实验5：创建S2 concatenated页表 with 40 bits IPA</h3><p>实验目的：了解ARM64架构的S2 concatenated页表<br>实验要求：在上个实验的基础上，本实验要创建S2 concatenated页表，并且IPA bits 为40，页面粒度为4KB。画出该映射的结构示意图。</p>
+<h3 id="实验6：创建虚拟机中的两阶段地址映射"><a href="#实验6：创建虚拟机中的两阶段地址映射" class="headerlink" title="实验6：创建虚拟机中的两阶段地址映射"></a>实验6：创建虚拟机中的两阶段地址映射</h3><p>实验目的：了解ARM64架构的2 stage页表映射，建立第二阶段的地址映射，即GPA到HPA的映射，GPA到HPA的映射采用恒等映射方式。</p>
+<ul>
+<li>建立第一阶段的地址映射，即GVA到GPA的映射采用非恒等映射方式。</li>
+</ul>
+<p>实验要求：</p>
+<ul>
+<li>在Hypervisor中分配一个page，因为在Hypervisor中是恒等映射，所以gpa &#x3D; hpa</li>
+<li>在这个gpa中写入数值，比如0x12345678</li>
+<li>在切入到VM时候，把这个gpa传递给VM</li>
+<li>在VM中创建一个gva到gpa的映射，假设gva地址为：0x80000000</li>
+<li>然后在VM中读取gva地址的值，看是否为0x12345678？</li>
+</ul>
+<p>请画出这个系统中所有映射的示意图，包括VM和Hypervisor内部的</p>
+<p>TODO</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/d599358e-d9ec-4d26-b4e5-f63691517525.png" alt="映射示意图" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212050689.png" alt="三套页表" loading="lazy"></p>
+<h2 id="IO设备虚拟化"><a href="#IO设备虚拟化" class="headerlink" title="IO设备虚拟化"></a>IO设备虚拟化</h2><h3 id="三种主流方式"><a href="#三种主流方式" class="headerlink" title="三种主流方式"></a>三种主流方式</h3><ol>
+<li><p><strong>全软件虚拟化</strong>：采用“陷入和模拟”（trap &amp; emulate）的方式来完全模拟设备的行为。</p>
+</li>
+<li><p><strong>半虚拟化</strong>：采用高效的前端驱动程序和后续驱动程序来减少虚拟机陷入事件，提升I&#x2F;O设备虚拟化性能，如VirtIO技术。</p>
+</li>
+<li><p><strong>硬件辅助虚拟化</strong>：硬件直接透传（passthrough）、IOMMU以及SR-IOV（Single Root I&#x2F;O Virtualization）</p>
+</li>
+</ol>
+<p><strong>模拟MMIO寄存器访问的流程（trap &amp; emulate）</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212051404.png" alt="模拟MMIO寄存器访问的流程（trap &amp; emulate）" loading="lazy"></p>
+<p><strong>解析触发指令</strong></p>
+<ul>
+<li>VM访问MMIO，触发“<strong>Data Abort from a lower Exception level</strong>”异常。</li>
+<li>不需要人工解析异常指令编码，硬件已经帮忙解析了，读取ISS即可：</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212052007.png" alt="ISS" loading="lazy"></p>
+<ul>
+<li>ISV: 表示ISS[23:14] 包含的异常指令解析是有效的。</li>
+<li>SAS：发生异常时，访问内存的大小。</li>
+<li>SSE：数据是否需要有符号扩展。</li>
+<li>SRT：目标寄存器Rt</li>
+<li>SF：是32位还是64位的load&#x2F;Store指令</li>
+<li>AR：指令是否包含acquire&#x2F;release屏障语义</li>
+<li>VNCR：是否来着嵌套虚拟化的访问</li>
+<li>SET：同步错误类型。</li>
+<li>FnV：far寄存器是否有效。</li>
+<li>WnR：读或者写操作触发的异常</li>
+</ul>
+<p><strong>模拟读串口MMIO寄存器的流程</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212054444.png" alt="模拟读串口MMIO寄存器的流程" loading="lazy"></p>
+<p><strong>模拟写串口MMIO寄存器的流程</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212055886.png" alt="模拟写串口MMIO寄存器的流程" loading="lazy"></p>
+<h3 id="实验7：在hypervisor中模拟串口设备"><a href="#实验7：在hypervisor中模拟串口设备" class="headerlink" title="实验7：在hypervisor中模拟串口设备"></a>实验7：在hypervisor中模拟串口设备</h3><p>实验目的：使用全软件虚拟化的方式来模拟串口设备</p>
+<p>实验要求：在GuestOS中实现串口驱动，并且能让GuestOS从串口中打印输出</p>
+<p>TODO</p>
+<h2 id="定时器虚拟化"><a href="#定时器虚拟化" class="headerlink" title="定时器虚拟化"></a>定时器虚拟化</h2><ul>
+<li>System counter：提供一个全系统，固定频率的系统计数器。</li>
+<li>System counter会广播到所有的core上<ul>
+<li>CNTPCT_EL0寄存器返回 system counter的值</li>
+<li>CNTFRQ_EL0 寄存器用来设置system counter对应的频率。</li>
+</ul>
+</li>
+<li>每个CPU core会有一组定时器</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212504536.png" alt="System counter and generic timer" loading="lazy"></p>
+<p><strong>generic timer</strong></p>
+<p>每个ARMv8v9的CPU核心上有一组通用定时器</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212058259.png" alt="generic timer" loading="lazy"></p>
+<p>以Cortex-A72为例</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212059081.png" alt="Generic Timer Functional description" loading="lazy"></p>
+<p><strong>物理定时器与虚拟定时器的区别</strong></p>
+<p>虚拟计数器（virtual counter）可以<strong>测量 虚拟机上 时间的流逝</strong>。</p>
+<p><strong>虚拟机上的时间流逝 !&#x3D; 真实物理机上的 时间流逝</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212059124.png" alt="vcpu运行时间受VM调度影响" loading="lazy"></p>
+<p>假设两个vCPU轮流运行，每个vCPU运行1ms</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212101372.png" alt="vcpu调度" loading="lazy"></p>
+<p>如果vCPU0在T&#x3D;0时设置了一个定时器，在经过3ms后触发一个中断，中断是否已触发？</p>
+<p><strong>物理时间 vs 虚拟时间</strong>：物理时间是指挂钟时间（wall-clock time），即实际经过的时间。虚拟时间是指虚拟处理器（vCPU）经历的时间</p>
+<p>vCPU0在物理时间4毫秒时只运行了2毫秒。根据物理时间的流逝，vCPU0的比较器设置的时间还没有到达3毫秒，此时不会触发中断。</p>
+<ul>
+<li><p><strong>Virtual counter &#x3D; physical counter - offset</strong></p>
+</li>
+<li><p><strong>CNTVCT_EL0(虚拟计数器) &#x3D; CNTPCT_EL0(物理计数器) - CNTVOFF_EL2(虚拟偏移量)</strong></p>
+</li>
+</ul>
+<h3 id="VM中的-虚拟时间的计算-方式1"><a href="#VM中的-虚拟时间的计算-方式1" class="headerlink" title="VM中的 虚拟时间的计算 方式1"></a>VM中的 虚拟时间的计算 方式1</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212101810.png" alt="VM中的 虚拟时间的计算 方式1" loading="lazy"></p>
+<p>虚拟时间 offset<br>$$<br>\text{offset} &#x3D; \sum(\text{Time_sched_in} - \text{Time_sched_out})<br>$$<br>其中Time_sched_in是 vCPU 被调度进入运行的时间，Time_sched_out是 vCPU 被调度挂起的时间。</p>
+<p><strong>方案1：在每次vCPU被调度运行时，hypervisor更新CNTVOFF_EL2寄存器。</strong></p>
+<h3 id="VM中的-虚拟时间的计算-方式2"><a href="#VM中的-虚拟时间的计算-方式2" class="headerlink" title="VM中的 虚拟时间的计算 方式2"></a>VM中的 虚拟时间的计算 方式2</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212516547.png" alt="VM中的 虚拟时间的计算 方式2" loading="lazy"></p>
+<p>方案2：</p>
+<ul>
+<li>让虚拟offset为一个恒定值，虚拟计数器 &#x3D; 物理计数器 - 虚拟offset</li>
+<li>当vCPU被调度出去时，hypervisor关闭虚拟timer中断，即该vCPU的jiffies会暂时停止自增。</li>
+<li>当vCPU被调度运行时，hypervisor打开虚拟timer中断，该vCPU的jiffies会恢复自增</li>
+</ul>
+<h3 id="Timer触发中断两种方式"><a href="#Timer触发中断两种方式" class="headerlink" title="Timer触发中断两种方式"></a>Timer触发中断两种方式</h3><ul>
+<li>使用TimeValue的方式，即给定时器赋一个初始值，让它递减。当递减到0时触发中断，在中断处理程序里重新给定时器赋值</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212104942.png" alt="CNXX_TVAL_Elx寄存器" loading="lazy"></p>
+<ul>
+<li>使用CmpValue的方式：即给定时器赋一个对比值CValue，当timer增加的Cvalue之后，触发中断。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212105458.png" alt="CNXX_CVAL_Elx寄存器" loading="lazy"></p>
+<h3 id="实验8：使能hypervisor-EL2-physical-timer"><a href="#实验8：使能hypervisor-EL2-physical-timer" class="headerlink" title="实验8：使能hypervisor (EL2) physical timer"></a>实验8：使能hypervisor (EL2) physical timer</h3><p>实验目的：熟悉arm64架构中的通用定时器的用法</p>
+<p>实验要求：在BenOS中使能EL2 物理定时器</p>
+<p>TODO</p>
+<h3 id="实验9：使能VM中的virtual-timer"><a href="#实验9：使能VM中的virtual-timer" class="headerlink" title="实验9：使能VM中的virtual timer"></a>实验9：使能VM中的virtual timer</h3><p>实验目的：熟悉arm64架构中的通用定时器的用法</p>
+<p>实验要求：在BenOS中使能virtual timer。本实验 看不到Guest OS的定时器中断处理函数中的打印。因为，VM中的virtual timer会路由的EL2中的hypervisor来处理，然后再注入到VM中，这个过程需要实现GIC中断虚拟化才行。</p>
+<p>TODO</p>
+<h2 id="中断虚拟化"><a href="#中断虚拟化" class="headerlink" title="中断虚拟化"></a>中断虚拟化</h2><h3 id="中断处理的路由"><a href="#中断处理的路由" class="headerlink" title="中断处理的路由"></a>中断处理的路由</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212107193.png" alt="IRQ的路由" loading="lazy"></p>
+<p>对于异常和中断，可以路由到EL1, EL2, EL3处理，需要配置HCR以及SCR相关寄存器。</p>
+<p>HCR_EL2寄存器是虚拟管理程序配置寄存器，其中有如下几个字段和异常处理路由相关</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212109549.png" alt="HCR_EL2寄存器" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212109938.png" alt="中断路由的例子" loading="lazy"></p>
+<h3 id="虚拟中断"><a href="#虚拟中断" class="headerlink" title="虚拟中断"></a>虚拟中断</h3><ul>
+<li>有两种方式来发送虚拟中断（virtual interrupt）到vCPU<ul>
+<li>使用系统寄存器（ HCR_EL2中的VI和VF字段）来配置vIRQ和vFIQ</li>
+<li>使用GICv2和GICv3控制器</li>
+</ul>
+</li>
+<li>使用vIRQ和VFIQ需要在hypervisor中模拟中断控制器<ul>
+<li>效率低，trapping and emulating</li>
+<li>GIC中断控制器支持vCPU，不需要软件模拟</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212543639.png" alt="GIC中断控制器" loading="lazy"></p>
+<h3 id="GICv2中断控制器"><a href="#GICv2中断控制器" class="headerlink" title="GICv2中断控制器"></a>GICv2中断控制器</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212114959.png" alt="GICv2中断控制器" loading="lazy"></p>
+<p>The Distributor registers (<code>GICD_</code>) 包含了中断设置和配置</p>
+<p>The CPU Interface registers (<code>GICC_</code>) 包含CPU相关的特殊设置</p>
+<h4 id="GIC的中断类型"><a href="#GIC的中断类型" class="headerlink" title="GIC的中断类型"></a><strong>GIC的中断类型</strong></h4><ul>
+<li>SGI：软件产生的中断（Software Generated Interrupt），软中断即软件产生的中断，用于给其他CPU核心发送中断信号。</li>
+<li>PPI：私有外设中断（Private Peripheral Interrupt），私有的外设中断，该中断是某个指定的CPU独有的。</li>
+<li>SPI：共享外设中断（Shared Peripheral Interrupt），共享的外设中断，所有CPU都可以访问这个中断。</li>
+<li>LPI，本地特殊外设中断（Locality-specific Peripheral Interrupt），GICv3新增的中断类型。基于消息传递的中断类型。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212115266.png" alt="GICv2中断控制器中断号分配情况" loading="lazy"></p>
+<blockquote>
+<p>注意: 中断号 1020 ~ 1023是保留的</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212118094.png" alt="GICv2" loading="lazy"></p>
+<h4 id="GICv2寄存器"><a href="#GICv2寄存器" class="headerlink" title="GICv2寄存器"></a>GICv2寄存器</h4><p>GICv2寄存器分成两组：</p>
+<ul>
+<li>D：表示Distributor的寄存器</li>
+<li>C：表示CPU interface的寄存器</li>
+</ul>
+<p>有些寄存器是按照 中断号 来描述的，比如使用某几个比特位来描述一个 中断号 的相关属性，同一个寄存器可以n个。</p>
+<p>例如<strong>GICD_ISENABLERn</strong>寄存器，它是用来 使能某个中断号的。“n”表示它有n个这样的寄存器</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212923776.png" alt="Table 4-1 Distributor register map" loading="lazy"></p>
+<p>可以看到这个寄存器从0x100 到 0x17c，这些都是这个寄存器</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212555313.png" alt="GICD_ISENABLERn" loading="lazy"></p>
+<p>寄存器里的每个比特位表示一个中断号的enable</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212558527.png" alt="GICD_ISENABLERn" loading="lazy"></p>
+<ul>
+<li>ARM Core的中断：<ul>
+<li>Core n HP tiemr IRQ</li>
+<li>Core n V timer IRQ</li>
+<li>Legacy FIQn</li>
+<li>Core n PS timer IRQ</li>
+<li><strong>Core n PNS timer IRQ</strong> (PPI ID <strong>30</strong>)</li>
+<li>Legacy IRQn</li>
+</ul>
+</li>
+<li>ARM local的中断<ul>
+<li>ARM Mailbox IRQs</li>
+<li>Core 0 PMU IRQ</li>
+<li>Core 1 PMU IRQ</li>
+<li>Core 2 PMU IRQ</li>
+<li>Core 3 PMU IRQ</li>
+<li>AXIERR IRQ</li>
+<li>Local timer IRQ</li>
+</ul>
+</li>
+<li>16个ARMC外设中断</li>
+<li>64个VC外设中断</li>
+<li>51个PCI相关的外设中断</li>
+</ul>
+<h4 id="访问GIC-400寄存器"><a href="#访问GIC-400寄存器" class="headerlink" title="访问GIC-400寄存器"></a><strong>访问GIC-400寄存器</strong></h4><ul>
+<li>树莓派4b上的GIC-400的基地址</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121750493.png" alt="GIC-400地址" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121853350.png" alt="GIC-400 register map" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121911817.png" alt="GIC-400 memory map" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121943003.png" alt="GIC-400 memory map" loading="lazy"></p>
+<p><strong>访问</strong>：树莓派GIC400的**基地址 **+ GIC-400 <strong>memory map偏移</strong> + <strong>寄存器偏移</strong></p>
+<h4 id="GIC-v2上虚拟化的支持"><a href="#GIC-v2上虚拟化的支持" class="headerlink" title="GIC v2上虚拟化的支持"></a>GIC v2上虚拟化的支持</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212612932.png" alt="Virtual CPU interface" loading="lazy"></p>
+<p>GIC v2为了支持虚拟化：</p>
+<ul>
+<li>新增了<strong>virtual CPU interface</strong>，发送Vfiq&#x2F;vIRQ到vCPU。</li>
+<li>新增<strong>GIC virtual interface control registers</strong>。</li>
+<li>新增<strong>GIC virtual CPU interface registers</strong></li>
+</ul>
+<p><strong>Distributor只有一个，hypervisor需要为VM模拟一个vDdistributor</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212618883.png" alt="Virtual Distributor" loading="lazy"></p>
+<h4 id="GIC-v2中断虚拟化流程"><a href="#GIC-v2中断虚拟化流程" class="headerlink" title="GIC v2中断虚拟化流程"></a>GIC v2中断虚拟化流程</h4><ol>
+<li><strong>确保所有的中断都路由到EL2的hypervisor来处理</strong>。</li>
+<li><strong>Hypervisor模拟一个vDistributor给VM使用，即GuestOS访问GIC distributor的MMIO寄存器会陷入到hypervisor</strong>。</li>
+<li><strong>在hypervisor中建立映射，即GuestOS访问GIC CPU interface的MMIO区间，会映射到GIC virtual CPU interface</strong>。</li>
+<li><strong>当hypervisor收到一个物理中断，它要决定这个中断由hypervisor处理还是注入到VM来处理</strong>。</li>
+<li><strong>如果需要注入中断到VM，更新GICH_LRn寄存器，来填入中断相关信息。等CPU返回到vCPU时，即完成中断注入</strong>。</li>
+<li><strong>VM运行时，读取GIC_IAR寄存器，可以得到中断号</strong></li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251205190043736.png" alt="一个例子" loading="lazy"></p>
+<p>外设中断流程如下：</p>
+<ol>
+<li>进入到GIC控制器里面Distributor硬件单元，然后派送到某个physical CPU interface。</li>
+<li>CPU会响应这个中断。</li>
+<li>这个中断会被路由到EL2。hypervisor读取IAR寄存器，得到物理中断号hwirq。Hypervisor写GICC_EOIR，告诉GIC，物理中断处理完成。</li>
+<li>Hypervisor设置GICH_LRn寄存器来注册一个虚拟中断。</li>
+<li>Virtual CPU interface收到这个中断之后，判断这个虚拟中断能不能发送给vCPU。</li>
+<li>这个中断进入了vCPU的虚拟异常向量表。Guest OS读取GICC_IAR寄存器，然后得到vINTID虚拟中断号，然后跳转到中断处理程序中处理。</li>
+<li>Guest OS处理完中断之后，写GICC_EOIR寄存器，告诉GIC这个虚拟中断已经完成。</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212628041.png" alt="中断注入" loading="lazy"></p>
+<p>流程如下：</p>
+<ol>
+<li>外设触发了一个IRQ中断，中断达到GIC</li>
+<li>GIC把中断发送到CPU。因为设置了HCR_EL2.IMQ&#x3D;1的原因，CPU路由到EL2</li>
+<li>GIC配置GIC List Register（GICH_LRn）来注册一个vIRQ。</li>
+<li>Hypervisor切换到Guest OS上运行，EL2切换到EL1&#x2F;EL0，CPU运行在vCPU上</li>
+<li>vCPU接收到来自GIC的vIRQ中断</li>
+</ol>
+<h4 id="GIC-v2虚拟化新增的两组寄存器"><a href="#GIC-v2虚拟化新增的两组寄存器" class="headerlink" title="GIC v2虚拟化新增的两组寄存器"></a>GIC v2虚拟化新增的两组寄存器</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212934900.png" alt="GIC v2虚拟化新增的两组寄存器" loading="lazy"></p>
+<h4 id="GIC虚拟化之MMIO"><a href="#GIC虚拟化之MMIO" class="headerlink" title="GIC虚拟化之MMIO"></a>GIC虚拟化之MMIO</h4><p>根据虚拟化的3个必要条件之一：等价性（equivalence）。即虚拟机不感知自己运行在虚拟环境里。</p>
+<ol>
+<li><p>VM访问GIC CPU interface，仿佛真的一样。Hypervisor需要把GICC_interface映射到 GICV_interface上。Base + 0x2000 —&gt;（映射） Base + 0x6000</p>
+</li>
+<li><p>GICC_interface和GICV_interface是格式一样的两组寄存器。</p>
+</li>
+<li><p>由于GICv2内部中只有一个Distributor，所以VM看到的Distributor是hypervisor模拟的。</p>
+</li>
+</ol>
+<blockquote>
+<p>vDistributor和Distributor最终访问的是同一个硬件单元，需要避免访问冲突</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251205190922401.png" alt="GIC虚拟化之MMIO" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/e986c0ae-e699-4253-9a16-a9e84b3d42af.png" alt="GIC virtual interface control register map" loading="lazy"></p>
+<ul>
+<li><strong>GICH_HCR</strong>     GICH总控制的寄存器</li>
+<li><strong>GICH_ELSR0</strong>  GICH_LR寄存器状态，判断LR寄存器是否为空等等</li>
+<li><strong>GICH_LR0</strong>      用来注入中断到VM</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251205191008694.png" alt="GIC virtual CPU interface register map" loading="lazy"></p>
+<h4 id="GICH-LRn寄存器实现-中断注入"><a href="#GICH-LRn寄存器实现-中断注入" class="headerlink" title="GICH_LRn寄存器实现 中断注入"></a>GICH_LRn寄存器实现 中断注入</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212639039.png" alt="GICH_LRn" loading="lazy"></p>
+<p>写入GICH_LRn寄存器可以实现中断注入到VM</p>
+<h3 id="实验10：给VM虚拟机注入中断"><a href="#实验10：给VM虚拟机注入中断" class="headerlink" title="实验10：给VM虚拟机注入中断"></a>实验10：给VM虚拟机注入中断</h3><p>实验目的：熟悉GIC v2如何注入中断</p>
+<p>实验要求：在BenOS中实现中断的注入功能，把virtual timer中断 注入到 VM中。步骤如下：</p>
+<ul>
+<li>使能GIC虚拟化功能， GICH_HCR.EN &#x3D;1</li>
+<li>映射VM中的GICC_interface访问地址到hypervisor的GICV_interface</li>
+<li>在hypervisor中模拟Distributor</li>
+<li>当VM中的virtual timer触发中断之后，路由到EL2的hypervisor来处理</li>
+<li>Hypervisor把中断信息写入到GICH_LRn寄存器中，注入中断到VM</li>
+<li>EOI mode, handled by Hypervisor or inject vm</li>
+<li>VM中的GuestOS的GIC 驱动，读取中断号，处理中断</li>
+</ul>
+<h3 id="模拟vDistributor-需要注意的地方"><a href="#模拟vDistributor-需要注意的地方" class="headerlink" title="模拟vDistributor 需要注意的地方"></a>模拟vDistributor 需要注意的地方</h3><ul>
+<li>VM看到的Distributor是由hypervisor模拟的。</li>
+<li>Hypervisor在模拟vDistributor时，需要考虑VM和hypervisor并发访问的问题。</li>
+<li>Distributor的有些寄存器是按照 中断号 来描述的，比如使用某几个比特位来描述一个 中断号 的相关属性，那同一个寄存器可以描述n个中断源</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212647816.png" alt="GICR_IPRIORITY" loading="lazy"></p>
+<blockquote>
+<p>如果vDistributor鲁莽地通过trap and emulate来 直接 写 这类寄存器，会破坏hypervisor原有的状态</p>
+</blockquote>
+<p>避免冲突的方法：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251205212654872.png" alt="GICD_IPRIORITY" loading="lazy"></p>
+<p>已知 reg_base，far_addr，field_width，可计算出far_addr对应的起始start_hwirq号。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (start_hwirq ~ start_hwirq +<span class="number">4</span>)</span><br><span class="line">	<span class="keyword">if</span> (irq owned by hypervisor)</span><br><span class="line">		<span class="keyword">continue</span>；</span><br><span class="line">	update_reg_field();</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="Virtualization-Host-Extensions"><a href="#Virtualization-Host-Extensions" class="headerlink" title="Virtualization Host Extensions"></a>Virtualization Host Extensions</h2><p>TODO</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2512050/">https://even629.com/posts/2512050/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ARM/">ARM</a><a class="post-meta__tags" href="/tags/virtualization/">virtualization</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ARM64%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">ARM64虚拟化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8A%AF%E7%89%87%E6%89%8B%E5%86%8C"><span class="toc-number">1.1.</span> <span class="toc-text">芯片手册</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8C%96%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.</span> <span class="toc-text">虚拟化介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text">虚拟化技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8C%96%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.2.</span> <span class="toc-text">虚拟化应用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF%E7%9A%84%E9%87%8D%E8%A6%81%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80"><span class="toc-number">1.2.3.</span> <span class="toc-text">虚拟化技术的重要理论基础</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E8%BE%85%E5%8A%A9%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF"><span class="toc-number">1.2.4.</span> <span class="toc-text">硬件辅助虚拟化技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A8%E8%99%9A%E6%8B%9F%E5%8C%96%E4%B8%8E%E5%8D%8A%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.2.5.</span> <span class="toc-text">全虚拟化与半虚拟化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-number">1.2.6.</span> <span class="toc-text">虚拟机的分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.2.7.</span> <span class="toc-text">内存虚拟化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IO%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.2.8.</span> <span class="toc-text">IO虚拟化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.3.</span> <span class="toc-text">CPU虚拟化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vCPU%E4%B8%8EVM%E6%A6%82%E5%BF%B5"><span class="toc-number">1.3.1.</span> <span class="toc-text">vCPU与VM概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AAvCPU"><span class="toc-number">1.3.2.</span> <span class="toc-text">创建多个vCPU</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ARMv8-v9%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-number">1.3.3.</span> <span class="toc-text">ARMv8&#x2F;v9异常处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hyervisor%E8%BF%9B%E5%85%A5VM"><span class="toc-number">1.3.4.</span> <span class="toc-text">Hyervisor进入VM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8EVM%E9%80%80%E5%87%BA%E5%88%B0Hypervisor"><span class="toc-number">1.3.5.</span> <span class="toc-text">从VM退出到Hypervisor</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HVC%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-number">1.3.5.1.</span> <span class="toc-text">HVC系统调用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E7%BB%BC%E5%90%88%E4%BF%A1%E6%81%AF%E5%AF%84%E5%AD%98%E5%99%A8ESR-EL2"><span class="toc-number">1.3.5.2.</span> <span class="toc-text">异常综合信息寄存器ESR_EL2</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E8%99%9A%E6%8B%9F%E5%8C%96-1"><span class="toc-number">1.4.</span> <span class="toc-text">内存虚拟化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ARM64%E9%A1%B5%E8%A1%A8%E6%98%A0%E5%B0%84"><span class="toc-number">1.4.1.</span> <span class="toc-text">ARM64页表映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Stage-%E9%A1%B5%E8%A1%A8%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.4.2.</span> <span class="toc-text">2 Stage 页表转换</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Stage-1%E9%A1%B5%E8%A1%A8%E6%98%A0%E5%B0%84"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">Stage 1页表映射</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Stage-2%E9%A1%B5%E8%A1%A8%E6%98%A0%E5%B0%84"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">Stage 2页表映射</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#S2-contatenated-%E9%A1%B5%E8%A1%A8"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">S2 contatenated 页表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#S2%E9%A1%B5%E8%A1%A8%E5%B1%9E%E6%80%A7"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">S2页表属性</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#MemAttr"><span class="toc-number">1.4.2.4.1.</span> <span class="toc-text">MemAttr</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#S2AP%E5%B1%9E%E6%80%A7"><span class="toc-number">1.4.2.4.2.</span> <span class="toc-text">S2AP属性</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#S2%E9%A1%B5%E8%A1%A8%E7%9B%B8%E5%85%B3%E7%9A%84%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.4.2.5.</span> <span class="toc-text">S2页表相关的寄存器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C3%EF%BC%9A%E5%88%9B%E5%BB%BA4%E7%BA%A7%E9%A1%B5%E8%A1%A8%E7%9A%84S2%E6%98%A0%E5%B0%84"><span class="toc-number">1.4.3.</span> <span class="toc-text">实验3：创建4级页表的S2映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C4%EF%BC%9A%E5%88%9B%E5%BB%BAS2-concatenated%E9%A1%B5%E8%A1%A8-with-43-bits-IPA"><span class="toc-number">1.4.4.</span> <span class="toc-text">实验4：创建S2 concatenated页表 with 43 bits IPA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C5%EF%BC%9A%E5%88%9B%E5%BB%BAS2-concatenated%E9%A1%B5%E8%A1%A8-with-40-bits-IPA"><span class="toc-number">1.4.5.</span> <span class="toc-text">实验5：创建S2 concatenated页表 with 40 bits IPA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C6%EF%BC%9A%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="toc-number">1.4.6.</span> <span class="toc-text">实验6：创建虚拟机中的两阶段地址映射</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IO%E8%AE%BE%E5%A4%87%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.5.</span> <span class="toc-text">IO设备虚拟化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E4%B8%BB%E6%B5%81%E6%96%B9%E5%BC%8F"><span class="toc-number">1.5.1.</span> <span class="toc-text">三种主流方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C7%EF%BC%9A%E5%9C%A8hypervisor%E4%B8%AD%E6%A8%A1%E6%8B%9F%E4%B8%B2%E5%8F%A3%E8%AE%BE%E5%A4%87"><span class="toc-number">1.5.2.</span> <span class="toc-text">实验7：在hypervisor中模拟串口设备</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E6%97%B6%E5%99%A8%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.6.</span> <span class="toc-text">定时器虚拟化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#VM%E4%B8%AD%E7%9A%84-%E8%99%9A%E6%8B%9F%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-%E6%96%B9%E5%BC%8F1"><span class="toc-number">1.6.1.</span> <span class="toc-text">VM中的 虚拟时间的计算 方式1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VM%E4%B8%AD%E7%9A%84-%E8%99%9A%E6%8B%9F%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-%E6%96%B9%E5%BC%8F2"><span class="toc-number">1.6.2.</span> <span class="toc-text">VM中的 虚拟时间的计算 方式2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Timer%E8%A7%A6%E5%8F%91%E4%B8%AD%E6%96%AD%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F"><span class="toc-number">1.6.3.</span> <span class="toc-text">Timer触发中断两种方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C8%EF%BC%9A%E4%BD%BF%E8%83%BDhypervisor-EL2-physical-timer"><span class="toc-number">1.6.4.</span> <span class="toc-text">实验8：使能hypervisor (EL2) physical timer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C9%EF%BC%9A%E4%BD%BF%E8%83%BDVM%E4%B8%AD%E7%9A%84virtual-timer"><span class="toc-number">1.6.5.</span> <span class="toc-text">实验9：使能VM中的virtual timer</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.7.</span> <span class="toc-text">中断虚拟化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86%E7%9A%84%E8%B7%AF%E7%94%B1"><span class="toc-number">1.7.1.</span> <span class="toc-text">中断处理的路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E4%B8%AD%E6%96%AD"><span class="toc-number">1.7.2.</span> <span class="toc-text">虚拟中断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GICv2%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-number">1.7.3.</span> <span class="toc-text">GICv2中断控制器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#GIC%E7%9A%84%E4%B8%AD%E6%96%AD%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.7.3.1.</span> <span class="toc-text">GIC的中断类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICv2%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.7.3.2.</span> <span class="toc-text">GICv2寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AEGIC-400%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.7.3.3.</span> <span class="toc-text">访问GIC-400寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GIC-v2%E4%B8%8A%E8%99%9A%E6%8B%9F%E5%8C%96%E7%9A%84%E6%94%AF%E6%8C%81"><span class="toc-number">1.7.3.4.</span> <span class="toc-text">GIC v2上虚拟化的支持</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GIC-v2%E4%B8%AD%E6%96%AD%E8%99%9A%E6%8B%9F%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">1.7.3.5.</span> <span class="toc-text">GIC v2中断虚拟化流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GIC-v2%E8%99%9A%E6%8B%9F%E5%8C%96%E6%96%B0%E5%A2%9E%E7%9A%84%E4%B8%A4%E7%BB%84%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.7.3.6.</span> <span class="toc-text">GIC v2虚拟化新增的两组寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GIC%E8%99%9A%E6%8B%9F%E5%8C%96%E4%B9%8BMMIO"><span class="toc-number">1.7.3.7.</span> <span class="toc-text">GIC虚拟化之MMIO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICH-LRn%E5%AF%84%E5%AD%98%E5%99%A8%E5%AE%9E%E7%8E%B0-%E4%B8%AD%E6%96%AD%E6%B3%A8%E5%85%A5"><span class="toc-number">1.7.3.8.</span> <span class="toc-text">GICH_LRn寄存器实现 中断注入</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C10%EF%BC%9A%E7%BB%99VM%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%B3%A8%E5%85%A5%E4%B8%AD%E6%96%AD"><span class="toc-number">1.7.4.</span> <span class="toc-text">实验10：给VM虚拟机注入中断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E6%8B%9FvDistributor-%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-number">1.7.5.</span> <span class="toc-text">模拟vDistributor 需要注意的地方</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Virtualization-Host-Extensions"><span class="toc-number">1.8.</span> <span class="toc-text">Virtualization Host Extensions</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'a22e2ec99e8fc3210f91c3f1f59ff65d'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

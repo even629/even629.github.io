@@ -1,0 +1,697 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM AXI | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Arm64 AXI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM AXI">
+<meta property="og:url" content="https://even629.com/posts/2510310/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Arm64 AXI">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-10-31T12:15:13.000Z">
+<meta property="article:modified_time" content="2025-10-31T12:15:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2510310/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARM AXI',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">ARM AXI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-31T12:15:13.000Z" title="发表于 2025-10-31 20:15:13">2025-10-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-31T12:15:13.000Z" title="更新于 2025-10-31 20:15:13">2025-10-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/arm64/">arm64</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2510310/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-31</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<p>参考文档：</p>
+<div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>
+
+
+
+
+
+<p>档：AMBA AXI and ACE Protocol Specificationi, issue H, part A &amp; Part E</p>
+<h3 id="AMBA总线发展历史"><a href="#AMBA总线发展历史" class="headerlink" title="AMBA总线发展历史"></a>AMBA总线发展历史</h3><p><strong>AXI总线的应用</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011114248709.png" alt="AXI总线的应用" loading="lazy"></p>
+<p><strong>AMBA总线发展历史</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011114351400.png" alt="AMBA总线发展历史" loading="lazy"></p>
+<h3 id="AXI基本概念：通道，传输，事务"><a href="#AXI基本概念：通道，传输，事务" class="headerlink" title="AXI基本概念：通道，传输，事务"></a>AXI基本概念：通道，传输，事务</h3><h4 id="什么是总线"><a href="#什么是总线" class="headerlink" title="什么是总线"></a>什么是总线</h4><ul>
+<li><p>总线由单个或者一组信号组成，传输数据或者控制信息</p>
+</li>
+<li><p>在总线上，发送方按协议规定的高点电平组合编码发送信息，接收方再解码</p>
+</li>
+<li><p>外部总线和内部总线</p>
+<ul>
+<li>外部总线连接外围设备，可能外界干扰，连接器，PCB的损耗，信号完整性差</li>
+</ul>
+<p>I2C，UART，SPI，PCIe，USB</p>
+<ul>
+<li>内部总线用于SOC内部，在芯片内部走线，距离极短，很多干扰和信号完整性问题不需要考虑</li>
+</ul>
+<p>AXI，UPI（intel）</p>
+</li>
+<li><p>并行总线与串行总线</p>
+<ul>
+<li>并行：多个数据同时传输，需要考虑数据的协同性，导致了并行传输的频率不能做的很高，容易干扰</li>
+<li>串行：只有一条链路，把频率做的很高，提高传输速度</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011115214008.png" alt="并行与串行" loading="lazy"></p>
+<h4 id="AXI总线的特点"><a href="#AXI总线的特点" class="headerlink" title="AXI总线的特点"></a>AXI总线的特点</h4><ul>
+<li>AXI总线是一个芯片内部的同步串行总线</li>
+<li>AXI总线的优点<ul>
+<li>高性能：高带宽（high-bandwidth）,低延时（low-latency）,高频率（High-frequency）</li>
+<li>可灵活扩展总线位宽以及拓扑连接</li>
+<li>兼容AHB和APB总线</li>
+</ul>
+</li>
+<li>AXI总线的特点<ul>
+<li>独立的地址&#x2F;控制和数据通道（seprate read &amp; write channel）</li>
+<li>支持burst传输</li>
+<li>支持超前传输（multiple outstanding addresses）</li>
+<li>在发送地址和数据阶段之间没有严格的时序要求（no strict timing between address and data phases）</li>
+<li>支持乱序传输（out-of-order transaction completion）</li>
+<li>支持非对齐数据传输（support unaligned data transfer）</li>
+</ul>
+</li>
+</ul>
+<h4 id="AXI拓扑"><a href="#AXI拓扑" class="headerlink" title="AXI拓扑"></a>AXI拓扑</h4><p><strong>AXI使用主从机制</strong></p>
+<ul>
+<li>由master发起请求</li>
+<li>slave对请求进行应答</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011120444262.png" alt="AXI使用主从机制" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011120513349.png" alt="多对多" loading="lazy"></p>
+<h4 id="AXI通道"><a href="#AXI通道" class="headerlink" title="AXI通道"></a>AXI通道</h4><p>AXI定义了5个独立的传输通道（channel），提升bandwidth</p>
+<ol>
+<li>读地址通道：AR</li>
+<li>读数据通道：R</li>
+<li>写地址通道：AW</li>
+<li>写数据通道：W</li>
+<li>写回应通道：B</li>
+</ol>
+<p>每个channel不止一根信号线，而是一组信号线</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011121446597.png" alt="每个channel不止一根信号线，而是一组信号线" loading="lazy"></p>
+<h4 id="写传输事务"><a href="#写传输事务" class="headerlink" title="写传输事务"></a>写传输事务</h4><ul>
+<li>地址通道包含传输控制信息</li>
+<li>传输事务步骤：<ul>
+<li>Master通过write address channel发起写传输，包括地址和控制信息</li>
+<li>Master通过write data channel写数据给slave</li>
+<li>Slave通过write response channel回应</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011121734142.png" alt="Write address channel" loading="lazy"></p>
+<h4 id="读传输事务"><a href="#读传输事务" class="headerlink" title="读传输事务"></a>读传输事务</h4><ul>
+<li>Master通过read address channel发送地址和控制信息给slave</li>
+<li>Slave通过read data channel返回数据，回应信息包含在返回数据里</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011122210015.png" alt="Read address channel" loading="lazy"></p>
+<h4 id="握手信号（Handshake-process）"><a href="#握手信号（Handshake-process）" class="headerlink" title="握手信号（Handshake process）"></a>握手信号（Handshake process）</h4><ul>
+<li>5个channel都使用相同的握手信号：VALID&#x2F;READY handshake process</li>
+<li>source端产生VALID信号表明地址，数据，控制信息等已经ready了</li>
+<li>destination端产生READY信号表明它开始接受信息了。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011122430648.png" alt="Handshake process" loading="lazy"></p>
+<p>只有READY和VALID信号同时有效时才握手</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011122549042.png" alt="只有READY和VALID信号同时有效时才握手" loading="lazy"></p>
+<h4 id="传输transfer和事务transaction的区别"><a href="#传输transfer和事务transaction的区别" class="headerlink" title="传输transfer和事务transaction的区别"></a>传输transfer和事务transaction的区别</h4><p><strong>Transfer</strong></p>
+<p>只有一次的握手过程，传输一次数据</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011122740449.png" alt="只有一次的握手过程，传输一次数据" loading="lazy"></p>
+<p><strong>transaction</strong></p>
+<p><strong>有多次的握手信号，由多次的transfer来组成</strong></p>
+<p>以write为例，通过write address channel传递地址和控制信息。然后通过write data channel来传输数据。最后通过write response channel来回应。</p>
+<p>一共有3个transfer</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011122958070.png" alt="有多次的握手信号，由多次的transfer来组成" loading="lazy"></p>
+<h4 id="例子：Write-transaction-single-data-item"><a href="#例子：Write-transaction-single-data-item" class="headerlink" title="例子：Write transaction: single data item"></a>例子：Write transaction: single data item</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011123120307.png" alt="Write transaction: single data item" loading="lazy"></p>
+<h4 id="例子：Read-transaction：single-data-item"><a href="#例子：Read-transaction：single-data-item" class="headerlink" title="例子：Read transaction：single data item"></a>例子：Read transaction：single data item</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011125902378.png" alt="Read transaction：single data item" loading="lazy"></p>
+<h4 id="例子：Read-transaction：multiple-data-items"><a href="#例子：Read-transaction：multiple-data-items" class="headerlink" title="例子：Read transaction：multiple data items"></a>例子：Read transaction：multiple data items</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011130022469.png" alt="ead transaction：multiple data items" loading="lazy"></p>
+<h4 id="通道信号和事务结构"><a href="#通道信号和事务结构" class="headerlink" title="通道信号和事务结构"></a>通道信号和事务结构</h4><h5 id="写地址通道（write-address-channel）的信号线"><a href="#写地址通道（write-address-channel）的信号线" class="headerlink" title="写地址通道（write address channel）的信号线"></a><strong>写地址通道（write address channel）的信号线</strong></h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011130156266.png" alt="写地址通道（write address channel）的信号线" loading="lazy"></p>
+<h5 id="写数据通道（write-data-channel）的信号线"><a href="#写数据通道（write-data-channel）的信号线" class="headerlink" title="写数据通道（write data channel）的信号线"></a><strong>写数据通道（write data channel）的信号线</strong></h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011130238140.png" alt="写数据通道（write data channel）的信号线" loading="lazy"></p>
+<h5 id="写回应通道（write-response-channel）的信号线"><a href="#写回应通道（write-response-channel）的信号线" class="headerlink" title="写回应通道（write response channel）的信号线"></a><strong>写回应通道（write response channel）的信号线</strong></h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011130317420.png" alt="写回应通道（write response channel）的信号线" loading="lazy"></p>
+<h5 id="读地址通道（read-address-channel）的信号线"><a href="#读地址通道（read-address-channel）的信号线" class="headerlink" title="读地址通道（read address channel）的信号线"></a><strong>读地址通道（read address channel）的信号线</strong></h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011130427312.png" alt="读地址通道（read address channel）的信号线" loading="lazy"></p>
+<h5 id="读数据通道（read-data-channel）的信号线"><a href="#读数据通道（read-data-channel）的信号线" class="headerlink" title="读数据通道（read data channel）的信号线"></a><strong>读数据通道（read data channel）的信号线</strong></h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011130457673.png" alt="读数据通道（read data channel）的信号线" loading="lazy"></p>
+<h5 id="Transaction-structure"><a href="#Transaction-structure" class="headerlink" title="Transaction structure"></a>Transaction structure</h5><ul>
+<li>一次burst中包括多少个传输transfer<ul>
+<li>AXI3最多包含16个transfer：Burst_Length &#x3D; AxLEN[3:0] + 1</li>
+<li>AXI4最多包含256个transfers：Burst_Length &#x3D; AxLEN[7:0] + 1</li>
+</ul>
+</li>
+<li>AxSIZE：表示一个transfer传递多少个字节，最大128个字节</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011131144768.png" alt="Transaction structure" loading="lazy"></p>
+<ul>
+<li><p>AxBURST：表示burst类型</p>
+<ul>
+<li><p>FIXED：固定地址模式，应用于FIFO</p>
+</li>
+<li><p>INCR：地址递增模式，应用于RAM</p>
+<p>​    slave递增地址，支持1~256个transfers，支持unaligned transfer</p>
+</li>
+<li><p>WRAP：地址递增，达到上限后绕回，应用于Cache</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011131201598.png" alt="Burst type encoding" loading="lazy"></p>
+<h5 id="访问权限（Access-permissions）"><a href="#访问权限（Access-permissions）" class="headerlink" title="访问权限（Access permissions）"></a>访问权限（Access permissions）</h5><ul>
+<li>ARPROT[2:0]：表示读事务的访问权限</li>
+<li>AWPROT[2:0]：表示写事务的访问权限</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011131342053.png" alt="Protection encoding" loading="lazy"></p>
+<h5 id="高速缓存的支持"><a href="#高速缓存的支持" class="headerlink" title="高速缓存的支持"></a>高速缓存的支持</h5><ul>
+<li>传输过程中可以利用各种缓存<ul>
+<li>系统各级高速缓存，例如L2&#x2F;L3 cache</li>
+<li>系统总线内部的缓存（with the iterconnect）</li>
+</ul>
+</li>
+<li>AxCACHE[3:0]：表示高速缓存属性</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011131724554.png" alt="高速缓存的支持" loading="lazy"></p>
+<h5 id="回应包-response-structure"><a href="#回应包-response-structure" class="headerlink" title="回应包(response structure)"></a>回应包(response structure)</h5><ul>
+<li><p>RRESP[1:0]，for read transfers</p>
+</li>
+<li><p>BRESP[1:0]，for write transfers</p>
+</li>
+<li><p>OKAY：表示normal access成功或者exclusive access has failed</p>
+</li>
+<li><p>EXOKAY：表示exclusive access成功</p>
+</li>
+<li><p>SLVERR：slave error</p>
+</li>
+<li><p>DECERR：解码错误</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011132056042.png" alt="回应包(response structure)" loading="lazy"></p>
+<h5 id="Write-strobes"><a href="#Write-strobes" class="headerlink" title="Write strobes"></a>Write strobes</h5><ul>
+<li>WSTRB[n:0]：表示WDATA上的数据是否有效，一个bit表示一个字节</li>
+<li>主要是为了支持不对齐访问</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011132254458.png" alt="Write strobes" loading="lazy"></p>
+<h5 id="QoS信号"><a href="#QoS信号" class="headerlink" title="QoS信号"></a>QoS信号</h5><ul>
+<li>AXI总线提供额外的信号线来支持quality of service</li>
+<li>AWQOS：4-bit QoS，在每个写事务的write address channel中</li>
+<li>AWQOS:   4-bit QoS,  在每个读事务的read address channel中</li>
+<li>0表示最低优先级，F表示最高优先级</li>
+<li>一般系统总线IP提供寄存器来配置每个master的QoS</li>
+</ul>
+<h5 id="通道依赖关系"><a href="#通道依赖关系" class="headerlink" title="通道依赖关系"></a>通道依赖关系</h5><ul>
+<li>依赖关系1：在AWVALID有效之前，WVALID先设置有效<ul>
+<li>AWVALID表示write address channel有效</li>
+<li>WVALID表示write data channel有效</li>
+<li><strong>写地址有效之前，可以先把数据发送出去</strong></li>
+</ul>
+</li>
+<li>依赖关系2：在BVALID有效之前，必须发送WLAST<ul>
+<li>BVALID表示write response channel有效</li>
+<li>WLAST表示时事务中最后一个transfer</li>
+<li><strong>在写回应包发送之前，所有的写data和地址address必须发送完成</strong></li>
+</ul>
+</li>
+<li>依赖关系3：在ARADDR发送完成之前，RVALID不能有效<ul>
+<li>ARADDR表示读事务的第一个transfer的地址</li>
+<li>RVALID表示read data channel有效</li>
+<li><strong>如果地址没有发送完成，不应该看到有读数据返回</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="lock-access-and-exclusive-access"><a href="#lock-access-and-exclusive-access" class="headerlink" title="lock access and exclusive access"></a>lock access and exclusive access</h3><h4 id="Locked-accesses"><a href="#Locked-accesses" class="headerlink" title="Locked accesses"></a>Locked accesses</h4><ul>
+<li>Locked access只在AXI 3协议中，AXI 4已经遗弃</li>
+<li>AXI 3和AXI 4里有AxLOCK信号线</li>
+<li>AXI 3中，Locked access类似锁住总线</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011133452170.png" alt="Locked accesses" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011133503522.png" alt="AXI3 atomic access encoding" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011133513233.png" alt="AXI4 atomic access encoding" loading="lazy"></p>
+<h4 id="Exclusive-access"><a href="#Exclusive-access" class="headerlink" title="Exclusive access"></a>Exclusive access</h4><ul>
+<li><p>Exclusive access 比 Locked access 更高效，不需要锁住总线，其他master可以同时访问总线</p>
+</li>
+<li><p>需要在slave端实现exclusive monitor来协同完成exlusive access</p>
+</li>
+<li><p><strong>ARID</strong> 读事务的ID</p>
+</li>
+<li><p><strong>AWID</strong> 写事务的ID</p>
+</li>
+<li><p>访问流程</p>
+<ol>
+<li>master发起exclusive读。Slave的exclusive monitor把ARID，地址以及数据填入到表里面。</li>
+<li>master对同一个地址发起exclusive写操作。exclusive monitor查表并比较AWID和ARID是否一致</li>
+<li>回应<ul>
+<li>EXOKAY（成功），如果这期间没有其他master对这个地址进行写入，那么exclusive写操作就成功</li>
+<li>OKAY（失败），如果这个期间有其他master对这个地址进行写入，那么exclusive写失败</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="例子：独占访问失败"><a href="#例子：独占访问失败" class="headerlink" title="例子：独占访问失败"></a>例子：独占访问失败</h4><p>操作序列：</p>
+<ol>
+<li>Master往0x8000地址发起第1次的exclusive read操作</li>
+<li>Master往0x8000地址发起第2次的exclusive read操作</li>
+<li>Master往0x8000地址exclusive地写入0x3-&gt;成功</li>
+<li>Master往0x8000地址exclusive地写入0x5-&gt;失败</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011135826149.png" alt="例子：独占访问" loading="lazy"></p>
+<p>前三步操作：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011135900220.png" alt="前三步操作" loading="lazy"></p>
+<p>Exclusive write时有相同ID的读事务，所以写入成功</p>
+<p>当exclusive write成功之后，独占监视器会把这个地址和ID相关的所有entry从这个table里删掉</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011140113869.png" alt="独占监视器维护的表" loading="lazy"></p>
+<p>Exclusive Write时查表时没有相同ID的读事务，所以失败</p>
+<h3 id="事务的次序transaction-ordering"><a href="#事务的次序transaction-ordering" class="headerlink" title="事务的次序transaction ordering"></a>事务的次序transaction ordering</h3><h4 id="AXI-transaction-ID"><a href="#AXI-transaction-ID" class="headerlink" title="AXI transaction ID"></a>AXI transaction ID</h4><ul>
+<li>AXI为每个事务通道有一个独立事务ID</li>
+<li>所有的transfer必须有一个ID</li>
+<li>在同一个事务的transfer有相同的ID</li>
+<li>事务ID是为了out-of-order</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011140429069.png" alt="AXI transaction ID" loading="lazy"></p>
+<h4 id="写事务次序规则"><a href="#写事务次序规则" class="headerlink" title="写事务次序规则"></a>写事务次序规则</h4><ul>
+<li><strong>写事务次序规则1</strong>：在write data channel写数据的次序必须和write address channel中的地址传输次序一致（data must follow the same order as address transfers）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011140626113.png" alt="写事务次序规则1" loading="lazy"></p>
+<p>在write address channel是先发送A地址，然后再发送B地址，所以在write data cache中，先发送A数据，然后再发送B的数据</p>
+<ul>
+<li><strong>写事务规则2</strong>：不同ID的写事务之间可以任意次序完成（data for different transation IDs can be interleaved）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011140923727.png" alt="写事务规则2" loading="lazy"></p>
+<p>事务B比事务A先完成，尽管事务A比事务B先执行</p>
+<ul>
+<li><strong>写事务规则3</strong>：相同ID的写事务，按照顺序执行和按照顺序完成(data with the same ID must follow in the order as issued)</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011141101806.png" alt="写事务规则3" loading="lazy"></p>
+<p>事务B和事务A，C的ID不同，事务B可以任意次序完成。事务A和C使用相同的ID，那么必须事务A先完成，然后才是事务C</p>
+<h4 id="读事务次序规则"><a href="#读事务次序规则" class="headerlink" title="读事务次序规则"></a>读事务次序规则</h4><ul>
+<li>读事务次序规则1：在read data channel不同的ID的事务可以任意次序（data for different IDs has no ordering restrictions）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011141349297.png" alt="读事务次序规则1" loading="lazy"></p>
+<p>尽管在read address channel中事务B比事务A晚发送地址，但是，事务B可以比事务A先读取数据</p>
+<ul>
+<li><strong>读事务规则2</strong>：不同ID的事务的传输在read data channel可以交织地读（data with different transaction IDs can be interleaved）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011141628065.png" alt="读事务规则2" loading="lazy"></p>
+<p>事务A和事务B交织地读数据</p>
+<ul>
+<li><strong>读事务规则3</strong>：相同ID的读事务必须按照顺序完成（data with same ID must follow in the order as issued）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011141756085.png" alt="读事务规则3" loading="lazy"></p>
+<p>事务A和C有相同的ID，事务A比事务C先发送，那么事务A也必须比事务C先完成</p>
+<h3 id="非对齐地址访问"><a href="#非对齐地址访问" class="headerlink" title="非对齐地址访问"></a>非对齐地址访问</h3><ul>
+<li>AXI总线支持非对齐地址访问，使用byte strobes机制</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011142017049.png" alt="byte strobes机制" loading="lazy"></p>
+<p>从0x1地址开始，先传输3个字节，随后就对齐了地址</p>
+<h3 id="AXI-Lite总线"><a href="#AXI-Lite总线" class="headerlink" title="AXI-Lite总线"></a>AXI-Lite总线</h3><h4 id="AXI4-Lite总线介绍"><a href="#AXI4-Lite总线介绍" class="headerlink" title="AXI4-Lite总线介绍"></a>AXI4-Lite总线介绍</h4><ul>
+<li>AXI4-Lite不支持burst模式，或者burst长度为1</li>
+<li>AXI4-Lite支持数据位宽32bit或者64bit</li>
+<li>AXI4-Lite所有访问都是Non-modifiable，Non-bufferable</li>
+<li>不支持exclusive access</li>
+</ul>
+<h4 id="AXI5-Lite总线介绍"><a href="#AXI5-Lite总线介绍" class="headerlink" title="AXI5-Lite总线介绍"></a>AXI5-Lite总线介绍</h4><ul>
+<li>AXI5-Lite在AXI4-Lite基础上放宽了数据位宽和事务传输次序的要求</li>
+<li>AXI5-Lite的特点<ul>
+<li>不支持burst模式，或者burst长度为1</li>
+<li>所有访问都是Device and Non-bufferable</li>
+<li>不支持exclusive access</li>
+<li>当请求具有不同的id时，允许对响应进行重排序</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011142655225.png" alt="AXI5-Lite" loading="lazy"></p>
+<h3 id="AXI5-ACE5新增的功能"><a href="#AXI5-ACE5新增的功能" class="headerlink" title="AXI5&#x2F;ACE5新增的功能"></a>AXI5&#x2F;ACE5新增的功能</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251011142831546.png" alt="AXI5&#x2F;ACE5新增的功能" loading="lazy"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>AXI总线定义了5个独立的通道，每个通道由一组信号线组成</li>
+<li>AXI总线定义了传输事务的数据结构和属性<ul>
+<li>Burst的数量</li>
+<li>Transfer的大小</li>
+<li>Burst类型</li>
+<li>回应包</li>
+<li>高速缓存支持</li>
+<li>访问全新啊</li>
+<li>QoS信号</li>
+</ul>
+</li>
+<li>支持exclusive access</li>
+<li>通过事务ID来支持乱序传输</li>
+<li>支持非对齐访问</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2510310/">https://even629.com/posts/2510310/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ARM/">ARM</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#AMBA%E6%80%BB%E7%BA%BF%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2"><span class="toc-number">1.</span> <span class="toc-text">AMBA总线发展历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AXI%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%EF%BC%9A%E9%80%9A%E9%81%93%EF%BC%8C%E4%BC%A0%E8%BE%93%EF%BC%8C%E4%BA%8B%E5%8A%A1"><span class="toc-number">2.</span> <span class="toc-text">AXI基本概念：通道，传输，事务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%80%BB%E7%BA%BF"><span class="toc-number">2.1.</span> <span class="toc-text">什么是总线</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AXI%E6%80%BB%E7%BA%BF%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.2.</span> <span class="toc-text">AXI总线的特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AXI%E6%8B%93%E6%89%91"><span class="toc-number">2.3.</span> <span class="toc-text">AXI拓扑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AXI%E9%80%9A%E9%81%93"><span class="toc-number">2.4.</span> <span class="toc-text">AXI通道</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E4%BC%A0%E8%BE%93%E4%BA%8B%E5%8A%A1"><span class="toc-number">2.5.</span> <span class="toc-text">写传输事务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E4%BC%A0%E8%BE%93%E4%BA%8B%E5%8A%A1"><span class="toc-number">2.6.</span> <span class="toc-text">读传输事务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%A1%E6%89%8B%E4%BF%A1%E5%8F%B7%EF%BC%88Handshake-process%EF%BC%89"><span class="toc-number">2.7.</span> <span class="toc-text">握手信号（Handshake process）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%A0%E8%BE%93transfer%E5%92%8C%E4%BA%8B%E5%8A%A1transaction%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">2.8.</span> <span class="toc-text">传输transfer和事务transaction的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9AWrite-transaction-single-data-item"><span class="toc-number">2.9.</span> <span class="toc-text">例子：Write transaction: single data item</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9ARead-transaction%EF%BC%9Asingle-data-item"><span class="toc-number">2.10.</span> <span class="toc-text">例子：Read transaction：single data item</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9ARead-transaction%EF%BC%9Amultiple-data-items"><span class="toc-number">2.11.</span> <span class="toc-text">例子：Read transaction：multiple data items</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E9%81%93%E4%BF%A1%E5%8F%B7%E5%92%8C%E4%BA%8B%E5%8A%A1%E7%BB%93%E6%9E%84"><span class="toc-number">2.12.</span> <span class="toc-text">通道信号和事务结构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%86%99%E5%9C%B0%E5%9D%80%E9%80%9A%E9%81%93%EF%BC%88write-address-channel%EF%BC%89%E7%9A%84%E4%BF%A1%E5%8F%B7%E7%BA%BF"><span class="toc-number">2.12.1.</span> <span class="toc-text">写地址通道（write address channel）的信号线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%86%99%E6%95%B0%E6%8D%AE%E9%80%9A%E9%81%93%EF%BC%88write-data-channel%EF%BC%89%E7%9A%84%E4%BF%A1%E5%8F%B7%E7%BA%BF"><span class="toc-number">2.12.2.</span> <span class="toc-text">写数据通道（write data channel）的信号线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%86%99%E5%9B%9E%E5%BA%94%E9%80%9A%E9%81%93%EF%BC%88write-response-channel%EF%BC%89%E7%9A%84%E4%BF%A1%E5%8F%B7%E7%BA%BF"><span class="toc-number">2.12.3.</span> <span class="toc-text">写回应通道（write response channel）的信号线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AF%BB%E5%9C%B0%E5%9D%80%E9%80%9A%E9%81%93%EF%BC%88read-address-channel%EF%BC%89%E7%9A%84%E4%BF%A1%E5%8F%B7%E7%BA%BF"><span class="toc-number">2.12.4.</span> <span class="toc-text">读地址通道（read address channel）的信号线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AF%BB%E6%95%B0%E6%8D%AE%E9%80%9A%E9%81%93%EF%BC%88read-data-channel%EF%BC%89%E7%9A%84%E4%BF%A1%E5%8F%B7%E7%BA%BF"><span class="toc-number">2.12.5.</span> <span class="toc-text">读数据通道（read data channel）的信号线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Transaction-structure"><span class="toc-number">2.12.6.</span> <span class="toc-text">Transaction structure</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%EF%BC%88Access-permissions%EF%BC%89"><span class="toc-number">2.12.7.</span> <span class="toc-text">访问权限（Access permissions）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%AB%98%E9%80%9F%E7%BC%93%E5%AD%98%E7%9A%84%E6%94%AF%E6%8C%81"><span class="toc-number">2.12.8.</span> <span class="toc-text">高速缓存的支持</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9B%9E%E5%BA%94%E5%8C%85-response-structure"><span class="toc-number">2.12.9.</span> <span class="toc-text">回应包(response structure)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Write-strobes"><span class="toc-number">2.12.10.</span> <span class="toc-text">Write strobes</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#QoS%E4%BF%A1%E5%8F%B7"><span class="toc-number">2.12.11.</span> <span class="toc-text">QoS信号</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%80%9A%E9%81%93%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB"><span class="toc-number">2.12.12.</span> <span class="toc-text">通道依赖关系</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#lock-access-and-exclusive-access"><span class="toc-number">3.</span> <span class="toc-text">lock access and exclusive access</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Locked-accesses"><span class="toc-number">3.1.</span> <span class="toc-text">Locked accesses</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Exclusive-access"><span class="toc-number">3.2.</span> <span class="toc-text">Exclusive access</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9A%E7%8B%AC%E5%8D%A0%E8%AE%BF%E9%97%AE%E5%A4%B1%E8%B4%A5"><span class="toc-number">3.3.</span> <span class="toc-text">例子：独占访问失败</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E6%AC%A1%E5%BA%8Ftransaction-ordering"><span class="toc-number">4.</span> <span class="toc-text">事务的次序transaction ordering</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AXI-transaction-ID"><span class="toc-number">4.1.</span> <span class="toc-text">AXI transaction ID</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E4%BA%8B%E5%8A%A1%E6%AC%A1%E5%BA%8F%E8%A7%84%E5%88%99"><span class="toc-number">4.2.</span> <span class="toc-text">写事务次序规则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E4%BA%8B%E5%8A%A1%E6%AC%A1%E5%BA%8F%E8%A7%84%E5%88%99"><span class="toc-number">4.3.</span> <span class="toc-text">读事务次序规则</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E9%BD%90%E5%9C%B0%E5%9D%80%E8%AE%BF%E9%97%AE"><span class="toc-number">5.</span> <span class="toc-text">非对齐地址访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AXI-Lite%E6%80%BB%E7%BA%BF"><span class="toc-number">6.</span> <span class="toc-text">AXI-Lite总线</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AXI4-Lite%E6%80%BB%E7%BA%BF%E4%BB%8B%E7%BB%8D"><span class="toc-number">6.1.</span> <span class="toc-text">AXI4-Lite总线介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AXI5-Lite%E6%80%BB%E7%BA%BF%E4%BB%8B%E7%BB%8D"><span class="toc-number">6.2.</span> <span class="toc-text">AXI5-Lite总线介绍</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AXI5-ACE5%E6%96%B0%E5%A2%9E%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="toc-number">7.</span> <span class="toc-text">AXI5&#x2F;ACE5新增的功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'e4cf5da8298f67561e201767d963944a'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

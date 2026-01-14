@@ -1,0 +1,1018 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C language">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C">
+<meta property="og:url" content="https://even629.com/posts/42882/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="C language">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/C_lang.png">
+<meta property="article:published_time" content="2025-07-19T12:12:13.000Z">
+<meta property="article:modified_time" content="2025-07-19T14:31:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/C_lang.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/42882/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/programming.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">C</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-19T12:12:13.000Z" title="发表于 2025-07-19 20:12:13">2025-07-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-19T14:31:13.000Z" title="更新于 2025-07-19 22:31:13">2025-07-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/programming/">programming</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>15分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/42882/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-07-19</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><h2 id="常见整数的范围"><a href="#常见整数的范围" class="headerlink" title="常见整数的范围"></a>常见整数的范围</h2><table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>字节数</th>
+<th>十进制取值范围</th>
+<th>科学计数法表示（约）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>char</code></td>
+<td>1</td>
+<td>-128 ~ 127</td>
+<td>-1.28×10² ~ 1.27×10²</td>
+</tr>
+<tr>
+<td><code>unsigned char</code></td>
+<td>1</td>
+<td>0 ~ 255</td>
+<td>0 ~ 2.55×10²</td>
+</tr>
+<tr>
+<td><code>short</code></td>
+<td>2</td>
+<td>-32,768 ~ 32,767</td>
+<td>-3.28×10⁴ ~ 3.27×10⁴</td>
+</tr>
+<tr>
+<td><code>unsigned short</code></td>
+<td>2</td>
+<td>0 ~ 65,535</td>
+<td>0 ~ 6.55×10⁴</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>4</td>
+<td>-2,147,483,648 ~ 2,147,483,647</td>
+<td>-2.15×10⁹ ~ 2.15×10⁹</td>
+</tr>
+<tr>
+<td><code>unsigned int</code></td>
+<td>4</td>
+<td>0 ~ 4,294,967,295</td>
+<td>0 ~ 4.29×10⁹</td>
+</tr>
+<tr>
+<td><code>long</code> (Linux 64 位)</td>
+<td>8</td>
+<td>-9,223,372,036,854,775,808 ~ 9,223,372,036,854,775,807</td>
+<td>±9.22×10¹⁸</td>
+</tr>
+<tr>
+<td><code>unsigned long</code></td>
+<td>8</td>
+<td>0 ~ 18,446,744,073,709,551,615</td>
+<td>0 ~ 1.84×10¹⁹</td>
+</tr>
+<tr>
+<td><code>long long</code></td>
+<td>8</td>
+<td>-9,223,372,036,854,775,808 ~ 9,223,372,036,854,775,807</td>
+<td>±9.22×10¹⁸</td>
+</tr>
+<tr>
+<td><code>unsigned long long</code></td>
+<td>8</td>
+<td>0 ~ 18,446,744,073,709,551,615</td>
+<td>0 ~ 1.84×10¹⁹</td>
+</tr>
+</tbody></table>
+<ul>
+<li>long 的字节数在 不同平台上可能不同，如在 64 位 Linux 系统上通常为 8 字节。</li>
+<li>实际大小和范围由编译器及目标平台的 data model 决定，如 LP64（Linux）&#x2F;LLP64（Windows）</li>
+</ul>
+<h2 id="ASCII-表"><a href="#ASCII-表" class="headerlink" title="ASCII 表"></a>ASCII 表</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509121053858.png" alt="ASCII可显示字符" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/202509121053206.png" alt="ASCII控制字符" loading="lazy"></p>
+<h1 id="库函数"><a href="#库函数" class="headerlink" title="库函数"></a>库函数</h1><h2 id="输入输出"><a href="#输入输出" class="headerlink" title="输入输出"></a>输入输出</h2><h3 id="scanf"><a href="#scanf" class="headerlink" title="scanf"></a>scanf</h3><p>%c 和空白的区别</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">scanf</span>(<span class="string">&quot;%c&quot;</span>, &amp;ch);</span><br></pre></td></tr></table></figure>
+
+<p>会 原封不动 读取一个字符，包括空格、制表符、换行 \n。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">scanf</span>(<span class="string">&quot; %c&quot;</span>, &amp;ch);</span><br></pre></td></tr></table></figure>
+
+<p>因为格式字符串里有个 空格，scanf 会先跳过所有 空白字符（space、\t、\n），再读一个有效字符。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;x)!=EOF)</span><br></pre></td></tr></table></figure>
+
+<p>总结：</p>
+<ul>
+<li>scanf 读取非法值时会返回 EOF</li>
+<li>%d、%f 等数字格式符号：默认自动跳过空白。</li>
+<li>%c：不会跳过空白，需要 “ %c” 才能忽略空格、换行。</li>
+<li>原理：scanf 的格式字符串里，空白符（空格、\n、\t）意味着“匹配任意数量的空白”。</li>
+</ul>
+<h3 id="getline"><a href="#getline" class="headerlink" title="getline"></a>getline</h3><p>getline() 的返回值是读取的字符数(包括换行符)</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>char **lineptr</code></td>
+<td>指向一个 <code>char*</code> 指针（用来存储读入的字符串，函数内部会自动分配&#x2F;扩展内存）</td>
+</tr>
+<tr>
+<td><code>size_t *n</code></td>
+<td>指向缓冲区大小（初始为 0），函数根据需要动态分配&#x2F;扩展内存</td>
+</tr>
+<tr>
+<td><code>FILE *stream</code></td>
+<td>输入流，例如 <code>stdin</code>、文件句柄等</td>
+</tr>
+</tbody></table>
+<p>返回值</p>
+<ul>
+<li>成功：返回读取到的字符数（包括换行符 <code>\n</code>，但不包括终止符 <code>\0</code>）</li>
+<li>失败：返回 <code>-1</code>，并设置 <code>errno</code></li>
+</ul>
+<p>使用 getline 需要包含 GNU 扩展定义的 &lt;stdio.h&gt; 和 &lt;stdlib.h&gt;，但更关键的是在 某些非 POSIX 平台（如 Windows 或老标准 C 编译器） 中，getline() 并不是标准 C 函数。<br>综合解决方法（适用于 Linux&#x2F;GCC 环境）：<br>确保你包含了以下头文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可选：启用 GNU 扩展</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用strcspn</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义了 ssize_t 类型（带符号的 size_t），常用于 read, write, getline, readlink 等函数的返回值</span></span><br><span class="line"><span class="comment">// 是 POSIX 标准的一部分，不是 C 标准库的一部分，所以在 GNU/Linux 平台使用 POSIX API 时必须包含</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE         <span class="comment">// 启用 getline 所需的 GNU 扩展</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span>          <span class="comment">// 提供 errno</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span>         <span class="comment">// 提供 strerror()</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span> *line = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="type">size_t</span> len = <span class="number">0</span>;</span><br><span class="line">    <span class="type">ssize_t</span> nread;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;请输入一行文本（按 Ctrl+D 或 Ctrl+Z + Enter 结束）：\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    errno = <span class="number">0</span>;  <span class="comment">// 使用前清零</span></span><br><span class="line">    nread = getline(&amp;line, &amp;len, <span class="built_in">stdin</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nread == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (feof(<span class="built_in">stdin</span>)) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;输入结束（EOF）\n&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 打印 errno 的值和对应信息</span></span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;getline 失败，errno = %d: %s\n&quot;</span>, errno, strerror(errno));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">free</span>(line);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;读取了 %zd 字符：%s&quot;</span>, nread, line);</span><br><span class="line">    <span class="built_in">free</span>(line);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="printf"><a href="#printf" class="headerlink" title="printf"></a>printf</h3><p>printf 函数详解：<br>下面是 printf() 函数的声明。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">printf</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *format, ...)</span></span><br></pre></td></tr></table></figure>
+
+<p>参数</p>
+<ul>
+<li>format – 这是字符串，包含了要被写入到标准输出 stdout 的文本。它可以包含嵌入的 format 标签，format 标签可被随后的附加参数中指定的值替换，并按需求进行格式化。</li>
+<li>format 标签属性是</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%<span class="selector-attr">[flags]</span><span class="selector-attr">[width]</span><span class="selector-attr">[.precision]</span><span class="selector-attr">[length]</span>specifier</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">格式字符</th>
+<th align="left">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">a, A</td>
+<td align="left">以十六进制形式输出浮点数(C99 新增)。实例 <strong>printf(“pi&#x3D;%a\n”, 3.14);</strong> 输出 <strong>pi&#x3D;0x1.91eb86p+1</strong>。</td>
+</tr>
+<tr>
+<td align="left">d</td>
+<td align="left">以十进制形式输出带符号整数(正数不输出符号)</td>
+</tr>
+<tr>
+<td align="left">o</td>
+<td align="left">以八进制形式输出无符号整数(不输出前缀 0)</td>
+</tr>
+<tr>
+<td align="left">x,X</td>
+<td align="left">以十六进制形式输出无符号整数(不输出前缀 Ox)</td>
+</tr>
+<tr>
+<td align="left">u</td>
+<td align="left">以十进制形式输出无符号整数</td>
+</tr>
+<tr>
+<td align="left">f</td>
+<td align="left">以小数形式输出单、双精度实数</td>
+</tr>
+<tr>
+<td align="left">e,E</td>
+<td align="left">以指数形式输出单、双精度实数</td>
+</tr>
+<tr>
+<td align="left">g,G</td>
+<td align="left">以%f 或%e 中较短的输出宽度输出单、双精度实数</td>
+</tr>
+<tr>
+<td align="left">c</td>
+<td align="left">输出单个字符</td>
+</tr>
+<tr>
+<td align="left">s</td>
+<td align="left">输出字符串</td>
+</tr>
+<tr>
+<td align="left">p</td>
+<td align="left">输出指针地址</td>
+</tr>
+<tr>
+<td align="left">lu</td>
+<td align="left">32 位无符号整数</td>
+</tr>
+<tr>
+<td align="left">llu</td>
+<td align="left">64 位无符号整数</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">flags（标识）</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">-</td>
+<td align="left">在给定的字段宽度内左对齐，默认是右对齐（参见 width 子说明符）。</td>
+</tr>
+<tr>
+<td align="left">+</td>
+<td align="left">强制在结果之前显示加号或减号（+ 或 -），即正数前面会显示 + 号。默认情况下，只有负数前面会显示一个 - 号。</td>
+</tr>
+<tr>
+<td align="left">空格</td>
+<td align="left">如果没有写入任何符号，则在该值前面插入一个空格。</td>
+</tr>
+<tr>
+<td align="left">#</td>
+<td align="left">与 o、x 或 X 说明符一起使用时，非零值前面会分别显示 0、0x 或 0X。 与 e、E 和 f 一起使用时，会强制输出包含一个小数点，即使后边没有数字时也会显示小数点。默认情况下，如果后边没有数字时候，不会显示显示小数点。 与 g 或 G 一起使用时，结果与使用 e 或 E 时相同，但是尾部的零不会被移除。</td>
+</tr>
+<tr>
+<td align="left">0</td>
+<td align="left">在指定填充 padding 的数字左边放置零（0），而不是空格（参见 width 子说明符）。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">width（宽度）</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">(number)</td>
+<td align="left">要输出的字符的最小数目。如果输出的值短于该数，结果会用空格填充。如果输出的值长于该数，结果不会被截断。</td>
+</tr>
+<tr>
+<td align="left">*</td>
+<td align="left">宽度在 format 字符串中未指定，但是会作为附加整数值参数放置于要被格式化的参数之前。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">.precision（精度）</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">.number</td>
+<td align="left">对于整数说明符（d、i、o、u、x、X）：precision 指定了要写入的数字的最小位数。如果写入的值短于该数，结果会用前导零来填充。如果写入的值长于该数，结果不会被截断。精度为 0 意味着不写入任何字符。 对于 e、E 和 f 说明符：要在小数点后输出的小数位数。 对于 g 和 G 说明符：要输出的最大有效位数。 对于 s: 要输出的最大字符数。默认情况下，所有字符都会被输出，直到遇到末尾的空字符。 对于 c 类型：没有任何影响。 当未指定任何精度时，默认为 1。如果指定时不带有一个显式值，则假定为 0。</td>
+</tr>
+<tr>
+<td align="left">.*</td>
+<td align="left">精度在 format 字符串中未指定，但是会作为附加整数值参数放置于要被格式化的参数之前。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">length（长度）</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">h</td>
+<td align="left">参数被解释为短整型或无符号短整型（仅适用于整数说明符：i、d、o、u、x 和 X）。</td>
+</tr>
+<tr>
+<td align="left">l</td>
+<td align="left">参数被解释为长整型或无符号长整型，适用于整数说明符（i、d、o、u、x 和 X）及说明符 c（表示一个宽字符）和 s（表示宽字符字符串）。</td>
+</tr>
+<tr>
+<td align="left">L</td>
+<td align="left">参数被解释为长双精度型（仅适用于浮点数说明符：e、E、f、g 和 G）。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>附加参数</p>
+<blockquote>
+<p>根据不同的 format 字符串，函数可能需要一系列的附加参数，每个参数包含了一个要被插入的值，替换了 format 参数中指定的每个 % 标签。参数的个数应与 % 标签的个数相同。</p>
+</blockquote>
+</li>
+<li><p>返回值</p>
+<blockquote>
+<p>如果成功，则返回写入的字符总数，否则返回一个负数。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="math-h"><a href="#math-h" class="headerlink" title="math.h"></a>math.h</h2><h3 id="错误状态宏定义"><a href="#错误状态宏定义" class="headerlink" title="错误状态宏定义"></a>错误状态宏定义</h3><p>在 <code>&lt;math.h&gt;</code> 中，有一些宏用于表示数学函数的错误状态：</p>
+<table>
+<thead>
+<tr>
+<th align="left">宏</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>HUGE_VAL</code></td>
+<td align="left">当函数结果溢出时返回的值（正无穷大）。此宏代表一个非常大的双精度浮点数，通常用来作为某些数学函数在结果超出可表示范围时的返回值。当一个函数的结果太大以至于无法用正常的浮点数表示（即发生上溢）时，会设置 errno 为 ERANGE（范围错误），并返回 HUGE_VAL 或其负值（对于负无穷大）。</td>
+</tr>
+<tr>
+<td align="left"><code>HUGE_VALF</code></td>
+<td align="left">当函数结果溢出时返回的值（正无穷大，浮点型）</td>
+</tr>
+<tr>
+<td align="left"><code>HUGE_VALL</code></td>
+<td align="left">当函数结果溢出时返回的值（正无穷大，长双精度）</td>
+</tr>
+<tr>
+<td align="left"><code>INFINITY</code></td>
+<td align="left">正无穷大</td>
+</tr>
+<tr>
+<td align="left"><code>NAN</code></td>
+<td align="left">非数字值（Not-A-Number）</td>
+</tr>
+<tr>
+<td align="left"><code>FP_INFINITE</code></td>
+<td align="left">表示无穷大</td>
+</tr>
+<tr>
+<td align="left"><code>FP_NAN</code></td>
+<td align="left">表示非数字值</td>
+</tr>
+<tr>
+<td align="left"><code>FP_NORMAL</code></td>
+<td align="left">表示正常的浮点数</td>
+</tr>
+<tr>
+<td align="left"><code>FP_SUBNORMAL</code></td>
+<td align="left">表示次正规数</td>
+</tr>
+<tr>
+<td align="left"><code>FP_ZERO</code></td>
+<td align="left">表示零</td>
+</tr>
+</tbody></table>
+<h3 id="库函数-1"><a href="#库函数-1" class="headerlink" title="库函数"></a>库函数</h3><p>下面列出了头文件 math.h 中定义的函数：</p>
+<table>
+<thead>
+<tr>
+<th align="left">函数</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">double acos(double x)</td>
+<td align="left">返回以弧度表示的 x 的反余弦。</td>
+</tr>
+<tr>
+<td align="left">double asin(double x)</td>
+<td align="left">返回以弧度表示的 x 的反正弦。</td>
+</tr>
+<tr>
+<td align="left">double atan(double x)</td>
+<td align="left">返回以弧度表示的 x 的反正切。</td>
+</tr>
+<tr>
+<td align="left">double atan2(double y, double x)</td>
+<td align="left">返回以弧度表示的 y&#x2F;x 的反正切。y 和 x 的值的符号决定了正确的象限。</td>
+</tr>
+<tr>
+<td align="left">double cos(double x)</td>
+<td align="left">返回弧度角 x 的余弦。</td>
+</tr>
+<tr>
+<td align="left">double cosh(double x)</td>
+<td align="left">返回 x 的双曲余弦。</td>
+</tr>
+<tr>
+<td align="left">double sin(double x)</td>
+<td align="left">返回弧度角 x 的正弦。</td>
+</tr>
+<tr>
+<td align="left">double sinh(double x)</td>
+<td align="left">返回 x 的双曲正弦。</td>
+</tr>
+<tr>
+<td align="left">double tanh(double x)</td>
+<td align="left">返回 x 的双曲正切。</td>
+</tr>
+<tr>
+<td align="left">double exp(double x)</td>
+<td align="left">返回 e 的 x 次幂的值。</td>
+</tr>
+<tr>
+<td align="left">double frexp(double x, int *exponent)</td>
+<td align="left">把浮点数 x 分解成尾数和指数。返回值是尾数，并将指数存入 exponent 中。所得的值是 x &#x3D; mantissa * 2 ^ exponent。</td>
+</tr>
+<tr>
+<td align="left">double ldexp(double x, int exponent)</td>
+<td align="left">返回 x 乘以 2 的 exponent 次幂。</td>
+</tr>
+<tr>
+<td align="left">double log(double x)</td>
+<td align="left">返回 x 的自然对数（基数为 e 的对数）。</td>
+</tr>
+<tr>
+<td align="left">double log10(double x)</td>
+<td align="left">返回 x 的常用对数（基数为 10 的对数）。</td>
+</tr>
+<tr>
+<td align="left">double modf(double x, double *integer)</td>
+<td align="left">返回值为小数部分（小数点后的部分），并设置 integer 为整数部分。</td>
+</tr>
+<tr>
+<td align="left">double pow(double x, double y)</td>
+<td align="left">返回 x 的 y 次幂。</td>
+</tr>
+<tr>
+<td align="left">double sqrt(double x)</td>
+<td align="left">返回 x 的平方根。</td>
+</tr>
+<tr>
+<td align="left">double ceil(double x)</td>
+<td align="left">返回大于或等于 x 的最小的整数值。</td>
+</tr>
+<tr>
+<td align="left">double fabs(double x)</td>
+<td align="left">返回 x 的绝对值。</td>
+</tr>
+<tr>
+<td align="left">double floor(double x)</td>
+<td align="left">返回小于或等于 x 的最大的整数值。</td>
+</tr>
+<tr>
+<td align="left">double fmod(double x, double y)</td>
+<td align="left">返回 x 除以 y 的余数。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>作用</th>
+<th>向哪边取整</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>round()</code></td>
+<td>四舍五入</td>
+<td>到最近整数</td>
+</tr>
+<tr>
+<td><code>floor()</code></td>
+<td>向下取整（不大于原数的最大整数）</td>
+<td>向 -∞</td>
+</tr>
+<tr>
+<td><code>ceil()</code></td>
+<td>向上取整（不小于原数的最小整数）</td>
+<td>向 +∞</td>
+</tr>
+<tr>
+<td><code>trunc()</code></td>
+<td>去除小数部分（直接截断）</td>
+<td>向 0</td>
+</tr>
+</tbody></table>
+<h3 id="常用数学常量"><a href="#常用数学常量" class="headerlink" title="常用数学常量"></a>常用数学常量</h3><p>以下是 <code>&lt;math.h&gt;</code> 中定义的一些常用数学常量：</p>
+<table>
+<thead>
+<tr>
+<th align="left">常量</th>
+<th align="left">值</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>M_PI</code></td>
+<td align="left">3.14159265358979323846</td>
+<td align="left">圆周率 π</td>
+</tr>
+<tr>
+<td align="left"><code>M_E</code></td>
+<td align="left">2.71828182845904523536</td>
+<td align="left">自然对数的底数 e</td>
+</tr>
+<tr>
+<td align="left"><code>M_LOG2E</code></td>
+<td align="left">1.44269504088896340736</td>
+<td align="left">log2(e)</td>
+</tr>
+<tr>
+<td align="left"><code>M_LOG10E</code></td>
+<td align="left">0.43429448190325182765</td>
+<td align="left">log10(e)</td>
+</tr>
+<tr>
+<td align="left"><code>M_LN2</code></td>
+<td align="left">0.69314718055994530942</td>
+<td align="left">ln(2)</td>
+</tr>
+<tr>
+<td align="left"><code>M_LN10</code></td>
+<td align="left">2.30258509299404568402</td>
+<td align="left">ln(10)</td>
+</tr>
+<tr>
+<td align="left"><code>M_PI_2</code></td>
+<td align="left">1.57079632679489661923</td>
+<td align="left">π&#x2F;2</td>
+</tr>
+<tr>
+<td align="left"><code>M_PI_4</code></td>
+<td align="left">0.78539816339744830962</td>
+<td align="left">π&#x2F;4</td>
+</tr>
+<tr>
+<td align="left"><code>M_1_PI</code></td>
+<td align="left">0.31830988618379067154</td>
+<td align="left">1&#x2F;π</td>
+</tr>
+<tr>
+<td align="left"><code>M_2_PI</code></td>
+<td align="left">0.63661977236758134308</td>
+<td align="left">2&#x2F;π</td>
+</tr>
+<tr>
+<td align="left"><code>M_2_SQRTPI</code></td>
+<td align="left">1.12837916709551257390</td>
+<td align="left">2&#x2F;√π</td>
+</tr>
+<tr>
+<td align="left"><code>M_SQRT2</code></td>
+<td align="left">1.41421356237309504880</td>
+<td align="left">√2</td>
+</tr>
+<tr>
+<td align="left"><code>M_SQRT1_2</code></td>
+<td align="left">0.70710678118654752440</td>
+<td align="left">1&#x2F;√2</td>
+</tr>
+</tbody></table>
+<h2 id="string-h"><a href="#string-h" class="headerlink" title="string.h"></a>string.h</h2><h3 id="strdup"><a href="#strdup" class="headerlink" title="strdup"></a>strdup</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="type">char</span> *<span class="title function_">strdup</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *s)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>相当于 strcpy 但是会自动分配内存</p>
+<h3 id="strtok"><a href="#strtok" class="headerlink" title="strtok"></a>strtok</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> *<span class="title function_">strtok</span><span class="params">(<span class="type">char</span> *str, <span class="type">const</span> <span class="type">char</span> *delim)</span></span><br></pre></td></tr></table></figure>
+
+<p>参数<br>str: 要分割的字符串。在第一次调用时，传入要分割的字符串；后续调用时，传入 NULL，表示继续分割同一个字符串。<br>delim: 分隔符字符串。strtok() 会根据这个字符串中的任意一个字符来分割 str。</p>
+<p>返回值<br>返回指向下一个标记的指针。如果没有更多的标记，则返回 NULL。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 获取第一个子字符串 */</span></span><br><span class="line">token = strtok(str, s);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 继续获取其他的子字符串 */</span></span><br><span class="line"><span class="keyword">while</span>( token != <span class="literal">NULL</span> ) &#123;</span><br><span class="line">   <span class="built_in">printf</span>( <span class="string">&quot;%s\n&quot;</span>, token );</span><br><span class="line"></span><br><span class="line">   token = strtok(<span class="literal">NULL</span>, s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意事项</p>
+<ol>
+<li>修改原字符串: strtok() 会修改传入的字符串，将分隔符替换为 \0（空字符）。因此，原始字符串会被破坏。</li>
+<li>不可重入: strtok() 使用静态缓冲区来保存状态，因此它不是线程安全的。如果在多线程环境中使用，可以考虑使用 strtok_r()（可重入版本）。</li>
+<li>连续分隔符: 如果字符串中有连续的分隔符，strtok() 会忽略它们，并返回下一个有效的标记。</li>
+</ol>
+<p>可重入版本：strtok_r()<br>strtok_r() 是 strtok() 的可重入版本，它允许你在多线程环境中安全地使用。它的原型如下：</p>
+<p>char *strtok_r(char *str, const char <em>delim, char **saveptr);<br>saveptr: 是一个指向 char</em> 的指针，用于保存分割的状态。</p>
+<p>示例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span> str[] = <span class="string">&quot;This is a sample string&quot;</span>;</span><br><span class="line">    <span class="type">char</span> *token;</span><br><span class="line">    <span class="type">char</span> *saveptr;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第一次调用 strtok_r，传入要分割的字符串</span></span><br><span class="line">    token = strtok_r(str, <span class="string">&quot; &quot;</span>, &amp;saveptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 继续调用 strtok_r，直到返回 NULL</span></span><br><span class="line">    <span class="keyword">while</span> (token != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, token);</span><br><span class="line">        token = strtok_r(<span class="literal">NULL</span>, <span class="string">&quot; &quot;</span>, &amp;saveptr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="strcspn"><a href="#strcspn" class="headerlink" title="strcspn"></a>strcspn</h3><p>strcspn 是 C 标准库 &lt;string.h&gt; 中的一个字符串处理函数，用于查找目标字符串中第一个匹配指定字符集合的字符的位置。</p>
+<ul>
+<li>函数原型</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">size_t</span> <span class="title function_">strcspn</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *s, <span class="type">const</span> <span class="type">char</span> *reject)</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>功能说明</li>
+</ul>
+<p>它返回字符串 s 中第一个包含 reject 中任意字符的位置（索引），如果 s 中不包含 reject 中的任何字符，就返回 strlen(s)。</p>
+<blockquote>
+<p>💡 “cspn” 全称是 complement span，意思是：返回“不是 reject 的最长前缀”长度</p>
+</blockquote>
+<ul>
+<li>示例</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">char</span> str[] = <span class="string">&quot;hello, world!&quot;</span>;</span><br><span class="line">    <span class="type">size_t</span> pos = <span class="built_in">strcspn</span>(str, <span class="string">&quot;,!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;第一个 &#x27;,&#x27; 或 &#x27;!&#x27; 的位置是：%zu\n&quot;</span>, pos);  <span class="comment">// 输出 5</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="strspn"><a href="#strspn" class="headerlink" title="strspn"></a>strspn</h3><p>strspn 是 C 语言标准库 &lt;string.h&gt; 中的函数，用来计算一个字符串开头有多少字符全部属于指定的字符集合。<br>strspn 这个函数名来自 “string span” 的缩写，意思是“字符串的跨度”或“字符串中连续满足条件的前缀长度”。</p>
+<p>对比 strcspn</p>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>含义说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>strspn</code></td>
+<td>span of characters <strong>in</strong> accept</td>
+</tr>
+<tr>
+<td><code>strcspn</code></td>
+<td>span of characters <strong>not in</strong> reject</td>
+</tr>
+</tbody></table>
+<p>也就是说：</p>
+<ul>
+<li><p>strspn(s, accept)：从开头开始，统计多少字符在 accept 中</p>
+</li>
+<li><p>strcspn(s, reject)：从开头开始，统计多少字符不在 reject 中</p>
+</li>
+<li><p>函数原型</p>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">size_t</span> <span class="title">strspn</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *s, <span class="type">const</span> <span class="type">char</span> *accept)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>功能说明</li>
+</ul>
+<p>strspn(s, accept) 会返回字符串 s 开头连续有多少个字符，全部都出现在 accept 中。</p>
+<ol>
+<li>它不会跳过字符，也不会检查整个字符串；</li>
+<li>一旦遇到一个不属于 accept 的字符，就停止统计；</li>
+<li>返回值是一个 size_t 类型（即无符号整数），表示匹配的长度。</li>
+</ol>
+<ul>
+<li>示例</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *s = <span class="string">&quot;abcabc123&quot;</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *accept = <span class="string">&quot;abc&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">size_t</span> len = <span class="built_in">strspn</span>(s, accept);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;前缀长度为：%zu\n&quot;</span>, len);  <span class="comment">// 输出 6</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>✨ 分析：<br>字符串 s &#x3D; “abcabc123”<br>以 “a”, “b”, “c” 开头，刚好连着 6 个字符都在 “abc” 中<br>第 7 个字符是 ‘1’，不在 “abc” 中 → 统计停止<br>所以返回 6</p>
+</li>
+<li><p>应用场景<br>📌 检查字符串开头是否只包含某些字符</p>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">strspn</span>(s, <span class="string">&quot;0123456789&quot;</span>) == <span class="built_in">strlen</span>(s)) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;s 是纯数字\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>📌 跳过前缀中所有合法字符</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> *s = <span class="string">&quot; \t\n hello&quot;</span>;</span><br><span class="line">s += <span class="built_in">strspn</span>(s, <span class="string">&quot; \t\n&quot;</span>);  <span class="comment">// 跳过所有空白字符</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;剩下：%s\n&quot;</span>, s);  <span class="comment">// 输出 &quot;hello&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><h3 id="errno"><a href="#errno" class="headerlink" title="errno"></a>errno</h3><p>你可以在标准库函数调用失败时，通过读取 <code>errno</code> 的值来判断失败的<strong>具体原因</strong>，然后使用 <code>perror()</code> 或 <code>strerror(errno)</code> 获取对应的错误描述。</p>
+<hr>
+<p>示例：使用 <code>errno</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    FILE *fp = fopen(<span class="string">&quot;no-such-file.txt&quot;</span>, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (fp == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="comment">// 打印错误编号</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;errno = %d\n&quot;</span>, errno);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;error code = %d\n&quot;</span>, errno);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印错误描述</span></span><br><span class="line">        perror(<span class="string">&quot;fopen 失败&quot;</span>);           <span class="comment">// 推荐：自动添加前缀</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 或者手动打印错误信息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;错误信息: %s\n&quot;</span>, strerror(errno));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">errno = 2</span><br><span class="line"><span class="keyword">error </span>code = 2</span><br><span class="line">fopen 失败: No such file or directory</span><br><span class="line">错误信息: No such file or directory</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/42882/">https://even629.com/posts/42882/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/programming/">programming</a></div><div class="post-share"><div class="social-share" data-image="/images/C_lang.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E6%95%B4%E6%95%B0%E7%9A%84%E8%8C%83%E5%9B%B4"><span class="toc-number">1.1.</span> <span class="toc-text">常见整数的范围</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ASCII-%E8%A1%A8"><span class="toc-number">1.2.</span> <span class="toc-text">ASCII 表</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%93%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">库函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA"><span class="toc-number">2.1.</span> <span class="toc-text">输入输出</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#scanf"><span class="toc-number">2.1.1.</span> <span class="toc-text">scanf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#getline"><span class="toc-number">2.1.2.</span> <span class="toc-text">getline</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#printf"><span class="toc-number">2.1.3.</span> <span class="toc-text">printf</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#math-h"><span class="toc-number">2.2.</span> <span class="toc-text">math.h</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E7%8A%B6%E6%80%81%E5%AE%8F%E5%AE%9A%E4%B9%89"><span class="toc-number">2.2.1.</span> <span class="toc-text">错误状态宏定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%93%E5%87%BD%E6%95%B0-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">库函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%95%B0%E5%AD%A6%E5%B8%B8%E9%87%8F"><span class="toc-number">2.2.3.</span> <span class="toc-text">常用数学常量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#string-h"><span class="toc-number">2.3.</span> <span class="toc-text">string.h</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#strdup"><span class="toc-number">2.3.1.</span> <span class="toc-text">strdup</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#strtok"><span class="toc-number">2.3.2.</span> <span class="toc-text">strtok</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#strcspn"><span class="toc-number">2.3.3.</span> <span class="toc-text">strcspn</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#strspn"><span class="toc-number">2.3.4.</span> <span class="toc-text">strspn</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">错误处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#errno"><span class="toc-number">2.4.1.</span> <span class="toc-text">errno</span></a></li></ol></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '8673876cf6cc9b2a1ea44e121cc92966'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

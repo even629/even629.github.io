@@ -1,0 +1,573 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SR-IOV原理与实现 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="SR-IOV(Single Root I&#x2F;O Virtualization)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SR-IOV原理与实现">
+<meta property="og:url" content="https://even629.com/posts/42860/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="SR-IOV(Single Root I&#x2F;O Virtualization)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/img/avatar.png">
+<meta property="article:published_time" content="2025-05-22T13:12:13.000Z">
+<meta property="article:modified_time" content="2025-05-22T13:31:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="virtualization">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/img/avatar.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/42860/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SR-IOV原理与实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/12bb_background.png);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">SR-IOV原理与实现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-22T13:12:13.000Z" title="发表于 2025-05-22 21:12:13">2025-05-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-22T13:31:13.000Z" title="更新于 2025-05-22 21:31:13">2025-05-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/virtualization/">virtualization</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/42860/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-05-22</p>
+</div></div><div class='timeline-item-content'><ol>
+<li>init</li>
+</ol>
+</div></div></div>
+<hr>
+<h1 id="I-O-虚拟化（IOV）"><a href="#I-O-虚拟化（IOV）" class="headerlink" title="I&#x2F;O 虚拟化（IOV）"></a>I&#x2F;O 虚拟化（IOV）</h1><p><strong>I&#x2F;O 虚拟化（IOV）</strong> 是指多个虚拟机之间共享单一的 I&#x2F;O 资源。实现 IOV 的方法包括：</p>
+<ul>
+<li><strong>纯软件实现</strong>的共享方式，</li>
+<li><strong>硬件支持</strong>的共享方式，</li>
+<li>以及 <strong>软硬结合的混合方式</strong>。</li>
+</ul>
+<h2 id="基于纯软件实现的共享"><a href="#基于纯软件实现的共享" class="headerlink" title="基于纯软件实现的共享"></a>基于纯软件实现的共享</h2><ol>
+<li><strong>device emulation（完全虚拟化）</strong>：<br> 设备仿真模式会模仿那些被广泛支持的真实硬件设备（例如 Intel 的 1Gb 网卡），从而使虚拟机中的操作系统可以继续使用它原本就支持的驱动程序。虚拟机管理程序（VMM，Virtual Machine Monitor）会模拟这个 I&#x2F;O 设备，以确保兼容性，并在实际 I&#x2F;O 操作前处理这些操作，然后再把它们转发给实际的物理设备（这个物理设备可能和模拟的设备不一样）。<br> ⚠️ 问题：这样一来，I&#x2F;O 操作就必须经过两层 I&#x2F;O 栈——一层在虚拟机内部，另一层在虚拟机管理程序中，这会增加开销，降低性能。</li>
+<li><strong>the split-driver model（半虚拟化）</strong>：<br> 这种方法和设备仿真类似，但它<strong>不再模拟一个传统设备</strong>。而是采用一种<strong>前后端驱动配合的方式</strong>：<ul>
+<li>前端驱动运行在虚拟机的客户操作系统中；</li>
+<li>后端驱动运行在虚拟机管理程序中。<br> 两者配合工作，专门为资源共享进行了优化。相比设备仿真，这种方法的优势在于：<strong>不需要模拟整个设备</strong>，从而性能更好、开销更小。后端驱动会直接与实际物理设备进行通信。</li>
+</ul>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>device emulation</td>
+<td>兼容性好，可使用现有驱动</td>
+<td>性能较差，要经过两层 I&#x2F;O 栈</td>
+</tr>
+<tr>
+<td>the split-driver model</td>
+<td>性能更好，优化了共享</td>
+<td>需要专门为前后端编写驱动</td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250522224910146.png" alt="image-20250522224910146" loading="lazy"></p>
+<p><strong>基于软件的共享的缺点</strong></p>
+<p>无论是<strong>设备仿真</strong>还是<strong>分离驱动（即半虚拟化驱动）</strong>，它们通常只能提供物理硬件功能的一部分，因此可能<strong>无法利用物理设备提供的高级功能</strong>。</p>
+<p>此外，虚拟机管理程序（VMM）在实现一个虚拟的软件交换机（用于将数据包在多个虚拟机之间转发）时，可能会消耗<strong>大量的 CPU 资源</strong>。这种 CPU 开销会（而且通常确实会）<strong>降低 I&#x2F;O 设备的最大吞吐量</strong>。</p>
+<p>举个例子：如果只使用设备仿真方式，10Gbps 的以太网控制器<strong>最大只能达到 4.5 到 6.5Gbps 的吞吐量</strong>（这个范围依赖于具体测试服务器的架构）。<br>其中一个主要原因是：<strong>每个数据包都必须通过软件交换机</strong>，而这就需要使用 CPU 来处理这些数据包，造成性能瓶颈，无法达到线速（Line Rate）或接近线速的传输能力。</p>
+<p>基于软件的 I&#x2F;O 虚拟化方式虽然兼容性好，但也存在一些明显的<strong>性能瓶颈和功能限制</strong>，这些缺陷在对性能要求较高的场景（如高频交易、数据中心、网络功能虚拟化等）中尤其明显：</p>
+<table>
+<thead>
+<tr>
+<th>缺点</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>功能不完整</td>
+<td>无法访问设备的全部高级特性，如硬件加速、QoS、SR-IOV等。</td>
+</tr>
+<tr>
+<td>高 CPU 开销</td>
+<td>每个 I&#x2F;O 操作都需要 VMM 介入处理，特别是在网络场景下，包处理要通过软件交换机，会消耗大量 CPU。</td>
+</tr>
+<tr>
+<td>吞吐量受限</td>
+<td>理论 10Gbps 的网卡实际只有 4.5~6.5Gbps 的吞吐，远低于线速。</td>
+</tr>
+</tbody></table>
+<h2 id="直接分配（Direct-Assignment）"><a href="#直接分配（Direct-Assignment）" class="headerlink" title="直接分配（Direct Assignment）"></a>直接分配（Direct Assignment）</h2><p>也称<strong>设备直通</strong></p>
+<p>基于软件的共享方式在每次 I&#x2F;O 操作中都增加了额外开销，因为在客户机驱动和 I&#x2F;O 硬件之间存在一个<strong>仿真层</strong>。这种中间层的存在还带来了另一个影响：<strong>无法使用物理设备提供的硬件加速功能</strong>。<br> 为了解决这些问题，可以将物理硬件<strong>直接暴露给客户操作系统（Guest OS）</strong>，并让它运行<strong>原生设备驱动</strong>，从而减少中间层带来的性能损失。</p>
+<p>硬件厂商（如Intel）为此引入了一些增强功能，用于<strong>支持内存地址转换</strong>并<strong>确保内存保护</strong>，使得设备能够<strong>直接进行主机内存的 DMA 操作</strong>。这些增强功能可以<strong>绕过虚拟机管理程序（VMM）的 I&#x2F;O 仿真层</strong>，从而<strong>提升虚拟机的 I&#x2F;O 吞吐性能</strong>。</p>
+<p>Intel® VT-x 技术的一个特性是：如果由 VMM 进行配置，虚拟机可以<strong>直接访问物理地址</strong>。这样，虚拟机中的设备驱动就可以<strong>直接写入 I&#x2F;O 设备的寄存器</strong>（例如配置 DMA 描述符等）。</p>
+<p>而 Intel® VT-d 技术则提供了类似的能力，使 I&#x2F;O 设备可以<strong>直接写入虚拟机的内存空间</strong>，例如进行 DMA 操作。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250522230514903.png" alt="image-20250522230514903" loading="lazy"></p>
+<p>实现直接分配的机制<strong>在不同厂商之间有所差异</strong>，但其基本思路相同：虚拟机管理程序利用并配置诸如 Intel® VT-x 和 VT-d 这类技术，在数据收发过程中完成地址转换，确保数据可以安全、高效地在虚拟机与 I&#x2F;O 设备之间传输。</p>
+<p>✅ 优势：</p>
+<ul>
+<li><strong>绕过中间的仿真层</strong>，减少 CPU 开销；</li>
+<li><strong>支持原生驱动</strong>，可以启用设备的全部功能（包括硬件加速）；</li>
+<li><strong>大幅提升性能</strong>，尤其是吞吐量和延迟方面的改进明显；</li>
+<li><strong>适合高性能场景</strong>，如网络功能虚拟化（NFV）、GPU 加速计算等。</li>
+</ul>
+<p>⚠️ 问题：</p>
+<p>直接分配的一个主要问题是其<strong>可扩展性有限</strong>：一个物理设备<strong>只能分配给一个虚拟机</strong>。</p>
+<blockquote>
+<p>例如，一个双端口的网卡（NIC）只能同时提供给两个虚拟机使用（每个虚拟机占用一个端口）。然而，系统中可插入的 I&#x2F;O 设备数量存在<strong>根本性的限制</strong>。</p>
+</blockquote>
+<p>设想一下不久将来的一个相对强大的服务器：<br> 它可能拥有 4 个物理 CPU，每个 CPU 有 12 个核心，总共有 48 个核心。按照“一核一虚拟机”的经验规则，这台服务器可能运行 <strong>48 个虚拟机</strong>。如果你希望为每个虚拟机都使用 Direct Assignment 的方式分配设备，就<strong>需要 48 个物理端口</strong>。</p>
+<h1 id="单根-I-O-虚拟化（SR-IOV）"><a href="#单根-I-O-虚拟化（SR-IOV）" class="headerlink" title="单根 I&#x2F;O 虚拟化（SR-IOV）"></a>单根 I&#x2F;O 虚拟化（SR-IOV）</h1><blockquote>
+<p>以上架构问题根源在于硬件底层原生不支持共享，需要一种新型的<strong>原生可共享设备</strong>（<strong>Navitely Shared Devices</strong>），这些设要能为每个虚拟机复制必要的资源，使得<strong>虚拟机可以直接连接到 I&#x2F;O 设备</strong>，并且<strong>无需 VMM 参与</strong>即可完成主要的数据传输。</p>
+</blockquote>
+<p><strong>原生可共享设备</strong>通常会为每个虚拟接口提供<strong>独立的内存空间、工作队列、中断和命令处理机制</strong>，而在主机接口之后共享一些<strong>公共资源</strong>。这些共享资源仍然需要管理，通常会将一组管理寄存器暴露给 VMM 中的<strong>可信分区（Trusted Partition）</strong>，为每个虚拟机提供独立的工作队列和命令处理能力，这类设备能够<strong>同时接收多个来源的指令</strong>，并在发送给二级互连（如 Ethernet 或 SAS 链路）之前将其整合，而不再需要虚拟化软件将多个 I&#x2F;O 请求串行化处理。</p>
+<p>这种原生可共享设备可以通过多种方式实现，既有标准化的，也有专有的。由于大多数这类设备是通过 PCI 接口访问的，PCI-SIG（PCI Special Interest Group）决定制定一个标准机制来支持这一功能。</p>
+<p>这个标准就是：<strong>PCI-SIG 单根 I&#x2F;O 虚拟化和共享规范（SR-IOV，Single Root I&#x2F;O Virtualization）</strong></p>
+<p>SR-IOV 定义了一个标准机制，使设备能实现原生共享。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250522231842281.png" alt="image-20250522231842281" loading="lazy"></p>
+<h2 id="PCI-SIG-SR-IOV-规范"><a href="#PCI-SIG-SR-IOV-规范" class="headerlink" title="PCI-SIG SR-IOV 规范"></a>PCI-SIG SR-IOV 规范</h2><p>PCI-SIG SR-IOV规范的目标可以总结为一句话：<strong>规范化一种绕过虚拟机管理程序（VMM）参与数据传输的方式</strong>，通过为每台虚拟机提供<strong>独立的内存空间、中断通道和 DMA 通道</strong>，以实现高效的 I&#x2F;O 虚拟化。</p>
+<p>SR-IOV 的体系结构设计允许一个设备支持多个<strong>虚拟功能（VF, Virtual Functions）</strong>，并在此过程中重点关注每个额外功能的硬件成本最小化。</p>
+<p>SR-IOV 引入了两种新的 PCIe 功能类型：</p>
+<ul>
+<li><p><strong>物理功能（PF, Physical Functions）</strong>：<br> 完整的 PCIe 功能，包含 <strong>SR-IOV 扩展能力（Extended Capability）</strong>。该能力用于配置和管理 SR-IOV 的相关功能。</p>
+</li>
+<li><p><strong>虚拟功能（VF, Virtual Functions）</strong>：<br> 轻量级 PCIe 功能，包含完成数据传输所需的资源，但其<strong>配置资源经过精简设计</strong>，以降低硬件开销。</p>
+</li>
+</ul>
+<p><strong>SR-IOV</strong> 提供了一种机制，使得一个单一的物理功能（例如一个以太网端口）<strong>可以表现为多个独立的“物理设备”</strong>。</p>
+<p>一个支持 SR-IOV 的设备可以被配置（通常由 VMM 完成），使其在 <strong>PCI 配置空间</strong> 中<strong>呈现为多个功能（Function）</strong>，每个功能都拥有独立的 <strong>配置空间</strong>，包括自己的 <strong>基地址寄存器（BARs）</strong>。SR-IOV 设备可以配置为支持<strong>多个独立的虚拟功能（VF）</strong>，每个 VF 都有独立的 PCI 配置空间。VMM 会将这些 VF 分配给不同的虚拟机。</p>
+<p>虚拟机管理程序（VMM）会将一个或多个虚拟功能（VF）分配给某个虚拟机，这个过程涉及将 VF 的真实配置空间<strong>映射为该 VM 所能看到的 PCI 配置空间</strong>。同时，诸如 Intel® VT-x 和 VT-d 之类的<strong>内存地址转换技术</strong>提供了<strong>硬件加速机制</strong>，可以使 DMA 数据直接在 VM 和设备之间传输，从而<strong>绕过 VMM 中的软件交换开销</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250522233027661.png" alt="image-20250522233027661" loading="lazy"></p>
+<h2 id="生态系统依赖"><a href="#生态系统依赖" class="headerlink" title="生态系统依赖"></a>生态系统依赖</h2><h3 id="BIOS"><a href="#BIOS" class="headerlink" title="BIOS"></a>BIOS</h3><ul>
+<li>BIOS 在系统启动时负责分配 <strong>内存映射I&#x2F;O（MMIO）空间</strong> 和 <strong>PCI Express总线号（Bus Numbers）</strong> 给主机桥（host bridges）。</li>
+<li>许多系统中 PCI 资源分配缺乏标准化，软件依赖 BIOS 配置设备，确保有足够的内存空间和总线范围，支持主机桥下面的所有 I&#x2F;O 设备。</li>
+<li>需要增强 BIOS 的枚举代码，使其能识别 <strong>SR-IOV设备</strong>，并分配足够的 MMIO 空间给所有虚拟功能（Virtual Functions，VFs）。</li>
+<li>具体如何解析 PCI 配置空间并计算 VF 所需最大 MMIO 空间，详见 PCI-SIG SR-IOV 规范。</li>
+</ul>
+<h3 id="虚拟机监控器（VMM）"><a href="#虚拟机监控器（VMM）" class="headerlink" title="虚拟机监控器（VMM）"></a>虚拟机监控器（VMM）</h3><ul>
+<li>SR-IOV 定义了两种函数类型：<ul>
+<li><strong>PF</strong>：完整的 PCIe 功能，包含 SR-IOV 扩展能力，用于管理和配置虚拟功能。</li>
+<li><strong>VFs</strong>：轻量级的 PCIe 功能，包含仅用于数据传输的最小配置资源。</li>
+</ul>
+</li>
+<li>SR-IOV 引入了一个新的软件实体：<strong>单根 PCI 配置管理器（Single Root PCI Configuration Manager, SR-PCIM 或 PCIM）</strong>。<ul>
+<li>PCIM 负责管理和配置 VFs，处理所有对配置空间的访问请求。</li>
+<li>它基于物理函数的信息，向虚拟机中的客户操作系统呈现完整的 PCI 配置模型。</li>
+<li>PCIM 是一个概念模型，具体实现由各 VMM 厂商负责集成。</li>
+</ul>
+</li>
+<li>Linux 内核自 2.6.30 版本（2009 年 6 月）开始支持 SR-IOV，多个发行版均已集成。</li>
+</ul>
+<h4 id="虚拟功能（VF）创建"><a href="#虚拟功能（VF）创建" class="headerlink" title="虚拟功能（VF）创建"></a>虚拟功能（VF）创建</h4><ul>
+<li>在设备上电后，VFs 默认不存在，也无法访问其配置空间。</li>
+<li>VFs 必须通过物理函数上的 SR-IOV 功能配置和启用后才能访问。</li>
+<li>物理函数的 PCI 配置空间内有 SR-IOV 能力结构，其中包含一个 <strong>系统页大小字段（System Page Size）</strong>，由 VMM 设定为平台支持的大小。</li>
+<li>所有 VF 的内存空间被连续映射在由 VF 基址寄存器（VF Base Address Register）指定的内存范围内。</li>
+<li>为确保内存空间隔离，VF 的内存资源必须对齐到系统提供的页保护边界。</li>
+<li>ARI（替代路由 ID 解释）能力标志会影响最大 VF 数量的分布，VMM 应启用根端口和交换机上的 ARI，并在 SR-IOV 能力中设置 ARI 能力层级位。BIOS 可能已预先启用 ARI。</li>
+</ul>
+<h4 id="VF-发现"><a href="#VF-发现" class="headerlink" title="VF 发现"></a>VF 发现</h4><ul>
+<li>设置 VF 启用字段后，VFs 被创建并响应配置事务。</li>
+<li>旧有的枚举软件不会自动发现这些 VF。</li>
+<li>SR-IOV 引入一种新机制：通过物理函数中的 <strong>First VF Offset</strong> 和 <strong>VF Stride</strong> 字段形成链表，软件可定位与该物理函数关联的所有 VF。</li>
+<li>SR-IOV 设备可能要求软件分配多个 PCI 总线号以支持超过 256 个功能。</li>
+</ul>
+<h4 id="VF-驱动与物理函数驱动通信支持"><a href="#VF-驱动与物理函数驱动通信支持" class="headerlink" title="VF 驱动与物理函数驱动通信支持"></a>VF 驱动与物理函数驱动通信支持</h4><ul>
+<li>VMM 可以支持创建共享内存页，促进虚拟机中的 VF 驱动与主驱动（Master Driver）之间的通信（详细内容在第 6 节）。</li>
+</ul>
+<h4 id="VF-分配给虚拟机"><a href="#VF-分配给虚拟机" class="headerlink" title="VF 分配给虚拟机"></a>VF 分配给虚拟机</h4><ul>
+<li>VFs 创建配置后，可被分配给虚拟机，实现虚拟机与硬件设备的直接 I&#x2F;O 交互。</li>
+<li>SR-IOV 设计假定设备上的所有 VF 是相同的，PCI 配置中均呈现相同的功能。</li>
+<li>但通过主驱动介入分配，硬件可以根据系统管理员需求，提供不同的功能特性或性能等级（例如，为某些 VF 提供 2Gbps 的以太网性能保证）。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>BIOS 需要支持 SR-IOV 设备的识别和资源分配，尤其是 MMIO 和总线号管理。</li>
+<li>VMM 引入 PCIM 模型管理 VFs，负责配置访问透明化和虚拟化资源管理。</li>
+<li>VF 需要显式创建和启用，且支持大规模虚拟化场景（成百上千 VF）。</li>
+<li>SR-IOV 支持高性能、低延迟的 I&#x2F;O 直通，同时具备灵活的资源分配和管理能力。</li>
+</ul>
+<h2 id="主驱动程序（MD-Master-Driver）"><a href="#主驱动程序（MD-Master-Driver）" class="headerlink" title="主驱动程序（MD, Master Driver）"></a>主驱动程序（MD, Master Driver）</h2><p>主驱动（Master Driver，简称 MD；也称为物理功能驱动 PFD 或 PF Driver）是一个专门的驱动程序，用于管理 SR-IOV 设备的全局功能，并负责配置共享资源。MD 是特定于虚拟机监控器（VMM）的，运行在比一般虚拟机驱动更高权限的环境中。它包含了传统驱动的全部功能，以便 VMM 访问 I&#x2F;O 资源；同时它还能执行影响整个设备的操作。</p>
+<p>MD 必须在一个持续存在的环境中运行，在任何虚拟机驱动加载之前加载，并在所有虚拟机驱动卸载之后才能卸载。所有会影响整个设备的操作只能被 MD 接收和处理。</p>
+<p>为了实现这种控制能力，虚拟机中的 VF 驱动需要与 MD 通信。比如，以太网设备的链路状态变化或最大传输单元（MTU）改变，就需要这种通信机制。VF 驱动通过通信通道询问链路状态时，MD 可以返回任意状态。当物理设备的 MTU 发生改变时，MD 可通知所有 VF 驱动，以便网络栈作出相应调整。</p>
+<h3 id="VF-Drivers"><a href="#VF-Drivers" class="headerlink" title="VF Drivers"></a>VF Drivers</h3><p>VF 是“轻量级”的 PCIe 功能，只包含执行数据传输所必需的资源，它并不是一个完整的 PCIe 设备，仅提供数据进出机制。</p>
+<p>VF 驱动运行于虚拟机中，应为半虚拟化驱动（即意识到它在虚拟化环境中），只能执行其允许的操作。通常，VF 具备发送&#x2F;接收数据和执行自身复位的能力。该复位操作仅影响该 VF，而不会影响整个物理设备。超出其权限范围的操作需通过与 MD 通信实现。</p>
+<p>VF 驱动是一个专门化驱动，它“知道”自身只能执行特定的功能，如配置 DMA 描述符、设置 MAC 地址、VLAN 标签等。每个 VF 都有在 I&#x2F;O 设备中分配的独立资源。以太网 VF 通常具备独立的发送&#x2F;接收队列，绑定到对应的 BAR（基地址寄存器）及描述符。</p>
+<h3 id="VF-驱动与主驱动的通信"><a href="#VF-驱动与主驱动的通信" class="headerlink" title="VF 驱动与主驱动的通信"></a>VF 驱动与主驱动的通信</h3><p>设备共享的关键在于 VF 驱动能够与 MD 通信，请求那些影响全局的操作。这个通信通道需要传递消息并能生成中断。</p>
+<p>SR-IOV 并未定义这一通信机制，因此需由主驱动、物理功能驱动和 VMM 设计者共同构建。最简单的方式是使用 VF 专属的设备内邮箱（mailbox）和门铃（doorbell）机制（Intel SR-IOV 网络控制器支持该方式）。目前，各家 VMM 厂商正在实现各自的通信机制，尚未形成统一标准。</p>
+<h3 id="workflow-示例"><a href="#workflow-示例" class="headerlink" title="workflow 示例"></a>workflow 示例</h3><p>以下是一个接收以太网数据包并通过 VF 转发到虚拟机的典型流程：</p>
+<ol>
+<li>数据包到达 Intel® 网卡。</li>
+<li>包被送入由主驱动配置的二层分类器（Layer 2 sorter）。</li>
+<li>分类后，数据包进入目标 VF 的接收队列。</li>
+<li>启动 DMA 操作，其目标地址由 VF 驱动配置的描述符决定。</li>
+<li>DMA 到达芯片组。VMM 配置的 Intel® VT-d 将虚拟地址映射为主机物理地址，完成 DMA。</li>
+<li>NIC 发出中断，VMM 捕获。</li>
+<li>VMM 发出虚拟中断通知 VM 数据到达</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250522234850850.png" alt="image-20250522234850850" loading="lazy"></p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><p>平台必须支持地址转换（如 Intel® VT-d），才能使设备将数据 DMA 直接写入 VM 的内存。</p>
+</li>
+<li><p>BIOS 和 VMM 需能解析 PCI 配置空间，尤其是 SR-IOV 的 VF 定位机制。</p>
+</li>
+<li><p>VMM、PF 驱动、VF 驱动三者必须配合，为 VM 提供完整的 PCI 空间映射和 VF 操作能力。</p>
+</li>
+</ul>
+<h2 id="相关技术"><a href="#相关技术" class="headerlink" title="相关技术"></a>相关技术</h2><h3 id="PCIe"><a href="#PCIe" class="headerlink" title="PCIe"></a>PCIe</h3><h4 id="PCI（Perpheral-Component-Interconnect）"><a href="#PCI（Perpheral-Component-Interconnect）" class="headerlink" title="PCI（Perpheral Component Interconnect）"></a>PCI（Perpheral Component Interconnect）</h4><p>PCI曾经是个人电脑中使用最为广泛的接口，几乎所有的主板产品上都带有这种插槽。目前该总线已经逐渐被PCI Express总线所取代。PCI总线是由ISA(Industy Standard Architecture)总线发展而来的，是一种同步的独立于处理器的32位或64位局部总线。从结构上看，PCI是在CPU的供应商和原来的系统总线之间插入的一级总线，具体由一个桥接电路实现对这一层的管理，并实现上下之间的接口以协调数据的传送。</p>
+<p>**注：**ISA并行总线有8位和16位两种模式，时钟频率为8MHz，工作频率为33MHz&#x2F;66MHz。</p>
+<p>PCI总线是一种树型结构，并且独立于CPU总线，可以和CPU总线并行操作。PCI总线上可以挂接PCI设备和PCI桥，PCI总线上只允许有一个PCI主设备（同一时刻），其他的均为PCI 从设备，而且读写操作只能在主从设备之间进行，从设备之间的数据交换需要通过主设备中转。</p>
+<p>**注：**这并不意味着所有的读写操作都需要通过北桥中转，因为PCI总线上的主设备和从设备属性是可以变化的。比如Ethernet和SCSI需要传输数据，可以通过一种叫做Peer-to-Peer的方式来完成，此时Ethernet或者SCSI则作为主机，其它的设备则为从机。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1000019445-6365655222482740534418391.png" loading="lazy"></p>
+<p>一个典型的33MHz的PCI总线系统如上图所示，处理器通过<strong>FSB</strong>（<strong>Front Side Bus</strong>，前端总线，是早期计算机体系结构中，<strong>处理器（CPU）与北桥芯片之间通信的主要总线</strong>，用于连接 CPU 和内存控制器、显卡、PCI 总线等系统核心组件）与北桥相连接，北桥上挂载着图形加速器（显卡）、SDRAM（内存）和PCI总线。PCI总线上挂载着南桥、以太网、SCSI总线（一种老式的小型机总线）和若干个PCI插槽。CD和硬盘则通过IDE连接至南桥，音频设备以及打印机、鼠标和键盘等也连接至南桥，此外南桥还提供若干的USB接口。</p>
+<p>PCI总线是一种共享总线，所以需要特定的<strong>仲裁器</strong>（<strong>Arbiter</strong>）来决定当前时刻的总线的控制权。一般该仲裁器位于北桥中，而仲裁器（主机）则通过一对引脚，<strong>REQ#</strong>（<strong>request</strong>） 和<strong>GNT#</strong> （<strong>grant</strong>）来与各个从机连接。如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1000019445-6365655215521250613180895.png" alt="image.png" loading="lazy"></p>
+<p>需要注意的是，并不是所有的设备都有能力成为仲裁器（Arbiter）或者initiator 。</p>
+<p>最初的PCI总线的时钟频率为33MHz，但是随着版本的更新，时钟频率也逐渐的提高。但是由于PCI采用的是一种<strong>Reflected-Wave Signaling</strong>信号模型，导致了时钟频率越高，总线的最大负载越少。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1000019445-6365655345775545777449405.png" alt="1000019445-6365655345775545777449405" loading="lazy"></p>
+<h3 id="Alternative-Routing-ID"><a href="#Alternative-Routing-ID" class="headerlink" title="Alternative Routing-ID"></a>Alternative Routing-ID</h3><h3 id="Address-Translation-Services（ATS）"><a href="#Address-Translation-Services（ATS）" class="headerlink" title="Address Translation Services（ATS）"></a>Address Translation Services（ATS）</h3><h4 id="Intel®-Virtualization-Technology-for-Directed-I-O-Intel®-VT-d"><a href="#Intel®-Virtualization-Technology-for-Directed-I-O-Intel®-VT-d" class="headerlink" title="Intel® Virtualization Technology for Directed I&#x2F;O (Intel® VT-d)"></a>Intel® Virtualization Technology for Directed I&#x2F;O (Intel® VT-d)</h4><h3 id="Access-Control-Services-ACS"><a href="#Access-Control-Services-ACS" class="headerlink" title="Access Control Services (ACS)"></a>Access Control Services (ACS)</h3></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/42860/">https://even629.com/posts/42860/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/virtualization/">virtualization</a></div><div class="post-share"><div class="social-share" data-image="/img/avatar.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#I-O-%E8%99%9A%E6%8B%9F%E5%8C%96%EF%BC%88IOV%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">I&#x2F;O 虚拟化（IOV）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E7%BA%AF%E8%BD%AF%E4%BB%B6%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%85%B1%E4%BA%AB"><span class="toc-number">1.1.</span> <span class="toc-text">基于纯软件实现的共享</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E5%88%86%E9%85%8D%EF%BC%88Direct-Assignment%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">直接分配（Direct Assignment）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%95%E6%A0%B9-I-O-%E8%99%9A%E6%8B%9F%E5%8C%96%EF%BC%88SR-IOV%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">单根 I&#x2F;O 虚拟化（SR-IOV）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#PCI-SIG-SR-IOV-%E8%A7%84%E8%8C%83"><span class="toc-number">2.1.</span> <span class="toc-text">PCI-SIG SR-IOV 规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%E4%BE%9D%E8%B5%96"><span class="toc-number">2.2.</span> <span class="toc-text">生态系统依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BIOS"><span class="toc-number">2.2.1.</span> <span class="toc-text">BIOS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9B%91%E6%8E%A7%E5%99%A8%EF%BC%88VMM%EF%BC%89"><span class="toc-number">2.2.2.</span> <span class="toc-text">虚拟机监控器（VMM）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8A%9F%E8%83%BD%EF%BC%88VF%EF%BC%89%E5%88%9B%E5%BB%BA"><span class="toc-number">2.2.2.1.</span> <span class="toc-text">虚拟功能（VF）创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#VF-%E5%8F%91%E7%8E%B0"><span class="toc-number">2.2.2.2.</span> <span class="toc-text">VF 发现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#VF-%E9%A9%B1%E5%8A%A8%E4%B8%8E%E7%89%A9%E7%90%86%E5%87%BD%E6%95%B0%E9%A9%B1%E5%8A%A8%E9%80%9A%E4%BF%A1%E6%94%AF%E6%8C%81"><span class="toc-number">2.2.2.3.</span> <span class="toc-text">VF 驱动与物理函数驱动通信支持</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#VF-%E5%88%86%E9%85%8D%E7%BB%99%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="toc-number">2.2.2.4.</span> <span class="toc-text">VF 分配给虚拟机</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">2.2.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%EF%BC%88MD-Master-Driver%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">主驱动程序（MD, Master Driver）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#VF-Drivers"><span class="toc-number">2.3.1.</span> <span class="toc-text">VF Drivers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VF-%E9%A9%B1%E5%8A%A8%E4%B8%8E%E4%B8%BB%E9%A9%B1%E5%8A%A8%E7%9A%84%E9%80%9A%E4%BF%A1"><span class="toc-number">2.3.2.</span> <span class="toc-text">VF 驱动与主驱动的通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#workflow-%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.3.3.</span> <span class="toc-text">workflow 示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">2.3.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF"><span class="toc-number">2.4.</span> <span class="toc-text">相关技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#PCIe"><span class="toc-number">2.4.1.</span> <span class="toc-text">PCIe</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PCI%EF%BC%88Perpheral-Component-Interconnect%EF%BC%89"><span class="toc-number">2.4.1.1.</span> <span class="toc-text">PCI（Perpheral Component Interconnect）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Alternative-Routing-ID"><span class="toc-number">2.4.2.</span> <span class="toc-text">Alternative Routing-ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Address-Translation-Services%EF%BC%88ATS%EF%BC%89"><span class="toc-number">2.4.3.</span> <span class="toc-text">Address Translation Services（ATS）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Intel%C2%AE-Virtualization-Technology-for-Directed-I-O-Intel%C2%AE-VT-d"><span class="toc-number">2.4.3.1.</span> <span class="toc-text">Intel® Virtualization Technology for Directed I&#x2F;O (Intel® VT-d)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Access-Control-Services-ACS"><span class="toc-number">2.4.4.</span> <span class="toc-text">Access Control Services (ACS)</span></a></li></ol></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'df0a6b5ddf14ad248b19bf23df0bc2f0'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

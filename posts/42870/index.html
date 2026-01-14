@@ -1,0 +1,1377 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GDB | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="gdb的编译，用法总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDB">
+<meta property="og:url" content="https://even629.com/posts/42870/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="gdb的编译，用法总结">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/gdb_cover.png">
+<meta property="article:published_time" content="2025-06-24T12:12:13.000Z">
+<meta property="article:modified_time" content="2025-10-13T13:26:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/gdb_cover.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/42870/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GDB',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/gnu_tools.png);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">GDB</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-24T12:12:13.000Z" title="发表于 2025-06-24 20:12:13">2025-06-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-13T13:26:13.000Z" title="更新于 2025-10-13 21:26:13">2025-10-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/programming/">programming</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>29分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/42870/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-06-24</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-07</p>
+</div></div><div class='timeline-item-content'><p>add gdb in emacs</p>
+</div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-09</p>
+</div></div><div class='timeline-item-content'><p>add complementary skills</p>
+</div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-10</p>
+</div></div><div class='timeline-item-content'><p>add multithread debugging</p>
+</div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-13</p>
+</div></div><div class='timeline-item-content'><p>add multiprocess debugging，remote debugging，coredump debugging，add memory problem check</p>
+</div></div></div>
+
+<hr>
+<h1 id="gdb-配置"><a href="#gdb-配置" class="headerlink" title="gdb 配置"></a>gdb 配置</h1><h2 id="tui-模式下显示混乱"><a href="#tui-模式下显示混乱" class="headerlink" title="tui 模式下显示混乱"></a>tui 模式下显示混乱</h2><p>参考：</p>
+<div class="tag link"><a class="link-card" title="gdb tui模式下显示混乱解决方案" target="_blank" rel="noopener" href="https://blog.csdn.net/u012772347/article/details/142598998"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://g.csdnimg.cn/static/logo/favicon32.ico"/></div><div class="right"><p class="text">gdb tui模式下显示混乱解决方案</p><p class="url">https://blog.csdn.net/u012772347/article/details/142598998</p></div></a></div>
+
+<p>总之是创建一个~&#x2F;.gdbinit 文件然后写入如下内容</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">define c</span><br><span class="line"><span class="keyword">continue</span></span><br><span class="line"><span class="keyword">refresh</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">define n</span><br><span class="line">next</span><br><span class="line"><span class="keyword">refresh</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> debuginfod enabled <span class="keyword">on</span></span><br><span class="line"><span class="keyword">set</span> print pretty</span><br></pre></td></tr></table></figure>
+<p>对于c++调试，推荐使用下面的扩展指令，可以更方便查看stl容器：</p>
+<div class="tag link"><a class="link-card" title="gdbinit_stl_views" target="_blank" rel="noopener" href="http://www.yolinux.com/TUTORIALS/src/dbinit_stl_views-1.03.txt"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="http://www.yolinux.com/favicon.ico"/></div><div class="right"><p class="text">gdbinit_stl_views</p><p class="url">http://www.yolinux.com/TUTORIALS/src/dbinit_stl_views-1.03.txt</p></div></a></div>
+
+<p>共有以下指令：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">std::vector&lt;T&gt; -- via pvector command</span><br><span class="line">std::list&lt;T&gt; -- via plist <span class="keyword">or</span> plist_member command</span><br><span class="line">std::map&lt;T,T&gt; -- via pmap <span class="keyword">or</span> pmap_member command</span><br><span class="line">std::multimap&lt;T,T&gt; -- via pmap <span class="keyword">or</span> pmap_member command</span><br><span class="line">std::set&lt;T&gt; -- via pset command</span><br><span class="line">std::multiset&lt;T&gt; -- via pset command</span><br><span class="line">std::deque&lt;T&gt; -- via pdequeue command</span><br><span class="line">std::stack&lt;T&gt; -- via pstack command</span><br><span class="line">std::queue&lt;T&gt; -- via pqueue command</span><br><span class="line">std::priority_queue&lt;T&gt; -- via ppqueue command</span><br><span class="line">std::bitset&lt;n&gt; -- via pbitset command</span><br><span class="line">std::string -- via pstring command</span><br><span class="line">std::widestring -- via pwstring command</span><br></pre></td></tr></table></figure>
+
+<h2 id="gdb-看不到程序-printf-输出"><a href="#gdb-看不到程序-printf-输出" class="headerlink" title="gdb 看不到程序 printf 输出"></a>gdb 看不到程序 printf 输出</h2><p>这是因为输出存在缓冲区，使用以下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">call fflush(stdout)</span><br></pre></td></tr></table></figure>
+
+<h2 id="io-输入输出使用不同的终端"><a href="#io-输入输出使用不同的终端" class="headerlink" title="io 输入输出使用不同的终端"></a>io 输入输出使用不同的终端</h2><p>缺省情况，gdb 和程序的输入输出使用同一终端，可以为程序指定单独的输入输出终端，先打开一个终端输入 tty 命令获取当前终端名称<br>然后启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb -<span class="built_in">tty</span> /dev/pts/3 ./a.out</span><br></pre></td></tr></table></figure>
+
+<h2 id="在-emacs-中使用-gdb"><a href="#在-emacs-中使用-gdb" class="headerlink" title="在 emacs 中使用 gdb"></a>在 emacs 中使用 gdb</h2><p>主要使用 gdb 的 MI 模式，参考</p>
+<div class="tag link"><a class="link-card" title="my emacs configuration" href="https://even629.com/posts/28521/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://even629.com/img/favicon.ico"/></div><div class="right"><p class="text">my emacs configuration</p><p class="url">https://even629.com/posts/28521/</p></div></a></div>
+
+<h1 id="gdb-tui-模式"><a href="#gdb-tui-模式" class="headerlink" title="gdb tui 模式"></a>gdb tui 模式</h1><blockquote>
+<p>TUI 模式下最多显示 3 个窗口，命令窗口始终存在</p>
+</blockquote>
+<h2 id="打开-tui-模式并打开源码"><a href="#打开-tui-模式并打开源码" class="headerlink" title="打开 tui 模式并打开源码"></a>打开 tui 模式并打开源码</h2><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) layout <span class="attribute">src</span></span><br></pre></td></tr></table></figure>
+
+<p>源码窗口代码行数前的断点</p>
+<ul>
+<li>B 表示已经命中过了，至少命中过一次</li>
+<li>b 表示还没有命中的</li>
+<li>+表示断点时是可用的</li>
+<li>-表示断点是 disable 的</li>
+</ul>
+<h2 id="显示汇编窗口"><a href="#显示汇编窗口" class="headerlink" title="显示汇编窗口"></a>显示汇编窗口</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) layout <span class="keyword">asm</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="显示寄存器窗口"><a href="#显示寄存器窗口" class="headerlink" title="显示寄存器窗口"></a>显示寄存器窗口</h2><figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="keyword">layout</span> reg</span><br></pre></td></tr></table></figure>
+
+<h2 id="切分窗口"><a href="#切分窗口" class="headerlink" title="切分窗口"></a>切分窗口</h2><figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) layout <span class="built_in">split</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="切换窗口焦点"><a href="#切换窗口焦点" class="headerlink" title="切换窗口焦点"></a>切换窗口焦点</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) focus src/<span class="keyword">asm</span>/reg/<span class="built_in">cmd</span></span><br><span class="line">(gdb) fs <span class="keyword">asm</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查看当前拥有焦点的窗口"><a href="#查看当前拥有焦点的窗口" class="headerlink" title="查看当前拥有焦点的窗口"></a>查看当前拥有焦点的窗口</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">info</span> win</span><br></pre></td></tr></table></figure>
+
+<h2 id="退出窗口模式"><a href="#退出窗口模式" class="headerlink" title="退出窗口模式"></a>退出窗口模式</h2><p><strong>Ctrl + x +a</strong></p>
+<h1 id="启动-gdb"><a href="#启动-gdb" class="headerlink" title="启动 gdb"></a>启动 gdb</h1><h2 id="编译阶段：加入调试信息"><a href="#编译阶段：加入调试信息" class="headerlink" title="编译阶段：加入调试信息"></a>编译阶段：加入调试信息</h2><p>为了让 GDB 能看到函数名、变量名、源码行号，<strong>编译时必须加上 <code>-g</code> 参数</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -g hello.c -o hello        <span class="comment"># 对 C 程序</span></span><br><span class="line">g++ -g hello.cpp -o hello      <span class="comment"># 对 C++ 程序</span></span><br></pre></td></tr></table></figure>
+
+<p>否则 GDB 只能看到汇编和内存地址，无法进行源码级调试。</p>
+<hr>
+<h2 id="启动方式"><a href="#启动方式" class="headerlink" title="启动方式"></a>启动方式</h2><h3 id="调试一个程序"><a href="#调试一个程序" class="headerlink" title="调试一个程序"></a><strong>调试一个程序</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb ./program</span><br></pre></td></tr></table></figure>
+
+<h4 id="设置程序运行参数"><a href="#设置程序运行参数" class="headerlink" title="设置程序运行参数"></a><strong>设置程序运行参数</strong></h4><ul>
+<li><p><strong>设置运行参数（如命令行参数）</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> args 10 20 30</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看当前设置的参数</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show args</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="设置运行环境变量"><a href="#设置运行环境变量" class="headerlink" title="设置运行环境变量"></a><strong>设置运行环境变量</strong></h4><ul>
+<li><p><strong>设置程序运行路径（用于找可执行文件）</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">path /your/bin/dir</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看运行路径设置</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show paths</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>设置环境变量</strong>（例如传给 <code>main()</code> 程序用的环境）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> environment USER=yourname</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看环境变量</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show environment</span><br><span class="line">show environment USER</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="设置工作目录"><a href="#设置工作目录" class="headerlink" title="设置工作目录"></a><strong>设置工作目录</strong></h4><p>设置工作目录指的是程序运行时的当前目录</p>
+<ul>
+<li><p><strong>切换当前目录</strong>（等同于 shell 的 <code>cd</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/dir</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看当前目录</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">pwd</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="控制程序的输入输出"><a href="#控制程序的输入输出" class="headerlink" title="控制程序的输入输出"></a><strong>控制程序的输入输出</strong></h4><ul>
+<li><p><strong>查看程序绑定的终端信息</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">info terminal</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>重定向输出（如保存输出到文件）</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run &gt; output.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>指定程序输入输出使用的终端设备</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">tty</span> /dev/pts/1</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="调试-core-dump-文件"><a href="#调试-core-dump-文件" class="headerlink" title="调试 core dump 文件"></a><strong>调试 core dump 文件</strong></h3><p>Linux core dump：</p>
+<blockquote>
+<p>一般称之为核心转储、内核转储，我们统称为转储文件。是某个时刻某个进程的内存信息映射，即包含了生成转储文件时该进程的整个内存信息以及寄存器等信息。转储文件可以是某个进程的，也可以是整个系统的。可以是进程活着的时候生成的，也可以是进程或者系统崩溃的时候自动生成的。</p>
+<p>为活着的进程创建 core dump 文件一般可以通过 gdb 来生成，使用 gdb 把进程 attach 进来以后，执行 generate-core-file 或者 gcore 命令来生成 core dump 文件。</p>
+<p>我们更多时候是对崩溃产生的 core dump 文件进行分析。</p>
+</blockquote>
+<h4 id="为活着的进程产生-coredump-文件"><a href="#为活着的进程产生-coredump-文件" class="headerlink" title="为活着的进程产生 coredump 文件"></a>为活着的进程产生 coredump 文件</h4><p>通过 gcore 生成 core dump 文件，完全不影响程序的运行</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">gdb attach <span class="title">pid</span></span></span><br><span class="line"><span class="function"><span class="params">(gdb)</span> gcore test.<span class="title">core</span></span></span><br><span class="line"><span class="function"><span class="params">(gdb)</span> detach</span></span><br></pre></td></tr></table></figure>
+
+<p>core dump 是程序崩溃后的转储</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb ./program core</span><br></pre></td></tr></table></figure>
+
+<h4 id="打开-Linux-core-文件生成功能"><a href="#打开-Linux-core-文件生成功能" class="headerlink" title="打开 Linux core 文件生成功能"></a>打开 Linux core 文件生成功能</h4><p>Linux <strong>默认没有打开 core 文件生成功能</strong>，也就是发生段错误时不会<code>core dumped</code>。可以通过以下命令打开<code>core</code>文件的生成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 不限制产生 core 的大小</span></span><br><span class="line"><span class="built_in">ulimit</span> -c unlimited</span><br></pre></td></tr></table></figure>
+
+<p><code>unlimited</code> 意思是系统<strong>不限制 core 文件的大小</strong>，只要有足够的磁盘空间，会转存程序所占用的全部内存，如果需要限制系统产生 <code>core </code>的大小，可以使用以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># core 最大限制大小为 409600 字节</span></span><br><span class="line"><span class="built_in">ulimit</span> -c 409600</span><br></pre></td></tr></table></figure>
+
+<p>可以配置生成的 coredump 文件的名字，可以不覆盖默认的 coredump 文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;%e-%p-%t&quot;</span> &gt; /proc/sys/kernel/core_pattern</span><br></pre></td></tr></table></figure>
+
+<h4 id="关闭-Linux-core-文件生成功能"><a href="#关闭-Linux-core-文件生成功能" class="headerlink" title="关闭 Linux core 文件生成功能"></a>关闭 Linux core 文件生成功能</h4><p>把核心转储功能关闭，只需要将限制大小设为<code>0</code> 即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ulimit</span> -c 0</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意，如果只是输入命令“<code>ulimit -c unlimited</code>”，这只会在当前终端有效，退出终端或者打开一个新的终端时是无效的</strong>。</p>
+<p>例子：</p>
+<p>编写一个简单的 C 程序，人为制造一个<code>Segmentation fault</code>错误：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> *p = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 给一个NULL指令赋值，会产生 Segmentation fault 错误</span></span><br><span class="line">  *p = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码中定义了一个空指针变量 P，然后给空指针 P 赋值，运行程序就会<strong>产生一个段错误</strong>。</p>
+<p>开启了<strong>核心转储</strong>后，就会产生一个<code> core</code> 文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编译 hello.c 生成 hello 程序</span></span><br><span class="line">gcc -o hello hello.c -g</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行该程序</span></span><br><span class="line">./hello</span><br></pre></td></tr></table></figure>
+
+<p>运行后，我们可以看到 <code>Segmentation fault (core dumped)</code> 提示信息，表示已经在当前目录下产生了一个<code>core </code>文件：</p>
+<h3 id="调试正在运行的程序"><a href="#调试正在运行的程序" class="headerlink" title="调试正在运行的程序"></a><strong>调试正在运行的程序</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb ./program &lt;PID&gt;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><strong>直接指定 PID 启动 GDB</strong>（需要有可执行程序路径）：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb ./program &lt;PID&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>在 GDB 内 attach 到某个 PID</strong>：</li>
+</ol>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) attach &lt;PID&gt;</span><br><span class="line">(gdb) detach   # 取消 attach</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="常用启动参数"><a href="#常用启动参数" class="headerlink" title="常用启动参数"></a>常用启动参数</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-s</code> 或 <code>-symbols &lt;file&gt;</code></td>
+<td>指定符号表文件</td>
+</tr>
+<tr>
+<td><code>-se &lt;file&gt;</code></td>
+<td>指定符号表文件，并关联到可执行文件</td>
+</tr>
+<tr>
+<td><code>-c</code> 或 <code>-core &lt;file&gt;</code></td>
+<td>指定 core dump 文件用于调试</td>
+</tr>
+<tr>
+<td><code>-d</code> 或 <code>-directory &lt;dir&gt;</code></td>
+<td>添加源码搜索路径（默认用 <code>$PATH</code>）</td>
+</tr>
+</tbody></table>
+<p>退出输入 quit(q)即可</p>
+<h2 id="gdb-中运行-Shell-命令"><a href="#gdb-中运行-Shell-命令" class="headerlink" title="gdb 中运行 Shell 命令"></a>gdb 中运行 Shell 命令</h2><p>在 GDB 中可以直接运行操作系统的命令，方法是：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) shell &lt;命令字符串&gt;</span><br><span class="line">(gdb) !&lt;命令字符串&gt;</span><br></pre></td></tr></table></figure>
+
+<p>example</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) shell <span class="built_in">ls</span> -l</span><br><span class="line">(gdb) shell <span class="built_in">cat</span> input.txt</span><br></pre></td></tr></table></figure>
+
+<p>这会在 GDB 内部启动你系统的 shell（由环境变量 <code>SHELL</code> 决定），然后执行你写的命令。</p>
+<p>GDB 也内置了一个命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) make &lt;参数&gt;</span><br></pre></td></tr></table></figure>
+
+<p>它本质上等价于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) shell make &lt;参数&gt;</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，它会调用系统的 <code>make</code> 工具来重新编译程序，非常方便调试时快速修改代码后重新 build。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) pip i locals | grep test</span><br><span class="line">(gdb) | thread apply all bt | wc</span><br></pre></td></tr></table></figure>
+
+<h2 id="gdb-调试输出日志保存"><a href="#gdb-调试输出日志保存" class="headerlink" title="gdb 调试输出日志保存"></a>gdb 调试输出日志保存</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 打开日志输出，off为关闭</span><br><span class="line">(gdb) set logging on</span><br><span class="line"># 设置输出文件</span><br><span class="line">(gdb) set logging file filename</span><br><span class="line"># 覆盖输出文件，默认为追加</span><br><span class="line">(gdb) set logging overwrite</span><br></pre></td></tr></table></figure>
+
+<h1 id="调试程序"><a href="#调试程序" class="headerlink" title="调试程序"></a>调试程序</h1><h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><h3 id="显示源代码"><a href="#显示源代码" class="headerlink" title="显示源代码"></a>显示源代码</h3><ul>
+<li>显示源代码 <strong>list</strong> or **l,**默认显示 10 行</li>
+<li>设置每次显示的行数：<strong>set listsize xx</strong></li>
+<li>查看指定的函数代码：<strong>list test_fun</strong></li>
+<li>查看指定文件指定行代码: <strong>list main.cpp:15</strong></li>
+</ul>
+<h3 id="搜索源代码"><a href="#搜索源代码" class="headerlink" title="搜索源代码"></a>搜索源代码</h3><ul>
+<li><strong>search</strong> 正则表达式</li>
+<li><strong>forward-search</strong> 正则表达式</li>
+<li><strong>reverse-search</strong> 正则表达式</li>
+</ul>
+<p>（输入 search 命令后按回车会继续找下一个匹配的，通过 list 命令指定起始搜索位置）</p>
+<p>设置源代码搜索目录</p>
+<ul>
+<li><strong>directory path</strong></li>
+</ul>
+<h2 id="断点-breakpoint"><a href="#断点-breakpoint" class="headerlink" title="断点 (breakpoint)"></a>断点 (breakpoint)</h2><h3 id="设置断点"><a href="#设置断点" class="headerlink" title="设置断点"></a>设置断点</h3><h4 id="按函数名设置断点"><a href="#按函数名设置断点" class="headerlink" title="按函数名设置断点"></a>按函数名设置断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> <span class="keyword">function</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在指定函数的<strong>入口</strong>处停下。</li>
+<li>对于 C++ 可以写成：<ul>
+<li><code>break ClassName::Function</code></li>
+<li><code>break function(type1, type2)</code>（如果重载）</li>
+</ul>
+</li>
+</ul>
+<h4 id="按行号设置断点"><a href="#按行号设置断点" class="headerlink" title="按行号设置断点"></a>按行号设置断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> 42</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在当前源文件的第 <strong>42 行</strong> 设断点。</li>
+</ul>
+<h4 id="相对当前行设置断点"><a href="#相对当前行设置断点" class="headerlink" title="相对当前行设置断点"></a>相对当前行设置断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> +5     // 当前行之后5行</span><br><span class="line"><span class="built_in">break</span> -3     // 当前行之前3行</span><br></pre></td></tr></table></figure>
+
+<h4 id="指定文件-行号"><a href="#指定文件-行号" class="headerlink" title="指定文件 + 行号"></a>指定文件 + 行号</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> filename.c:42</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在 <code>filename.c</code> 的第 42 行设置断点。</li>
+</ul>
+<h4 id="指定文件-函数名"><a href="#指定文件-函数名" class="headerlink" title="指定文件 + 函数名"></a>指定文件 + 函数名</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> filename.c:func</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在 <code>filename.c</code> 中 <code>func</code> 函数的入口处设置断点。</li>
+</ul>
+<h4 id="按地址设置断点"><a href="#按地址设置断点" class="headerlink" title="按地址设置断点"></a>按地址设置断点</h4><p>常用于汇编调试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> *0x4007d0</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在程序内存地址 <code>0x4007d0</code> 处设置断点。</li>
+</ul>
+<h4 id="设置条件断点"><a href="#设置条件断点" class="headerlink" title="设置条件断点"></a>设置条件断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> func <span class="keyword">if</span> i == 100</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当变量 <code>i == 100</code> 且执行到 <code>func</code> 函数时才停下。</li>
+</ul>
+<h4 id="设置下一条语句的断点（无参数）"><a href="#设置下一条语句的断点（无参数）" class="headerlink" title="设置下一条语句的断点（无参数）"></a>设置下一条语句的断点（无参数）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在“下一条将要执行”的语句处设断点。</li>
+</ul>
+<h3 id="查看断点"><a href="#查看断点" class="headerlink" title="查看断点"></a>查看断点</h3><h4 id="查看所有断点"><a href="#查看所有断点" class="headerlink" title="查看所有断点"></a>查看所有断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">info breakpoints</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看指定编号的断点"><a href="#查看指定编号的断点" class="headerlink" title="查看指定编号的断点"></a>查看指定编号的断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">info <span class="built_in">break</span> 3</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除断点"><a href="#删除断点" class="headerlink" title="删除断点"></a>删除断点</h3><h4 id="删除某一个断点"><a href="#删除某一个断点" class="headerlink" title="删除某一个断点"></a>删除某一个断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">delete &lt;编号&gt;</span><br><span class="line">del &lt;编号&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>例如：<code>delete 1</code> 表示删除编号为 1 的断点。</li>
+</ul>
+<h4 id="删除多个断点"><a href="#删除多个断点" class="headerlink" title="删除多个断点"></a>删除多个断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete 1 2 3</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>同时删除断点 1、2 和 3。</li>
+</ul>
+<h4 id="删除所有断点"><a href="#删除所有断点" class="headerlink" title="删除所有断点"></a>删除所有断点</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>不加参数</strong>表示删除所有断点。GDB 会提示你确认（输入 <code>y</code>）。</li>
+</ul>
+<h3 id="为断点添加命令"><a href="#为断点添加命令" class="headerlink" title="为断点添加命令"></a>为断点添加命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">commands &lt;bnum&gt;</span><br><span class="line">...gdb命令序列...</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> foo <span class="keyword">if</span> x &gt; 0</span><br><span class="line">commands</span><br><span class="line"><span class="built_in">printf</span> <span class="string">&quot;x is %d\n&quot;</span>, x</span><br><span class="line"><span class="built_in">continue</span></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>作用：x &gt; 0 时断点命中，打印后自动继续，不用手动按 <code>c</code>。</p>
+</blockquote>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">b</span> <span class="number">31</span></span><br><span class="line">commands</span><br><span class="line">&gt;<span class="selector-tag">p</span> *curr</span><br><span class="line">&gt;<span class="selector-tag">p</span> prev</span><br><span class="line">&gt;end</span><br><span class="line"><span class="selector-tag">i</span> <span class="selector-tag">b</span></span><br></pre></td></tr></table></figure>
+
+<p>为断点设置命令后当程序停到该断点时自动打印出这两个值；</p>
+<p>commands 命令后面可以直接跟断点的序号</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">i</span> <span class="selector-tag">b</span></span><br><span class="line">commands <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="清除已有命令"><a href="#清除已有命令" class="headerlink" title="清除已有命令"></a>清除已有命令</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">commands &lt;bnum&gt;</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h3 id="忽略断点次数（ignore）"><a href="#忽略断点次数（ignore）" class="headerlink" title="忽略断点次数（ignore）"></a>忽略断点次数（ignore）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ignore &lt;bnum&gt; &lt;count&gt;   <span class="comment"># 忽略断点号 bnum 的触发 count 次</span></span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ignore 2 3</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>忽略断点 2 的前三次命中，第 4 次才真正中断。</p>
+</blockquote>
+<p>example</p>
+<ul>
+<li><p>调试循环或大函数中的问题时，建议使用：<br><code>break &lt;line&gt; if i == 9999</code><br>或<br><code>ignore &lt;bnum&gt; 9998</code></p>
+</li>
+<li><p>在你定位 bug 后，不要删断点，直接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">disable</span> &lt;bnum&gt;  <span class="comment"># 保留断点以后复用</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>想测试多个变量变化时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">watch a</span><br><span class="line">watch b</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>想搞自动化调试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">silent</span><br><span class="line"><span class="built_in">printf</span> <span class="string">&quot;Reached here\n&quot;</span></span><br><span class="line"><span class="built_in">continue</span></span><br><span class="line">end</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="保存断点到文件并读取"><a href="#保存断点到文件并读取" class="headerlink" title="保存断点到文件并读取"></a>保存断点到文件并读取</h3><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) save breakpoints d<span class="selector-class">.txt</span></span><br><span class="line">(gdb) !cat d<span class="selector-class">.txt</span></span><br></pre></td></tr></table></figure>
+
+<p>关闭后重新打开，应用已经保存的断点信息</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">source</span> d.txt</span><br></pre></td></tr></table></figure>
+
+<h2 id="观察点-watchpoint"><a href="#观察点-watchpoint" class="headerlink" title="观察点 (watchpoint)"></a>观察点 (watchpoint)</h2><blockquote>
+<p>观察点是一个特殊的断点，当表达式的值发生变化时，它将中断下来。表达式可以是一个变量的值，也可以包含由运算符组合的一个或多个变量的值，例如’a+b’。有时被称为数据断点</p>
+</blockquote>
+<h3 id="设置观察点"><a href="#设置观察点" class="headerlink" title="设置观察点"></a>设置观察点</h3><h4 id="watch"><a href="#watch" class="headerlink" title="watch &lt;expr&gt;"></a><code>watch &lt;expr&gt;</code></h4><ul>
+<li><p><strong>用途</strong>：当表达式或变量 <code>expr</code> 的 <strong>值被改变</strong> 时，程序会暂停。</p>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">watch x</span><br><span class="line">watch gdata+gdata2&gt;10</span><br></pre></td></tr></table></figure>
+
+<p>当变量 <code>x</code> 的值发生变化时暂停。</p>
+<p>任何一个线程满足 gdata+gdata2&gt;10 程序都会停下来</p>
+</li>
+</ul>
+<h4 id="rwatch"><a href="#rwatch" class="headerlink" title="rwatch &lt;expr&gt;"></a><code>rwatch &lt;expr&gt;</code></h4><ul>
+<li><p><strong>用途</strong>：当表达式或变量 <code>expr</code> 被<strong>读取</strong>时，程序暂停。</p>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rwatch y</span><br></pre></td></tr></table></figure>
+
+<p>当变量 <code>y</code> 被读取时暂停程序。</p>
+</li>
+</ul>
+<h4 id="awatch"><a href="#awatch" class="headerlink" title="awatch &lt;expr&gt;"></a><code>awatch &lt;expr&gt;</code></h4><ul>
+<li><p><strong>用途</strong>：当表达式或变量 <code>expr</code> 被<strong>读取或写入</strong>时，程序暂停。</p>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awatch z</span><br></pre></td></tr></table></figure>
+
+<p>当变量 <code>z</code> 被读取或写入时都暂停。</p>
+</li>
+</ul>
+<h3 id="查看当前观察点"><a href="#查看当前观察点" class="headerlink" title="查看当前观察点"></a>查看当前观察点</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">info watchpoints</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>显示所有设置的观察点（类似 <code>info breakpoints</code>）。</li>
+</ul>
+<h3 id="删除观察点"><a href="#删除观察点" class="headerlink" title="删除观察点"></a>删除观察点</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete &lt;编号&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>与删除断点的方式一样。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>观察点依赖于 <strong>目标架构是否支持硬件观察点</strong>（大多数支持）。</li>
+<li>不支持的情况下，GDB 可能无法设置 <code>watch</code>、<code>rwatch</code> 等。</li>
+<li>观察点数量受限，一般比断点少（通常是 4 个）。</li>
+</ul>
+<h2 id="捕获点-catchpoint"><a href="#捕获点-catchpoint" class="headerlink" title="捕获点 (catchpoint)"></a>捕获点 (catchpoint)</h2><blockquote>
+<p>捕获点是一个特殊的断点，命令语法为：catch event，即捕获到 event 这个事件的时候，程序就会中断下来</p>
+</blockquote>
+<p>命令格式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catch &lt;event&gt;</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用一次性的捕获点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcatch &lt;event&gt;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="常见-catchpoint-类型"><a href="#常见-catchpoint-类型" class="headerlink" title="常见 catchpoint 类型"></a>常见 catchpoint 类型</h3><table>
+<thead>
+<tr>
+<th>事件类型</th>
+<th>描述说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>throw</code></td>
+<td>捕获 C++ 程序抛出异常的位置。</td>
+</tr>
+<tr>
+<td><code>catch</code></td>
+<td>捕获 C++ 程序捕获异常的位置。</td>
+</tr>
+<tr>
+<td><code>exec</code></td>
+<td>捕获程序调用 <code>exec()</code> 系统调用（替换进程映像）。</td>
+</tr>
+<tr>
+<td><code>fork</code></td>
+<td>捕获程序调用 <code>fork()</code> 系统调用（创建子进程）。</td>
+</tr>
+<tr>
+<td><code>vfork</code></td>
+<td>捕获 <code>vfork()</code> 调用（特殊类型的 <code>fork()</code>）。</td>
+</tr>
+<tr>
+<td><code>load</code></td>
+<td>捕获动态链接库的加载事件。</td>
+</tr>
+<tr>
+<td><code>unload</code></td>
+<td>捕获动态链接库的卸载事件。</td>
+</tr>
+</tbody></table>
+<p>示例</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catch throw</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在 C++ 抛出异常时中断程序。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catch fork</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在程序调用 <code>fork()</code> 时中断。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcatch <span class="built_in">exec</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>设置一次性的捕获点，在程序调用 <code>exec()</code> 系统调用时暂停，之后自动移除。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>catch assert</td>
+<td>Catch failed Ada assertions, when raised.</td>
+</tr>
+<tr>
+<td>catch catch</td>
+<td>Catch an exception, when caught.</td>
+</tr>
+<tr>
+<td>catch exception</td>
+<td>Catch Ada exceptions, when raised.</td>
+</tr>
+<tr>
+<td>catch exec</td>
+<td>Catch calls to exec.</td>
+</tr>
+<tr>
+<td>catch fork</td>
+<td>Catch calls to fork.</td>
+</tr>
+<tr>
+<td>catch handlers</td>
+<td>Catch Ada exceptions, when handled.</td>
+</tr>
+<tr>
+<td>catch load</td>
+<td>Catch loads of shared libraries.</td>
+</tr>
+<tr>
+<td>catch rethrow</td>
+<td>Catch an exception, when rethrown.</td>
+</tr>
+<tr>
+<td>catch signal</td>
+<td>Catch signals by their names and&#x2F;or numbers.</td>
+</tr>
+<tr>
+<td>catch syscall</td>
+<td>Catch system calls by their names, groups and&#x2F;or numbers.</td>
+</tr>
+<tr>
+<td>catch throw</td>
+<td>Catch an exception, when thrown.</td>
+</tr>
+<tr>
+<td>catch unload</td>
+<td>Catch unloads of shared libraries.</td>
+</tr>
+<tr>
+<td>catch vfork</td>
+<td>Catch calls to vfork.</td>
+</tr>
+</tbody></table>
+<h2 id="程序停止点清除"><a href="#程序停止点清除" class="headerlink" title="程序停止点清除"></a>程序停止点清除</h2><h3 id="清除停止点（clear）"><a href="#清除停止点（clear）" class="headerlink" title="清除停止点（clear）"></a>清除停止点（clear）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">clear                    <span class="comment"># 清除当前位置所有停止点</span></span><br><span class="line">clear &lt;<span class="keyword">function</span>&gt;         <span class="comment"># 清除函数上的所有停止点</span></span><br><span class="line">clear &lt;filename:<span class="keyword">function</span>&gt;# 指定源文件和函数</span><br><span class="line">clear &lt;linenum&gt;          <span class="comment"># 清除当前文件某行的断点</span></span><br><span class="line">clear &lt;filename:linenum&gt; <span class="comment"># 指定文件+行号清除</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>说明：<code>clear</code> 是基于“<strong>位置</strong>”清除，而非编号。</p>
+</blockquote>
+<h3 id="删除断点（delete）"><a href="#删除断点（delete）" class="headerlink" title="删除断点（delete）"></a>删除断点（delete）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">delete                   <span class="comment"># 删除所有断点</span></span><br><span class="line">delete &lt;bnum&gt;            <span class="comment"># 删除指定编号的断点</span></span><br><span class="line">delete &lt;range&gt;           <span class="comment"># 如 delete 3-5，删除编号 3 到 5 的断点</span></span><br><span class="line">d                        <span class="comment"># delete 的简写</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="禁用-启用断点（disable-enable）"><a href="#禁用-启用断点（disable-enable）" class="headerlink" title="禁用&#x2F;启用断点（disable &#x2F; enable）"></a>禁用&#x2F;启用断点（disable &#x2F; enable）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">disable</span>                  <span class="comment"># 禁用所有断点</span></span><br><span class="line"><span class="built_in">disable</span> &lt;bnum&gt; [range]   <span class="comment"># 禁用特定断点</span></span><br><span class="line">dis                      <span class="comment"># disable 的简写</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">enable</span>                   <span class="comment"># 启用所有断点</span></span><br><span class="line"><span class="built_in">enable</span> &lt;bnum&gt;            <span class="comment"># 启用某个断点</span></span><br><span class="line"><span class="built_in">enable</span> &lt;bnum&gt; once       <span class="comment"># 执行一次后自动 disable</span></span><br><span class="line"><span class="built_in">enable</span> &lt;bnum&gt; delete     <span class="comment"># 执行一次后自动删除</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>推荐使用 <code>disable/enable</code> 管理调试状态，灵活又不丢失断点信息。</p>
+</blockquote>
+<hr>
+<h2 id="设置-修改停止点的条件（condition）"><a href="#设置-修改停止点的条件（condition）" class="headerlink" title="设置 &#x2F; 修改停止点的条件（condition）"></a>设置 &#x2F; 修改停止点的条件（condition）</h2><h3 id="设置条件停止点（设置时）"><a href="#设置条件停止点（设置时）" class="headerlink" title="设置条件停止点（设置时）"></a>设置条件停止点（设置时）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> foo <span class="keyword">if</span> x &gt; 5</span><br><span class="line">watch var <span class="keyword">if</span> var == 0</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改断点条件（维护时）"><a href="#修改断点条件（维护时）" class="headerlink" title="修改断点条件（维护时）"></a>修改断点条件（维护时）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">condition &lt;bnum&gt; x &gt; 100     <span class="comment"># 修改断点编号为 bnum 的条件</span></span><br><span class="line">condition &lt;bnum&gt;            <span class="comment"># 清除断点条件</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="调试程序执行"><a href="#调试程序执行" class="headerlink" title="调试程序执行"></a>调试程序执行</h2><h3 id="恢复程序运行（继续执行）"><a href="#恢复程序运行（继续执行）" class="headerlink" title="恢复程序运行（继续执行）"></a>恢复程序运行（继续执行）</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>continue</code> &#x2F; <code>c</code> &#x2F; <code>fg</code></td>
+<td>从当前断点处继续运行</td>
+</tr>
+<tr>
+<td><code>continue &lt;ignore-count&gt;</code></td>
+<td>忽略接下来的 <code>&lt;count&gt;</code> 次断点命中</td>
+</tr>
+<tr>
+<td><code>run</code> &#x2F; <code>r</code></td>
+<td>重新启动程序（从头开始）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>适用于程序刚停下，想跳过一些断点或继续往下执行。</p>
+</blockquote>
+<h3 id="单步调试（源代码级）"><a href="#单步调试（源代码级）" class="headerlink" title="单步调试（源代码级）"></a>单步调试（源代码级）</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>step</code> &#x2F; <code>s</code></td>
+<td>单步执行，会进入函数（Step Into）</td>
+</tr>
+<tr>
+<td><code>next</code> &#x2F; <code>n</code></td>
+<td>单步执行，不进入函数（Step Over）</td>
+</tr>
+<tr>
+<td><code>step &lt;count&gt;</code> &#x2F; <code>next &lt;count&gt;</code></td>
+<td>连续执行 <code>&lt;count&gt;</code> 步</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>用于逐行查看程序逻辑，<code>step</code> 会进函数内部，<code>next</code> 则略过。</p>
+</blockquote>
+<h3 id="退出当前函数（函数级跳出）"><a href="#退出当前函数（函数级跳出）" class="headerlink" title="退出当前函数（函数级跳出）"></a>退出当前函数（函数级跳出）</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>finish</code></td>
+<td>继续运行到当前函数返回，并打印返回值和返回地址</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>非常实用，适合跟踪完某个函数后退出它。</p>
+</blockquote>
+<h3 id="跳出循环体-块（until）"><a href="#跳出循环体-块（until）" class="headerlink" title="跳出循环体 &#x2F; 块（until）"></a>跳出循环体 &#x2F; 块（until）</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>until &lt;location&gt;</code> &#x2F; <code>u</code></td>
+<td>执行直到某个位置或当前块结束（适合退出循环）</td>
+</tr>
+</tbody></table>
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">until</span> 42            <span class="comment"># 运行到当前文件的第 42 行</span></span><br><span class="line"><span class="keyword">until</span> main.c:100    <span class="comment"># 运行到 main.c 第 100 行</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>用于快速跳出 for&#x2F;while 循环等结构块。</p>
+</blockquote>
+<h3 id="汇编级单步（指令级调试）"><a href="#汇编级单步（指令级调试）" class="headerlink" title="汇编级单步（指令级调试）"></a>汇编级单步（指令级调试）</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>stepi</code> &#x2F; <code>si</code></td>
+<td>单步执行一条机器指令（Step Into）</td>
+</tr>
+<tr>
+<td><code>nexti</code> &#x2F; <code>ni</code></td>
+<td>单步执行一条机器指令（Step Over）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>用于底层跟踪，比如跟踪系统调用、libc 内部逻辑或 boot code。</p>
+</blockquote>
+<p>汇编查看建议：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">display/i <span class="variable">$pc</span>     <span class="comment"># 实时显示当前执行指令</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="设置-step-mode-模式"><a href="#设置-step-mode-模式" class="headerlink" title="设置 step-mode 模式"></a>设置 step-mode 模式</h3><p>主要用于控制是否进入无符号函数</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>set step-mode on</code></td>
+<td>即使没有 debug 符号也停住（默认 off）</td>
+</tr>
+<tr>
+<td><code>set step-mode off</code></td>
+<td>遇到无符号函数就跳过（默认）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>对调试汇编或只含部分符号的库文件时很有用。</p>
+</blockquote>
+<h2 id="skip-跳过某个函数的单步执行"><a href="#skip-跳过某个函数的单步执行" class="headerlink" title="skip 跳过某个函数的单步执行"></a>skip 跳过某个函数的单步执行</h2><ul>
+<li>skip function</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">test_str</span>(test.<span class="built_in">get_str</span>());</span><br></pre></td></tr></table></figure>
+
+<p>如果我们不关心 get_str()但是想要看 test_str()，执行 s 命令时会先进入 get_str()</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) s</span><br><span class="line">(gdb) finish</span><br><span class="line"></span><br><span class="line">(gdb) skip test_c::get_str</span><br><span class="line">(gdb) s</span><br></pre></td></tr></table></figure>
+
+<p>skip 不是 jump，虽然 skip 了这个函数，但是实际上它还是会执行，只是跳过了调试</p>
+<ul>
+<li>skip file filename</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) skip file test.cpp</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>skip -gfi 通配符</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> -gfi可以通过文件名通配符匹配的方式跳过</span><br><span class="line">(gdb) skip -gfi common/*.*</span><br></pre></td></tr></table></figure>
+
+<h2 id="jump-命令跳转"><a href="#jump-命令跳转" class="headerlink" title="jump 命令跳转"></a>jump 命令跳转</h2><blockquote>
+<p>在指定位置恢复执行，如果存在断点，执行到指定位置时将中断下来。如果没有断点，则不会停下来，因此，我们通常会在指定位置设置一个断点。跳转命令不会更改当前堆栈帧，堆栈指针，程序计数器以外的任何寄存器</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 向前跳转或向后跳转跳过某些行都可以，但跳转到别的函数的结果是不可预期的</span><br><span class="line">(gdb) jump location</span><br><span class="line">(gdb) j location</span><br><span class="line"></span><br><span class="line"># 可以用改变pc寄存器来实现跳转</span><br><span class="line">(gdb) i line 12</span><br><span class="line">(gdb) p $pc=0x5400000</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>核心作用</strong>：强制程序<strong>跳转到指定位置执行</strong>（可以是任意行号或地址），直接 “跳过” 中间的执行步骤。</li>
+</ul>
+<h2 id="rn-反向执行"><a href="#rn-反向执行" class="headerlink" title="rn 反向执行"></a>rn 反向执行</h2><p>首先要执行 record 命令</p>
+<blockquote>
+<p>必须是 non-stop mode</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(gdb) record</span><br><span class="line">....</span><br><span class="line">....</span><br><span class="line"># 反向执行一步</span><br><span class="line">(gdb) rn</span><br><span class="line"># 反向执行到这个函数的开始</span><br><span class="line">(gdb) reverse-fisnish</span><br><span class="line">(gdb) record stop</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>核心作用</strong>：实现<strong>程序执行历史的回溯</strong>，让程序 “倒着跑”，用于排查已经发生的错误（如变量何时被意外修改）。</p>
+<p><strong>停止模式（默认）</strong></p>
+</li>
+<li><p>当你执行 <code>run</code> 或 <code>continue</code> 时，<strong>整个程序和所有线程都会暂停&#x2F;继续</strong>。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>简单、易用</li>
+<li>线程调试时无法单独控制线程</li>
+</ul>
+</li>
+<li><p>默认就是停止模式。</p>
+</li>
+</ul>
+<p><strong>非停止模式（Non-stop mode）</strong></p>
+<ul>
+<li><p>每个线程可以单独暂停或继续，而不影响其他线程。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>可以在多线程程序中只暂停某一线程进行调试</li>
+<li>支持更灵活的线程调试</li>
+</ul>
+</li>
+<li><p>开启方法：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> non-<span class="built_in">stop</span> <span class="keyword">on</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意：</p>
+<ul>
+<li>不支持某些功能，例如 <strong>process record</strong>（执行记录）和某些远程 target 功能</li>
+</ul>
+</li>
+</ul>
+<h1 id="查看运行时数据"><a href="#查看运行时数据" class="headerlink" title="查看运行时数据"></a>查看运行时数据</h1><p>程序暂停时，使用 print 命令（简写 p）或者用同义命令 inspect 查看当前程序的运行数据，格式为：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> <span class="symbol">&lt;expr&gt;</span></span><br><span class="line"><span class="keyword">print</span>/<span class="symbol">&lt;f&gt;</span> <span class="symbol">&lt;expr&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><expr>为要调试的程序语言的表达式</li>
+<li><f>是 format 的意思，比如按 16 进制输出就是&#x2F;x</li>
+</ul>
+<h2 id="print-p-输出格式"><a href="#print-p-输出格式" class="headerlink" title="print(p)输出格式"></a>print(p)输出格式</h2><p>一般来说，GDB 会根据变量的类型输出变量的值。但你也可以自定义 GDB 的输出的格式。例如，你想输出一个整数的十六进制，或是二进制来查看这个整<br>型变量的中的位的情况。要做到这样，你可以使用 GDB 的数据显示格式：</p>
+<ul>
+<li>x 按十六进制格式显示变量。 (hex)</li>
+<li>d 按十进制格式显示变量。 (decimal)</li>
+<li>u 按十六进制格式显示无符号整型。 (unsinged hex)</li>
+<li>o 按八进制格式显示变量。 (octal)</li>
+<li>t 按二进制格式显示变量。 (two)</li>
+<li>a 按十六进制格式显示变量。 (address)</li>
+<li>c 按字符格式显示变量。 (char)</li>
+<li>f 按浮点数格式显示变量。 (float)</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p i</span><br><span class="line"><span class="variable">$21</span> = 101</span><br><span class="line">(gdb) p/a i</span><br><span class="line"><span class="variable">$22</span> = 0x65</span><br><span class="line">(gdb) p/c i</span><br><span class="line"><span class="variable">$23</span> = 101 <span class="string">&#x27;e&#x27;</span></span><br><span class="line">(gdb) p/f i</span><br><span class="line"><span class="variable">$24</span> = 1.41531145e-43 (gdb) p/x i</span><br><span class="line"><span class="variable">$25</span> = 0x65</span><br><span class="line">(gdb) p/t i</span><br><span class="line"><span class="variable">$26</span> = 1100101</span><br></pre></td></tr></table></figure>
+
+<h2 id="表达式"><a href="#表达式" class="headerlink" title="表达式"></a>表达式</h2><p>表达式可以是当前程序运行中的 const 常量，变量，函数等内容，但不能是程序中定义的宏</p>
+<h3 id="程序变量"><a href="#程序变量" class="headerlink" title="程序变量"></a>程序变量</h3><p>在 GDB 中，你可以随时查看以下三种变量的值：</p>
+<ol>
+<li>全局变量（所有文件可见的）</li>
+<li>静态全局变量（当前文件可见的）</li>
+<li>局部变量（当前 Scope 可见的）</li>
+</ol>
+<p>用 print 显示出的变量的值会是函数中的局部变量的值。如果此时你想查看全局变量的值时，你可以使用“::”操作符：</p>
+<figure class="highlight vhdl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">file</span>::<span class="keyword">variable</span></span><br><span class="line"><span class="keyword">function</span>::<span class="keyword">variable</span></span><br></pre></td></tr></table></figure>
+
+<p>example</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb) p <span class="string">&#x27;f2.c&#x27;</span>::x</span><br></pre></td></tr></table></figure>
+
+<div class="tip warning faa-horizontal animated"><p>注意：如果你的程序编译时开启了优化选项，那么在用 GDB 调试被优化过的程序时，可能会发生某些变量不能访问，或是取值错误码的情况。这个是很正常的，因为优化程序会删改你的程序，整理你程序的语句顺序，剔除一些无意义的变量等，所以在 GDB 调试这种程序时，运行时的指令和你所编写指令就有不一样，也就会出现你所想象不到的结果。对付这种情况时，需要在编译程序时关闭编译优化。一般来说，几乎所有的编译器都支持编译优化的开关，例如，GNU 的 C&#x2F;C++编译器 GCC，你可以使用“-gstabs”选项来解决这个问题。</p>
+</div>
+
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> *<span class="built_in">array</span> = (<span class="type">int</span> *) <span class="built_in">malloc</span> (len * <span class="keyword">sizeof</span> (<span class="type">int</span>));</span><br></pre></td></tr></table></figure>
+
+<p>在 GDB 调试过程中，你可以以如下命令显示出这个动态数组的取值：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">p</span> *array<span class="keyword">@len</span></span><br></pre></td></tr></table></figure>
+
+<p>@的左边是数组的首地址的值，也就是变量 array 所指向的内容，右边则是数据的长度，其保存在变量 len 中，其输出结果，大约是下面这个样子的：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p <span class="number">*a</span>rray@len</span><br><span class="line"><span class="variable">$1</span> = &#123;2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40&#125; 如果是静态数组的话，可以直接用 <span class="built_in">print</span> 数组名，就可以显示数组中所有数据的内容了。</span><br></pre></td></tr></table></figure>
+
+<p>如果是静态数组的话，可以直接用 print 数组名，就可以显示数组中所有数据的内容了。</p>
+<h2 id="examine-x-查看内存"><a href="#examine-x-查看内存" class="headerlink" title="examine(x)查看内存"></a>examine(x)查看内存</h2><p>使用 examine 命令（简写是 x）来查看内存地址中的值。x 命令的语法如下所示：</p>
+<figure class="highlight bnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/<span class="attribute">&lt;n/f/u&gt;</span> <span class="attribute">&lt;addr&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>n：显示的个数，即从内存地址 <addr> 开始，显示几个单位（默认为 1）。</p>
+</li>
+<li><p>f：显示格式，比如：</p>
+<ul>
+<li>x 十六进制</li>
+<li>d 十进制</li>
+<li>t 二进制</li>
+<li>c 字符</li>
+<li>f 浮点数</li>
+<li>s 字符串</li>
+<li>i 指令</li>
+</ul>
+</li>
+<li><p>u：读取单位的大小，决定每次读取多少字节：</p>
+<ul>
+<li>b &#x3D; 1 字节（byte）</li>
+<li>h &#x3D; 2 字节（half word）</li>
+<li>w &#x3D; 4 字节（word，默认）</li>
+<li>g &#x3D; 8 字节（giant&#x2F;quad word）</li>
+</ul>
+</li>
+</ul>
+<h2 id="查看寄存器"><a href="#查看寄存器" class="headerlink" title="查看寄存器"></a>查看寄存器</h2><p>要查看寄存器的值，很简单，可以使用 info registers (i r)</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看寄存器的情况。（除了浮点寄存器）</span></span><br><span class="line"><span class="built_in">info</span> all-registers</span><br><span class="line"><span class="comment"># 查看所有寄存器的情况。（包括浮点寄存器）</span></span><br><span class="line"><span class="built_in">info</span> registers &lt;regname <span class="built_in">..</span>.&gt;</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 print 命令来访问寄存器的情况，只需要在寄存器名字前加一个$符号就可以了。如：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">p</span> <span class="variable">$eip</span>。</span><br></pre></td></tr></table></figure>
+
+<p>查看所指定的寄存器的情况。<br>寄存器中放置了程序运行时的数据，比如程序当前运行的指令地址（ip），程序的当前堆栈地址（sp）等等。你同样可以使用 print 命令来访问寄存器的情况，只需要在寄存器名字前加一个$符号就可以了。如：p $eip。</p>
+<h2 id="自动显示"><a href="#自动显示" class="headerlink" title="自动显示"></a>自动显示</h2><p>你可以设置一些自动显示的变量，当程序停住时，或是在你单步跟踪时，这些变量会自动显示。相关的 GDB 命令是 display。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">display</span> <span class="symbol">&lt;expr&gt;</span></span><br><span class="line"><span class="keyword">display</span>/<span class="symbol">&lt;fmt&gt;</span> <span class="symbol">&lt;expr&gt;</span></span><br><span class="line"><span class="keyword">display</span>/<span class="symbol">&lt;fmt&gt;</span> <span class="symbol">&lt;addr&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>expr 是一个表达式</li>
+<li>fmt 表示显示的格式</li>
+<li>addr 表示内存地址<br>当你用 display 设定好了一个或多个表达式后，只要你的程序被停下来，GDB 会自动显示你所设置的这些表达式的值。</li>
+</ul>
+<p>格式 i 和 s 同样被 display 支持，一个非常有用的命令是：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">display/i <span class="variable">$pc</span></span><br></pre></td></tr></table></figure>
+
+<p>$pc 是 GDB 的环境变量，表示着指令的地址，&#x2F;i 则表示输出格式为机器指令码，也就是汇编。于是当程序停下后，就会出现源代码和机器指令码相对应的情形</p>
+<h3 id="删除自动显示"><a href="#删除自动显示" class="headerlink" title="删除自动显示"></a>删除自动显示</h3><p>要删除自动显示可以用下面的命令</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">undisplay &lt;dnums...&gt;</span><br><span class="line"><span class="keyword">delete</span> display &lt;dnums...&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>dnums 意为所设置好了的自动显式的编号。<br>如果要同时删除几个，编号可以用空格分隔，如果要删除一个范围内的编号，可以用减号表示（如：2-5）</li>
+</ul>
+<h3 id="隐藏自动显示"><a href="#隐藏自动显示" class="headerlink" title="隐藏自动显示"></a>隐藏自动显示</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">disable</span> display &lt;dnums<span class="built_in">..</span>.&gt;</span><br><span class="line">(gdb) <span class="built_in">enable</span> display &lt;dnums<span class="built_in">..</span>.&gt;</span><br></pre></td></tr></table></figure>
+
+<p>disable 和 enalbe 不删除自动显示的设置，而只是让其失效和恢复。</p>
+<h3 id="查看设置的自动显示的信息"><a href="#查看设置的自动显示的信息" class="headerlink" title="查看设置的自动显示的信息"></a>查看设置的自动显示的信息</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">info</span> display</span><br></pre></td></tr></table></figure>
+
+<p>查看 display 设置的自动显示的信息。GDB 会打出一张表格，向你报告当然调试中设置了多少个自动显示设置，其中包括，设置的编号，表达式，是否 enable。</p>
+<h2 id="查看函数参数"><a href="#查看函数参数" class="headerlink" title="查看函数参数"></a>查看函数参数</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info args</span><br><span class="line">(gdb) i args</span><br><span class="line"></span><br><span class="line"># 查看都有哪些函数</span><br><span class="line">(gdb) info functions</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看局部变量"><a href="#查看局部变量" class="headerlink" title="查看局部变量"></a>查看局部变量</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info locals</span><br><span class="line">(gdb) i locals</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行中修改值"><a href="#运行中修改值" class="headerlink" title="运行中修改值"></a>运行中修改值</h2><h3 id="修改变量的值"><a href="#修改变量的值" class="headerlink" title="修改变量的值"></a>修改变量的值</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p test.<span class="attribute">age</span>=28</span><br><span class="line">(gdb) <span class="built_in">set</span> &#123;int&#125;&amp;test.gender = 110</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改寄存器的值"><a href="#修改寄存器的值" class="headerlink" title="修改寄存器的值"></a>修改寄存器的值</h3><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">var</span> <span class="variable">$pc</span>=xxx</span><br><span class="line">p <span class="variable">$rip</span>=xxx</span><br></pre></td></tr></table></figure>
+
+<p>可以配合 info 指令，查看某一行的地址，或查看某一个栈帧的地址</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">info</span> line 14</span><br><span class="line">p <span class="variable">$pc</span>=0x5555555553a3</span><br><span class="line"></span><br><span class="line"><span class="built_in">info</span> f 0</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看函数调用栈"><a href="#查看函数调用栈" class="headerlink" title="查看函数调用栈"></a>查看函数调用栈</h2><h3 id="backtrace-bt-查看栈回溯信息"><a href="#backtrace-bt-查看栈回溯信息" class="headerlink" title="backtrace&#x2F;bt 查看栈回溯信息"></a><strong>backtrace&#x2F;bt</strong> 查看栈回溯信息</h3><h3 id="frame-n-切换栈帧"><a href="#frame-n-切换栈帧" class="headerlink" title="frame n 切换栈帧"></a><strong>frame n</strong> 切换栈帧</h3><h3 id="info-f-n-查看栈帧信息"><a href="#info-f-n-查看栈帧信息" class="headerlink" title="info f n 查看栈帧信息"></a><strong>info f n</strong> 查看栈帧信息</h3><h2 id="查看数据类型信息"><a href="#查看数据类型信息" class="headerlink" title="查看数据类型信息"></a>查看数据类型信息</h2><h3 id="whatis"><a href="#whatis" class="headerlink" title="whatis"></a><strong>whatis</strong></h3><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) whatis test1</span><br><span class="line">(gdb) whatis test2</span><br><span class="line">(gdb) whatis node</span><br><span class="line">(gdb) whatis <span class="selector-tag">main</span></span><br><span class="line">(gdb) whatis test3<span class="selector-class">.test_fun2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="ptype"><a href="#ptype" class="headerlink" title="ptype"></a><strong>ptype</strong></h3><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p<span class="keyword">type</span> test1</span><br></pre></td></tr></table></figure>
+
+<p>可以显示这个类的成员变量，函数等</p>
+<h4 id="ptype-m"><a href="#ptype-m" class="headerlink" title="ptype &#x2F;m"></a>ptype &#x2F;m</h4><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p<span class="keyword">type</span> /m test1</span><br></pre></td></tr></table></figure>
+
+<p>不显示成员函数了</p>
+<h4 id="ptype-t"><a href="#ptype-t" class="headerlink" title="ptype &#x2F;t"></a>ptype &#x2F;t</h4><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p<span class="keyword">type</span> /t test3</span><br></pre></td></tr></table></figure>
+
+<p>不显示 typedef</p>
+<h4 id="ptype-o"><a href="#ptype-o" class="headerlink" title="ptype &#x2F;o"></a>ptype &#x2F;o</h4><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) ptype /o <span class="keyword">node</span><span class="title"></span></span><br></pre></td></tr></table></figure>
+
+<p>查看结构体的偏移量和大小</p>
+<h3 id="i-variables"><a href="#i-variables" class="headerlink" title="i variables"></a><strong>i variables</strong></h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) i variables <span class="built_in">count</span></span><br></pre></td></tr></table></figure>
+
+<p>会显示所有变量名含有 count 的变量的定义</p>
+<h3 id="set-print-object-on"><a href="#set-print-object-on" class="headerlink" title="set print object on"></a>set print object on</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">set</span> <span class="built_in">print</span> object on</span><br><span class="line">(gdb) ptype test2</span><br></pre></td></tr></table></figure>
+
+<p>set print object on 表示显示出类的派生类型</p>
+<h2 id="调用内部外部函数"><a href="#调用内部外部函数" class="headerlink" title="调用内部外部函数"></a>调用内部外部函数</h2><ul>
+<li>p 表达式</li>
+</ul>
+<blockquote>
+<p>求表达式的值并显示结果值。表达式可以包括对正在调试的程序中的函数的调用，即使函数返回值是 void，也会显示</p>
+</blockquote>
+<ul>
+<li>call 表达式</li>
+</ul>
+<blockquote>
+<p>求表达式的值并显示结果值，如果是函数调用，返回值是 void 的话，不显示 void 返回值</p>
+</blockquote>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">p</span> <span class="built_in">sizeof</span>(int)</span><br><span class="line"><span class="selector-tag">p</span> <span class="built_in">strlen</span>(name)</span><br><span class="line"></span><br><span class="line">call (int)<span class="built_in">getpid</span>()</span><br><span class="line"></span><br><span class="line">call <span class="built_in">malloc</span>(<span class="number">10</span>)</span><br><span class="line">call <span class="built_in">strcpy</span>($<span class="number">5</span>,&quot;soft&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>还有 strcmp,printf 等</p>
+<h1 id="多线程程序调试"><a href="#多线程程序调试" class="headerlink" title="多线程程序调试"></a>多线程程序调试</h1><h2 id="线程管理相关命令"><a href="#线程管理相关命令" class="headerlink" title="线程管理相关命令"></a>线程管理相关命令</h2><h3 id="info-threads"><a href="#info-threads" class="headerlink" title="info threads"></a>info threads</h3><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">gdb</span>) info threads</span><br><span class="line">(<span class="name">gdb</span>) i threads</span><br></pre></td></tr></table></figure>
+
+<p>查看所有线程信息，结果中序号前面有”*“表示当前线程</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010211018276.png" alt="info threads" loading="lazy"></p>
+<ul>
+<li>Thread 后面跟线程的地址</li>
+<li>LWP 表示 Light Weight Process，轻量级线程（可以在命令行中使用 ps -aL 查看所有轻量级线程）</li>
+<li>为给线程起名字时默认使用进程的名字</li>
+</ul>
+<h3 id="thread-find"><a href="#thread-find" class="headerlink" title="thread find"></a>thread find</h3><p>查找线程</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="function">thread find <span class="title">multh</span></span></span><br><span class="line"><span class="function"><span class="params">(gdb)</span> thread find 689519</span></span><br></pre></td></tr></table></figure>
+
+<p>搜索的范围是线程，地址，lwp 以及线程名字，也就是 i threads 的前三项</p>
+<h3 id="thread-num"><a href="#thread-num" class="headerlink" title="thread num"></a>thread num</h3><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">gdb</span>) bt</span><br><span class="line">(<span class="name">gdb</span>) thread <span class="number">2</span></span><br><span class="line">(<span class="name">gdb</span>) bt</span><br></pre></td></tr></table></figure>
+
+<p>切换线程，bt 只会显示当前线程的调用栈</p>
+<h3 id="thread-name"><a href="#thread-name" class="headerlink" title="thread name"></a>thread name</h3><p>设置线程名字，设置的是当前线程的名字</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) thread name main</span><br></pre></td></tr></table></figure>
+
+<h3 id="b-breakpoint-thread-id"><a href="#b-breakpoint-thread-id" class="headerlink" title="b breakpoint thread id"></a>b breakpoint thread id</h3><p>为线程单独设置断点</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b <span class="number">15</span> thread <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>如果用普通的 b 15，那么所有线程<strong>如果能执行到第 15 行</strong>都会停止下来</p>
+<h3 id="thread-apply"><a href="#thread-apply" class="headerlink" title="thread apply"></a>thread apply</h3><p>为线程执行命令</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) thread <span class="built_in">apply</span> <span class="number">3</span> i <span class="built_in">args</span></span><br><span class="line">(gdb) thread <span class="built_in">apply</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> i <span class="built_in">args</span></span><br><span class="line">(gdb) thread <span class="built_in">apply</span> <span class="number">1</span>-<span class="number">3</span> <span class="number">5</span> i <span class="built_in">args</span></span><br><span class="line">(gdb) thread <span class="built_in">apply</span> all i locals</span><br></pre></td></tr></table></figure>
+
+<p>-q 不显示线程信息</p>
+<p>-s 不显示错误信息</p>
+<p>这两个参数都要放在线程 id 后面</p>
+<h3 id="set-scheduler-locking-off-on-step"><a href="#set-scheduler-locking-off-on-step" class="headerlink" title="set scheduler-locking off|on|step"></a>set scheduler-locking off|on|step</h3><p><code>set scheduler-locking</code> 通过设置锁定策略，限制其他线程的执行，确保调试焦点始终在目标线程上</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>off</code></td>
+<td>关闭锁定（默认），调度器可自由切换所有线程执行。</td>
+<td>需观察多线程交互时（如线程同步、通信），允许其他线程自然执行。</td>
+</tr>
+<tr>
+<td><code>on</code></td>
+<td>开启完全锁定，<strong>只有当前被调试的线程能执行</strong>，其他线程被暂停。</td>
+<td>专注调试单个线程的逻辑（如函数调用链、局部变量变化），避免其他线程干扰。</td>
+</tr>
+<tr>
+<td><code>step</code></td>
+<td>分步锁定，仅在单步执行（<code>step</code>）时锁定其他线程，<code>continue</code> 时解锁。</td>
+<td>单步调试时需要隔离其他线程，但希望 <code>continue</code> 后程序能正常多线程运行。</td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 查看当前 scheduler-locking 配置</span><br><span class="line">(gdb) show scheduler-locking</span><br><span class="line">scheduler-locking is off.</span><br><span class="line"></span><br><span class="line"># 设置为完全锁定（on），确保当前调试的线程独占核心</span><br><span class="line">(gdb) set scheduler-locking on</span><br><span class="line"></span><br><span class="line"># 单步执行内核代码时，设置为分步锁定（step）</span><br><span class="line">(gdb) set scheduler-locking step</span><br><span class="line"></span><br><span class="line"># 调试完成后，恢复为默认（off）</span><br><span class="line">(gdb) set scheduler-locking off</span><br></pre></td></tr></table></figure>
+
+<p>打印线程事件信息</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) show <span class="built_in">print</span> thread-events</span><br><span class="line">(gdb) <span class="built_in">set</span> <span class="built_in">print</span> thread-events off</span><br></pre></td></tr></table></figure>
+
+<h2 id="多线程死锁调试"><a href="#多线程死锁调试" class="headerlink" title="多线程死锁调试"></a>多线程死锁调试</h2><p>死锁条件：</p>
+<ul>
+<li>互斥条件</li>
+<li>保持和请求条件</li>
+<li>不可剥夺条件</li>
+<li>循环等待条件</li>
+</ul>
+<p>常用命令：</p>
+<ul>
+<li>thread 2</li>
+<li>bt</li>
+<li>f 2</li>
+<li>p _mutex_2</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013210411803.png" alt="查看锁的owner" loading="lazy"></p>
+<p>解决死锁的方式：</p>
+<ul>
+<li>顺序使用锁</li>
+<li>控制锁的作用范围</li>
+<li>可以使用超时机制</li>
+</ul>
+<h1 id="多进程程序调试"><a href="#多进程程序调试" class="headerlink" title="多进程程序调试"></a>多进程程序调试</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="inferior"><a href="#inferior" class="headerlink" title="inferior"></a>inferior</h3><blockquote>
+<p>gdb 使用 inferior 来表示一个被调试进程的状态，通常情况下，一个 inferior 代表一个进程，这是 gdb 内部的概念和对象，我们可以把运行的进程 attach 到 inferior 上</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(gdb) i inferiors</span><br><span class="line">(gdb) add-inferior</span><br><span class="line">(gdb) remove-inferior 1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(gdb) !ps aux | grep rele</span><br><span class="line">(gdb) attach 2959251</span><br><span class="line"></span><br><span class="line">(gdb) i inferiors</span><br><span class="line">(gdb) detach inferior 2</span><br></pre></td></tr></table></figure>
+
+<h3 id="set-schedule-multiple-on-off"><a href="#set-schedule-multiple-on-off" class="headerlink" title="set schedule-multiple on&#x2F;off"></a>set schedule-multiple on&#x2F;off</h3><p>允许多个进程同时执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) show schedule-multiple</span><br><span class="line">(gdb) set schedule-mulitple on</span><br></pre></td></tr></table></figure>
+
+<h2 id="调试子进程"><a href="#调试子进程" class="headerlink" title="调试子进程"></a>调试子进程</h2><p>默认情况下无法调试子进程</p>
+<h3 id="set-follow-fork-mode-child-parent"><a href="#set-follow-fork-mode-child-parent" class="headerlink" title="set follow-fork-mode child&#x2F;parent"></a>set follow-fork-mode child&#x2F;parent</h3><blockquote>
+<p>默认情况下，follow-fork-mode 为 parent，即调试跟着父进程走，设置为 child 时才会跟着子进程走</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) set follow-fork-mode child</span><br><span class="line">(gdb) show follow-fork-mode</span><br></pre></td></tr></table></figure>
+
+<h3 id="set-detach-on-fork-on-off"><a href="#set-detach-on-fork-on-off" class="headerlink" title="set detach-on-fork on&#x2F;off"></a>set detach-on-fork on&#x2F;off</h3><p>默认情况下，detach-on-fork 为 on，即调试子进程时，父进程继续执行，父进程有可能直接执行结束，无法调试父进程了。因此，如果想要同时调试父进程和子进程，需要</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="keyword">set</span> detach-<span class="keyword">on</span>-fork <span class="keyword">off</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="info-inferiors"><a href="#info-inferiors" class="headerlink" title="info inferiors"></a>info inferiors</h3><p>查看由 gdb 启动的进程，也就是 gdb 的子进程</p>
+<h3 id="inferior-process-num"><a href="#inferior-process-num" class="headerlink" title="inferior process_num"></a>inferior process_num</h3><p>切换到 1 号子进程</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">gdb</span>) inferior <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="制作调试发行版"><a href="#制作调试发行版" class="headerlink" title="制作调试发行版"></a>制作调试发行版</h1><p>发行版需要一个没有调试信息的版本，同时也要保留有调试信息的版本，方便调试</p>
+<h2 id="方法-1：去掉-g-参数和带有-g-参数的两个版本"><a href="#方法-1：去掉-g-参数和带有-g-参数的两个版本" class="headerlink" title="方法 1：去掉-g 参数和带有-g 参数的两个版本"></a>方法 1：去掉-g 参数和带有-g 参数的两个版本</h2><p>在 Makefile 中写两个编译任务，分别是带-g 参数和不带-g 参数的版本</p>
+<h2 id="方法-2：strip-命令"><a href="#方法-2：strip-命令" class="headerlink" title="方法 2：strip 命令"></a>方法 2：strip 命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">strip -g debug_version.o release_version.o</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调试</span></span><br><span class="line">gdb --symbol=debug_version.o -<span class="built_in">exec</span>=release_version.o</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法-3：objcopy-命令"><a href="#方法-3：objcopy-命令" class="headerlink" title="方法 3：objcopy 命令"></a>方法 3：objcopy 命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成纯调试符号文件</span></span><br><span class="line">objcopy --only-keep-debug debug_version.o debug.sym</span><br><span class="line"><span class="comment"># 调试</span></span><br><span class="line">gdb --symbol=debug.sym -<span class="built_in">exec</span>=release_version.o</span><br></pre></td></tr></table></figure>
+
+<h1 id="直接编辑可执行文件"><a href="#直接编辑可执行文件" class="headerlink" title="直接编辑可执行文件"></a>直接编辑可执行文件</h1><p>gdb 启动时加入参数–write</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) gdb --write test.o</span><br><span class="line"># 显示源码对应的汇编和机器码</span><br><span class="line">(gdb) disassemble /mr check_some</span><br></pre></td></tr></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013202057070.png" alt="disassemble &#x2F;mr" loading="lazy"></p>
+<p>我们要修改的是机器码，修改后直接退出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p &#123;unsigned char&#125;0x00000000000011b4=0x65</span><br><span class="line">(gdb) q</span><br></pre></td></tr></table></figure>
+
+<h1 id="内存检查"><a href="#内存检查" class="headerlink" title="内存检查"></a>内存检查</h1><h2 id="内存泄漏检查"><a href="#内存泄漏检查" class="headerlink" title="内存泄漏检查"></a>内存泄漏检查</h2><h3 id="call-malloc-stats"><a href="#call-malloc-stats" class="headerlink" title="call malloc_stats()"></a>call malloc_stats()</h3><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) call <span class="built_in">malloc_stats</span>()</span><br></pre></td></tr></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013203318444.png" alt="malloc_stats" loading="lazy"></p>
+<blockquote>
+<p>Arena0 表示当前线程使用的内存数据</p>
+<p>Total 表示整个进程使用的内存数据</p>
+</blockquote>
+<h3 id="call-malloc-info-0-stdout"><a href="#call-malloc-info-0-stdout" class="headerlink" title="call malloc_info(0, stdout)"></a>call malloc_info(0, stdout)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) call malloc_info(0, stdout)</span><br></pre></td></tr></table></figure>
+
+<p>输出的是 xml 格式，主要关注<strong>rest</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013203805307.png" alt="malloc_info" loading="lazy"></p>
+<h2 id="gcc-选项-fsanitize-address"><a href="#gcc-选项-fsanitize-address" class="headerlink" title="gcc 选项 -fsanitize&#x3D;address"></a>gcc 选项 -fsanitize&#x3D;address</h2><ul>
+<li>检查内存泄漏</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013204508831.png" alt="memleak" loading="lazy"></p>
+<ul>
+<li>检查堆溢出</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013204826971.png" alt="heap_overflow" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013204758941.png" alt="heap_overflow" loading="lazy"></p>
+<ul>
+<li>检查栈溢出</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013204907479.png" alt="stack overflow" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013212246057.png" alt="stack size" loading="lazy"></p>
+<ul>
+<li>检查全局内存溢出</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013204950685.png" alt="global memory overflow" loading="lazy"></p>
+<ul>
+<li>检查释放后再使用</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251013205044920.png" alt="use after free" loading="lazy"></p>
+<h1 id="远程调试"><a href="#远程调试" class="headerlink" title="远程调试"></a>远程调试</h1><ol>
+<li>服务器端&#x2F;被调试机</li>
+</ol>
+<p>安装 gdbserver，启动 gdbserver</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ifconfig</span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> apt-get isntall gdbserver</span><br><span class="line"></span><br><span class="line"><span class="comment"># 这个端口可以任取，但不能和别的程序冲突，不能被防火墙ban</span></span><br><span class="line">gdbserver 10.20.50.83:9988 ./test.o</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果程序已经启动，先通过ps命令获取程序pid，然后</span></span><br><span class="line">gdbserver 10.20.50.83:9988 --attach pid</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>客户端&#x2F;调试机</li>
+</ol>
+<p>gdb 远程连接并进行调试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) target remote 10.20.50.83:9988</span><br><span class="line"># 远程程序输入quit不会导致远程程序结束</span><br><span class="line">(gdb) quit</span><br><span class="line"># 也可以使用detach</span><br><span class="line">(gdb) detach</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/42870/">https://even629.com/posts/42870/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/programming/">programming</a></div><div class="post-share"><div class="social-share" data-image="/images/gdb_cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#gdb-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">gdb 配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#tui-%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%98%BE%E7%A4%BA%E6%B7%B7%E4%B9%B1"><span class="toc-number">1.1.</span> <span class="toc-text">tui 模式下显示混乱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gdb-%E7%9C%8B%E4%B8%8D%E5%88%B0%E7%A8%8B%E5%BA%8F-printf-%E8%BE%93%E5%87%BA"><span class="toc-number">1.2.</span> <span class="toc-text">gdb 看不到程序 printf 输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#io-%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E4%BD%BF%E7%94%A8%E4%B8%8D%E5%90%8C%E7%9A%84%E7%BB%88%E7%AB%AF"><span class="toc-number">1.3.</span> <span class="toc-text">io 输入输出使用不同的终端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8-emacs-%E4%B8%AD%E4%BD%BF%E7%94%A8-gdb"><span class="toc-number">1.4.</span> <span class="toc-text">在 emacs 中使用 gdb</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#gdb-tui-%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">gdb tui 模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%BC%80-tui-%E6%A8%A1%E5%BC%8F%E5%B9%B6%E6%89%93%E5%BC%80%E6%BA%90%E7%A0%81"><span class="toc-number">2.1.</span> <span class="toc-text">打开 tui 模式并打开源码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E6%B1%87%E7%BC%96%E7%AA%97%E5%8F%A3"><span class="toc-number">2.2.</span> <span class="toc-text">显示汇编窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E5%AF%84%E5%AD%98%E5%99%A8%E7%AA%97%E5%8F%A3"><span class="toc-number">2.3.</span> <span class="toc-text">显示寄存器窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%87%E5%88%86%E7%AA%97%E5%8F%A3"><span class="toc-number">2.4.</span> <span class="toc-text">切分窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%87%E6%8D%A2%E7%AA%97%E5%8F%A3%E7%84%A6%E7%82%B9"><span class="toc-number">2.5.</span> <span class="toc-text">切换窗口焦点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E6%8B%A5%E6%9C%89%E7%84%A6%E7%82%B9%E7%9A%84%E7%AA%97%E5%8F%A3"><span class="toc-number">2.6.</span> <span class="toc-text">查看当前拥有焦点的窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%80%E5%87%BA%E7%AA%97%E5%8F%A3%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.7.</span> <span class="toc-text">退出窗口模式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8-gdb"><span class="toc-number">3.</span> <span class="toc-text">启动 gdb</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%8A%A0%E5%85%A5%E8%B0%83%E8%AF%95%E4%BF%A1%E6%81%AF"><span class="toc-number">3.1.</span> <span class="toc-text">编译阶段：加入调试信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">3.2.</span> <span class="toc-text">启动方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.2.1.</span> <span class="toc-text">调试一个程序</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E5%8F%82%E6%95%B0"><span class="toc-number">3.2.1.1.</span> <span class="toc-text">设置程序运行参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">3.2.1.2.</span> <span class="toc-text">设置运行环境变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="toc-number">3.2.1.3.</span> <span class="toc-text">设置工作目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA"><span class="toc-number">3.2.1.4.</span> <span class="toc-text">控制程序的输入输出</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95-core-dump-%E6%96%87%E4%BB%B6"><span class="toc-number">3.2.2.</span> <span class="toc-text">调试 core dump 文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E6%B4%BB%E7%9D%80%E7%9A%84%E8%BF%9B%E7%A8%8B%E4%BA%A7%E7%94%9F-coredump-%E6%96%87%E4%BB%B6"><span class="toc-number">3.2.2.1.</span> <span class="toc-text">为活着的进程产生 coredump 文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%93%E5%BC%80-Linux-core-%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E5%8A%9F%E8%83%BD"><span class="toc-number">3.2.2.2.</span> <span class="toc-text">打开 Linux core 文件生成功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%97%AD-Linux-core-%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E5%8A%9F%E8%83%BD"><span class="toc-number">3.2.2.3.</span> <span class="toc-text">关闭 Linux core 文件生成功能</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.2.3.</span> <span class="toc-text">调试正在运行的程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0"><span class="toc-number">3.3.</span> <span class="toc-text">常用启动参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gdb-%E4%B8%AD%E8%BF%90%E8%A1%8C-Shell-%E5%91%BD%E4%BB%A4"><span class="toc-number">3.4.</span> <span class="toc-text">gdb 中运行 Shell 命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gdb-%E8%B0%83%E8%AF%95%E8%BE%93%E5%87%BA%E6%97%A5%E5%BF%97%E4%BF%9D%E5%AD%98"><span class="toc-number">3.5.</span> <span class="toc-text">gdb 调试输出日志保存</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%A8%8B%E5%BA%8F"><span class="toc-number">4.</span> <span class="toc-text">调试程序</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-number">4.1.</span> <span class="toc-text">源代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-number">4.1.1.</span> <span class="toc-text">显示源代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%90%9C%E7%B4%A2%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-number">4.1.2.</span> <span class="toc-text">搜索源代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%AD%E7%82%B9-breakpoint"><span class="toc-number">4.2.</span> <span class="toc-text">断点 (breakpoint)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.1.</span> <span class="toc-text">设置断点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E5%87%BD%E6%95%B0%E5%90%8D%E8%AE%BE%E7%BD%AE%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.1.1.</span> <span class="toc-text">按函数名设置断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E8%A1%8C%E5%8F%B7%E8%AE%BE%E7%BD%AE%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.1.2.</span> <span class="toc-text">按行号设置断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%AF%B9%E5%BD%93%E5%89%8D%E8%A1%8C%E8%AE%BE%E7%BD%AE%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.1.3.</span> <span class="toc-text">相对当前行设置断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6-%E8%A1%8C%E5%8F%B7"><span class="toc-number">4.2.1.4.</span> <span class="toc-text">指定文件 + 行号</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6-%E5%87%BD%E6%95%B0%E5%90%8D"><span class="toc-number">4.2.1.5.</span> <span class="toc-text">指定文件 + 函数名</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E5%9C%B0%E5%9D%80%E8%AE%BE%E7%BD%AE%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.1.6.</span> <span class="toc-text">按地址设置断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E6%9D%A1%E4%BB%B6%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.1.7.</span> <span class="toc-text">设置条件断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E4%B8%8B%E4%B8%80%E6%9D%A1%E8%AF%AD%E5%8F%A5%E7%9A%84%E6%96%AD%E7%82%B9%EF%BC%88%E6%97%A0%E5%8F%82%E6%95%B0%EF%BC%89"><span class="toc-number">4.2.1.8.</span> <span class="toc-text">设置下一条语句的断点（无参数）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.2.</span> <span class="toc-text">查看断点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.2.1.</span> <span class="toc-text">查看所有断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%8C%87%E5%AE%9A%E7%BC%96%E5%8F%B7%E7%9A%84%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.2.2.</span> <span class="toc-text">查看指定编号的断点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.3.</span> <span class="toc-text">删除断点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E6%9F%90%E4%B8%80%E4%B8%AA%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.3.1.</span> <span class="toc-text">删除某一个断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E5%A4%9A%E4%B8%AA%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.3.2.</span> <span class="toc-text">删除多个断点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%96%AD%E7%82%B9"><span class="toc-number">4.2.3.3.</span> <span class="toc-text">删除所有断点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E6%96%AD%E7%82%B9%E6%B7%BB%E5%8A%A0%E5%91%BD%E4%BB%A4"><span class="toc-number">4.2.4.</span> <span class="toc-text">为断点添加命令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B8%85%E9%99%A4%E5%B7%B2%E6%9C%89%E5%91%BD%E4%BB%A4"><span class="toc-number">4.2.4.1.</span> <span class="toc-text">清除已有命令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%BD%E7%95%A5%E6%96%AD%E7%82%B9%E6%AC%A1%E6%95%B0%EF%BC%88ignore%EF%BC%89"><span class="toc-number">4.2.5.</span> <span class="toc-text">忽略断点次数（ignore）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E6%96%AD%E7%82%B9%E5%88%B0%E6%96%87%E4%BB%B6%E5%B9%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">4.2.6.</span> <span class="toc-text">保存断点到文件并读取</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E7%82%B9-watchpoint"><span class="toc-number">4.3.</span> <span class="toc-text">观察点 (watchpoint)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E8%A7%82%E5%AF%9F%E7%82%B9"><span class="toc-number">4.3.1.</span> <span class="toc-text">设置观察点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#watch"><span class="toc-number">4.3.1.1.</span> <span class="toc-text">watch &lt;expr&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#rwatch"><span class="toc-number">4.3.1.2.</span> <span class="toc-text">rwatch &lt;expr&gt;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#awatch"><span class="toc-number">4.3.1.3.</span> <span class="toc-text">awatch &lt;expr&gt;</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E8%A7%82%E5%AF%9F%E7%82%B9"><span class="toc-number">4.3.2.</span> <span class="toc-text">查看当前观察点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E8%A7%82%E5%AF%9F%E7%82%B9"><span class="toc-number">4.3.3.</span> <span class="toc-text">删除观察点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">4.3.4.</span> <span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8D%95%E8%8E%B7%E7%82%B9-catchpoint"><span class="toc-number">4.4.</span> <span class="toc-text">捕获点 (catchpoint)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81-catchpoint-%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.4.1.</span> <span class="toc-text">常见 catchpoint 类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%81%9C%E6%AD%A2%E7%82%B9%E6%B8%85%E9%99%A4"><span class="toc-number">4.5.</span> <span class="toc-text">程序停止点清除</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%85%E9%99%A4%E5%81%9C%E6%AD%A2%E7%82%B9%EF%BC%88clear%EF%BC%89"><span class="toc-number">4.5.1.</span> <span class="toc-text">清除停止点（clear）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E6%96%AD%E7%82%B9%EF%BC%88delete%EF%BC%89"><span class="toc-number">4.5.2.</span> <span class="toc-text">删除断点（delete）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%81%E7%94%A8-%E5%90%AF%E7%94%A8%E6%96%AD%E7%82%B9%EF%BC%88disable-enable%EF%BC%89"><span class="toc-number">4.5.3.</span> <span class="toc-text">禁用&#x2F;启用断点（disable &#x2F; enable）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE-%E4%BF%AE%E6%94%B9%E5%81%9C%E6%AD%A2%E7%82%B9%E7%9A%84%E6%9D%A1%E4%BB%B6%EF%BC%88condition%EF%BC%89"><span class="toc-number">4.6.</span> <span class="toc-text">设置 &#x2F; 修改停止点的条件（condition）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E6%9D%A1%E4%BB%B6%E5%81%9C%E6%AD%A2%E7%82%B9%EF%BC%88%E8%AE%BE%E7%BD%AE%E6%97%B6%EF%BC%89"><span class="toc-number">4.6.1.</span> <span class="toc-text">设置条件停止点（设置时）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E6%96%AD%E7%82%B9%E6%9D%A1%E4%BB%B6%EF%BC%88%E7%BB%B4%E6%8A%A4%E6%97%B6%EF%BC%89"><span class="toc-number">4.6.2.</span> <span class="toc-text">修改断点条件（维护时）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C"><span class="toc-number">4.7.</span> <span class="toc-text">调试程序执行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%EF%BC%88%E7%BB%A7%E7%BB%AD%E6%89%A7%E8%A1%8C%EF%BC%89"><span class="toc-number">4.7.1.</span> <span class="toc-text">恢复程序运行（继续执行）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E6%AD%A5%E8%B0%83%E8%AF%95%EF%BC%88%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BA%A7%EF%BC%89"><span class="toc-number">4.7.2.</span> <span class="toc-text">单步调试（源代码级）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%80%E5%87%BA%E5%BD%93%E5%89%8D%E5%87%BD%E6%95%B0%EF%BC%88%E5%87%BD%E6%95%B0%E7%BA%A7%E8%B7%B3%E5%87%BA%EF%BC%89"><span class="toc-number">4.7.3.</span> <span class="toc-text">退出当前函数（函数级跳出）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%B3%E5%87%BA%E5%BE%AA%E7%8E%AF%E4%BD%93-%E5%9D%97%EF%BC%88until%EF%BC%89"><span class="toc-number">4.7.4.</span> <span class="toc-text">跳出循环体 &#x2F; 块（until）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%87%E7%BC%96%E7%BA%A7%E5%8D%95%E6%AD%A5%EF%BC%88%E6%8C%87%E4%BB%A4%E7%BA%A7%E8%B0%83%E8%AF%95%EF%BC%89"><span class="toc-number">4.7.5.</span> <span class="toc-text">汇编级单步（指令级调试）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE-step-mode-%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.7.6.</span> <span class="toc-text">设置 step-mode 模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#skip-%E8%B7%B3%E8%BF%87%E6%9F%90%E4%B8%AA%E5%87%BD%E6%95%B0%E7%9A%84%E5%8D%95%E6%AD%A5%E6%89%A7%E8%A1%8C"><span class="toc-number">4.8.</span> <span class="toc-text">skip 跳过某个函数的单步执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jump-%E5%91%BD%E4%BB%A4%E8%B7%B3%E8%BD%AC"><span class="toc-number">4.9.</span> <span class="toc-text">jump 命令跳转</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rn-%E5%8F%8D%E5%90%91%E6%89%A7%E8%A1%8C"><span class="toc-number">4.10.</span> <span class="toc-text">rn 反向执行</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE"><span class="toc-number">5.</span> <span class="toc-text">查看运行时数据</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#print-p-%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">print(p)输出格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">5.2.</span> <span class="toc-text">表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%8F%98%E9%87%8F"><span class="toc-number">5.2.1.</span> <span class="toc-text">程序变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84"><span class="toc-number">5.2.2.</span> <span class="toc-text">数组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#examine-x-%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98"><span class="toc-number">5.3.</span> <span class="toc-text">examine(x)查看内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">5.4.</span> <span class="toc-text">查看寄存器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E6%98%BE%E7%A4%BA"><span class="toc-number">5.5.</span> <span class="toc-text">自动显示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E8%87%AA%E5%8A%A8%E6%98%BE%E7%A4%BA"><span class="toc-number">5.5.1.</span> <span class="toc-text">删除自动显示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%90%E8%97%8F%E8%87%AA%E5%8A%A8%E6%98%BE%E7%A4%BA"><span class="toc-number">5.5.2.</span> <span class="toc-text">隐藏自动显示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E8%AE%BE%E7%BD%AE%E7%9A%84%E8%87%AA%E5%8A%A8%E6%98%BE%E7%A4%BA%E7%9A%84%E4%BF%A1%E6%81%AF"><span class="toc-number">5.5.3.</span> <span class="toc-text">查看设置的自动显示的信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="toc-number">5.6.</span> <span class="toc-text">查看函数参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F"><span class="toc-number">5.7.</span> <span class="toc-text">查看局部变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E4%B8%AD%E4%BF%AE%E6%94%B9%E5%80%BC"><span class="toc-number">5.8.</span> <span class="toc-text">运行中修改值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC"><span class="toc-number">5.8.1.</span> <span class="toc-text">修改变量的值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E5%80%BC"><span class="toc-number">5.8.2.</span> <span class="toc-text">修改寄存器的值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E6%A0%88"><span class="toc-number">5.9.</span> <span class="toc-text">查看函数调用栈</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#backtrace-bt-%E6%9F%A5%E7%9C%8B%E6%A0%88%E5%9B%9E%E6%BA%AF%E4%BF%A1%E6%81%AF"><span class="toc-number">5.9.1.</span> <span class="toc-text">backtrace&#x2F;bt 查看栈回溯信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#frame-n-%E5%88%87%E6%8D%A2%E6%A0%88%E5%B8%A7"><span class="toc-number">5.9.2.</span> <span class="toc-text">frame n 切换栈帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#info-f-n-%E6%9F%A5%E7%9C%8B%E6%A0%88%E5%B8%A7%E4%BF%A1%E6%81%AF"><span class="toc-number">5.9.3.</span> <span class="toc-text">info f n 查看栈帧信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BF%A1%E6%81%AF"><span class="toc-number">5.10.</span> <span class="toc-text">查看数据类型信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#whatis"><span class="toc-number">5.10.1.</span> <span class="toc-text">whatis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ptype"><span class="toc-number">5.10.2.</span> <span class="toc-text">ptype</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ptype-m"><span class="toc-number">5.10.2.1.</span> <span class="toc-text">ptype &#x2F;m</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ptype-t"><span class="toc-number">5.10.2.2.</span> <span class="toc-text">ptype &#x2F;t</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ptype-o"><span class="toc-number">5.10.2.3.</span> <span class="toc-text">ptype &#x2F;o</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#i-variables"><span class="toc-number">5.10.3.</span> <span class="toc-text">i variables</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#set-print-object-on"><span class="toc-number">5.10.4.</span> <span class="toc-text">set print object on</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E5%86%85%E9%83%A8%E5%A4%96%E9%83%A8%E5%87%BD%E6%95%B0"><span class="toc-number">5.11.</span> <span class="toc-text">调用内部外部函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95"><span class="toc-number">6.</span> <span class="toc-text">多线程程序调试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="toc-number">6.1.</span> <span class="toc-text">线程管理相关命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#info-threads"><span class="toc-number">6.1.1.</span> <span class="toc-text">info threads</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#thread-find"><span class="toc-number">6.1.2.</span> <span class="toc-text">thread find</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#thread-num"><span class="toc-number">6.1.3.</span> <span class="toc-text">thread num</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#thread-name"><span class="toc-number">6.1.4.</span> <span class="toc-text">thread name</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-breakpoint-thread-id"><span class="toc-number">6.1.5.</span> <span class="toc-text">b breakpoint thread id</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#thread-apply"><span class="toc-number">6.1.6.</span> <span class="toc-text">thread apply</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#set-scheduler-locking-off-on-step"><span class="toc-number">6.1.7.</span> <span class="toc-text">set scheduler-locking off|on|step</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%AD%BB%E9%94%81%E8%B0%83%E8%AF%95"><span class="toc-number">6.2.</span> <span class="toc-text">多线程死锁调试</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95"><span class="toc-number">7.</span> <span class="toc-text">多进程程序调试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">7.1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#inferior"><span class="toc-number">7.1.1.</span> <span class="toc-text">inferior</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#set-schedule-multiple-on-off"><span class="toc-number">7.1.2.</span> <span class="toc-text">set schedule-multiple on&#x2F;off</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="toc-number">7.2.</span> <span class="toc-text">调试子进程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#set-follow-fork-mode-child-parent"><span class="toc-number">7.2.1.</span> <span class="toc-text">set follow-fork-mode child&#x2F;parent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#set-detach-on-fork-on-off"><span class="toc-number">7.2.2.</span> <span class="toc-text">set detach-on-fork on&#x2F;off</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#info-inferiors"><span class="toc-number">7.2.3.</span> <span class="toc-text">info inferiors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inferior-process-num"><span class="toc-number">7.2.4.</span> <span class="toc-text">inferior process_num</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%B6%E4%BD%9C%E8%B0%83%E8%AF%95%E5%8F%91%E8%A1%8C%E7%89%88"><span class="toc-number">8.</span> <span class="toc-text">制作调试发行版</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-1%EF%BC%9A%E5%8E%BB%E6%8E%89-g-%E5%8F%82%E6%95%B0%E5%92%8C%E5%B8%A6%E6%9C%89-g-%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%89%88%E6%9C%AC"><span class="toc-number">8.1.</span> <span class="toc-text">方法 1：去掉-g 参数和带有-g 参数的两个版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-2%EF%BC%9Astrip-%E5%91%BD%E4%BB%A4"><span class="toc-number">8.2.</span> <span class="toc-text">方法 2：strip 命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-3%EF%BC%9Aobjcopy-%E5%91%BD%E4%BB%A4"><span class="toc-number">8.3.</span> <span class="toc-text">方法 3：objcopy 命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E7%BC%96%E8%BE%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="toc-number">9.</span> <span class="toc-text">直接编辑可执行文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%A3%80%E6%9F%A5"><span class="toc-number">10.</span> <span class="toc-text">内存检查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%A3%80%E6%9F%A5"><span class="toc-number">10.1.</span> <span class="toc-text">内存泄漏检查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#call-malloc-stats"><span class="toc-number">10.1.1.</span> <span class="toc-text">call malloc_stats()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#call-malloc-info-0-stdout"><span class="toc-number">10.1.2.</span> <span class="toc-text">call malloc_info(0, stdout)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gcc-%E9%80%89%E9%A1%B9-fsanitize-address"><span class="toc-number">10.2.</span> <span class="toc-text">gcc 选项 -fsanitize&#x3D;address</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95"><span class="toc-number">11.</span> <span class="toc-text">远程调试</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '1e8fb8edc2f713446602fa74fa941f73'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

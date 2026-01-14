@@ -1,0 +1,1113 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux驱动框架 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux驱动的基本框架和基本知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux驱动框架">
+<meta property="og:url" content="https://even629.com/posts/2511093/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Linux驱动的基本框架和基本知识">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2025-11-09T12:31:13.000Z">
+<meta property="article:modified_time" content="2025-11-09T12:31:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2511093/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux驱动框架',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux驱动框架</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-09T12:31:13.000Z" title="发表于 2025-11-09 20:31:13">2025-11-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-09T12:31:13.000Z" title="更新于 2025-11-09 20:31:13">2025-11-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>25分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2511093/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-09</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h2 id="Linux-驱动抽象"><a href="#Linux-驱动抽象" class="headerlink" title="Linux 驱动抽象"></a>Linux 驱动抽象</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251222155906561.png" alt="Linux驱动框架演进" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251222155904703.png" alt="Linux2.4的驱动架构" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251222155920419.png" alt="Linux2.6引入平台总线架构" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251222155930212.png" alt="Linux设备树" loading="lazy"></p>
+<p>Linux 将存储器和外设分为 3 个基础大类：<strong>字符设备驱动</strong>，<strong>块设备驱动</strong>，<strong>网络设备驱动</strong>。</p>
+<h2 id="Linux-源码目录结构"><a href="#Linux-源码目录结构" class="headerlink" title="Linux 源码目录结构"></a>Linux 源码目录结构</h2><table>
+<thead>
+<tr>
+<th>目录</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>arch</td>
+<td>架构相关目录，存放多种 CPU 架构（如 arm、X86、MIPS 等）的适配代码</td>
+</tr>
+<tr>
+<td>block</td>
+<td>块设备相关代码目录，Linux 中以块设备形式管理硬盘、SD 卡等存储设备</td>
+</tr>
+<tr>
+<td>crypto</td>
+<td>加密算法目录，存放各类加密相关的实现代码</td>
+</tr>
+<tr>
+<td>Documentation</td>
+<td>官方 Linux 内核文档目录，包含内核功能、接口等详细说明</td>
+</tr>
+<tr>
+<td>drivers</td>
+<td>驱动目录，存放 Linux 系统支持的各类硬件设备驱动代码</td>
+</tr>
+<tr>
+<td>firmware</td>
+<td>固件目录，存放硬件设备所需的固件文件</td>
+</tr>
+<tr>
+<td>fs</td>
+<td>文件系统目录，存放 ext2、ext3、fat 等文件系统的实现代码</td>
+</tr>
+<tr>
+<td>include</td>
+<td>公共头文件目录，提供内核各模块共用的头文件</td>
+</tr>
+<tr>
+<td>init</td>
+<td>内核启动初始化目录，存放 Linux 内核启动阶段的初始化代码</td>
+</tr>
+<tr>
+<td>ipc</td>
+<td>进程间通信目录，存放管道、消息队列、共享内存等 IPC 机制的实现代码</td>
+</tr>
+<tr>
+<td>kernel</td>
+<td>内核核心目录，存放内核本身的核心功能代码</td>
+</tr>
+<tr>
+<td>lib</td>
+<td>库函数目录，存放内核使用的各类库函数</td>
+</tr>
+<tr>
+<td>mm</td>
+<td>内存管理目录（mm 为 memory management 缩写），负责内核内存管理功能</td>
+</tr>
+<tr>
+<td>net</td>
+<td>网络相关目录，存放 TCP&#x2F;IP 协议栈等网络功能的实现代码</td>
+</tr>
+<tr>
+<td>scripts</td>
+<td>脚本目录，存放内核编译、测试等流程中使用的脚本文件</td>
+</tr>
+<tr>
+<td>security</td>
+<td>安全相关目录，存放内核安全机制的实现代码</td>
+</tr>
+<tr>
+<td>sound</td>
+<td>音频相关目录，存放音频设备驱动及音频处理的代码</td>
+</tr>
+<tr>
+<td>tools</td>
+<td>工具目录，存放 Linux 内核开发、调试用到的工具程序</td>
+</tr>
+<tr>
+<td>usr</td>
+<td>与 Linux 内核启动相关的代码目录</td>
+</tr>
+<tr>
+<td>virt</td>
+<td>内核虚拟机相关目录，存放内核级虚拟化功能的实现代码</td>
+</tr>
+</tbody></table>
+<h2 id="最简单的-Linux-驱动结构解析"><a href="#最简单的-Linux-驱动结构解析" class="headerlink" title="最简单的 Linux 驱动结构解析"></a>最简单的 Linux 驱动结构解析</h2><ul>
+<li><strong>组成部分</strong><ol>
+<li><strong>头文件（必须）</strong>：驱动需包含内核相关头文件，其中<code>&lt;linux/module.h&gt;</code>和<code>&lt;linux/init.h&gt;</code>是必备的。</li>
+<li><strong>驱动加载函数（必须）</strong>：加载驱动时，该函数会被内核自动执行。</li>
+<li><strong>驱动卸载函数（必须）</strong>：卸载驱动时，该函数会被内核自动执行。</li>
+<li><strong>许可证声明（必须）</strong>：因 Linux 内核遵循 GPL 协议，驱动加载时也需遵守相关协议，常见的有 GPL v2 等多种许可证类型。</li>
+<li><strong>模块参数（可选）</strong>：是模块加载时传递给内核模块的值。</li>
+<li><strong>作者和版本信息（可选）</strong>：用于声明驱动的作者及代码版本信息。</li>
+</ol>
+</li>
+<li><strong>例子</strong></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">hello_world_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    printk(KERN_INFO <span class="string">&quot;Hello World: Module loaded\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">hello_world_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    printk(KERN_INFO <span class="string">&quot;Hello World: Module unloaded\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(hello_world_init);</span><br><span class="line">module_exit(hello_world_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;Zhao Hang&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;Hello World Kernel Module&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>当且仅当 module_init 中的 init 函数返回大于等于 0 的值模块才会被加载成功</p>
+</blockquote>
+<h2 id="模块信息"><a href="#模块信息" class="headerlink" title="模块信息"></a>模块信息</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -h hello_world.ko</span><br><span class="line"></span><br><span class="line">hello_world.ko:     file format elf64-little</span><br><span class="line"></span><br><span class="line">Sections:</span><br><span class="line">Idx Name          Size      VMA               LMA               File off  Algn</span><br><span class="line">  0 .text         00000000  0000000000000000  0000000000000000  00000040  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, CODE</span><br><span class="line">  1 .init.text    00000034  0000000000000000  0000000000000000  00000040  2**2</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE</span><br><span class="line">  2 .exit.text    00000024  0000000000000000  0000000000000000  00000074  2**2</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE</span><br><span class="line">  3 .note.gnu.property 00000020  0000000000000000  0000000000000000  00000098  2**3</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br><span class="line">  4 .note.gnu.build-id 00000024  0000000000000000  0000000000000000  000000b8  2**2</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br><span class="line">  5 .note.Linux   00000018  0000000000000000  0000000000000000  000000dc  2**2</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br><span class="line">  6 .rodata.str1.8 0000002b  0000000000000000  0000000000000000  000000f8  2**3</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br><span class="line">  7 .modinfo      000000b2  0000000000000000  0000000000000000  00000123  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br><span class="line">  8 __versions    00000080  0000000000000000  0000000000000000  000001d8  2**3</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br><span class="line">  9 __patchable_function_entries 00000008  0000000000000080  0000000000000080  00000258  2**3</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, DATA</span><br><span class="line"> 10 .data         00000000  0000000000000000  0000000000000000  00000260  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, DATA</span><br><span class="line"> 11 .gnu.linkonce.this_module 000003c0  0000000000000000  0000000000000000  00000260  2**6</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, DATA, LINK_ONCE_DISCARD</span><br><span class="line"> 12 .plt          00000001  0000000000000000  0000000000000000  00000620  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, CODE</span><br><span class="line"> 13 .init.plt     00000001  0000000000000000  0000000000000000  00000621  2**0</span><br><span class="line">                  ALLOC, READONLY</span><br><span class="line"> 14 .text.ftrace_trampoline 00000001  0000000000000000  0000000000000000  00000621  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, CODE</span><br><span class="line"> 15 .bss          00000000  0000000000000000  0000000000000000  00000622  2**0</span><br><span class="line">                  ALLOC</span><br><span class="line"> 16 .comment      00000026  0000000000000000  0000000000000000  00000622  2**0</span><br><span class="line">                  CONTENTS, READONLY</span><br><span class="line"> 17 .note.GNU-stack 00000000  0000000000000000  0000000000000000  00000648  2**0</span><br><span class="line">                  CONTENTS, READONLY</span><br></pre></td></tr></table></figure>
+
+<p>内核模块使用其<code>.modinfo</code>部分来存储关于模块的信息，所有<code>MODULE_*</code>宏都用参数传递的值更新这部分的内容。其中一些宏是<br><code>MODULE_DESCRIPTION()</code>、<code>MODULE_AUTHOR()</code>和<code>MODULE_LICENSE()</code>。内核提供的在模块信息部分添加条目的真正底层宏是<code>MODULE_INFO(tag,info)</code>，它添加的一般信息形式是<code>tag=info</code>。这意味着驱动程序作者可以自由添加其想要的任何形式信息，例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MODULE_INFO(my_field_name, <span class="string">&quot;What eeasy value&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>.modeinfo</code>部分的内容:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -x .modinfo hello_world.ko</span><br><span class="line"></span><br><span class="line">Hex dump of section <span class="string">&#x27;.modinfo&#x27;</span>:</span><br><span class="line">  0x00000000 64657363 72697074 696f6e3d 68656c6c description=hell</span><br><span class="line">  0x00000010 6f20776f 726c6421 00617574 686f723d o world!.author=</span><br><span class="line">  0x00000020 6576656e 36323900 6c696365 6e73653d even629.license=</span><br><span class="line">  0x00000030 47504c00 73726376 65727369 6f6e3d41 GPL.srcversion=A</span><br><span class="line">  0x00000040 34303030 33444636 33303137 39423643 40003DF630179B6C</span><br><span class="line">  0x00000050 46314430 34350064 6570656e 64733d00 F1D045.depends=.</span><br><span class="line">  0x00000060 6e616d65 3d68656c 6c6f5f77 6f726c64 name=hello_world</span><br><span class="line">  0x00000070 00766572 6d616769 633d352e 31302e31 .vermagic=5.10.1</span><br><span class="line">  0x00000080 31302d76 382b2053 4d502070 7265656d 10-v8+ SMP preem</span><br><span class="line">  0x00000090 7074206d 6f645f75 6e6c6f61 64206d6f pt mod_unload mo</span><br><span class="line">  0x000000a0 64766572 73696f6e 73206161 72636836 dversions aarch6</span><br><span class="line">  0x000000b0 3400                                4.</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用<code>modinfo</code>查看</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ modinfo hello_world.ko</span><br><span class="line">filename:       /home/zhaohang/repository/linux/linux_driver_learning/01_hello_world/hello_world.ko</span><br><span class="line">description:    hello world!</span><br><span class="line">author:         even629</span><br><span class="line">license:        GPL</span><br><span class="line">srcversion:     A40003DF630179B6CF1D045</span><br><span class="line">depends:</span><br><span class="line">name:           hello_world</span><br><span class="line">vermagic:       5.10.110-v8+ SMP preempt mod_unload modversions aarch64</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译-Linux-驱动"><a href="#编译-Linux-驱动" class="headerlink" title="编译 Linux 驱动"></a>编译 Linux 驱动</h2><ul>
+<li><strong>将驱动放在 Linux 内核里面</strong>，然后编译 Linux 内核。将驱动编译到 Linux 内核里面。</li>
+<li>将驱动<strong>编译成内核模块</strong>，独立于 Linux 内核之外<ul>
+<li>内核模块是 Linux 系统中的一个特殊的机制，可以<u>将一些使用频率很少或者暂时不用的功能编译成内核模块</u>，在需要的时候再动态加载到内核里面。</li>
+<li>使用内核模块可以减小内核体积，加快启动速度。并且可以在系统运行时插入或者卸载驱动，无需重启系统。内核模块的后缀是.ko</li>
+</ul>
+</li>
+</ul>
+<h3 id="编译成内核模块"><a href="#编译成内核模块" class="headerlink" title="编译成内核模块"></a>编译成内核模块</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">obj-m += hello_world.o</span><br><span class="line">KERNEL_SRC:=/home/zhaohang/repository/linux/linux-5.10.246</span><br><span class="line">PWD ?=<span class="variable">$(<span class="built_in">shell</span> pwd)</span></span><br><span class="line">ARCH = arm64</span><br><span class="line">CROSS_COMPILE = aarch64-linux-gnu-</span><br><span class="line"></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	<span class="variable">$(MAKE)</span> ARCH=<span class="variable">$(ARCH)</span> CROSS_COMPILE=<span class="variable">$(CROSS_COMPILE)</span> -C <span class="variable">$(KERNEL_SRC)</span> M=<span class="variable">$(PWD)</span> modules</span><br><span class="line"></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	<span class="variable">$(MAKE)</span> ARCH=<span class="variable">$(ARCH)</span> CROSS_COMPILE=<span class="variable">$(CROSS_COMPILE)</span> -C <span class="variable">$(KERNEL_SRC)</span> M=<span class="variable">$(PWD)</span> modules clean</span><br><span class="line">	rm -rf *.ko *.o *.mod.o *.mod.c *.symvers *.order</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>本地的 Linux 代码在&#x2F;lib&#x2F;modules&#x2F;$(uname -r)&#x2F;kernel 下</p>
+</blockquote>
+<h3 id="将驱动编译到内核"><a href="#将驱动编译到内核" class="headerlink" title="将驱动编译到内核"></a>将驱动编译到内核</h3><p>在<code>drivers/char</code>(以字符驱动为例)创建文件夹 helloworld，然后将驱动源代码放入，然后创建 Kconfig 文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">config helloworld</span><br><span class="line">	bool &quot;helloworld support&quot;</span><br><span class="line">	default y</span><br><span class="line">	help</span><br><span class="line">			helloworld</span><br></pre></td></tr></table></figure>
+
+<p>更改 drivers</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">emacs ../Kconfig</span><br><span class="line"><span class="comment"># 添加</span></span><br><span class="line"><span class="built_in">source</span> <span class="string">&quot;drivers/char/helloworld/Kconfig&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>在驱动源码里创建 Makefile</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obj-<span class="variable">$(CONFIG_helloworld)</span> += helloworld.o</span><br></pre></td></tr></table></figure>
+
+<p>然后在上一级的 Makefile 中添加：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">emacs ../Makefile</span><br><span class="line"><span class="comment"># 添加</span></span><br><span class="line">obj-y += helloworld/</span><br></pre></td></tr></table></figure>
+
+<h2 id="模块相关命令"><a href="#模块相关命令" class="headerlink" title="模块相关命令"></a>模块相关命令</h2><h3 id="模块加载命令"><a href="#模块加载命令" class="headerlink" title="模块加载命令"></a>模块加载命令</h3><ul>
+<li><strong>insmod</strong><ul>
+<li>功能：载入 Linux 内核模块</li>
+<li>语法：insmod 模块名</li>
+<li>例子：insmod hello_world.ko</li>
+</ul>
+</li>
+<li><strong>modprobe</strong><ul>
+<li>功能：加载内核模块，同时这个模块所依赖的模块也同时被加载</li>
+<li>语法：modprobe 模块名</li>
+<li>举例：modprobe hello_world.ko</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>系统管理员或在生产系统中则常用 modprobe。modprobe 更智能,它在加载指定的模块之前解析文件 modules.dep，以便首先加载依赖关系。它会自动处理模块依赖关系，就像包管理器所做的那样。</p>
+<p>但是**<code>modprobe</code> 不能直接加载任意路径下的 <code>.ko</code> 文件** —— 它只从标准内核模块目录（如 <code>/lib/modules/$(uname -r)/</code>）中查找模块，并依赖 <code>modules.dep</code> 索引。</p>
+</blockquote>
+<h3 id="模块卸载命令"><a href="#模块卸载命令" class="headerlink" title="模块卸载命令"></a>模块卸载命令</h3><ul>
+<li><p><strong>rmmod</strong></p>
+<ul>
+<li>功能：移除已经载入 Linux 的内核模块</li>
+<li>语法：rmmod 模块名</li>
+<li>举例：rmmod hello_world.ko</li>
+</ul>
+</li>
+<li><p><strong>modeprobe -r</strong></p>
+<ul>
+<li>它不仅会尝试卸载 <code>mymodule</code>，还会<strong>自动检查并卸载那些只被 <code>mymodule</code> 依赖、且当前没有其他模块&#x2F;进程在使用的依赖模块</strong>。</li>
+<li>语法：<code>modeprobe -r mymodule</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>卸载内核模块功能的启用或禁用由 CONFIG_MODULE_UNLOAD 配置选项的值决定。没有这个选项，就不能卸载任何模块。</p>
+<p>在运行时，如果模块卸载会导致其他不良影响，则即使有人要求卸载，内核也将阻止这样做。这是因为<strong>内核通过引用计数记录模块的使用次数</strong>，这样它就知道模块是否在用。如果内核认为删除一个模块是不安全的，就不会删除它。然而，以下设置可以改变这种行为：MODULE_FORCE_UNLOAD&#x3D;y</p>
+</blockquote>
+<h3 id="设置启动时加载模块"><a href="#设置启动时加载模块" class="headerlink" title="设置启动时加载模块"></a>设置启动时加载模块</h3><p>如果要在启动的时候加载一些模块，则只需创建文件<code>/etc/modules-load.d/&lt;filename&gt;.conf</code>，并添加应该加载的模块名称（每行一个）。人们通常使用模块：<code>/etc/modules-load.d/modules.conf</code>。当然也可以根据需要创建多个.conf 文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">emacs /etc/modules-load.d/mymodule.conf</span><br><span class="line"><span class="comment"># 下面时mymodule.conf的内容</span></span><br><span class="line">uio</span><br><span class="line">iwlwifi</span><br><span class="line">i2c-dev</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看模块信息命令"><a href="#查看模块信息命令" class="headerlink" title="查看模块信息命令"></a>查看模块信息命令</h3><ul>
+<li><strong>lsmod</strong>命令<ul>
+<li>功能：列出已经载入 Linux 的内核模块</li>
+<li>也可以使用命令 cat &#x2F;proc&#x2F;modules 来查看模块是否加载成功</li>
+</ul>
+</li>
+<li><strong>modinfo</strong>命令<ul>
+<li>功能：查看内核模块信息</li>
+<li>语法：modinfo 模块名</li>
+<li>举例：modinfo hello_world.ko</li>
+</ul>
+</li>
+</ul>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p><strong>menuconfig</strong>配置驱动选项状态操作：</p>
+<p>驱动状态：</p>
+<ol>
+<li><strong>把驱动编译成内核模块，用 M 来表示</strong></li>
+<li><strong>把驱动编译到内核里面，用*来表示</strong></li>
+<li><strong>不编译</strong></li>
+</ol>
+<p>使用空格来切换这三种不同状态。</p>
+<p>选项的状态有:</p>
+<ul>
+<li><code>[]</code> : 表示有两种状态只能设置成选中或者不选中</li>
+<li><code>&lt;&gt;</code> : 表示有三种状态，可以设置成选中，不选中，和编译成模块</li>
+<li>() : 表示用来存放字符串或者 16 进制数</li>
+</ul>
+<h3 id="Kconfig-文件"><a href="#Kconfig-文件" class="headerlink" title="Kconfig 文件"></a>Kconfig 文件</h3><p>Kconfig 文件是图形化配置界面的源文件，图形化配置界面中的选项由 Kconfig 文件决定。当我们执行命令<code>make menuconfig</code>命令的时候，内核的配置工具会读取内核源码目录下的<code>arch/xxx/Kconfig</code>。xxx 是 ARCH 的值，比如 arm64，然后生成对应的配置界面供开发者使用。</p>
+<h3 id="config-文件与-config-文件"><a href="#config-文件与-config-文件" class="headerlink" title="config 文件与.config 文件"></a>config 文件与.config 文件</h3><p>config 文件和.config 文件都是 Linux 内核的配置文件。</p>
+<ul>
+<li><p>config 文件位于 Linux 内核源码的 arch&#x2F;$(ARCH)&#x2F;configs 目录下，是<strong>Linux 系统默认的配置文件</strong>。.</p>
+</li>
+<li><p>config 文件位于 Linux 内核源码的顶层目录下，编译 linux 内核时会使用.config 文件里面的配置来编译内核镜像。</p>
+<ul>
+<li><p>若.config 存在，make menuconfig 界面的默认配置即当前.config 文件的配置，若修改了图形化配置界面的设置并保存，则.config 文件会被更新。</p>
+</li>
+<li><p>若.config 文件不存在，make menuconfig 界面的默认配置则为 Kconfig 文件中的默认配置。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>使用命令 make xxx_defconfig 命令会根据 arch&#x2F;$(ARCH)&#x2F;configs 目录下默认文件生成.config 文件。</p>
+<h3 id="Kconfig-语法"><a href="#Kconfig-语法" class="headerlink" title="Kconfig 语法"></a>Kconfig 语法</h3><p>参考:</p>
+<div class="tag link"><a class="link-card" title="kconfig language" target="_blank" rel="noopener" href="https://docs.kernel.org/kbuild/kconfig-language.html"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://docs.kernel.org/_static/logo.svg"/></div><div class="right"><p class="text">kconfig language</p><p class="url">https://docs.kernel.org/kbuild/kconfig-language.html</p></div></a></div>
+
+<p><strong>主菜单</strong></p>
+<p><strong>mainmenu</strong>用来设置主菜单的标题</p>
+<p>举例：<code>mainmenu &quot;Linux/\$(ARCH) $(KERNELVERSION) Kernel Configuration&quot;</code></p>
+<p>上述名字设置的菜单名字为<code>Linux/\$(ARCH) $(KERNELVERSION) Kernel Configuration</code></p>
+<p><strong>菜单结构</strong></p>
+<p>可以用 menu&#x2F;endmenu 来生成菜单，menu 是菜单开始的标志，endmenu 是菜单结束的标志。这两个是成对出现的。</p>
+<p>如下描述的是一个名字为：”Network device support”的菜单</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">menu <span class="string">&quot;Network device support&quot;</span></span><br><span class="line">	config NETDEVICE</span><br><span class="line">	...</span><br><span class="line">endmenu</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置选项</strong></p>
+<p>使用关键字<strong>config</strong>来定义一个新的选项。每个选项都必须指定类型，类型包括<strong>bool, tristate, string, hex, int</strong>。最常见的是 bool, tristate, string 这三个。</p>
+<ul>
+<li><p>bool 类型有两种值：y 和 n;</p>
+</li>
+<li><p>trisate 有三种值：y, m 和 n;</p>
+</li>
+<li><p>string 为字符串类型。</p>
+</li>
+</ul>
+<p>help 表示帮助信息，当我们在图形化界面按下 h 按键，弹出来的就是 help 的内容。</p>
+<p>举例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">config helloworld</span><br><span class="line">	bool &quot;hello world support&quot;</span><br><span class="line">	default y</span><br><span class="line">	help</span><br><span class="line">		hello world</span><br></pre></td></tr></table></figure>
+
+<p><strong>依赖关系</strong></p>
+<p>Kconfig 中的依赖关系可以用 depends on 和 select</p>
+<p><strong>depends on 表示直接依赖关系</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config A</span><br><span class="line">	depends on B</span><br></pre></td></tr></table></figure>
+
+<p>表示选项 A 依赖选项 B，只有选项 B 被选中时，A 选项才可以被选中</p>
+<p><strong>select 表示反向依赖关系：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config A</span><br><span class="line">	select B</span><br></pre></td></tr></table></figure>
+
+<p>在 A 选项被选中的情况下，B 选项自动被选中</p>
+<p><strong>可选选项</strong></p>
+<p>使用 choice 和 endchoice 定义可选择项</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">choice</span><br><span class="line">	bool &quot;a&quot;</span><br><span class="line">config b</span><br><span class="line">	boot b1</span><br><span class="line">config c</span><br><span class="line">	boot c1</span><br><span class="line">...</span><br><span class="line">endchoice</span><br></pre></td></tr></table></figure>
+
+<p><strong>注释</strong></p>
+<p>在图形化配置界面显示一个注释</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">config TEST_CONFIG</span><br><span class="line">	bool &quot;test&quot;</span><br><span class="line">	default y</span><br><span class="line">	help</span><br><span class="line">		just test</span><br><span class="line">comment &quot;just for test&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>souce</strong></p>
+<p>source 用于读取另一个 Kconfig 文件，如 source “init&#x2F;Kconfig” 就是读取 init 目录下的 Kconfig 文件到当前 Kconfig 文件</p>
+<h2 id="驱动模块传参"><a href="#驱动模块传参" class="headerlink" title="驱动模块传参"></a>驱动模块传参</h2><p>驱动传参的意义：</p>
+<p><strong>优势：</strong></p>
+<ol>
+<li>通过驱动传参，可以让驱动程序更加灵活，兼容性更强。</li>
+<li>可以通过驱动传参，设置安全校验，防止驱动被盗用</li>
+</ol>
+<p><strong>不足</strong></p>
+<ol>
+<li>使驱动代码变得复杂化</li>
+<li>增加了驱动的资源占用</li>
+</ol>
+<h3 id="驱动可以传递的参数类型"><a href="#驱动可以传递的参数类型" class="headerlink" title="驱动可以传递的参数类型"></a>驱动可以传递的参数类型</h3><p>C 语言常用的数据类型内核大部分都支持驱动传参。这里将内核支持的驱动传递参数类型分为三类：</p>
+<ul>
+<li><strong>基本类型</strong>：char, bool, int, long, short, byte, ushort, uint</li>
+<li><strong>数组</strong>：array</li>
+<li><strong>字符串</strong>：string</li>
+</ul>
+<h3 id="给-Linux-驱动传递参数的方式"><a href="#给-Linux-驱动传递参数的方式" class="headerlink" title="给 Linux 驱动传递参数的方式"></a>给 Linux 驱动传递参数的方式</h3><ul>
+<li><p><strong>参数类型与对应函数</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数类型</th>
+<th>对应函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基本类型</td>
+<td><code>module_param</code></td>
+<td>传递基本类型参数</td>
+</tr>
+<tr>
+<td>数组类型</td>
+<td><code>module_param_array</code></td>
+<td>传递数组类型参数</td>
+</tr>
+<tr>
+<td>字符串类型</td>
+<td><code>module_param_string</code></td>
+<td>传递字符串类型参数</td>
+</tr>
+</tbody></table>
+</li>
+<li><p><strong>函数定义位置</strong>：这三个函数在 Linux 内核源码的<code>include/linux/moduleparam.h</code>中定义。</p>
+</li>
+</ul>
+<h4 id="module-param"><a href="#module-param" class="headerlink" title="module_param"></a>module_param</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * module_param - typesafe helper for a module/cmdline parameter</span></span><br><span class="line"><span class="comment"> * @name: the variable to alter, and exposed parameter name.</span></span><br><span class="line"><span class="comment"> * @type: the type of the parameter</span></span><br><span class="line"><span class="comment"> * @perm: visibility in sysfs.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @name becomes the module parameter, or (prefixed by KBUILD_MODNAME and a</span></span><br><span class="line"><span class="comment"> * &quot;.&quot;) the kernel commandline parameter.  Note that - is changed to _, so</span></span><br><span class="line"><span class="comment"> * the user can use &quot;foo-bar=1&quot; even for variable &quot;foo_bar&quot;.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @perm is 0 if the variable is not to appear in sysfs, or 0444</span></span><br><span class="line"><span class="comment"> * for world-readable, 0644 for root-writable, etc.  Note that if it</span></span><br><span class="line"><span class="comment"> * is writable, you may need to use kernel_param_lock() around</span></span><br><span class="line"><span class="comment"> * accesses (esp. charp, which can be kfreed when it changes).</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The @type is simply pasted to refer to a param_ops_##type and a</span></span><br><span class="line"><span class="comment"> * param_check_##type: for convenience many standard types are provided but</span></span><br><span class="line"><span class="comment"> * you can create your own by defining those variables.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Standard types are:</span></span><br><span class="line"><span class="comment"> *	byte, hexint, short, ushort, int, uint, long, ulong</span></span><br><span class="line"><span class="comment"> *	charp: a character pointer</span></span><br><span class="line"><span class="comment"> *	bool: a bool, values 0/1, y/n, Y/N.</span></span><br><span class="line"><span class="comment"> *	invbool: the above, only sense-reversed (N = true).</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> module_param(name, type, perm)				\</span></span><br><span class="line"><span class="meta">	module_param_named(name, name, type, perm)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="module-param-array"><a href="#module-param-array" class="headerlink" title="module_param_array"></a>module_param_array</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * module_param_array - a parameter which is an array of some type</span></span><br><span class="line"><span class="comment"> * @name: the name of the array variable</span></span><br><span class="line"><span class="comment"> * @type: the type, as per module_param()</span></span><br><span class="line"><span class="comment"> * @nump: optional pointer filled in with the number written</span></span><br><span class="line"><span class="comment"> * @perm: visibility in sysfs</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Input and output are as comma-separated values.  Commas inside values</span></span><br><span class="line"><span class="comment"> * don&#x27;t work properly (eg. an array of charp).</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * ARRAY_SIZE(@name) is used to determine the number of elements in the</span></span><br><span class="line"><span class="comment"> * array, so the definition must be visible.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> module_param_array(name, type, nump, perm)		\</span></span><br><span class="line"><span class="meta">	module_param_array_named(name, name, type, nump, perm)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="module-param-string"><a href="#module-param-string" class="headerlink" title="module_param_string"></a>module_param_string</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * module_param_string - a char array parameter</span></span><br><span class="line"><span class="comment"> * @name: the name of the parameter</span></span><br><span class="line"><span class="comment"> * @string: the string variable</span></span><br><span class="line"><span class="comment"> * @len: the maximum length of the string, incl. terminator</span></span><br><span class="line"><span class="comment"> * @perm: visibility in sysfs.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This actually copies the string when it&#x27;s set (unlike type charp).</span></span><br><span class="line"><span class="comment"> * @len is usually just sizeof(string).</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> module_param_string(name, string, len, perm)			\</span></span><br><span class="line"><span class="meta">	static const struct kparam_string __param_string_##name		\</span></span><br><span class="line"><span class="meta">		= &#123; len, string &#125;;					\</span></span><br><span class="line"><span class="meta">	__module_param_call(MODULE_PARAM_PREFIX, name,			\</span></span><br><span class="line"><span class="meta">			    &amp;param_ops_string,				\</span></span><br><span class="line"><span class="meta">			    .str = &amp;__param_string_##name, perm, -1, 0);\</span></span><br><span class="line"><span class="meta">	__MODULE_PARM_TYPE(name, <span class="string">&quot;string&quot;</span>)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="MODULE-PARM-DESC"><a href="#MODULE-PARM-DESC" class="headerlink" title="MODULE_PARM_DESC"></a>MODULE_PARM_DESC</h4><p>函数功能：描述模块参数的信息。在 include&#x2F;linux&#x2F;moduleparam.h 定义</p>
+<p>函数原型：<code>MODULE_PARM_DESC(_parm, desc)</code></p>
+<p>函数参数： <code>_parm</code>：要描述的参数的参数名称。desc：描述信息</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td>参数名（可在命令行传入）</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>参数类型（如：<code>int</code>、<code>bool</code>、<code>charp</code>）</td>
+</tr>
+<tr>
+<td><code>perm</code></td>
+<td>在 <code>/sys/module/&lt;modname&gt;/parameters/</code> 中的权限，如 <code>0644</code></td>
+</tr>
+<tr>
+<td><code>nump</code></td>
+<td>（仅数组）保存数组元素数量的变量地址</td>
+</tr>
+<tr>
+<td><code>len</code></td>
+<td>（仅字符串）缓冲区长度</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td>指向字符串缓冲的指针</td>
+</tr>
+</tbody></table>
+<h4 id="权限定义"><a href="#权限定义" class="headerlink" title="权限定义"></a><strong>权限定义</strong></h4><blockquote>
+<p><strong>perm</strong> 是指 <strong>sysfs 中参数文件</strong>的 <strong>文件权限位</strong>。</p>
+</blockquote>
+<p>读写权限在<code>include/linux/stat.h</code>和<code>include/uapi/linux/stat.h</code>中定义。</p>
+<ul>
+<li><strong>include&#x2F;linux&#x2F;stat.h</strong></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SPDX-License-Identifier: GPL-2.0 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> _LINUX_STAT_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _LINUX_STAT_H</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;asm/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;uapi/linux/stat.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IRWXUGO	(S_IRWXU|S_IRWXG|S_IRWXO)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IALLUGO	(S_ISUID|S_ISGID|S_ISVTX|S_IRWXUGO)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IRUGO		(S_IRUSR|S_IRGRP|S_IROTH)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IWUGO		(S_IWUSR|S_IWGRP|S_IWOTH)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IXUGO		(S_IXUSR|S_IXGRP|S_IXOTH)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>include&#x2F;uapi&#x2F;linux&#x2F;stat.h</strong></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> _UAPI_LINUX_STAT_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _UAPI_LINUX_STAT_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__KERNEL__) || !defined(__GLIBC__) || (__GLIBC__ &lt; 2)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFMT  00170000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFSOCK 0140000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFLNK	 0120000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFREG  0100000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFBLK  0060000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFDIR  0040000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFCHR  0020000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IFIFO  0010000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISUID  0004000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISGID  0002000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISVTX  0001000</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISLNK(m)	(((m) &amp; S_IFMT) == S_IFLNK)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISREG(m)	(((m) &amp; S_IFMT) == S_IFREG)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISDIR(m)	(((m) &amp; S_IFMT) == S_IFDIR)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISCHR(m)	(((m) &amp; S_IFMT) == S_IFCHR)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISBLK(m)	(((m) &amp; S_IFMT) == S_IFBLK)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISFIFO(m)	(((m) &amp; S_IFMT) == S_IFIFO)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_ISSOCK(m)	(((m) &amp; S_IFMT) == S_IFSOCK)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IRWXU 00700</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IRUSR 00400</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IWUSR 00200</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IXUSR 00100</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IRWXG 00070</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IRGRP 00040</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IWGRP 00020</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IXGRP 00010</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IRWXO 00007</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IROTH 00004</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IWOTH 00002</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> S_IXOTH 00001</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* _UAPI_LINUX_STAT_H */</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>相关的权限主要是<strong>文件访问权限宏（File Permission Bits）</strong></p>
+<table>
+<thead>
+<tr>
+<th>宏名</th>
+<th>八进制值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>S_IRWXU</code></td>
+<td><code>00700</code></td>
+<td>所有者(U)读、写、执行权限(RWX)</td>
+</tr>
+<tr>
+<td><code>S_IRUSR</code></td>
+<td><code>00400</code></td>
+<td>所有者(USR)读权限(R)</td>
+</tr>
+<tr>
+<td><code>S_IWUSR</code></td>
+<td><code>00200</code></td>
+<td>所有者(USR)写权限(W)</td>
+</tr>
+<tr>
+<td><code>S_IXUSR</code></td>
+<td><code>00100</code></td>
+<td>所有者(USR)执行权限(X)</td>
+</tr>
+<tr>
+<td><code>S_IRWXG</code></td>
+<td><code>00070</code></td>
+<td>所属组(G)读、写、执行权限(RWX)</td>
+</tr>
+<tr>
+<td><code>S_IRGRP</code></td>
+<td><code>00040</code></td>
+<td>所属组(GRP)读权限(R)</td>
+</tr>
+<tr>
+<td><code>S_IWGRP</code></td>
+<td><code>00020</code></td>
+<td>所属组(GRP)写权限(W)</td>
+</tr>
+<tr>
+<td><code>S_IXGRP</code></td>
+<td><code>00010</code></td>
+<td>所属组(GRP)执行权限(X)</td>
+</tr>
+<tr>
+<td><code>S_IRWXO</code></td>
+<td><code>00007</code></td>
+<td>其他用户(O)读、写、执行权限(RWX)</td>
+</tr>
+<tr>
+<td><code>S_IROTH</code></td>
+<td><code>00004</code></td>
+<td>其他用户(OTH)读权限(R)</td>
+</tr>
+<tr>
+<td><code>S_IWOTH</code></td>
+<td><code>00002</code></td>
+<td>其他用户(OTH)写权限(W)</td>
+</tr>
+<tr>
+<td><code>S_IXOTH</code></td>
+<td><code>00001</code></td>
+<td>其他用户(OTH)执行权限(X)</td>
+</tr>
+</tbody></table>
+<p>还有<strong>组合权限</strong></p>
+<p><code>S_IRWXUGO</code></p>
+<ul>
+<li><strong>定义</strong>：<code>(S_IRWXU | S_IRWXG | S_IRWXO)</code></li>
+<li><strong>含义（展开后）</strong>：<code>00700 | 00070 | 00007 = 00777</code></li>
+<li><strong>实际意义</strong>：允许 <strong>所有者、组、其他用户</strong> (UGO) 拥有 <strong>读、写、执行</strong> 权限</li>
+<li><strong>举例用途</strong>：设置所有人可读写执行，如临时目录 <code>/tmp</code></li>
+</ul>
+<hr>
+<p><code>S_IALLUGO</code></p>
+<ul>
+<li><strong>定义</strong>：<code>(S_ISUID | S_ISGID | S_ISVTX | S_IRWXUGO)</code></li>
+<li><strong>含义（展开后）</strong>：<code>0004000 | 0002000 | 0001000 | 00777 = 01777</code></li>
+<li><strong>实际意义</strong>：包含特殊位（SUID、SGID、Sticky）以及所有人读写执行权限</li>
+<li><strong>举例用途</strong>：常见权限：<code>drwxrwxrwt</code>（如 <code>/tmp</code>）</li>
+</ul>
+<hr>
+<p><code>S_IRUGO</code></p>
+<ul>
+<li><strong>定义</strong>：<code>(S_IRUSR | S_IRGRP | S_IROTH)</code></li>
+<li><strong>含义（展开后）</strong>：<code>00400 | 00040 | 00004 = 00444</code></li>
+<li><strong>实际意义</strong>：所有人 <strong>读</strong> 权限</li>
+<li><strong>举例用途</strong>：常用于只读文件</li>
+</ul>
+<hr>
+<p><code>S_IWUGO</code></p>
+<ul>
+<li><strong>定义</strong>：<code>(S_IWUSR | S_IWGRP | S_IWOTH)</code></li>
+<li><strong>含义（展开后）</strong>：<code>00200 | 00020 | 00002 = 00222</code></li>
+<li><strong>实际意义</strong>：所有人 <strong>写</strong> 权限</li>
+<li><strong>举例用途</strong>：少用，一般仅限特定目录</li>
+</ul>
+<hr>
+<p><code>S_IXUGO</code></p>
+<ul>
+<li><strong>定义</strong>：<code>(S_IXUSR | S_IXGRP | S_IXOTH)</code></li>
+<li><strong>含义（展开后）</strong>：<code>00100 | 00010 | 00001 = 00111</code></li>
+<li><strong>实际意义</strong>：所有人 <strong>执行</strong> 权限</li>
+<li><strong>举例用途</strong>：使所有人可执行某脚本或程序</li>
+</ul>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> myint = <span class="number">0</span>;</span><br><span class="line">module_param(myint,<span class="type">int</span>, <span class="number">0644</span>);</span><br><span class="line">MODULE_PARM_DESC(myint, <span class="string">&quot;A sample int parameter&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">char</span>* mycharp = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">module_param(mycharp, charp, <span class="number">0644</span>);</span><br><span class="line">MODULE_PARM_DESC(mycharp, <span class="string">&quot;A sample charp parameter&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> myarr[<span class="number">3</span>] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"><span class="type">static</span> <span class="type">int</span> myarr_argc = ARRAY_SIZE(myarr);</span><br><span class="line">module_param_array(myarr, <span class="type">int</span>, &amp;myarr_argc, <span class="number">0644</span>);</span><br><span class="line">MODULE_PARM_DESC(myarr, <span class="string">&quot;A sample array parameter&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">char</span> mystring[] = <span class="string">&quot;default_value&quot;</span>;</span><br><span class="line">module_param_string(mystr, mystring, ARRAY_SIZE(mystring), <span class="number">0644</span>);</span><br><span class="line">MODULE_PARM_DESC(mystr, <span class="string">&quot;A sample string parameter&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">print_param</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">        <span class="type">int</span> i;</span><br><span class="line">        pr_info(<span class="string">&quot;[myint]: %d\n&quot;</span>, myint);</span><br><span class="line">        pr_info(<span class="string">&quot;[mycharp]: %s\n&quot;</span>, mycharp);</span><br><span class="line">        pr_info(<span class="string">&quot;[myarr]: &quot;</span>);</span><br><span class="line">        <span class="keyword">for</span>(i =<span class="number">0</span>;i&lt;myarr_argc;i++)&#123;</span><br><span class="line">                pr_info(<span class="string">&quot;%d &quot;</span>, myarr[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        pr_info(<span class="string">&quot;[mystr]: %s\n&quot;</span>, mystring);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">param_test_init</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">        printk(<span class="string">&quot;param test init\n&quot;</span>);</span><br><span class="line">        print_param();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">param_test_exit</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">        print_param();</span><br><span class="line">        printk(<span class="string">&quot;param test exit\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(param_test_init);</span><br><span class="line">module_exit(param_test_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629&lt;asqwgo@163.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;linux driver parameter test&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>加载模块时可以传参</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insmod parameter.ko myint=42 mycharp=<span class="string">&quot;hello world&quot;</span> myarr=9,8,7 mystr=<span class="string">&quot;hello&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>运行时候查看参数</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /sys/module/parameter/parameters/</span><br><span class="line"><span class="built_in">cat</span> myint</span><br><span class="line"><span class="built_in">echo</span> 99 &gt; myint</span><br></pre></td></tr></table></figure>
+
+<h2 id="内核符号表导入导出"><a href="#内核符号表导入导出" class="headerlink" title="内核符号表导入导出"></a>内核符号表导入导出</h2><p>驱动程序可以编译成内核模块，也就是 KO 文件。每个 KO 文件是相互独立的，也就是说模块之间无法相互访问。但是在某些使用场景下要相互访问，如 B 模块要用 A 模块中的函数。（B 模块依赖于 A 模块）</p>
+<p><strong>符号表</strong></p>
+<p><strong>”符号“就是内核中的函数名，全局变量名等</strong>。符号表就是用来记录这些”符号“的文件。</p>
+<h3 id="模块依赖关系"><a href="#模块依赖关系" class="headerlink" title="模块依赖关系"></a>模块依赖关系</h3><p>linux 内核中的模块可以提供函数或变量，用<code>EXPORT_SYMBOL</code>宏导出它们即可供其他模块使用，这些被称作符号。</p>
+<p><strong>模块 B 对模块 A 的依赖是指模块 B 使用从模块 A 导出的符号。</strong></p>
+<p><code>depmod</code> 是用户空间工具（通常由 <code>kmod</code> 包提供），在内核安装后运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">depmod -a &lt;kernel_version&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>它扫描 <code>/lib/modules/&lt;kernel_release&gt;/</code> 下所有 <code>.ko</code> 模块文件：<ul>
+<li>使用 <code>modinfo -F depends</code> 或直接解析 ELF 符号表；</li>
+<li>硔定每个模块 <strong>需要哪些符号（imports）</strong> 和 <strong>提供哪些符号（exports）</strong>；</li>
+<li>构建模块间的依赖关系图。</li>
+</ul>
+</li>
+</ul>
+<p><strong>生成的依赖文件</strong></p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>modules.dep</code></td>
+<td>文本格式，每行格式： <code>module.ko: dependent_module1.ko dependent_module2.ko ...</code></td>
+</tr>
+<tr>
+<td><code>modules.dep.bin</code></td>
+<td>二进制格式，供 <code>modprobe</code> 快速加载（避免每次解析文本）</td>
+</tr>
+<tr>
+<td><code>modules.symbols</code> &#x2F; <code>modules.symbols.bin</code></td>
+<td>记录所有导出符号及其所属模块（用于反向查找）</td>
+</tr>
+</tbody></table>
+<p>depmod 还处理模块文件以提取和收集该信息，并在<code>/lib/modules/&lt;kernel_release&gt;/modules.alias</code>中生成 modules.alias 文件，该文件将设备映射到其对应的驱动程序。</p>
+<p>modprobe 会解析 modules.alias 文件。</p>
+<h3 id="内核符号表导出"><a href="#内核符号表导出" class="headerlink" title="内核符号表导出"></a>内核符号表导出</h3><p><strong>导出宏</strong></p>
+<table>
+<thead>
+<tr>
+<th>宏名称</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>EXPORT_SYMBOL</code></td>
+<td>导出符号到内核符号表</td>
+</tr>
+<tr>
+<td><code>EXPORT_SYMBOL_GPL</code></td>
+<td>仅适用于包含 GPL 许可的模块</td>
+</tr>
+</tbody></table>
+<p>导出的符号可被其他模块使用，使用前只需声明即可。</p>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a+b;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(add);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">module_export_init</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">	pr_info(<span class="string">&quot;add init\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">module_export_exit</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">	pr_info(<span class="string">&quot;add exit\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(module_export_init);</span><br><span class="line">module_exit(module_export_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629&lt;asqwgo@163.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;A sample for module export&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>导入</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line">module_param(a,<span class="type">int</span>, <span class="number">0644</span>);</span><br><span class="line">MODULE_PARM_DESC(a, <span class="string">&quot;add test left num a, default 0&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> b = <span class="number">0</span>;</span><br><span class="line">module_param(b, <span class="type">int</span>, <span class="number">0644</span>);</span><br><span class="line">MODULE_PARM_DESC(b, <span class="string">&quot;add test left num b, default 0&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="type">int</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">module_export_init</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">        pr_info(<span class="string">&quot;hello init&quot;</span>);</span><br><span class="line">	pr_info(<span class="string">&quot;a=%d, b=%d\n&quot;</span>, a, b);</span><br><span class="line">	pr_info(<span class="string">&quot;a+b=%d\n&quot;</span>, a+b);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">module_export_exit</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">        pr_info(<span class="string">&quot;hello exit&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(module_export_init);</span><br><span class="line">module_exit(module_export_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629&lt;731005515@qq.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;A sample for module export&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>注意：加载时要先加载导出的那个模块，卸载时要先卸载导入的那个模块。<strong>因为此时两个模块已经有了依赖关系，modprobe 会自动处理这些依赖关系，不需要显式声明。</strong></p>
+<h2 id="使用-makefile-中定义的宏"><a href="#使用-makefile-中定义的宏" class="headerlink" title="使用 makefile 中定义的宏"></a>使用 makefile 中定义的宏</h2><p>核心思路：想要让它被 <strong>C 代码可见</strong>，必须通过 <strong>编译器命令行传入宏定义</strong>：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cc -D宏名=值 source.c</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">obj-m += mydriver.o</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义一个宏</span></span><br><span class="line">MY_DRIVER_VER := 0x10</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把它传给编译器</span></span><br><span class="line">KBUILD_CFLAGS_MODULE += -DMY_DRIVER_VER=<span class="variable">$(MY_DRIVER_VER)</span></span><br><span class="line"><span class="comment"># 或者使用</span></span><br><span class="line">ccflags-y += -DMY_DRIVER_VER=<span class="variable">$(MY_DRIVER_VER)</span></span><br></pre></td></tr></table></figure>
+
+<p>其他变量名：</p>
+<table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>作用范围</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ccflags-y</code></td>
+<td>当前模块的所有 <code>.c</code> 文件</td>
+<td>普通 C 编译选项</td>
+</tr>
+<tr>
+<td><code>asflags-y</code></td>
+<td>汇编文件</td>
+<td>汇编参数</td>
+</tr>
+<tr>
+<td><code>subdir-ccflags-y</code></td>
+<td>当前目录及子目录</td>
+<td>全局作用</td>
+</tr>
+<tr>
+<td><code>KBUILD_CFLAGS</code></td>
+<td>全局（由内核顶层 Makefile 设置）</td>
+<td>平台级 CFLAGS</td>
+</tr>
+<tr>
+<td><code>KBUILD_CFLAGS_MODULE</code></td>
+<td>内核模块</td>
+<td></td>
+</tr>
+<tr>
+<td><code>EXTRA_CFLAGS</code></td>
+<td>已废弃（旧版用法）</td>
+<td>临时附加选项</td>
+</tr>
+</tbody></table>
+<p>然后在 driver 中可以使用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">mydriver_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    pr_info(<span class="string">&quot;mydriver version: 0x%x\n&quot;</span>, MY_DRIVER_VER);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">mydriver_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    pr_info(<span class="string">&quot;mydriver exit\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(mydriver_init);</span><br><span class="line">module_exit(mydriver_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>Linux 驱动笔记</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1. Linux 驱动框架</td>
+<td><a href="https://even629.com/posts/2511093/">https://even629.com/posts/2511093/</a></td>
+</tr>
+<tr>
+<td>2. Linux 驱动加载逻辑</td>
+<td><a href="https://even629.com/posts/2511100/">https://even629.com/posts/2511100/</a></td>
+</tr>
+<tr>
+<td>3. 字符设备基础</td>
+<td><a href="https://even629.com/posts/2511113/">https://even629.com/posts/2511113/</a></td>
+</tr>
+<tr>
+<td>4. 并发与竞争</td>
+<td><a href="https://even629.com/posts/2511123/">https://even629.com/posts/2511123/</a></td>
+</tr>
+<tr>
+<td>5. 高级字符设备进阶</td>
+<td><a href="https://even629.com/posts/2511133/">https://even629.com/posts/2511133/</a></td>
+</tr>
+<tr>
+<td>6. 中断</td>
+<td><a href="https://even629.com/posts/2511143/">https://even629.com/posts/2511143/</a></td>
+</tr>
+<tr>
+<td>7. 平台总线</td>
+<td><a href="https://even629.com/posts/2511153/">https://even629.com/posts/2511153/</a></td>
+</tr>
+<tr>
+<td>8. 设备树</td>
+<td><a href="https://even629.com/posts/2511300/">https://even629.com/posts/2511300/</a></td>
+</tr>
+<tr>
+<td>9. 设备模型</td>
+<td><a href="https://even629.com/posts/2512013/">https://even629.com/posts/2512013/</a></td>
+</tr>
+<tr>
+<td>10. 热插拔</td>
+<td><a href="https://even629.com/posts/2512023/">https://even629.com/posts/2512023/</a></td>
+</tr>
+<tr>
+<td>11. pinctrl 子系统</td>
+<td><a href="https://even629.com/posts/2512160/">https://even629.com/posts/2512160/</a></td>
+</tr>
+<tr>
+<td>12. gpio 子系统</td>
+<td><a href="https://even629.com/posts/2512173/">https://even629.com/posts/2512173/</a></td>
+</tr>
+<tr>
+<td>13. 输入子系统</td>
+<td><a href="https://even629.com/posts/2512183/">https://even629.com/posts/2512183/</a></td>
+</tr>
+<tr>
+<td>14. 单总线</td>
+<td><a href="https://even629.com/posts/2512233/">https://even629.com/posts/2512233/</a></td>
+</tr>
+<tr>
+<td>15. I2C</td>
+<td><a href="https://even629.com/posts/2512283">https://even629.com/posts/2512283</a></td>
+</tr>
+<tr>
+<td>16. SPI</td>
+<td><a href="https://even629.com/posts/2512303">https://even629.com/posts/2512303</a></td>
+</tr>
+<tr>
+<td>17. UART</td>
+<td><a href="https://even629.com/posts/2512313">https://even629.com/posts/2512313</a></td>
+</tr>
+<tr>
+<td>18. PWM</td>
+<td><a href="https://even629.com/posts/2601043">https://even629.com/posts/2601043</a></td>
+</tr>
+<tr>
+<td>19. RTC</td>
+<td><a href="https://even629.com/posts/2601053">https://even629.com/posts/2601053</a></td>
+</tr>
+<tr>
+<td>20. Watchdog</td>
+<td><a href="https://even629.com/posts/2601063">https://even629.com/posts/2601063</a></td>
+</tr>
+<tr>
+<td>21. CAN</td>
+<td><a href="https://even629.com/posts/2601093">https://even629.com/posts/2601093</a></td>
+</tr>
+<tr>
+<td>22. 网络设备</td>
+<td><a href="https://even629.com/posts/2601133">https://even629.com/posts/2601133</a></td>
+</tr>
+<tr>
+<td>23. ADC</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>24. IIO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>25. USB</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>26. LCD</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>27. PCIe</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2511093/">https://even629.com/posts/2511093/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux-%E9%A9%B1%E5%8A%A8%E6%8A%BD%E8%B1%A1"><span class="toc-text">Linux 驱动抽象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux-%E6%BA%90%E7%A0%81%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-text">Linux 源码目录结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84-Linux-%E9%A9%B1%E5%8A%A8%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90"><span class="toc-text">最简单的 Linux 驱动结构解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%BF%A1%E6%81%AF"><span class="toc-text">模块信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91-Linux-%E9%A9%B1%E5%8A%A8"><span class="toc-text">编译 Linux 驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%88%90%E5%86%85%E6%A0%B8%E6%A8%A1%E5%9D%97"><span class="toc-text">编译成内核模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86%E9%A9%B1%E5%8A%A8%E7%BC%96%E8%AF%91%E5%88%B0%E5%86%85%E6%A0%B8"><span class="toc-text">将驱动编译到内核</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="toc-text">模块相关命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD%E5%91%BD%E4%BB%A4"><span class="toc-text">模块加载命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%8D%B8%E8%BD%BD%E5%91%BD%E4%BB%A4"><span class="toc-text">模块卸载命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%90%AF%E5%8A%A8%E6%97%B6%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9D%97"><span class="toc-text">设置启动时加载模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%A8%A1%E5%9D%97%E4%BF%A1%E6%81%AF%E5%91%BD%E4%BB%A4"><span class="toc-text">查看模块信息命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Kconfig-%E6%96%87%E4%BB%B6"><span class="toc-text">Kconfig 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#config-%E6%96%87%E4%BB%B6%E4%B8%8E-config-%E6%96%87%E4%BB%B6"><span class="toc-text">config 文件与.config 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kconfig-%E8%AF%AD%E6%B3%95"><span class="toc-text">Kconfig 语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E6%A8%A1%E5%9D%97%E4%BC%A0%E5%8F%82"><span class="toc-text">驱动模块传参</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E5%8F%AF%E4%BB%A5%E4%BC%A0%E9%80%92%E7%9A%84%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="toc-text">驱动可以传递的参数类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%99-Linux-%E9%A9%B1%E5%8A%A8%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="toc-text">给 Linux 驱动传递参数的方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#module-param"><span class="toc-text">module_param</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#module-param-array"><span class="toc-text">module_param_array</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#module-param-string"><span class="toc-text">module_param_string</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MODULE-PARM-DESC"><span class="toc-text">MODULE_PARM_DESC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E5%AE%9A%E4%B9%89"><span class="toc-text">权限定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%AC%A6%E5%8F%B7%E8%A1%A8%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA"><span class="toc-text">内核符号表导入导出</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB"><span class="toc-text">模块依赖关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%AC%A6%E5%8F%B7%E8%A1%A8%E5%AF%BC%E5%87%BA"><span class="toc-text">内核符号表导出</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-text">例子</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-makefile-%E4%B8%AD%E5%AE%9A%E4%B9%89%E7%9A%84%E5%AE%8F"><span class="toc-text">使用 makefile 中定义的宏</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '9d867166c73e185314301b42063b28b9'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

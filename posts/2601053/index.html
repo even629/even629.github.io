@@ -1,0 +1,797 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux RTC | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux RTC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux RTC">
+<meta property="og:url" content="https://even629.com/posts/2601053/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Linux RTC">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2026-01-05T14:09:00.000Z">
+<meta property="article:modified_time" content="2026-01-05T14:09:00.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2601053/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux RTC',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux RTC</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-05T14:09:00.000Z" title="更新于 2026-01-05 22:09:00">2026-01-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">6.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>27分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2601053/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-01-05</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h1 id="RTC-基础"><a href="#RTC-基础" class="headerlink" title="RTC 基础"></a>RTC 基础</h1><h2 id="RTC-介绍"><a href="#RTC-介绍" class="headerlink" title="RTC 介绍"></a>RTC 介绍</h2><p><strong>RTC（Real-Time Clock</strong>）即<strong>实时时钟</strong>，是一种集成电路或模块，用于<strong>在电子系统中提供精确的时间信息</strong>。</p>
+<p>与系统主处理器（CPU）不同，<strong>RTC 主要负责维护系统的实时日期和时间</strong>，<emp>即使在设备关闭或断电的情况下，RTC 也能持续运行并保持时间准确性。</emp></p>
+<p><strong>RTC 的主要功能</strong>：</p>
+<ol>
+<li><u>提供实时时间</u>：RTC 能够持续跟踪当前的日期和时间，通常包括年、月、日、时、分、秒等信息。</li>
+<li><u>断电保持时间</u>：RTC 通常配备有备用电池（如纽扣电池），即使主系统断电，RTC也能继续运行，确保时间信息不会丢失。</li>
+</ol>
+<p><strong>RTC 的应用场景</strong>：</p>
+<ol>
+<li>电子时钟：如电脑、手机、智能手表等设备中的时钟功能。</li>
+<li>嵌入式系统：在工业控制、物联网设备中，RTC 用于记录事件发生的时间。</li>
+<li>数据记录：在需要时间戳的场景中，RTC 提供准确的时间信息。</li>
+<li>定时任务：用于定时唤醒设备或执行特定操作。</li>
+</ol>
+<p><strong>RTC 的特点</strong>：</p>
+<ol>
+<li><u>低功耗</u>：RTC 通常设计为低功耗运行，适合长时间使用。</li>
+<li><u>高精度</u>：能够提供较为精确的时间信息，误差较小。</li>
+<li><u>独立性</u>：即使主系统关闭，RTC 也能独立运行。</li>
+</ol>
+<h3 id="内部-RTC-和外部-RTC"><a href="#内部-RTC-和外部-RTC" class="headerlink" title="内部 RTC 和外部 RTC"></a>内部 RTC 和外部 RTC</h3><p>实时时钟有着外部 RTC 和内部 RTC 这两种常见的实现方案。</p>
+<p><strong>外部 RTC 是独立于主控芯片的专用 RTC 芯片，通过 I2C、SPI 等通信接口与主控芯片连接</strong>。</p>
+<ul>
+<li>优点<ul>
+<li>具备高精度的特点，能够提供更准确的时间记录。</li>
+<li>外部 RTC 拥有独立的电源管理电路，可配备纽扣电池实现长时间独立运行，即使主控芯片断电或损坏，也能确保时间记录的连续性。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>外部 RTC 的成本较高，需要额外采购芯片及相关元件，同时增加了电路设计的复杂性和开发难度，并占用主控芯片的通信资源。</li>
+</ul>
+</li>
+</ul>
+<p>因此，外部 RTC 更适合对时间精度、可靠性和功能有较高要求的场景。在 iTOP-RK3568 开发板上就集成了外部 RTC，所使用的芯片是 RX8010，如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260105221104569.png" alt="外部RTC" loading="lazy"></p>
+<p><strong>内部 RTC 是集成在主控芯片内部的实时时钟模块</strong></p>
+<ul>
+<li>优点<ul>
+<li>具有硬件集成的特点，无需额外硬件组件，因此设计简单、成本低且易于使用。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>内部 RTC 依赖主控芯片的供电，通常需要备用电池来维持断电后的时间记录</li>
+<li><emp>内部 RTC 非常容易受到温度和电压波动的影响，导致时间漂移较大，可靠性也相对较低</emp>。</li>
+</ul>
+</li>
+</ul>
+<p>因此，内部 RTC 更适合对时间精度要求不高、成本敏感的场景，例如家用电器、简单的物联网设备或实时性要求较低的系统。</p>
+<p>而 iTOP-RK3568 核心板的电源管理芯片 RK809 默认是集成了内部 RTC 的，但由于上述内部 RTC 的种种缺点，且底板上已经有<br>了外部 RTC，所以内部 RTC 并没有被使能，RK809 电源管理芯片的内部 RTC 电路如下所示:</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260105221107412.png" alt="RK809电源管理芯片" loading="lazy"></p>
+<p><strong>总结</strong></p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>内部RTC</th>
+<th>外部RTC</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定义</td>
+<td>集成在主控芯片内的RTC模块</td>
+<td>独立的专用RTC芯片，通过I²C&#x2F;SPI等接口连接</td>
+</tr>
+<tr>
+<td>特点</td>
+<td>- 硬件集成 <br />- 低功耗模式支持 <br />- 依赖主控电源 <br />- 精度有限</td>
+<td>- 独立运行<br />- 高精度<br />- 多功能扩展</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>1. 成本低<br />2. 设计简单<br />3. 易于使用</td>
+<td>1. 高精度<br />2. 独立性强<br />3. 功能丰富<br />4. 可靠性高</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>1. 精度不足<br />2. 可靠性较低<br />3. 缺乏独立性</td>
+<td>1. 成本较高<br />2. 设计复杂<br />3. 占用资源</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>对时间精度要求不高、成本敏感、实时性要求低的系统</td>
+<td>对时间精度要求高、需长时间独立运行、需额外功能的场景</td>
+</tr>
+</tbody></table>
+<h3 id="RK3568-RTC-外设"><a href="#RK3568-RTC-外设" class="headerlink" title="RK3568 RTC 外设"></a>RK3568 RTC 外设</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260105221104569.png" alt="外部RTC" loading="lazy"></p>
+<p>可以将这个电路分为 RTC 电源供电部分以及 RTC 芯片电路部分，根据 RTC 芯片电路部分可以得到 RX8010 挂载到了 I2C5 上</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260105221128333.png" alt="VCC_RTC" loading="lazy"></p>
+<p>该系统的主要功能是通过<strong>主电源供电模式和备用电池供电模式的切换</strong>，确保 RTC 模块在主电源（<code>VCC3V3_SYS</code>）断电时仍能通过备用电池（<code>CR1220</code>）继续工作，从而保持时间信息不丢失。分为以下两种情况。</p>
+<ol>
+<li>在系统正常运行时，<code>VCC3V3_SYS</code> 提供 3.3V 电源，二极管 D2 正向导通为 RTC 模块供电，同时二极管 D3 反向截止以防止主电源向电池充电或消耗电池电量；</li>
+<li>当系统断电（<code>VCC3V3_SYS</code> 失效）时，二极管 D2 反向截止以防止电池电量通过主电源回路消耗，同时二极管 D3 正向导通，由<code>CR1220</code> 电池为 RTC 模块供电，确保 RTC 继续运行。</li>
+</ol>
+<h1 id="RX8010-驱动分析和移植"><a href="#RX8010-驱动分析和移植" class="headerlink" title="RX8010 驱动分析和移植"></a>RX8010 驱动分析和移植</h1><h2 id="RTC子系统框架"><a href="#RTC子系统框架" class="headerlink" title="RTC子系统框架"></a>RTC子系统框架</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260105221134473.png" alt="RTC子系统框架" loading="lazy"></p>
+<p>在上图中 RTC 子系统被划分为了三个层次，分别为用户空间、设备驱动层和硬件层，设备驱动层又包括 RTC 设备驱动和 PWM 核心层：</p>
+<ul>
+<li><p>用户空间是应用程序运行的层级，在这一层，应用程序通过不同的接口与系统进行交互，比如访问 <code>/dev/xxx</code> 设备节点来读写 RTC 时间，或通过 <code>sysf</code>s 和 <code>proc</code> 文件系统来获取或设置硬件状态。</p>
+</li>
+<li><p>中间的设备驱动层又分为了 RTC 设备驱动和 RTC 核心层，，。</p>
+<ul>
+<li>RTC 设备驱动负责操作硬件的具体细节通过与硬件（RTC 芯片）进行直接通信来实现硬件控制，设备驱动程序还负责将硬件设备暴露给上层系统，如 <code>device</code>（设备文件）和 <code>driver</code>（驱动程序）。<ul>
+<li><code>/dev/xxx</code> 是指用于操作设备的接口文件，用户应用程序通过它与 RTC 硬件进行交互。</li>
+<li><code>driver</code> 部分则是系统内核的一个模块，负责具体的硬件控制操作。</li>
+</ul>
+</li>
+<li>RTC 核心层负责管理和协调 RTC 的时间管理功能。它确保系统正确地读取和设置时间，同时确保时钟在断电时继续运行。</li>
+</ul>
+</li>
+<li><p>在 RTC 硬件层代表实际的 RTC 硬件，通过硬件接口（如 I2C、SPI 等）与设备驱动层进行通信，提供实际的时间计时功能。</p>
+</li>
+</ul>
+<h2 id="RTC-驱动源码分析"><a href="#RTC-驱动源码分析" class="headerlink" title="RTC 驱动源码分析"></a>RTC 驱动源码分析</h2><h3 id="设备树"><a href="#设备树" class="headerlink" title="设备树"></a>设备树</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//RTC 芯片使能</span></span><br><span class="line"><span class="variable">&amp;i2c5</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="symbol"></span></span><br><span class="line"><span class="symbol">        rx8010:</span> <span class="title class_">rx8010@32</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;epson,rx8010&quot;</span><span class="punctuation">;</span></span><br><span class="line">                <span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x32</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">                <span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line">                <span class="meta">#clock-cells = &lt;0&gt;;</span></span><br><span class="line">        <span class="punctuation">&#125;;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>通过再通过 compatible 属性<code>epson,rx8010</code>找到匹配的驱动文件，驱动的具体路径为 <code>drivers/rtc/rtc-rx8010.c</code>，先来找到驱动的入口函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">i2c_driver</span> <span class="title">rx8010_driver</span> =</span> &#123;</span><br><span class="line">	.driver = &#123;</span><br><span class="line">		.name = <span class="string">&quot;rtc-rx8010&quot;</span>,</span><br><span class="line">		.of_match_table = of_match_ptr(rx8010_of_match),</span><br><span class="line">	&#125;,</span><br><span class="line">	.probe		= rx8010_probe,</span><br><span class="line">	.id_table	= rx8010_id,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">module_i2c_driver(rx8010_driver);</span><br></pre></td></tr></table></figure>
+
+<h3 id="module-i2c-driver"><a href="#module-i2c-driver" class="headerlink" title="module_i2c_driver()"></a>module_i2c_driver()</h3><p>这个宏是用来简化 I2C 设备驱动的注册和注销过程的，定义在 <code>include/linux/i2c.h</code> 文件中，具体如下所示</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * module_i2c_driver() - Helper macro for registering a modular I2C driver</span></span><br><span class="line"><span class="comment"> * @__i2c_driver: i2c_driver struct</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Helper macro for I2C drivers which do not do anything special in module</span></span><br><span class="line"><span class="comment"> * init/exit. This eliminates a lot of boilerplate. Each module may only</span></span><br><span class="line"><span class="comment"> * use this macro once, and calling it replaces module_init() and module_exit()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> module_i2c_driver(__i2c_driver) \</span></span><br><span class="line"><span class="meta">	module_driver(__i2c_driver, i2c_add_driver, \</span></span><br><span class="line"><span class="meta">			i2c_del_driver)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="module-driver"><a href="#module-driver" class="headerlink" title="module_driver()"></a>module_driver()</h4><p><code>module_driver</code> 宏也是一个用来简化的宏，对应的宏定义如下所示</p>
+<p><code>include/linux/device/driver.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * module_driver() - Helper macro for drivers that don&#x27;t do anything</span></span><br><span class="line"><span class="comment"> * special in module init/exit. This eliminates a lot of boilerplate.</span></span><br><span class="line"><span class="comment"> * Each module may only use this macro once, and calling it replaces</span></span><br><span class="line"><span class="comment"> * module_init() and module_exit().</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @__driver: driver name</span></span><br><span class="line"><span class="comment"> * @__register: register function for this driver type</span></span><br><span class="line"><span class="comment"> * @__unregister: unregister function for this driver type</span></span><br><span class="line"><span class="comment"> * @...: Additional arguments to be passed to __register and __unregister.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Use this macro to construct bus specific macros for registering</span></span><br><span class="line"><span class="comment"> * drivers, and do not use it on its own.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> module_driver(__driver, __register, __unregister, ...) \</span></span><br><span class="line"><span class="meta">static int __init __driver##_init(void) \</span></span><br><span class="line"><span class="meta">&#123; \</span></span><br><span class="line"><span class="meta">	return __register(&amp;(__driver) , ##__VA_ARGS__); \</span></span><br><span class="line"><span class="meta">&#125; \</span></span><br><span class="line"><span class="meta">module_init(__driver##_init); \</span></span><br><span class="line"><span class="meta">static void __exit __driver##_exit(void) \</span></span><br><span class="line"><span class="meta">&#123; \</span></span><br><span class="line"><span class="meta">	__unregister(&amp;(__driver) , ##__VA_ARGS__); \</span></span><br><span class="line"><span class="meta">&#125; \</span></span><br><span class="line"><span class="meta">module_exit(__driver##_exit);</span></span><br></pre></td></tr></table></figure>
+
+<p>最后来对上述宏进行代入，展开可以得到如下内容：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">rx8010_driver_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> i2c_add_driver(&amp;rx8010_driver);</span><br><span class="line">&#125;</span><br><span class="line">module_init(rx8010_driver_init);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">rx8010_driver_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	i2c_del_driver(&amp;rx8010_driver);</span><br><span class="line">&#125;</span><br><span class="line">module_exit(rx8010_driver_exit);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>rx8010_driver_init</code> 函数在模块加载时被调用，它通过 <code>i2c_add_driver</code> 函数将 <code>rx8010_driver</code>注册到内核中。</p>
+</li>
+<li><p><code>rx8010_driver_exit</code> 函数在模块卸载时被调用，它通过 <code>i2c_del_driver</code> 函数将 <code>rx8010_driver</code> 从内核中注销。</p>
+</li>
+</ul>
+<h3 id="rx8010-probe"><a href="#rx8010-probe" class="headerlink" title="rx8010_probe()"></a>rx8010_probe()</h3><p>当 compatible 匹配之后会进入到 probe 函数，probe 函数内容如下所示</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">rx8010_probe</span><span class="params">(<span class="keyword">struct</span> i2c_client *client,</span></span><br><span class="line"><span class="params">			<span class="type">const</span> <span class="keyword">struct</span> i2c_device_id *id)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">i2c_adapter</span> *<span class="title">adapter</span> =</span> to_i2c_adapter(client-&gt;dev.parent);<span class="comment">// 获取 I2C 适配器对象，用于检查功能支持</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rtc_class_ops</span> *<span class="title">rtc_ops</span>;</span><span class="comment">// RTC 操作函数指针</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rx8010_data</span> *<span class="title">rx8010</span>;</span><span class="comment">// 用于存储设备私有数据的结构体</span></span><br><span class="line">	<span class="type">int</span> err = <span class="number">0</span>;<span class="comment">// 错误码初始化为 0</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查 I2C 适配器是否支持所需的 SMBus 功能</span></span><br><span class="line">	<span class="keyword">if</span> (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA</span><br><span class="line">		| I2C_FUNC_SMBUS_I2C_BLOCK)) &#123;</span><br><span class="line">		dev_err(&amp;adapter-&gt;dev, <span class="string">&quot;doesn&#x27;t support required functionality\n&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> -EIO;<span class="comment">// 如果不支持，打印错误信息并返回 -EIO（输入/输出错误）</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分配一块清零的内存，并将其与设备生命周期绑定。</span></span><br><span class="line">	rx8010 = devm_kzalloc(&amp;client-&gt;dev, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> rx8010_data),</span><br><span class="line">			      GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (!rx8010)<span class="comment">// 如果内存分配失败，返回 -ENOMEM（内存不足错误）</span></span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line">	<span class="comment">// 初始化设备私有数据</span></span><br><span class="line">	rx8010-&gt;client = client;</span><br><span class="line">	i2c_set_clientdata(client, rx8010); <span class="comment">// 将私有数据与 I2C 客户端关联</span></span><br><span class="line">	<span class="comment">// 初始化 RX8010 设备</span></span><br><span class="line">	err = rx8010_init_client(client);</span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		<span class="keyword">return</span> err;<span class="comment">// 如果初始化失败，直接返回错误码</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (client-&gt;irq &gt; <span class="number">0</span>) &#123;<span class="comment">// 检查设备是否提供了中断号</span></span><br><span class="line">		dev_info(&amp;client-&gt;dev, <span class="string">&quot;IRQ %d supplied\n&quot;</span>, client-&gt;irq);</span><br><span class="line">        <span class="comment">// 请求线程化的中断处理程序</span></span><br><span class="line">		err = devm_request_threaded_irq(&amp;client-&gt;dev, client-&gt;irq, <span class="literal">NULL</span>,</span><br><span class="line">						rx8010_irq_1_handler,</span><br><span class="line">						IRQF_TRIGGER_LOW | IRQF_ONESHOT,</span><br><span class="line">						<span class="string">&quot;rx8010&quot;</span>, client);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (err) &#123;</span><br><span class="line">            <span class="comment">// 如果请求中断失败，打印错误信息并返回错误码</span></span><br><span class="line">			dev_err(&amp;client-&gt;dev, <span class="string">&quot;unable to request IRQ\n&quot;</span>);</span><br><span class="line">			<span class="keyword">return</span> err;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 如果有中断支持，使用带有报警功能的 RTC 操作函数</span></span><br><span class="line">		rtc_ops = &amp;rx8010_rtc_ops_alarm;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 如果没有中断支持，使用默认的 RTC 操作函数</span></span><br><span class="line">		rtc_ops = &amp;rx8010_rtc_ops_default;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册 RTC 设备</span></span><br><span class="line">	rx8010-&gt;rtc = devm_rtc_device_register(&amp;client-&gt;dev, client-&gt;name,</span><br><span class="line">					       rtc_ops, THIS_MODULE);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(rx8010-&gt;rtc)) &#123;</span><br><span class="line">        <span class="comment">// 如果注册失败，打印错误信息并返回错误码</span></span><br><span class="line">		dev_err(&amp;client-&gt;dev, <span class="string">&quot;unable to register the class device\n&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> PTR_ERR(rx8010-&gt;rtc);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	rx8010-&gt;rtc-&gt;max_user_freq = <span class="number">1</span>;<span class="comment">// 设置 RTC 设备的最大用户频率</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> err;<span class="comment">// 返回成功状态</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>probe函数中定义了一个用于存储设备私有数据的 <code>rx8010_data</code> 结构体变量 rx8010，该结构体定义如下所示：</p>
+<h4 id="struct-rx8010-data"><a href="#struct-rx8010-data" class="headerlink" title="struct rx8010_data"></a>struct rx8010_data</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rx8010_data</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">i2c_client</span> *<span class="title">client</span>;</span> <span class="comment">// I2C 客户端，用于与 RX8010 设备通信</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rtc_device</span> *<span class="title">rtc</span>;</span> <span class="comment">// RTC 设备，用于管理实时时钟功能</span></span><br><span class="line">	u8 ctrlreg;	<span class="comment">// 控制寄存器的值，用于存储或配置 RX8010 的控制状态</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><code>i2c_client</code> 是指向 I2C 客户端的指针，用于与 RX8010 设备通信，而 <code>rtc_device</code> 结构体表示与 RX8010 设备关联的 RTC（实时时<br>钟）设备，该结构体的定义如下所示：</p>
+<h5 id="struct-rtc-device"><a href="#struct-rtc-device" class="headerlink" title="struct rtc_device"></a>struct rtc_device</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rtc_device</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">device</span> <span class="title">dev</span>;</span><span class="comment">// 设备结构体，用于与设备模型集成</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">module</span> *<span class="title">owner</span>;</span><span class="comment">// 拥有该 RTC 设备的模块</span></span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> id;<span class="comment">// RTC 设备的 ID</span></span><br><span class="line"></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rtc_class_ops</span> *<span class="title">ops</span>;</span><span class="comment">// RTC 设备的操作函数集</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">ops_lock</span>;</span><span class="comment">// 用于保护操作函数集的互斥锁</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">char_dev</span>;</span><span class="comment">// 字符设备，用于用户空间访问 RTC 设备</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> flags;<span class="comment">// RTC 设备的标志位</span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> irq_data;<span class="comment">// 中断相关数据</span></span><br><span class="line">	<span class="type">spinlock_t</span> irq_lock;<span class="comment">// 用于保护中断数据的自旋锁</span></span><br><span class="line">	<span class="type">wait_queue_head_t</span> irq_queue;<span class="comment">// 等待队列，用于处理中断事件</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">fasync_struct</span> *<span class="title">async_queue</span>;</span><span class="comment">// 异步通知队列</span></span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> irq_freq;<span class="comment">// 中断频率</span></span><br><span class="line">	<span class="type">int</span> max_user_freq;<span class="comment">// 用户空间允许的最大中断频率</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timerqueue_head</span> <span class="title">timerqueue</span>;</span><span class="comment">// 定时器队列，用于管理定时器事件</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rtc_timer</span> <span class="title">aie_timer</span>;</span>	<span class="comment">// 闹钟中断定时器</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rtc_timer</span> <span class="title">uie_rtctimer</span>;</span> <span class="comment">// 更新中断定时器</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">hrtimer</span> <span class="title">pie_timer</span>;</span> <span class="comment">/* sub second exp, so needs hrtimer */</span> <span class="comment">// 高精度定时器，用于处理亚秒级的中断</span></span><br><span class="line">	<span class="type">int</span> pie_enabled;<span class="comment">// 高精度定时器是否启用</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">work_struct</span> <span class="title">irqwork</span>;</span><span class="comment">// 中断处理的工作队列</span></span><br><span class="line">	<span class="comment">/* Some hardware can&#x27;t support UIE mode */</span></span><br><span class="line">	<span class="type">int</span> uie_unsupported;<span class="comment">// 硬件是否不支持更新中断模式</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Number of nsec it takes to set the RTC clock. This influences when</span></span><br><span class="line"><span class="comment">	 * the set ops are called. An offset:</span></span><br><span class="line"><span class="comment">	 *   - of 0.5 s will call RTC set for wall clock time 10.0 s at 9.5 s</span></span><br><span class="line"><span class="comment">	 *   - of 1.5 s will call RTC set for wall clock time 10.0 s at 8.5 s</span></span><br><span class="line"><span class="comment">	 *   - of -0.5 s will call RTC set for wall clock time 10.0 s at 10.5 s</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">long</span> set_offset_nsec;<span class="comment">/* 设置 RTC 时钟时的偏移时间（纳秒） */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">bool</span> registered;<span class="comment">// 设备是否已注册</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Old ABI support */</span></span><br><span class="line">	<span class="type">bool</span> nvram_old_abi;<span class="comment">// 是否使用旧的 NVRAM ABI</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bin_attribute</span> *<span class="title">nvram</span>;</span><span class="comment">// NVRAM 的二进制属性</span></span><br><span class="line"></span><br><span class="line">	<span class="type">time64_t</span> range_min;<span class="comment">// RTC 设备支持的最小时间范围</span></span><br><span class="line">	<span class="type">timeu64_t</span> range_max;<span class="comment">// RTC 设备支持的最大时间范围</span></span><br><span class="line">	<span class="type">time64_t</span> start_secs;<span class="comment">// RTC 设备的起始时间（秒）</span></span><br><span class="line">	<span class="type">time64_t</span> offset_secs;<span class="comment">// RTC 设备的偏移时间（秒）</span></span><br><span class="line">	<span class="type">bool</span> set_start_time;<span class="comment">// 是否设置了起始时间</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_RTC_INTF_DEV_UIE_EMUL</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">work_struct</span> <span class="title">uie_task</span>;</span><span class="comment">// 更新中断模拟任务</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timer_list</span> <span class="title">uie_timer</span>;</span><span class="comment">// 更新中断模拟定时器</span></span><br><span class="line">	<span class="comment">/* Those fields are protected by rtc-&gt;irq_lock */</span>  <span class="comment">/* 以下字段由 rtc-&gt;irq_lock 保护 */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> oldsecs;<span class="comment">// 上一次读取的秒数</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> uie_irq_active:<span class="number">1</span>;<span class="comment">// 更新中断是否激活</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> stop_uie_polling:<span class="number">1</span>;<span class="comment">// 是否停止更新中断轮询</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> uie_task_active:<span class="number">1</span>;<span class="comment">// 更新中断任务是否激活</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> uie_timer_active:<span class="number">1</span>;<span class="comment">// 更新中断定时器是否激活</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>该结构体是 Linux 内核中 RTC 设备的核心数据结构，涵盖了 RTC 设备的所有功能和状态。</p>
+<h4 id="rx8010-init-client"><a href="#rx8010-init-client" class="headerlink" title="rx8010_init_client()"></a>rx8010_init_client()</h4><p>probe 函数中通过 <code>rx8010_init_client</code> 函数对 RX8010 芯片进行初始化和配置，由于不同的 RTC 芯片寄存器并不相同，因此初始化代码也不同。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">rx8010_init_client</span><span class="params">(<span class="keyword">struct</span> i2c_client *client)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rx8010_data</span> *<span class="title">rx8010</span> =</span> i2c_get_clientdata(client);</span><br><span class="line">	u8 ctrl[<span class="number">2</span>];</span><br><span class="line">	<span class="type">int</span> need_clear = <span class="number">0</span>, err = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	u8 flag;</span><br><span class="line">    flag = i2c_smbus_read_byte_data(client, RX8010_FLAG);</span><br><span class="line">    <span class="keyword">if</span>(err &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> err;</span><br><span class="line"></span><br><span class="line">    flag &amp;= ~(RX8010_FLAG_VLF);</span><br><span class="line">        err = i2c_smbus_write_byte_data(client, RX8010_FLAG, flag);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Initialize reserved registers as specified in datasheet */</span></span><br><span class="line">	err = i2c_smbus_write_byte_data(client, RX8010_RESV17, <span class="number">0xD8</span>);</span><br><span class="line">	<span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line"></span><br><span class="line">	err = i2c_smbus_write_byte_data(client, RX8010_RESV30, <span class="number">0x00</span>);</span><br><span class="line">	<span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line"></span><br><span class="line">	err = i2c_smbus_write_byte_data(client, RX8010_RESV31, <span class="number">0x08</span>);</span><br><span class="line">	<span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line"></span><br><span class="line">	err = i2c_smbus_write_byte_data(client, RX8010_IRQ, <span class="number">0x00</span>);</span><br><span class="line">	<span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line"></span><br><span class="line">	err = i2c_smbus_read_i2c_block_data(rx8010-&gt;client, RX8010_FLAG,</span><br><span class="line">					    <span class="number">2</span>, ctrl);</span><br><span class="line">	<span class="keyword">if</span> (err != <span class="number">2</span>)</span><br><span class="line">		<span class="keyword">return</span> err &lt; <span class="number">0</span> ? err : -EIO;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ctrl[<span class="number">0</span>] &amp; RX8010_FLAG_VLF)</span><br><span class="line">		dev_warn(&amp;client-&gt;dev, <span class="string">&quot;Frequency stop was detected\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ctrl[<span class="number">0</span>] &amp; RX8010_FLAG_AF) &#123;</span><br><span class="line">		dev_warn(&amp;client-&gt;dev, <span class="string">&quot;Alarm was detected\n&quot;</span>);</span><br><span class="line">		need_clear = <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ctrl[<span class="number">0</span>] &amp; RX8010_FLAG_TF)</span><br><span class="line">		need_clear = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ctrl[<span class="number">0</span>] &amp; RX8010_FLAG_UF)</span><br><span class="line">		need_clear = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (need_clear) &#123;</span><br><span class="line">		ctrl[<span class="number">0</span>] &amp;= ~(RX8010_FLAG_AF | RX8010_FLAG_TF | RX8010_FLAG_UF);</span><br><span class="line">		err = i2c_smbus_write_byte_data(client, RX8010_FLAG, ctrl[<span class="number">0</span>]);</span><br><span class="line">		<span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">			<span class="keyword">return</span> err;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	rx8010-&gt;ctrlreg = (ctrl[<span class="number">1</span>] &amp; ~RX8010_CTRL_TEST);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="struct-rtc-class-ops"><a href="#struct-rtc-class-ops" class="headerlink" title="struct rtc_class_ops"></a>struct rtc_class_ops</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (client-&gt;irq &gt; <span class="number">0</span>) &#123;<span class="comment">// 检查设备是否提供了中断号</span></span><br><span class="line">	dev_info(&amp;client-&gt;dev, <span class="string">&quot;IRQ %d supplied\n&quot;</span>, client-&gt;irq);</span><br><span class="line">       <span class="comment">// 请求线程化的中断处理程序</span></span><br><span class="line">	err = devm_request_threaded_irq(&amp;client-&gt;dev, client-&gt;irq, <span class="literal">NULL</span>,</span><br><span class="line">					rx8010_irq_1_handler,</span><br><span class="line">					IRQF_TRIGGER_LOW | IRQF_ONESHOT,</span><br><span class="line">					<span class="string">&quot;rx8010&quot;</span>, client);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (err) &#123;</span><br><span class="line">           <span class="comment">// 如果请求中断失败，打印错误信息并返回错误码</span></span><br><span class="line">		dev_err(&amp;client-&gt;dev, <span class="string">&quot;unable to request IRQ\n&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 如果有中断支持，使用带有报警功能的 RTC 操作函数</span></span><br><span class="line">	rtc_ops = &amp;rx8010_rtc_ops_alarm;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       <span class="comment">// 如果没有中断支持，使用默认的 RTC 操作函数</span></span><br><span class="line">	rtc_ops = &amp;rx8010_rtc_ops_default;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>probe 函数中会根据设备是否提供了中断号来决定 RTC 芯片的操作模式，但无论是硬件连接还是设备树配置中没有使用中断，所以进入的是第二个判断，也就是<code>rtc_ops = &amp;rx8010_rtc_ops_default;</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rtc_class_ops</span> <span class="title">rx8010_rtc_ops_default</span> =</span> &#123;</span><br><span class="line">	.read_time = rx8010_get_time, <span class="comment">// 读取当前时间的函数指针</span></span><br><span class="line">	.set_time = rx8010_set_time,  <span class="comment">// 设置当前时间的函数指针</span></span><br><span class="line">	.ioctl = rx8010_ioctl,	      <span class="comment">// 提供额外控制功能的函数指针</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><code>rx8010_rtc_ops_default</code> 为 RX8010 实时时钟芯片提供一组默认的操作函数接口，包括读取当前时间的函数指针、设置当前时间的函数指针以及 ioctl 外控制功能</p>
+<h4 id="devm-rtc-device-register"><a href="#devm-rtc-device-register" class="headerlink" title="devm_rtc_device_register()"></a>devm_rtc_device_register()</h4><p>在 probe 函数中，使用 <code>devm_rtc_device_register</code> 函数注册 rtc 设备，该函数在 <code>drivers/rtc/class.c</code> 文件中，函数具体内容如下所示:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * devm_rtc_device_register - resource managed rtc_device_register()</span></span><br><span class="line"><span class="comment"> * @dev: the device to register</span></span><br><span class="line"><span class="comment"> * @name: the name of the device (unused)</span></span><br><span class="line"><span class="comment"> * @ops: the rtc operations structure</span></span><br><span class="line"><span class="comment"> * @owner: the module owner</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return a struct rtc on success, or an ERR_PTR on error</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Managed rtc_device_register(). The rtc_device returned from this function</span></span><br><span class="line"><span class="comment"> * are automatically freed on driver detach.</span></span><br><span class="line"><span class="comment"> * This function is deprecated, use devm_rtc_allocate_device and</span></span><br><span class="line"><span class="comment"> * rtc_register_device instead</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">struct</span> rtc_device *<span class="title function_">devm_rtc_device_register</span><span class="params">(<span class="keyword">struct</span> device *dev,</span></span><br><span class="line"><span class="params">					    <span class="type">const</span> <span class="type">char</span> *name,</span></span><br><span class="line"><span class="params">					    <span class="type">const</span> <span class="keyword">struct</span> rtc_class_ops *ops,</span></span><br><span class="line"><span class="params">					    <span class="keyword">struct</span> module *owner)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rtc_device</span> *<span class="title">rtc</span>;</span></span><br><span class="line">	<span class="type">int</span> err;</span><br><span class="line">	<span class="comment">// 分配设备资源管理器的内存，用于存储 RTC 设备指针</span></span><br><span class="line">	rtc = devm_rtc_allocate_device(dev);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(rtc))</span><br><span class="line">		<span class="keyword">return</span> rtc;<span class="comment">// 如果分配失败，返回错误指针（内存不足）</span></span><br><span class="line"></span><br><span class="line">	rtc-&gt;ops = ops;</span><br><span class="line"></span><br><span class="line">	err = __rtc_register_device(owner, rtc);<span class="comment">// 调用 rtc_device_register 注册 RTC 设备</span></span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		<span class="keyword">return</span> ERR_PTR(err);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> rtc;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(devm_rtc_device_register);</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="rtc-register-device"><a href="#rtc-register-device" class="headerlink" title="__rtc_register_device()"></a>__rtc_register_device()</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __rtc_register_device(<span class="keyword">struct</span> module *owner, <span class="keyword">struct</span> rtc_device *rtc)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rtc_wkalrm</span> <span class="title">alrm</span>;</span><span class="comment">// 用于存储报警信息</span></span><br><span class="line">	<span class="type">int</span> err;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!rtc-&gt;ops) &#123;</span><br><span class="line">		dev_dbg(&amp;rtc-&gt;dev, <span class="string">&quot;no ops set\n&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	rtc-&gt;owner = owner;<span class="comment">// 设置模块所有者</span></span><br><span class="line">	rtc_device_get_offset(rtc);<span class="comment">// 获取 RTC 设备的时间偏移量</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Check to see if there is an ALARM already set in hw */</span></span><br><span class="line">    <span class="comment">// 检查硬件中是否已经设置了报警</span></span><br><span class="line">	err = __rtc_read_alarm(rtc, &amp;alrm);<span class="comment">// 尝试读取硬件中的报警信息</span></span><br><span class="line">	<span class="keyword">if</span> (!err &amp;&amp; !rtc_valid_tm(&amp;alrm.time))<span class="comment">// 如果读取成功且时间有效</span></span><br><span class="line">		rtc_initialize_alarm(rtc, &amp;alrm);<span class="comment">// 初始化报警</span></span><br><span class="line"></span><br><span class="line">	rtc_dev_prepare(rtc);<span class="comment">// 准备 RTC 设备的字符设备接口</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将 RTC 设备的字符设备和设备结构体添加到内核</span></span><br><span class="line">	err = cdev_device_add(&amp;rtc-&gt;char_dev, &amp;rtc-&gt;dev);</span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		dev_warn(rtc-&gt;dev.parent, <span class="string">&quot;failed to add char device %d:%d\n&quot;</span>,</span><br><span class="line">			 MAJOR(rtc-&gt;dev.devt), rtc-&gt;id);</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		dev_dbg(rtc-&gt;dev.parent, <span class="string">&quot;char device (%d:%d)\n&quot;</span>,</span><br><span class="line">			MAJOR(rtc-&gt;dev.devt), rtc-&gt;id);</span><br><span class="line"></span><br><span class="line">	rtc_proc_add_device(rtc);<span class="comment">// 将 RTC 设备添加到 proc 文件系统中</span></span><br><span class="line"></span><br><span class="line">	rtc-&gt;registered = <span class="literal">true</span>;</span><br><span class="line">	dev_info(rtc-&gt;dev.parent, <span class="string">&quot;registered as %s\n&quot;</span>,</span><br><span class="line">		 dev_name(&amp;rtc-&gt;dev));</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_RTC_HCTOSYS_DEVICE<span class="comment">// 如果配置了 RTC 作为系统时间源，并且设备名称匹配，则同步硬件时钟到系统时钟</span></span></span><br><span class="line">	<span class="keyword">if</span> (!<span class="built_in">strcmp</span>(dev_name(&amp;rtc-&gt;dev), CONFIG_RTC_HCTOSYS_DEVICE))</span><br><span class="line">		rtc_hctosys(rtc);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(__rtc_register_device);</span><br></pre></td></tr></table></figure>
+
+<p>该函数主要作用是注册一个 RTC 设备到 Linux 内核的 RTC 子系统中 。它完成了一系列初始化和资源分配工作，使得内核可以通过标准接口与该 RTC 设备交互。</p>
+<p>重点是调用了<code>cdev_device_add</code> 函数，将 RTC 设备的字符设备和设备结构体注册到内核中，使RTC 设备正式成为内核的一部分，可供用户空间或其他内核模块使用。</p>
+<p>然后是其中的 <code>rtc_proc_add_device</code>，将 RTC 设备的信息添加到 proc 子系统当中，便于调试和监控。</p>
+<h2 id="移植-RX8010-驱动"><a href="#移植-RX8010-驱动" class="headerlink" title="移植 RX8010 驱动"></a>移植 RX8010 驱动</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260105221146876.png" alt="RX8010芯片" loading="lazy"></p>
+<p>可以确定 RX8010 挂载到了 I2C5 上，所以需要在设备树的 i2c5 节点下添加 rx8010 的节点，添加内容如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&amp;i2c5 &#123;</span><br><span class="line">	status = <span class="string">&quot;okay&quot;</span>;</span><br><span class="line">	rx8010: rx8010@<span class="number">32</span> &#123;</span><br><span class="line">		compatible = <span class="string">&quot;epson,rx8010&quot;</span>;</span><br><span class="line">		reg = &lt;<span class="number">0x32</span>&gt;;</span><br><span class="line">		status = <span class="string">&quot;okay&quot;</span>;</span><br><span class="line">		<span class="meta">#clock-cells = <span class="string">&lt;0&gt;</span>;</span></span><br><span class="line">	&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>reg 属性表示 RX8010 的地址为 0x32，这里的地址可以根据 RX8010 数据手册得到，具体如下所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260105221153352.png" alt="RX8010数据手册" loading="lazy"></p>
+<p>这里总共有 8 位的数据，这是因为在实际的数据传输过程中<u>主设备发送的第一个字节包含了从设备地址和读/写位</u>，其中从设备地址占字节的高 7 位（bit 7 到 bit 1），所以从上图可以得到 RX8010 的地址为 0110010，换算就可以得到 0x32 了。</p>
+<p>然后来到 Linux 内核源码的根目录，使用menuconfig打开RX8010驱动</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Device Drivers</span><br><span class="line">	<span class="built_in">Real</span> <span class="built_in">Time</span> Clock</span><br><span class="line">		&lt;*&gt; Epson RX8010SJ</span><br></pre></td></tr></table></figure>
+
+<p>除此之外还要确保 RK 电源管理芯片的内部 RTC 没有被勾选，确保系统里面不会存在两个RTC 设备</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Device Drivers</span><br><span class="line">	Real Time Clock</span><br><span class="line">		&lt;*&gt; Rockchip RK805<span class="regexp">/RK808/</span>RK809<span class="regexp">/RK816/</span>RK817/RK818 RTC</span><br></pre></td></tr></table></figure>
+
+<h1 id="时间相关命令"><a href="#时间相关命令" class="headerlink" title="时间相关命令"></a>时间相关命令</h1><h2 id="date-命令"><a href="#date-命令" class="headerlink" title="date 命令"></a>date 命令</h2><p>date 是 Linux 系统中一个非常强大的命令行工具，用于显示或设置系统的日期和时间。它不仅可以查看当前的系统时间，还可以设置系统时间、格式化日期和时间的输出、解析时间字符串并进行时间计算。</p>
+<ul>
+<li><strong>显示当前日期和时间</strong></li>
+</ul>
+<p>直接运行 date 命令会显示当前系统的日期和时间，格式为默认的本地时间格式，如下所示</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">date</span></span><br><span class="line">Mon Jan  5 09:37:49 PM CST 2026</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>CST表示时区（China Standard Time）</p>
+</blockquote>
+<ul>
+<li><strong>设置系统时间</strong></li>
+</ul>
+<p>使用 date 命令可以设置系统时间的命令格式如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">date</span> [MMDDhhmm[[CC]YY][.ss]]</span><br><span class="line"><span class="comment"># MM：月份（两位数字，如 10 表示十月）。</span></span><br><span class="line"><span class="comment"># DD：日期（两位数字，如 30 表示 30 日）。</span></span><br><span class="line"><span class="comment"># hh：小时（24 小时制，两位数字，如 14 表示下午 2 点）。</span></span><br><span class="line"><span class="comment"># mm：分钟（两位数字，如 23 表示 23 分钟）。</span></span><br><span class="line"><span class="comment"># CC：世纪（可选，两位数字，如 20 表示 2000 年代）。</span></span><br><span class="line"><span class="comment"># YY：年份（两位数字，如 23 表示 2023 年）。</span></span><br><span class="line"><span class="comment"># .ss：秒数（可选，两位数字，如 .45 表示 45 秒）。</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>例如将系统时间设置为 2025 年 1 月 20 日 14:23:45：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">date</span> 012014232025.45</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>格式化输出</strong></li>
+</ul>
+<p>date 命令支持通过格式化字符串自定义输出的日期和时间格式。在 date 命令后加上 + 和格式化字符串，可以指定输出格式。</p>
+<table>
+<thead>
+<tr>
+<th>格式符</th>
+<th>描述</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>%Y</code></td>
+<td>年份（四位数字）</td>
+<td>2023</td>
+</tr>
+<tr>
+<td><code>%m</code></td>
+<td>月份（两位数字）</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>%d</code></td>
+<td>日期（两位数字）</td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>%H</code></td>
+<td>小时（24小时制，两位数字）</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>%I</code></td>
+<td>小时（12小时制，两位数字）</td>
+<td>02</td>
+</tr>
+<tr>
+<td><code>%M</code></td>
+<td>分钟（两位数字）</td>
+<td>23</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>秒数（两位数字）</td>
+<td>45</td>
+</tr>
+<tr>
+<td><code>%A</code></td>
+<td>星期几（完整名称）</td>
+<td>Monday</td>
+</tr>
+<tr>
+<td><code>%a</code></td>
+<td>星期几（缩写名称）</td>
+<td>Mon</td>
+</tr>
+<tr>
+<td><code>%B</code></td>
+<td>月份（完整名称）</td>
+<td>October</td>
+</tr>
+<tr>
+<td><code>%b</code></td>
+<td>月份（缩写名称）</td>
+<td>Oct</td>
+</tr>
+<tr>
+<td><code>%p</code></td>
+<td>AM&#x2F;PM</td>
+<td>PM</td>
+</tr>
+<tr>
+<td><code>%Z</code></td>
+<td>时区</td>
+<td>CST</td>
+</tr>
+</tbody></table>
+<p>例如，将格式为 <code>YYYY-MM-DD HH:MM:SS</code>，并输出当前时间：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">date</span> <span class="string">&quot;+%Y-%m-%d %H:%M:%S&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="hwclock-命令"><a href="#hwclock-命令" class="headerlink" title="hwclock 命令"></a>hwclock 命令</h2><p>hwclock 是 Linux 系统中用于<strong>管理硬件时钟</strong>的命令行工具。包括查看、设置和同步硬件时钟与系统时钟。</p>
+<ul>
+<li><strong>查看硬件时钟</strong></li>
+</ul>
+<p>直接运行 hwclock 命令会显示当前硬件时钟的时间。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> hwclock</span><br><span class="line">2026-01-05 21:52:44.991760+08:00</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>hwclock 命令显示的是硬件时钟的时间。硬件时钟通常默认存储的是 UTC 时间，UTC 是目前全球使用的标准时间，它是基于原子时钟的精确时间定义，并且不受地球自转变化的影响。</p>
+<p>UTC 是全球时间的基准，不属于任何时区，因此它也被称为世界标准时间。</p>
+<p>而 date 命令显示的是系统时钟的时间，系统时钟会根据操作系统的时区设置来调整时间。</p>
+<p>上面打印的时区为 CST，即中国时区，那么 date 命令显示的时间会是 UTC+8。因此，系统时钟和硬件时钟使用不同的时间标准，导致二者之间的时间差。假设你在中国（UTC+8），那么两者的时间差正好是 8 小时。</p>
+</blockquote>
+<ul>
+<li><strong>同步硬件时钟与系统时钟</strong><ul>
+<li><code>hwclock -s</code>将系统时钟同步到硬件时钟</li>
+<li><code>hwclock -w</code>将硬件时钟同步到系统时钟</li>
+</ul>
+</li>
+</ul>
+<p>每次系统上电启动之后，都会将 RTC 里面的硬件时间同步到系统时间，具体的实现在内核<code>drivers/rtc/class.c</code> 文件的 <code>rtc_hctosys</code> 函数实现的。该函数的具体内容如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_RTC_HCTOSYS_DEVICE</span></span><br><span class="line"><span class="comment">/* Result of the last RTC to system clock attempt. */</span></span><br><span class="line"><span class="type">int</span> rtc_hctosys_ret = -ENODEV;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* IMPORTANT: the RTC only stores whole seconds. It is arbitrary</span></span><br><span class="line"><span class="comment"> * whether it stores the most close value or the value with partial</span></span><br><span class="line"><span class="comment"> * seconds truncated. However, it is important that we use it to store</span></span><br><span class="line"><span class="comment"> * the truncated value. This is because otherwise it is necessary,</span></span><br><span class="line"><span class="comment"> * in an rtc sync function, to read both xtime.tv_sec and</span></span><br><span class="line"><span class="comment"> * xtime.tv_nsec. On some processors (i.e. ARM), an atomic read</span></span><br><span class="line"><span class="comment"> * of &gt;32bits is not possible. So storing the most close value would</span></span><br><span class="line"><span class="comment"> * slow down the sync API. So here we have the truncated value and</span></span><br><span class="line"><span class="comment"> * the best guess is to add 0.5s.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">rtc_hctosys</span><span class="params">(<span class="keyword">struct</span> rtc_device *rtc)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> err;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rtc_time</span> <span class="title">tm</span>;</span><span class="comment">// 用于存储从 RTC 设备读取的时间</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timespec64</span> <span class="title">tv64</span> =</span> &#123;</span><br><span class="line">		.tv_nsec = NSEC_PER_SEC &gt;&gt; <span class="number">1</span>, <span class="comment">// 设置纳秒部分为 0.5 秒（用于时间精度调整）</span></span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从 RTC 设备读取当前时间</span></span><br><span class="line">	err = rtc_read_time(rtc, &amp;tm);</span><br><span class="line">	<span class="keyword">if</span> (err) &#123;<span class="comment">// 如果读取时间失败</span></span><br><span class="line">		dev_err(rtc-&gt;dev.parent,</span><br><span class="line">			<span class="string">&quot;hctosys: unable to read the hardware clock\n&quot;</span>);</span><br><span class="line">		<span class="keyword">goto</span> err_read;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 将 RTC 时间转换为 Unix 时间戳（自 1970 年 1 月 1 日以来的秒数）</span></span><br><span class="line">	tv64.tv_sec = rtc_tm_to_time64(&amp;tm);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> BITS_PER_LONG == 32 </span></span><br><span class="line">	<span class="keyword">if</span> (tv64.tv_sec &gt; INT_MAX) &#123;<span class="comment">// 在 32 位系统上，检查时间戳是否超出范围</span></span><br><span class="line">		err = -ERANGE; <span class="comment">// 如果超出范围，设置错误码为 &quot;超出范围&quot;</span></span><br><span class="line">		<span class="keyword">goto</span> err_read;<span class="comment">// 跳转到错误处理标签</span></span><br><span class="line">	&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	err = do_settimeofday64(&amp;tv64);<span class="comment">// 将时间戳设置为系统时钟</span></span><br><span class="line"></span><br><span class="line">	dev_info(rtc-&gt;dev.parent, <span class="string">&quot;setting system clock to %ptR UTC (%lld)\n&quot;</span>,</span><br><span class="line">		 &amp;tm, (<span class="type">long</span> <span class="type">long</span>)tv64.tv_sec);</span><br><span class="line"></span><br><span class="line">err_read:</span><br><span class="line">	rtc_hctosys_ret = err;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>rtc_read_time</code> 函数读取 RTC 硬件里面存储的时间，然后通过<code>do_settimeofday64</code> 函数将转换之后的时间戳设置为系统时钟。</p>
+<h1 id="RTC-应用程序编写"><a href="#RTC-应用程序编写" class="headerlink" title="RTC 应用程序编写"></a>RTC 应用程序编写</h1><h2 id="ioctl-宏定义解析"><a href="#ioctl-宏定义解析" class="headerlink" title="ioctl 宏定义解析"></a><code>ioctl</code> 宏定义解析</h2><h3 id="RTC-RD-TIME"><a href="#RTC-RD-TIME" class="headerlink" title="RTC_RD_TIME"></a><code>RTC_RD_TIME</code></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> RTC_RD_TIME _IOR(<span class="string">&#x27;p&#x27;</span>, 0x09, struct rtc_time)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>_IOR(type, nr, data_type)</code>：表示 <strong>从内核读取数据到用户空间</strong>。<ul>
+<li><code>&#39;p&#39;</code>：魔数（magic number），用于区分不同设备的 <code>ioctl</code> 命令（RTC 固定为 <code>&#39;p&#39;</code>）。</li>
+<li><code>0x09</code>：命令编号。</li>
+<li><code>struct rtc_time</code>：期望的数据类型。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>功能：<strong>读取 RTC 硬件当前时间</strong>（注意：不是系统时间！）</p>
+</blockquote>
+<hr>
+<h3 id="RTC-SET-TIME"><a href="#RTC-SET-TIME" class="headerlink" title="RTC_SET_TIME"></a><code>RTC_SET_TIME</code></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> RTC_SET_TIME _IOW(<span class="string">&#x27;p&#x27;</span>, 0x0a, struct rtc_time)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>_IOW(type, nr, data_type)</code>：表示 <strong>从用户空间写入数据到内核</strong>。</li>
+<li>其他参数同上。</li>
+</ul>
+<blockquote>
+<p>功能：<strong>将用户指定的时间写入 RTC 硬件</strong>（通常需要 root 权限）。</p>
+</blockquote>
+<hr>
+<h2 id="struct-rtc-time-结构体"><a href="#struct-rtc-time-结构体" class="headerlink" title="struct rtc_time 结构体"></a><code>struct rtc_time</code> 结构体</h2><p>这是 Linux 内核定义的标准时间结构（位于 <code>&lt;linux/rtc.h&gt;</code>），与 C 标准库的 <code>struct tm</code> <strong>几乎相同</strong>，但<strong>不保证完全兼容</strong>（尤其在跨平台时）。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>范围</th>
+<th>说明</th>
+<th>⚠️ 注意</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tm_sec</code></td>
+<td>0–59</td>
+<td>秒</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>tm_min</code></td>
+<td>0–59</td>
+<td>分钟</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>tm_hour</code></td>
+<td>0–23</td>
+<td>小时（24小时制）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>tm_mday</code></td>
+<td>1–31</td>
+<td>日期（1号起）</td>
+<td>不是 0-based！</td>
+</tr>
+<tr>
+<td><code>tm_mon</code></td>
+<td><strong>0–11</strong></td>
+<td>月份（0&#x3D;Jan）</td>
+<td><strong>容易出错！</strong></td>
+</tr>
+<tr>
+<td><code>tm_year</code></td>
+<td><strong>年份 - 1900</strong></td>
+<td>如 2023 → <code>123</code></td>
+<td><strong>必须减 1900！</strong></td>
+</tr>
+<tr>
+<td><code>tm_wday</code></td>
+<td>0–6</td>
+<td>星期（0&#x3D;Sun）</td>
+<td>驱动通常自动计算</td>
+</tr>
+<tr>
+<td><code>tm_yday</code></td>
+<td>0–365</td>
+<td>年内第几天</td>
+<td>驱动通常自动计算</td>
+</tr>
+<tr>
+<td><code>tm_isdst</code></td>
+<td>通常为 0</td>
+<td>夏令时标志</td>
+<td>RTC 硬件一般不支持</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>关键陷阱</strong>：</p>
+<ul>
+<li>设置 2023 年 2 月 15 日 → <code>.tm_year = 123</code>, <code>.tm_mon = 1</code></li>
+<li>打印时要加回去：<code>tm_year + 1900</code>, <code>tm_mon + 1</code></li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/rtc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rtc_time</span> <span class="title">tm</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 必须以 O_RDWR 打开才能写 RTC</span></span><br><span class="line">    fd = open(<span class="string">&quot;/dev/rtc0&quot;</span>, O_RDWR);</span><br><span class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;Failed to open /dev/rtc0 (try running as root)&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取当前 RTC 时间</span></span><br><span class="line">    <span class="keyword">if</span> (ioctl(fd, RTC_RD_TIME, &amp;tm) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;RTC_RD_TIME&quot;</span>);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Current RTC time: %d-%02d-%02d %02d:%02d:%02d\n&quot;</span>,</span><br><span class="line">           tm.tm_year + <span class="number">1900</span>, tm.tm_mon + <span class="number">1</span>, tm.tm_mday,</span><br><span class="line">           tm.tm_hour, tm.tm_min, tm.tm_sec);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// === 安全修改时间示例：设置为 2023-06-15 12:00:00 ===</span></span><br><span class="line">    <span class="comment">// 注意：这里假设你要设置一个完整、合法的时间</span></span><br><span class="line">    tm.tm_year = <span class="number">123</span>;   <span class="comment">// 2023</span></span><br><span class="line">    tm.tm_mon  = <span class="number">5</span>;     <span class="comment">// June (0-based)</span></span><br><span class="line">    tm.tm_mday = <span class="number">15</span>;    <span class="comment">// 15th</span></span><br><span class="line">    tm.tm_hour = <span class="number">12</span>;</span><br><span class="line">    tm.tm_min  = <span class="number">0</span>;</span><br><span class="line">    tm.tm_sec  = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 可选：清零其他字段（驱动通常会自动计算 wday/yday）</span></span><br><span class="line">    tm.tm_wday = tm.tm_yday = tm.tm_isdst = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 写入 RTC</span></span><br><span class="line">    <span class="keyword">if</span> (ioctl(fd, RTC_SET_TIME, &amp;tm) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (errno == EPERM || errno == EACCES) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Error: Permission denied. Run as root or use &#x27;sudo&#x27;.\n&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            perror(<span class="string">&quot;RTC_SET_TIME&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 验证写入结果</span></span><br><span class="line">    <span class="keyword">if</span> (ioctl(fd, RTC_RD_TIME, &amp;tm) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;RTC_RD_TIME (after set)&quot;</span>);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Modified RTC time: %d-%02d-%02d %02d:%02d:%02d\n&quot;</span>,</span><br><span class="line">           tm.tm_year + <span class="number">1900</span>, tm.tm_mon + <span class="number">1</span>, tm.tm_mday,</span><br><span class="line">           tm.tm_hour, tm.tm_min, tm.tm_sec);</span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li><p>读取：通常普通用户可读（取决于 udev 规则）。</p>
+</li>
+<li><p>写入（<code>RTC_SET_TIME</code>）：<strong>需要 root 权限</strong> 或 <code>CAP_SYS_TIME</code> 能力。</p>
+</li>
+</ul>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2601053/">https://even629.com/posts/2601053/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RTC-%E5%9F%BA%E7%A1%80"><span class="toc-text">RTC 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RTC-%E4%BB%8B%E7%BB%8D"><span class="toc-text">RTC 介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8-RTC-%E5%92%8C%E5%A4%96%E9%83%A8-RTC"><span class="toc-text">内部 RTC 和外部 RTC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RK3568-RTC-%E5%A4%96%E8%AE%BE"><span class="toc-text">RK3568 RTC 外设</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RX8010-%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90%E5%92%8C%E7%A7%BB%E6%A4%8D"><span class="toc-text">RX8010 驱动分析和移植</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RTC%E5%AD%90%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6"><span class="toc-text">RTC子系统框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RTC-%E9%A9%B1%E5%8A%A8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">RTC 驱动源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">设备树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#module-i2c-driver"><span class="toc-text">module_i2c_driver()</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#module-driver"><span class="toc-text">module_driver()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rx8010-probe"><span class="toc-text">rx8010_probe()</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-rx8010-data"><span class="toc-text">struct rx8010_data</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#struct-rtc-device"><span class="toc-text">struct rtc_device</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#rx8010-init-client"><span class="toc-text">rx8010_init_client()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-rtc-class-ops"><span class="toc-text">struct rtc_class_ops</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#devm-rtc-device-register"><span class="toc-text">devm_rtc_device_register()</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#rtc-register-device"><span class="toc-text">__rtc_register_device()</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E6%A4%8D-RX8010-%E9%A9%B1%E5%8A%A8"><span class="toc-text">移植 RX8010 驱动</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="toc-text">时间相关命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#date-%E5%91%BD%E4%BB%A4"><span class="toc-text">date 命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hwclock-%E5%91%BD%E4%BB%A4"><span class="toc-text">hwclock 命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RTC-%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%BC%96%E5%86%99"><span class="toc-text">RTC 应用程序编写</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ioctl-%E5%AE%8F%E5%AE%9A%E4%B9%89%E8%A7%A3%E6%9E%90"><span class="toc-text">ioctl 宏定义解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RTC-RD-TIME"><span class="toc-text">RTC_RD_TIME</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RTC-SET-TIME"><span class="toc-text">RTC_SET_TIME</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-rtc-time-%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-text">struct rtc_time 结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '343fb1aa5272a90d90c99d64ef4b3f7e'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

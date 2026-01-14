@@ -1,0 +1,788 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>rust std | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="rust笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rust std">
+<meta property="og:url" content="https://even629.com/posts/2510240/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="rust笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/rust_cover.webp">
+<meta property="article:published_time" content="2025-10-24T05:13:13.000Z">
+<meta property="article:modified_time" content="2025-10-24T05:13:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/rust_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2510240/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'rust std',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/rust.png);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">rust std</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-24T05:13:13.000Z" title="发表于 2025-10-24 13:13:13">2025-10-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-24T05:13:13.000Z" title="更新于 2025-10-24 13:13:13">2025-10-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/programming/">programming</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2510240/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-22</p>
+</div></div><div class='timeline-item-content'><p>add Vec, others todo</p>
+</div></div></div>
+
+<h1 id="bit-manipulation"><a href="#bit-manipulation" class="headerlink" title="bit manipulation"></a>bit manipulation</h1><h2 id="位统计"><a href="#位统计" class="headerlink" title="位统计"></a>位统计</h2><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>返回值类型</th>
+<th>作用</th>
+<th>示例输入</th>
+<th>示例输出</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>count_ones()</code></td>
+<td><code>u32</code></td>
+<td>统计二进制中 <code>1</code> 的个数</td>
+<td><code>0b1011_0001u8</code></td>
+<td><code>4</code></td>
+</tr>
+<tr>
+<td><code>count_zeros()</code></td>
+<td><code>u32</code></td>
+<td>统计二进制中 <code>0</code> 的个数</td>
+<td><code>0b1011_0001u8</code></td>
+<td><code>4</code>（8 位中有 4 个 0）</td>
+</tr>
+<tr>
+<td><code>leading_zeros()</code></td>
+<td><code>u32</code></td>
+<td>统计<strong>前导 0</strong>（从高位到第一个1之间的0数量）</td>
+<td><code>0b0001_0000u8</code></td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td><code>trailing_zeros()</code></td>
+<td><code>u32</code></td>
+<td>统计<strong>末尾 0</strong>（从最低位开始）</td>
+<td><code>0b0010_0000u8</code></td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td><code>leading_ones()</code></td>
+<td><code>u32</code></td>
+<td>统计<strong>前导 1</strong>数量</td>
+<td><code>0b1110_0000u8</code></td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td><code>trailing_ones()</code></td>
+<td><code>u32</code></td>
+<td>统计<strong>末尾 1</strong>数量</td>
+<td><code>0b0001_1111u8</code></td>
+<td><code>5</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span>: <span class="type">u8</span> = <span class="number">0b1011_0001</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x               = &#123;:08b&#125;&quot;</span>, x);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;count_ones      = &#123;&#125;&quot;</span>, x.<span class="title function_ invoke__">count_ones</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;count_zeros     = &#123;&#125;&quot;</span>, x.<span class="title function_ invoke__">count_zeros</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;leading_zeros   = &#123;&#125;&quot;</span>, x.<span class="title function_ invoke__">leading_zeros</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;trailing_zeros  = &#123;&#125;&quot;</span>, x.<span class="title function_ invoke__">trailing_zeros</span>());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span>: <span class="type">u8</span> = <span class="number">0b1110_0111</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;y               = &#123;:08b&#125;&quot;</span>, y);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;leading_ones    = &#123;&#125;&quot;</span>, y.<span class="title function_ invoke__">leading_ones</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;trailing_ones   = &#123;&#125;&quot;</span>, y.<span class="title function_ invoke__">trailing_ones</span>());</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zhaohang@cyberboy rust_programming]$ cargo run</span><br><span class="line">   Compiling rust_programming v0.1.0 (/home/zhaohang/repository/rust_programming)</span><br><span class="line">    Finished `dev` profile [unoptimized + debuginfo] target(s) <span class="keyword">in</span> 0.36s</span><br><span class="line">     Running `target/debug/rust_programming`</span><br><span class="line">x               = 10110001</span><br><span class="line">count_ones      = 4</span><br><span class="line">count_zeros     = 4</span><br><span class="line">leading_zeros   = 0</span><br><span class="line">trailing_zeros  = 0</span><br><span class="line">y               = 11100111</span><br><span class="line">leading_ones    = 3</span><br><span class="line">trailing_ones   = 3</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h1 id="primitive-like-collections"><a href="#primitive-like-collections" class="headerlink" title="primitive-like collections"></a>primitive-like collections</h1><blockquote>
+<p>基础序列类型，在标准库的顶层模块里，而不是std::collections，在预导入模块里，不用显示导入</p>
+</blockquote>
+<h2 id="Vec"><a href="#Vec" class="headerlink" title="Vec"></a>Vec</h2><h3 id="构造"><a href="#构造" class="headerlink" title="构造"></a>构造</h3><h4 id="vec"><a href="#vec" class="headerlink" title="vec![]"></a>vec![]</h4><p>用vec宏比较方便，可以在构造时初始化一些值</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> vec &#123;</span><br><span class="line">    () =&gt; (</span><br><span class="line">        $crate::vec::<span class="type">Vec</span>::<span class="title function_ invoke__">new</span>()</span><br><span class="line">    );</span><br><span class="line">    ($elem:expr; $n:expr) =&gt; (</span><br><span class="line">        $crate::vec::<span class="title function_ invoke__">from_elem</span>($elem, $n)</span><br><span class="line">    );</span><br><span class="line">    ($($x:expr),+ $(,)?) =&gt; (</span><br><span class="line">        &lt;[_]&gt;::<span class="title function_ invoke__">into_vec</span>(</span><br><span class="line">            <span class="comment">// Using the intrinsic produces a dramatic improvement in stack usage for</span></span><br><span class="line">            <span class="comment">// unoptimized programs using this code path to construct large Vecs.</span></span><br><span class="line">            $crate::boxed::<span class="title function_ invoke__">box_new</span>([$($x),+])</span><br><span class="line">        )</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="built_in">assert_eq!</span>(v[<span class="number">0</span>], <span class="number">1</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(v[<span class="number">1</span>], <span class="number">2</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(v[<span class="number">2</span>], <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h4 id="Vec-new"><a href="#Vec-new" class="headerlink" title="Vec::new()"></a><strong>Vec::new()</strong></h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> <span class="keyword">fn</span> <span class="title function_">new</span>() <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Constructs a new, empty Vec<T>. The vector <strong>will not allocate until elements are pushed onto it</strong>.</li>
+</ul>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span>: <span class="type">Vec</span>&lt;<span class="type">i32</span>&gt; = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h4 id="Vec-with-capacity"><a href="#Vec-with-capacity" class="headerlink" title="Vec::with_capacity()"></a><strong>Vec::with_capacity()</strong></h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">with_capacity</span>(capacity: <span class="type">usize</span>) <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Constructs a new, empty <code>Vec&lt;T&gt;</code> with at least the specified capacity.</p>
+</li>
+<li><p>If <code>capacity</code> is zero, the vector will not allocate.</p>
+</li>
+<li><p>For <code>Vec&lt;T&gt;</code> where <code>T</code> is a zero-sized type, there will be no allocation and the capacity will always be <code>usize::MAX</code>.</p>
+</li>
+</ul>
+<p><strong>Panics</strong></p>
+<p>Panics if the new capacity exceeds <code>isize::MAX</code> <em>bytes</em>.</p>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">with_capacity</span>(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// The vector contains no items, even though it has capacity for more</span></span><br><span class="line"><span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">len</span>(), <span class="number">0</span>);</span><br><span class="line"><span class="built_in">assert!</span>(vec.<span class="title function_ invoke__">capacity</span>() &gt;= <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// These are all done without reallocating...</span></span><br><span class="line"><span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">10</span> &#123;</span><br><span class="line">    vec.<span class="title function_ invoke__">push</span>(i);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">len</span>(), <span class="number">10</span>);</span><br><span class="line"><span class="built_in">assert!</span>(vec.<span class="title function_ invoke__">capacity</span>() &gt;= <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...but this may make the vector reallocate</span></span><br><span class="line">vec.<span class="title function_ invoke__">push</span>(<span class="number">11</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">len</span>(), <span class="number">11</span>);</span><br><span class="line"><span class="built_in">assert!</span>(vec.<span class="title function_ invoke__">capacity</span>() &gt;= <span class="number">11</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// A vector of a zero-sized type will always over-allocate, since no</span></span><br><span class="line"><span class="comment">// allocation is necessary</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">vec_units</span> = <span class="type">Vec</span>::&lt;()&gt;::<span class="title function_ invoke__">with_capacity</span>(<span class="number">10</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec_units.<span class="title function_ invoke__">capacity</span>(), <span class="type">usize</span>::MAX);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="Vec-from-raw-parts"><a href="#Vec-from-raw-parts" class="headerlink" title="Vec::from_raw_parts()"></a>Vec::from_raw_parts()</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">unsafe</span> <span class="keyword">fn</span> <span class="title function_">from_raw_parts</span>(</span><br><span class="line">    ptr: *<span class="keyword">mut</span> T,</span><br><span class="line">    length: <span class="type">usize</span>,</span><br><span class="line">    capacity: <span class="type">usize</span>,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Creates a <code>Vec&lt;T&gt;</code> directly from a pointer, a length, and a capacity.</p>
+</li>
+<li><p>This is highly unsafe, due to the number of invariants that aren’t checked:</p>
+<ul>
+<li><p>T needs to have the same alignment as what ptr was allocated with.</p>
+</li>
+<li><p><strong>ptr must have been allocated using the global allocator, such as via the alloc::alloc function</strong></p>
+<blockquote>
+<p>用C的ptr是不安全的，因为Vec在Drop时会调用rust allocator的dealloc，但这个内存是C分配的，不安全</p>
+</blockquote>
+</li>
+<li><p>length needs to be less than or equal to capacity</p>
+</li>
+<li><p>The first <code>length</code> values must be properly initialized values of type <code>T</code></p>
+</li>
+<li><p>capacity needs to be the capacity that the pointer was allocated with</p>
+</li>
+<li><p>The allocated size in bytes must be no larger than <code>isize::MAX</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::ptr;</span><br><span class="line"><span class="keyword">use</span> std::mem;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// Prevent running `v`&#x27;s destructor so we are in complete control</span></span><br><span class="line"><span class="comment">// of the allocation.</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = mem::ManuallyDrop::<span class="title function_ invoke__">new</span>(v);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Pull out the various important pieces of information about `v`</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">p</span> = v.<span class="title function_ invoke__">as_mut_ptr</span>();</span><br><span class="line"><span class="keyword">let</span> <span class="variable">len</span> = v.<span class="title function_ invoke__">len</span>();</span><br><span class="line"><span class="keyword">let</span> <span class="variable">cap</span> = v.<span class="title function_ invoke__">capacity</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">unsafe</span> &#123;</span><br><span class="line">    <span class="comment">// Overwrite memory with 4, 5, 6</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0</span>..len &#123;</span><br><span class="line">        ptr::<span class="title function_ invoke__">write</span>(p.<span class="title function_ invoke__">add</span>(i), <span class="number">4</span> + i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Put everything back together into a Vec</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">rebuilt</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">from_raw_parts</span>(p, len, cap);</span><br><span class="line">    <span class="built_in">assert_eq!</span>(rebuilt, [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>using memory that was allocated else where</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::alloc::&#123;alloc, Layout&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">// 构造一个可以存16个 u32 的内存布局</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">layout</span> = Layout::array::&lt;<span class="type">u32</span>&gt;(<span class="number">16</span>).<span class="title function_ invoke__">expect</span>(<span class="string">&quot;overflow cannot happen&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">vec</span> = <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        <span class="comment">// 使用裸分配函数分配内存（返回 *mut u8 指针）</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">mem</span> = <span class="title function_ invoke__">alloc</span>(layout).cast::&lt;<span class="type">u32</span>&gt;();</span><br><span class="line">        <span class="keyword">if</span> mem.<span class="title function_ invoke__">is_null</span>() &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="comment">// 往分配的内存第一个位置写入一个值</span></span><br><span class="line">        mem.<span class="title function_ invoke__">write</span>(<span class="number">1_000_000</span>);</span><br><span class="line">        </span><br><span class="line">	    <span class="comment">// 把这块原始内存包装成一个 Vec（长度1，容量16）</span></span><br><span class="line">        <span class="type">Vec</span>::<span class="title function_ invoke__">from_raw_parts</span>(mem, <span class="number">1</span>, <span class="number">16</span>)</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">assert_eq!</span>(vec, &amp;[<span class="number">1_000_000</span>]);</span><br><span class="line">    <span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">capacity</span>(), <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="属性访问"><a href="#属性访问" class="headerlink" title="属性访问"></a>属性访问</h3><h4 id="vec-len"><a href="#vec-len" class="headerlink" title="vec.len"></a>vec.len</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> <span class="keyword">fn</span> <span class="title function_">len</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">usize</span></span><br></pre></td></tr></table></figure>
+
+<p>返回元素个数</p>
+<hr>
+<h4 id="vec-is-empty"><a href="#vec-is-empty" class="headerlink" title="vec.is_empty"></a>vec.is_empty</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> <span class="keyword">fn</span> <span class="title function_">is_empty</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">bool</span></span><br></pre></td></tr></table></figure>
+
+<p>没有元素就返回真，否则返回false</p>
+<hr>
+<h3 id="访问元素"><a href="#访问元素" class="headerlink" title="访问元素"></a>访问元素</h3><h3 id="修改元素"><a href="#修改元素" class="headerlink" title="修改元素"></a>修改元素</h3><h4 id="vec-resize"><a href="#vec-resize" class="headerlink" title="vec.resize"></a>vec.resize</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">resize</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, new_len: <span class="type">usize</span>, value: T)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Resizes the <code>Vec</code> in-place so that <code>len</code> is equal to <code>new_len</code>.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="string">&quot;hello&quot;</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">resize</span>(<span class="number">3</span>, <span class="string">&quot;world&quot;</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>, <span class="string">&quot;world&quot;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">resize</span>(<span class="number">2</span>, <span class="string">&#x27;_&#x27;</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-resize-with"><a href="#vec-resize-with" class="headerlink" title="vec.resize_with"></a>vec.resize_with</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">resize_with</span>&lt;F&gt;(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, new_len: <span class="type">usize</span>, f: F)</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    F: <span class="title function_ invoke__">FnMut</span>() <span class="punctuation">-&gt;</span> T</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Resizes the <code>Vec</code> in-place so that <code>len</code> is equal to <code>new_len</code>.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">resize_with</span>(<span class="number">5</span>, <span class="built_in">Default</span>::default);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">0</span>, <span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[];</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">p</span> = <span class="number">1</span>;</span><br><span class="line">vec.<span class="title function_ invoke__">resize_with</span>(<span class="number">4</span>, || &#123; p *= <span class="number">2</span>; p &#125;);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="插入元素"><a href="#插入元素" class="headerlink" title="插入元素"></a>插入元素</h3><h4 id="vec-insert"><a href="#vec-insert" class="headerlink" title="vec.insert"></a>vec.insert</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">insert</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, index: <span class="type">usize</span>, element: T)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Inserts an element at position <code>index</code> within the vector, shifting all elements after it to the right.</p>
+</blockquote>
+<p><strong>Panics</strong></p>
+<p>Panics if <code>index &gt; len</code>.</p>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">insert</span>(<span class="number">1</span>, <span class="string">&#x27;d&#x27;</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]);</span><br><span class="line">vec.<span class="title function_ invoke__">insert</span>(<span class="number">4</span>, <span class="string">&#x27;e&#x27;</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;e&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-push"><a href="#vec-push" class="headerlink" title="vec.push"></a>vec.push</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">push</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, value: T)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Appends an element to the back of a collection.</p>
+</blockquote>
+<p><strong>Panics</strong></p>
+<p>Panics if the new capacity exceeds <code>isize::MAX</code> <em>bytes</em>.</p>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">push</span>(<span class="number">3</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-append"><a href="#vec-append" class="headerlink" title="vec.append"></a>vec.append</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">append</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, other: &amp;<span class="keyword">mut</span> <span class="type">Vec</span>&lt;T, A&gt;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Moves all the elements of <code>other</code> into <code>self</code>, leaving <code>other</code> empty.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec2</span> = <span class="built_in">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">append</span>(&amp;<span class="keyword">mut</span> vec2);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec2, []);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-extend-from-slice"><a href="#vec-extend-from-slice" class="headerlink" title="vec.extend_from_slice"></a>vec.extend_from_slice</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">extend_from_slice</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, other: &amp;[T])</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Clones and appends all elements in a slice to the <code>Vec</code>.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">extend_from_slice</span>(&amp;[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="vec-extend-from-within"><a href="#vec-extend-from-within" class="headerlink" title="vec.extend_from_within"></a>vec.extend_from_within</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">extend_from_within</span>&lt;R&gt;(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, src: R)</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    R: RangeBounds&lt;<span class="type">usize</span>&gt;,</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Given a range <code>src</code>, clones a slice of elements in that range and appends it to the end.</p>
+<p><code>src</code> must be a range that can form a valid subslice of the <code>Vec</code>.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">characters</span> = <span class="built_in">vec!</span>[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>];</span><br><span class="line">characters.<span class="title function_ invoke__">extend_from_within</span>(<span class="number">2</span>..);</span><br><span class="line"><span class="built_in">assert_eq!</span>(characters, [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">numbers</span> = <span class="built_in">vec!</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line">numbers.<span class="title function_ invoke__">extend_from_within</span>(..<span class="number">2</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(numbers, [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">strings</span> = <span class="built_in">vec!</span>[<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>), <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;world&quot;</span>), <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;!&quot;</span>)];</span><br><span class="line">strings.<span class="title function_ invoke__">extend_from_within</span>(<span class="number">1</span>..=<span class="number">2</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(strings, [<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>, <span class="string">&quot;!&quot;</span>, <span class="string">&quot;world&quot;</span>, <span class="string">&quot;!&quot;</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-into-flattened"><a href="#vec-into-flattened" class="headerlink" title="vec.into_flattened"></a>vec.into_flattened</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">into_flattened</span>(<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;T, A&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Takes a <code>Vec&lt;[T; N]&gt;</code> and flattens it into a <code>Vec&lt;T&gt;</code>.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>], [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]];</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">pop</span>(), <span class="title function_ invoke__">Some</span>([<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">flattened</span> = vec.<span class="title function_ invoke__">into_flattened</span>();</span><br><span class="line"><span class="built_in">assert_eq!</span>(flattened.<span class="title function_ invoke__">pop</span>(), <span class="title function_ invoke__">Some</span>(<span class="number">6</span>));</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h3><h4 id="vec-pop"><a href="#vec-pop" class="headerlink" title="vec.pop"></a>vec.pop</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">pop</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Removes the last element from a vector and returns it, or None if it is empty.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">pop</span>(), <span class="title function_ invoke__">Some</span>(<span class="number">3</span>));</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-pop-if"><a href="#vec-pop-if" class="headerlink" title="vec.pop_if"></a>vec.pop_if</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">pop_if</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, predicate: <span class="keyword">impl</span> <span class="title class_">FnOnce</span>(&amp;<span class="keyword">mut</span> T) <span class="punctuation">-&gt;</span> <span class="type">bool</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Removes and returns the last element from a vector if the predicate returns <code>true</code>, or None if the predicate returns false or the vector is empty (the predicate will not be called in that case).</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="variable">pred</span> = |x: &amp;<span class="keyword">mut</span> <span class="type">i32</span>| *x % <span class="number">2</span> == <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">pop_if</span>(pred), <span class="title function_ invoke__">Some</span>(<span class="number">4</span>));</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec.<span class="title function_ invoke__">pop_if</span>(pred), <span class="literal">None</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h4 id="vec-truncate"><a href="#vec-truncate" class="headerlink" title="vec.truncate"></a>vec.truncate</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">truncate</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, len: <span class="type">usize</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p> Shortens the vector, keeping the first <code>len</code> elements and dropping the rest.</p>
+<p>If <code>len</code> is greater or equal to the vector’s current length, this has no effect.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">truncate</span>(<span class="number">2</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-drain"><a href="#vec-drain" class="headerlink" title="vec.drain"></a>vec.drain</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">drain</span>&lt;R&gt;(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, range: R) <span class="punctuation">-&gt;</span> Drain&lt;<span class="symbol">&#x27;_</span>, T, A&gt; ⓘ</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    R: RangeBounds&lt;<span class="type">usize</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>drain</code> 会“抽干”Vec里指定索引范围的元素，返回一个迭代器 <code>Drain</code>，可以逐个访问这些被移除的元素。</p>
+<p><code>R</code> 可以是任何表示索引范围的类型，比如：<code>0..3</code>、<code>2..</code>、<code>..5</code>。</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="variable">u</span>: <span class="type">Vec</span>&lt;_&gt; = v.<span class="title function_ invoke__">drain</span>(<span class="number">1</span>..).<span class="title function_ invoke__">collect</span>();</span><br><span class="line"><span class="built_in">assert_eq!</span>(v, &amp;[<span class="number">1</span>]);</span><br><span class="line"><span class="built_in">assert_eq!</span>(u, &amp;[<span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment">// A full range clears the vector, like `clear()` does</span></span><br><span class="line">v.<span class="title function_ invoke__">drain</span>(..);</span><br><span class="line"><span class="built_in">assert_eq!</span>(v, &amp;[]);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="vec-remove"><a href="#vec-remove" class="headerlink" title="vec.remove"></a>vec.remove</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">remove</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, index: <span class="type">usize</span>) <span class="punctuation">-&gt;</span> T</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p> Removes and returns the element at position <code>index</code> within the vector, shifting all elements after it to the left.</p>
+</blockquote>
+<p><strong>Panics</strong></p>
+<p>Panics if <code>index</code> is out of bounds.</p>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="built_in">assert_eq!</span>(v.<span class="title function_ invoke__">remove</span>(<span class="number">1</span>), <span class="string">&#x27;b&#x27;</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(v, [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h4 id="vec-swap-remove"><a href="#vec-swap-remove" class="headerlink" title="vec.swap_remove"></a><strong>vec.swap_remove</strong></h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">swap_remove</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, index: <span class="type">usize</span>) <span class="punctuation">-&gt;</span> T</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Removes an element from the vector and returns it.</p>
+<p>The removed element is replaced by the last element of the vector.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="string">&quot;foo&quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;baz&quot;</span>, <span class="string">&quot;qux&quot;</span>];</span><br><span class="line"></span><br><span class="line"><span class="built_in">assert_eq!</span>(v.<span class="title function_ invoke__">swap_remove</span>(<span class="number">1</span>), <span class="string">&quot;bar&quot;</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(v, [<span class="string">&quot;foo&quot;</span>, <span class="string">&quot;qux&quot;</span>, <span class="string">&quot;baz&quot;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="built_in">assert_eq!</span>(v.<span class="title function_ invoke__">swap_remove</span>(<span class="number">0</span>), <span class="string">&quot;foo&quot;</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(v, [<span class="string">&quot;baz&quot;</span>, <span class="string">&quot;qux&quot;</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-retain"><a href="#vec-retain" class="headerlink" title="vec.retain"></a>vec.retain</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">retain</span>&lt;F&gt;(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, f: F)</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    F: <span class="title function_ invoke__">FnMut</span>(&amp;T) <span class="punctuation">-&gt;</span> <span class="type">bool</span>,</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Retains only the elements specified by the predicate.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">retain</span>(|&amp;x| x % <span class="number">2</span> == <span class="number">0</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">2</span>, <span class="number">4</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-retain-mut"><a href="#vec-retain-mut" class="headerlink" title="vec.retain_mut"></a>vec.retain_mut</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">retain_mut</span>&lt;F&gt;(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, f: F)</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    F: <span class="title function_ invoke__">FnMut</span>(&amp;<span class="keyword">mut</span> T) <span class="punctuation">-&gt;</span> <span class="type">bool</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Retains only the elements specified by the predicate, passing a mutable reference to it.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line">vec.<span class="title function_ invoke__">retain_mut</span>(|x| <span class="keyword">if</span> *x &lt;= <span class="number">3</span> &#123;</span><br><span class="line">    *x += <span class="number">1</span>;</span><br><span class="line">    <span class="literal">true</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="literal">false</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-clear"><a href="#vec-clear" class="headerlink" title="vec.clear"></a>vec.clear</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">clear</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Clears the vector, removing all values.</p>
+<p>Note that this method has no effect on the allocated capacity of the vector.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">v.<span class="title function_ invoke__">clear</span>();</span><br><span class="line"></span><br><span class="line"><span class="built_in">assert!</span>(v.<span class="title function_ invoke__">is_empty</span>());</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="vec-split-off"><a href="#vec-split-off" class="headerlink" title="vec.split_off"></a>vec.split_off</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">split_off</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, at: <span class="type">usize</span>) <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;T, A&gt;</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    A: <span class="built_in">Clone</span>,</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Splits the collection into two at the given index.</p>
+<p>Returns a newly allocated vector containing the elements in the range <code>[at, len)</code>.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="variable">vec2</span> = vec.<span class="title function_ invoke__">split_off</span>(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="string">&#x27;a&#x27;</span>]);</span><br><span class="line"><span class="built_in">assert_eq!</span>(vec2, [<span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="vec-dedup"><a href="#vec-dedup" class="headerlink" title="vec.dedup"></a>vec.dedup</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">dedup</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Removes consecutive repeated elements in the vector according to the <code>PartialEq</code> trait implementation.</p>
+<p>If the vector is sorted, this removes all duplicates.</p>
+</blockquote>
+<p><strong>Examples</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">vec.<span class="title function_ invoke__">dedup</span>();</span><br><span class="line"></span><br><span class="line"><span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">2</span>]);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">2</span>];</span><br><span class="line">    vec.<span class="title function_ invoke__">sort</span>();</span><br><span class="line">    vec.<span class="title function_ invoke__">dedup</span>();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">assert_eq!</span>(vec, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><h1 id="std-collections"><a href="#std-collections" class="headerlink" title="std::collections"></a>std::collections</h1><h2 id="VecDeque"><a href="#VecDeque" class="headerlink" title="VecDeque"></a>VecDeque</h2><h2 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h2><h2 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h2><h2 id="BTreeMap"><a href="#BTreeMap" class="headerlink" title="BTreeMap"></a>BTreeMap</h2><h2 id="BinaryHeap"><a href="#BinaryHeap" class="headerlink" title="BinaryHeap"></a>BinaryHeap</h2><h1 id="Cost-of-Collection-Operations"><a href="#Cost-of-Collection-Operations" class="headerlink" title="Cost of Collection Operations"></a>Cost of Collection Operations</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>get(i)</th>
+<th>insert(i)</th>
+<th>remove(i)</th>
+<th>append(Vec(m))</th>
+<th>split_off(i)</th>
+<th>range</th>
+<th>append</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/vec/struct.Vec.html"><code>Vec</code></a></td>
+<td><em>O</em>(1)</td>
+<td><em>O</em>(<em>n</em>-<em>i</em>)*</td>
+<td><em>O</em>(<em>n</em>-<em>i</em>)</td>
+<td><em>O</em>(<em>m</em>)*</td>
+<td><em>O</em>(<em>n</em>-<em>i</em>)</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/collections/struct.VecDeque.html"><code>VecDeque</code></a></td>
+<td><em>O</em>(1)</td>
+<td><em>O</em>(min(<em>i</em>, <em>n</em>-<em>i</em>))*</td>
+<td><em>O</em>(min(<em>i</em>, <em>n</em>-<em>i</em>))</td>
+<td><em>O</em>(<em>m</em>)*</td>
+<td><em>O</em>(min(<em>i</em>, <em>n</em>-<em>i</em>))</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/collections/struct.LinkedList.html"><code>LinkedList</code></a></td>
+<td><em>O</em>(min(<em>i</em>, <em>n</em>-<em>i</em>))</td>
+<td><em>O</em>(min(<em>i</em>, <em>n</em>-<em>i</em>))</td>
+<td><em>O</em>(min(<em>i</em>, <em>n</em>-<em>i</em>))</td>
+<td><em>O</em>(1)</td>
+<td><em>O</em>(min(<em>i</em>, <em>n</em>-<em>i</em>))</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/collections/struct.HashMap.html"><code>HashMap</code></a></td>
+<td><em>O</em>(1)~</td>
+<td><em>O</em>(1)~*</td>
+<td><em>O</em>(1)~</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html"><code>BTreeMap</code></a></td>
+<td><em>O</em>(log(<em>n</em>))</td>
+<td><em>O</em>(log(<em>n</em>))</td>
+<td><em>O</em>(log(<em>n</em>))</td>
+<td>N&#x2F;A</td>
+<td>N&#x2F;A</td>
+<td><em>O</em>(log(<em>n</em>))</td>
+<td><em>O</em>(<em>n</em>+<em>m</em>)</td>
+</tr>
+</tbody></table>
+<p>Note that where ties occur, <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/vec/struct.Vec.html"><code>Vec</code></a> is generally going to be faster than <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/collections/struct.VecDeque.html"><code>VecDeque</code></a>, and <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/collections/struct.VecDeque.html"><code>VecDeque</code></a> is generally going to be faster than <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/collections/struct.LinkedList.html"><code>LinkedList</code></a>.</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2510240/">https://even629.com/posts/2510240/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/programming/">programming</a></div><div class="post-share"><div class="social-share" data-image="/images/rust_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#bit-manipulation"><span class="toc-number">1.</span> <span class="toc-text">bit manipulation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%8D%E7%BB%9F%E8%AE%A1"><span class="toc-number">1.1.</span> <span class="toc-text">位统计</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#primitive-like-collections"><span class="toc-number">2.</span> <span class="toc-text">primitive-like collections</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Vec"><span class="toc-number">2.1.</span> <span class="toc-text">Vec</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0"><span class="toc-number">2.1.1.</span> <span class="toc-text">构造</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vec"><span class="toc-number">2.1.1.1.</span> <span class="toc-text">vec![]</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vec-new"><span class="toc-number">2.1.1.2.</span> <span class="toc-text">Vec::new()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vec-with-capacity"><span class="toc-number">2.1.1.3.</span> <span class="toc-text">Vec::with_capacity()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vec-from-raw-parts"><span class="toc-number">2.1.1.4.</span> <span class="toc-text">Vec::from_raw_parts()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E8%AE%BF%E9%97%AE"><span class="toc-number">2.1.2.</span> <span class="toc-text">属性访问</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-len"><span class="toc-number">2.1.2.1.</span> <span class="toc-text">vec.len</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-is-empty"><span class="toc-number">2.1.2.2.</span> <span class="toc-text">vec.is_empty</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%85%83%E7%B4%A0"><span class="toc-number">2.1.3.</span> <span class="toc-text">访问元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E5%85%83%E7%B4%A0"><span class="toc-number">2.1.4.</span> <span class="toc-text">修改元素</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-resize"><span class="toc-number">2.1.4.1.</span> <span class="toc-text">vec.resize</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-resize-with"><span class="toc-number">2.1.4.2.</span> <span class="toc-text">vec.resize_with</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%E5%85%83%E7%B4%A0"><span class="toc-number">2.1.5.</span> <span class="toc-text">插入元素</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-insert"><span class="toc-number">2.1.5.1.</span> <span class="toc-text">vec.insert</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-push"><span class="toc-number">2.1.5.2.</span> <span class="toc-text">vec.push</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-append"><span class="toc-number">2.1.5.3.</span> <span class="toc-text">vec.append</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-extend-from-slice"><span class="toc-number">2.1.5.4.</span> <span class="toc-text">vec.extend_from_slice</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-extend-from-within"><span class="toc-number">2.1.5.5.</span> <span class="toc-text">vec.extend_from_within</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-into-flattened"><span class="toc-number">2.1.5.6.</span> <span class="toc-text">vec.into_flattened</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="toc-number">2.1.6.</span> <span class="toc-text">删除元素</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-pop"><span class="toc-number">2.1.6.1.</span> <span class="toc-text">vec.pop</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-pop-if"><span class="toc-number">2.1.6.2.</span> <span class="toc-text">vec.pop_if</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-truncate"><span class="toc-number">2.1.6.3.</span> <span class="toc-text">vec.truncate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-drain"><span class="toc-number">2.1.6.4.</span> <span class="toc-text">vec.drain</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-remove"><span class="toc-number">2.1.6.5.</span> <span class="toc-text">vec.remove</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-swap-remove"><span class="toc-number">2.1.6.6.</span> <span class="toc-text">vec.swap_remove</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-retain"><span class="toc-number">2.1.6.7.</span> <span class="toc-text">vec.retain</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-retain-mut"><span class="toc-number">2.1.6.8.</span> <span class="toc-text">vec.retain_mut</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-clear"><span class="toc-number">2.1.6.9.</span> <span class="toc-text">vec.clear</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-split-off"><span class="toc-number">2.1.6.10.</span> <span class="toc-text">vec.split_off</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vec-dedup"><span class="toc-number">2.1.6.11.</span> <span class="toc-text">vec.dedup</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%81%8D%E5%8E%86"><span class="toc-number">2.1.7.</span> <span class="toc-text">遍历</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#String"><span class="toc-number">2.2.</span> <span class="toc-text">String</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#std-collections"><span class="toc-number">3.</span> <span class="toc-text">std::collections</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#VecDeque"><span class="toc-number">3.1.</span> <span class="toc-text">VecDeque</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LinkedList"><span class="toc-number">3.2.</span> <span class="toc-text">LinkedList</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap"><span class="toc-number">3.3.</span> <span class="toc-text">HashMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BTreeMap"><span class="toc-number">3.4.</span> <span class="toc-text">BTreeMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BinaryHeap"><span class="toc-number">3.5.</span> <span class="toc-text">BinaryHeap</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Cost-of-Collection-Operations"><span class="toc-number">4.</span> <span class="toc-text">Cost of Collection Operations</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'b373684ee71e0a15737b18fa5e4e89d7'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>

@@ -1,0 +1,1454 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM Interrupt Controller | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Arm64 interrupt controller">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM Interrupt Controller">
+<meta property="og:url" content="https://even629.com/posts/2510220/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Arm64 interrupt controller">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/arm-logo.png">
+<meta property="article:published_time" content="2025-10-22T07:25:13.000Z">
+<meta property="article:modified_time" content="2025-10-22T07:25:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/arm-logo.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2510220/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARM Interrupt Controller',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/arm.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">ARM Interrupt Controller</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-22T07:25:13.000Z" title="发表于 2025-10-22 15:25:13">2025-10-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-22T07:25:13.000Z" title="更新于 2025-10-22 15:25:13">2025-10-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/arm64/">arm64</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>32分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2510220/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-22</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+
+<p>参考文档：</p>
+<div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>
+
+<h2 id="ARM64异常处理之中断处理"><a href="#ARM64异常处理之中断处理" class="headerlink" title="ARM64异常处理之中断处理"></a>ARM64异常处理之中断处理</h2><ul>
+<li><strong>ARM</strong>核心两个和中断相关的管脚：<strong>nIRQ</strong>和<strong>nFIQ</strong></li>
+<li>每个<strong>CPU</strong>核心有一对这样的中断相关的管脚</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825185705111.png" alt="ARM® Cortex®-A72 MPCore Processor
+Revision: r0p3
+Technical Reference Manual" loading="lazy"></p>
+<ul>
+<li>PSTATE状态中有两个比特位和中断相关<ul>
+<li>I 用来屏蔽IRQ中断</li>
+<li>F 用来屏蔽FIQ中断</li>
+</ul>
+</li>
+</ul>
+<p><strong>ARM64</strong>中的<strong>GIC</strong>控制器</p>
+<ul>
+<li>ARM提供了标准的GIC控制器，例如树莓派4b上支持GIC-400</li>
+<li>树莓派3b上支持传统的中断方式（legacy interrupt）</li>
+</ul>
+<p><strong>Legacy Interrupt</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825185957548.png" alt="Legacy Interrupt" loading="lazy"></p>
+<h3 id="中断的处理过程"><a href="#中断的处理过程" class="headerlink" title="中断的处理过程"></a><strong>中断的处理过程</strong></h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825220741422.png" alt="中断处理的过程" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251025163458928.png" alt="Interrupt Handler in C code" loading="lazy"></p>
+<p>当处理器接受一个异常到 AArch64 执行状态时，所有的 PSTATE 中断掩码都会自动设置。这意味着后续的<br>异常将被禁用。如果软件要支持异常嵌套，例如，允许高优先级的中断去打断对低优先级源的处理，那么软<br>件需要显式地重新启用中断。<br>对于下面的指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MSR DAIFClr, #imm</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251025163402909.png" alt="Handling nested Interrupts" loading="lazy"></p>
+<p>嵌套处理程序需要一些额外的代码。它必须在堆栈上保存 SPSR_EL1 和 ELR_EL1 的内容。在确定（并清除）<br>中断源之后，我们还必须重新启用 IRQ。</p>
+<h3 id="树莓派4B上的中断源"><a href="#树莓派4B上的中断源" class="headerlink" title="树莓派4B上的中断源"></a><strong>树莓派4B上的中断源</strong></h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825225558702.png" alt="树莓派4B上的中断源" loading="lazy"></p>
+<ul>
+<li><p><strong>ARM Core n</strong>	(ARM核心的中断源)</p>
+<ul>
+<li><strong>PNS timer IRQ</strong>对应 <strong>A Non-secure EL1 physical timer</strong></li>
+<li><strong>PS timer IRQ</strong>对应<strong>A secure EL1 physical timer</strong></li>
+<li><strong>HP timer IRQ</strong>(Hypervisor)对应<strong>A Non-secure EL2 physical timer</strong></li>
+<li><strong>V timer IRQ</strong> 对应 <strong>A virtual timer</strong></li>
+<li><strong>PMU</strong> 是<strong>Performance Monitor Unit（性能监控单元）</strong></li>
+<li>repeated 4 times 表示每个核心都有一组这样的中断源，树莓派有4个核心因此repeated 4 times</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826095549264.png" alt="Generic Timer" loading="lazy"></p>
+</li>
+<li><p><strong>ARM_LOCAL</strong>	(只有CPU才能访问的中断源)</p>
+</li>
+<li><p><strong>ARMC</strong>	(CPU和GPU都能访问的中断源)</p>
+</li>
+<li><p><strong>VideoCore</strong>    (GPU核心的中断 源)</p>
+<p>包括的中断如下表：</p>
+<p><strong>VC(VideoCore) peripheral IRQs</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825230210414.png" alt="VideoCore Peripheral IRQs" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825230153579.png" alt="VideoCore Peripheral IRQs" loading="lazy"></p>
+</li>
+<li><p><strong>ETH_PCIe</strong> (PCIe的中断)</p>
+</li>
+</ul>
+<h2 id="树莓派4B的Legacy-Interrupt-Routing"><a href="#树莓派4B的Legacy-Interrupt-Routing" class="headerlink" title="树莓派4B的Legacy Interrupt Routing"></a><strong>树莓派4B</strong>的<strong>Legacy Interrupt Routing</strong></h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825225802525.png" alt="Legacy Interrupt Routing" loading="lazy"></p>
+<p>ARM Core IRQs直接路由到pre-core routing</p>
+<p>ARMC和VC通过ARMC routing 硬件单元路由</p>
+<h3 id="Legacy-IRQ-status-registers"><a href="#Legacy-IRQ-status-registers" class="headerlink" title="Legacy IRQ status registers"></a><strong>Legacy IRQ status registers</strong></h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825225938975.png" alt="Legacy IRQ status registers" loading="lazy"></p>
+<ul>
+<li><p>FIQn&#x2F;IRQn_PENDING2</p>
+</li>
+<li><p>FIQn&#x2F;IRQn_PENDING0</p>
+</li>
+<li><p>FIQn&#x2F;IRQn_PENDING1</p>
+</li>
+<li><p>FIQ&#x2F;IRQ_SOURCEn</p>
+<blockquote>
+<p>当source 寄存器的bit8被设置了，那么你需要读PENDING2状态寄存器</p>
+<p>如果PENDING2的bit24置位了，那么你需要读PENDING0的状态寄存器</p>
+<p>如果PENDING2的bit25置位了，那么你需要读PENDING1的寄存器</p>
+<p>软件需要一步一步读取中断状态寄存器</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">       ┌──────────────┐</span><br><span class="line">       │ SOURCE寄存器 │   ← ARM_LOCAL_IRQ_SOURCE0</span><br><span class="line">       └───────┬──────┘</span><br><span class="line">               │</span><br><span class="line">    ┌──────────┴──────────┐</span><br><span class="line">    │                     │</span><br><span class="line"> 本地中断？             <span class="attribute">bit8</span>=1？</span><br><span class="line">(定时器等)             (有外设/GPU中断)</span><br><span class="line">    │                     │</span><br><span class="line">    ↓                     ↓</span><br><span class="line">handle_timer_irq()   ┌───────────────┐</span><br><span class="line">                     │  PENDING2寄存器│</span><br><span class="line">                     └───────┬───────┘</span><br><span class="line">                             │</span><br><span class="line">          ┌───────────┬───────────┐</span><br><span class="line">          │           │           │</span><br><span class="line">     <span class="attribute">bit24</span>=1？    <span class="attribute">bit25</span>=1？     其它位？</span><br><span class="line">     去PENDING0   去PENDING1   直接是GPU中断</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>Example</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250825230422582.png" alt="树莓派文档中判断类型的例子" loading="lazy"></p>
+<p>以ARM Core的generic timer为例</p>
+<ul>
+<li>Cortex-A72支持4个ARM Core的generic timer<ul>
+<li><strong>CNT_PS_IRQ</strong>     Secure EL1 Physical Timer Event Interrupt</li>
+<li><strong>CNT_PNS_IRQ</strong>      Nonsecure EL1 Physical Timer Event interrupt</li>
+<li><strong>CNT_HP_IRQ</strong>        Hypervisor Physical Timer Event interrupt, EL2</li>
+<li><strong>CNT_V_IRQ</strong>           Virtual Timer Event interrupt EL3</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826105237538.png" alt="CNTP_CTL_ELx和CNTP_TVAL_ELx" loading="lazy"></p>
+<p>Timer支持两种触发方式</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826105313370.png" alt="Timer的两种触发方式" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826105434716.png" alt="CNTP_CTL_EL0" loading="lazy"></p>
+<p><code>XXX_ELn</code> → 表示这个系统寄存器 <strong>可在 ELn 及更高特权级访问</strong>。</p>
+<ul>
+<li>比如 <code>CNTP_CTL_EL0</code> 就是 <strong>EL0 和 EL1 都能访问</strong>。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826105846910.png" alt="CNTP_TVAL_EL0" loading="lazy"></p>
+<h3 id="EL1的Nonsecure-generic-timer的中断处理流程"><a href="#EL1的Nonsecure-generic-timer的中断处理流程" class="headerlink" title="EL1的Nonsecure generic timer的中断处理流程"></a><strong>EL1的Nonsecure generic timer的中断处理流程</strong></h3><ol>
+<li>初始化timer，设置<strong>cntp_ctl_el0</strong>寄存器的<strong>enable域为1</strong></li>
+<li>给timer的<strong>TimeValue</strong>一个初值，设置<strong>cntp_tval_el0</strong>寄存器</li>
+<li>打开树莓派中断控制器中和timer相关的中断，设置<strong>TIMER_CNTRL0</strong>寄存器中的<strong>CNT_PNS_IRQ</strong>为1</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826110142568.png" alt="TIMER_CNTRLx" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826110209383.png" alt="TIMER_CNTRLx" loading="lazy"></p>
+<ol start="4">
+<li><p>打开PSTATE寄存器中的IRQ中断总开关</p>
+</li>
+<li><p>Timer中断发生</p>
+</li>
+<li><p>CPU跳转到el1_irq汇编函数</p>
+</li>
+<li><p><strong>保存中断上下文</strong>(使用<strong>kernel_entry</strong>宏)</p>
+</li>
+<li><p>跳转到中断处理函数</p>
+</li>
+<li><p>读取ARM_LOCAL中中断状态寄存器<strong>IRQ_SOURCE0</strong></p>
+</li>
+<li><p>判断是否<strong>CNT_PNS_IRQ</strong>中断发生</p>
+</li>
+<li><p>如果是，重新设置TimeValue</p>
+</li>
+<li><p>返回到el1_irq汇编函数</p>
+</li>
+<li><p>恢复中断上下文</p>
+</li>
+<li><p>返回中断现场</p>
+</li>
+</ol>
+<h3 id="中断现场"><a href="#中断现场" class="headerlink" title="中断现场"></a>中断现场</h3><ul>
+<li>中断发生瞬间，CPU的状态包括：<ul>
+<li>PSTATE寄存器</li>
+<li>PC值</li>
+<li>SP值</li>
+<li>x0~x30寄存器</li>
+</ul>
+</li>
+<li>使用一个栈框数据结构来描述需要保存的中断现场(struct pt_regs)</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826110704640.png" alt="栈框" loading="lazy"></p>
+<p><strong>保存中断现场</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826110745607.png" alt="保存中断现场" loading="lazy"></p>
+<p><strong>恢复中断现场</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826110823118.png" alt="恢复中断现场" loading="lazy"></p>
+<h3 id="中断实验1：在树莓派上实现generic-timer"><a href="#中断实验1：在树莓派上实现generic-timer" class="headerlink" title="中断实验1：在树莓派上实现generic timer"></a>中断实验1：在树莓派上实现generic timer</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250826110924758.png" alt="实验1" loading="lazy"></p>
+<p>树莓派firmware启动时默认加载GIC控制器而不是使用Legacy Interrupt因此可以在QEMU上跑</p>
+<ol>
+<li><p>初始化timer，设置<strong>cntp_ctl_el0</strong>寄存器的<strong>enable域为1</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827230224054.png" alt="初始化timer" loading="lazy"></p>
+</li>
+<li><p>给timer的<strong>TimeValue</strong>一个初值，设置<strong>cntp_tval_el0</strong>寄存器</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827230238100.png" alt="设置cntp_tval_el0" loading="lazy"></p>
+</li>
+<li><p>打开树莓派中断控制器中和timer相关的中断，设置<strong>TIMER_CNTRL0</strong>寄存器中的<strong>CNT_PNS_IRQ</strong>为1</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827231440713.png" alt="CNT_PNS_IRQ宏定义" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827231506112.png" alt="树莓派TIMER_CNTRLx的地址" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827231410006.png" alt="设置TIMER_CNTRL0的CNT_PNS_IRQ" loading="lazy"></p>
+</li>
+<li><p>打开PSTATE寄存器中的IRQ中断总开关</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827231538262.png" alt="打开PSTATE寄存器的IRQ中断总开关" loading="lazy"></p>
+</li>
+<li><p>Timer中断发生</p>
+</li>
+<li><p>CPU跳转到el1_irq汇编函数</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827231620546.png" alt="异常向量表" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827233439350.png" alt="el1_irq处理逻辑" loading="lazy"></p>
+</li>
+<li><p><strong>保存中断上下文</strong>(使用<strong>kernel_entry</strong>宏)</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827233409312.png" alt="中断保存上下文的宏定义" loading="lazy"></p>
+</li>
+<li><p>跳转到中断处理函数</p>
+</li>
+<li><p>读取ARM_LOCAL中中断状态寄存器<strong>IRQ_SOURCE0</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827233805645.png" alt="ARM_LOCAL_IRQ_SOURCE0" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827233704448.png" alt="中断转发函数" loading="lazy"></p>
+</li>
+<li><p>判断是否<strong>CNT_PNS_IRQ</strong>中断发生</p>
+</li>
+<li><p>如果是，重新设置TimeValue</p>
+</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827233924549.png" alt="timer的中断处理函数" loading="lazy"></p>
+<ol start="12">
+<li>返回到el1_irq汇编函数</li>
+<li>恢复中断上下文</li>
+<li>返回中断现场</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827234104251.png" alt="image-20250827234104251" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250827234133603.png" alt="恢复中断现场的宏定义" loading="lazy"></p>
+<p>另一种实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timer.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;asm/arm_local_reg.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;io.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;irq.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;mydef.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;printk.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">unsigned</span> <span class="type">long</span> <span class="title function_">read_cntfrq</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> v;</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;mrs %0, cntfrq_el0&quot;</span> : <span class="string">&quot;=r&quot;</span>(v))</span>;</span><br><span class="line">  <span class="keyword">return</span> v;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ms -&gt; ticks</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">unsigned</span> <span class="type">long</span> <span class="title function_">ms_to_ticks</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> ms)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> f = read_cntfrq();</span><br><span class="line">  <span class="keyword">return</span> (f / <span class="number">1000UL</span>) * (<span class="type">unsigned</span> <span class="type">long</span>)ms;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置cntp_ctl_el0 enable域为1 开启EL1 Nonsecure generic timer</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">generic_timer_init</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;mov x0, #1\n&quot;</span></span></span><br><span class="line"><span class="params">               <span class="string">&quot;msr cntp_ctl_el0, x0&quot;</span></span></span><br><span class="line"><span class="params">               :</span></span><br><span class="line"><span class="params">               :</span></span><br><span class="line"><span class="params">               : <span class="string">&quot;memory&quot;</span>)</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 设置cntp_ctl_el0 enable域为0 关闭EL1 Nonsecure generic timer</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">generic_timer_deinit</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;mov x0, #0\n&quot;</span></span></span><br><span class="line"><span class="params">               <span class="string">&quot;msr cntp_ctl_el0, x0&quot;</span></span></span><br><span class="line"><span class="params">               :</span></span><br><span class="line"><span class="params">               :</span></span><br><span class="line"><span class="params">               : <span class="string">&quot;memory&quot;</span>)</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// %[name] → 引用约束变量</span></span><br><span class="line"><span class="comment">// %w[name] → 引用 低 32 位寄存器（如 w0, w1）</span></span><br><span class="line"><span class="comment">// %x[name] → 引用 完整 64 位寄存器（如 x0, x1）</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">generic_timer_reset</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> val)</span> &#123;</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;msr cntp_tval_el0, %x[timer_val]&quot;</span></span></span><br><span class="line"><span class="params">               :</span></span><br><span class="line"><span class="params">               : [timer_val] <span class="string">&quot;r&quot;</span>(val)</span></span><br><span class="line"><span class="params">               : <span class="string">&quot;memory&quot;</span>)</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">enable_timer_interrupt</span><span class="params">(<span class="type">void</span>)</span> &#123; writel(CNT_PNS_IRQ, TIMER_CNTRL0); &#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="title function_">void</span> <span class="params">(*timer_callback)</span><span class="params">(<span class="type">void</span>)</span> = <span class="literal">NULL</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">timer_init</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> ms, <span class="type">void</span> (*callback)(<span class="type">void</span>))</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 初始化timer, cntp_ctl_el0 enable为1</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> ticks = ms_to_ticks(ms); <span class="comment">// ms -&gt; tick</span></span><br><span class="line">  generic_timer_reset(ticks);</span><br><span class="line">  <span class="comment">// 打开中断控制器和timer相关的中断</span></span><br><span class="line">  enable_timer_interrupt();</span><br><span class="line">  timer_callback = callback;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">timer_start</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  raw_local_irq_disable(); <span class="comment">// 关闭PSTATE中断控制器总开关，防止初始化时被打断</span></span><br><span class="line">  generic_timer_init();    <span class="comment">// 打开cntp_ctl_el0.enbale=1，启动计数</span></span><br><span class="line">  raw_local_irq_enable();  <span class="comment">// 打开PSTATE中断控制器总开关，防止初始化时被打断</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">timer_stop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  raw_local_irq_disable(); <span class="comment">// 关闭PSTATE中断控制器总开关，防止初始化时被打断</span></span><br><span class="line">  generic_timer_deinit();</span><br><span class="line">  raw_local_irq_enable(); <span class="comment">// 打开PSTATE中断控制器总开关，防止初始化时被打断</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">timer_reset</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> ms)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> ticks = ms_to_ticks(ms); <span class="comment">// ms -&gt; tick</span></span><br><span class="line">  generic_timer_reset(ticks);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">handle_timer_irq</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  generic_timer_deinit();</span><br><span class="line">  <span class="keyword">if</span> (timer_callback) &#123;</span><br><span class="line">    timer_callback();</span><br><span class="line">    timer_callback = <span class="literal">NULL</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  printk(<span class="string">&quot;Core0 Timer interrupt received\r\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">kernel_main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  uart_init();</span><br><span class="line">  init_printk_done();</span><br><span class="line">  printk(<span class="string">&quot;Welcome to arm64 mini OS!\r\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">  raw_local_irq_enable(); <span class="comment">// 打开PSTATE中断控制器总开关</span></span><br><span class="line">  printk(<span class="string">&quot;timer test\n&quot;</span>);</span><br><span class="line">  timer_init(<span class="number">2000</span>, test_function);</span><br><span class="line">  timer_start();</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;wfi&quot;</span>)</span>;</span><br><span class="line">  <span class="comment">/* my test*/</span></span><br><span class="line">  my_test();</span><br><span class="line">  <span class="comment">// data_abort在QEMU中不起作用</span></span><br><span class="line">  <span class="comment">// trigger_sync_data_abort();</span></span><br><span class="line"></span><br><span class="line">  trigger_sync_instruction_alignment();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">    uart_send(uart_recv());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>顺序（推荐的顺序）</strong></p>
+<ol>
+<li><code>cntp_tval_el0</code> ← 写定时器值</li>
+<li><code>TIMER_CNTRL0.CNT_PNS_IRQ</code> ← 打开外设中断路径</li>
+<li><code>PSTATE.I</code> ← 关闭 CPU IRQ 总开关</li>
+<li><code>cntp_ctl_el0.enable</code> ← 启动定时器</li>
+<li><code>PSTATE.I</code> ← 打开 CPU IRQ 总开关</li>
+</ol>
+<p> 这种顺序保证 <strong>在 CPU 开 IRQ 前，外设和定时器都准备好了</strong>，所以一旦中断触发，CPU 能立刻收到并处理。</p>
+<p>在 <strong>裸机&#x2F;内核初始化阶段</strong>，定时器还没准备好，如果这时候 CPU <strong>允许 IRQ</strong>，就可能被 <strong>别的外设中断打断</strong>，导致：</p>
+<ul>
+<li>初始化流程被中断，配置寄存器可能只做了一半。</li>
+<li>定时器或者外设中断配置还没完成，就有中断 pending → 结果是中断丢失或乱序执行。</li>
+</ul>
+<h3 id="中断实验2：使用汇编函数的方式来保存和恢复中断现场"><a href="#中断实验2：使用汇编函数的方式来保存和恢复中断现场" class="headerlink" title="中断实验2：使用汇编函数的方式来保存和恢复中断现场"></a>中断实验2：使用汇编函数的方式来保存和恢复中断现场</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828162932926.png" alt="实验2" loading="lazy"></p>
+<p>关键在于<strong>使用函数方式lr寄存器被破坏</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828163516633.png" alt="kernel_entry" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828163836566.png" alt="el1_irq" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828163456205.png" alt="kernel_exit" loading="lazy"></p>
+<h2 id="GIC中断控制器"><a href="#GIC中断控制器" class="headerlink" title="GIC中断控制器"></a>GIC中断控制器</h2><ul>
+<li>传统的中断控制器，例如树莓派4b上的legacy interrupt controller<ul>
+<li>中断enable寄存器</li>
+<li>中断disable寄存器</li>
+<li>中断状态状态寄存器</li>
+</ul>
+</li>
+<li>传统的使用简单状态寄存器的方式来管理中断，变得越来越难管理<ul>
+<li>中断源变得越来越多</li>
+<li>不同类型的中断，比如多核间的中断，中断优先级，软件定义的中断等、</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828193356484.png" alt="GIC版本" loading="lazy"></p>
+<p><strong>GIC 主要有两个主要的功能块</strong>：</p>
+<ul>
+<li><strong>Distributor</strong>：系统中的所有中断源都连接到 distributor。Distributor 提供寄存器来控制各个中断的属性，例<br>如优先级、状态、安全性、路由信息和启用状态。distributor 通过附加的 CPU 接口确定将哪个中断转发到内<br>核。</li>
+<li><strong>CPU Interface</strong>：cpu 通过它接收中断。CPU 接口提供寄存器来屏蔽、识别和控制转发到该内核的中断状态。<br>系统中的每个内核都有一个单独的 CPU 接口。</li>
+</ul>
+<h3 id="GIC支持的中断类型"><a href="#GIC支持的中断类型" class="headerlink" title="GIC支持的中断类型"></a>GIC支持的中断类型</h3><ul>
+<li><p><strong>SGI</strong> （<strong>Software Generated Interrupt</strong>）,软件产生的中断，软中断，用于给其他CPU核心发送中断信号</p>
+</li>
+<li><p><strong>PPI</strong> （<strong>Private Peripheral Interrupt</strong>）,私有的外设中断，该中断时某个指定的CPU独有的</p>
+</li>
+<li><p><strong>SPI</strong>（<strong>Shared Peripheral Interrupt</strong>）,共享的外设中断，所有CPU都可以访问这个中断</p>
+</li>
+<li><p><strong>LPI</strong> （<strong>Locality-specific Peripheral Interrupt</strong>）,本地特殊外设中断，<strong>GICv3新增的中断类型</strong>。<strong>基于消息传递的中断类型</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828193912447.png" alt="GIC支持的中断类型" loading="lazy"></p>
+</li>
+</ul>
+<h3 id="中断的触发类型"><a href="#中断的触发类型" class="headerlink" title="中断的触发类型"></a>中断的触发类型</h3><p>每个中断类型要么是<strong>Edge-triggered</strong>的要么是<strong>Level-sensitive</strong>的：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831140733534.png" alt="中断的触发类型" loading="lazy"></p>
+<p>由<strong>GICD_ICFGRn</strong>寄存器控制</p>
+<ul>
+<li><strong>Edge-triggered</strong>: 当 GIC 检测到相关输入的上升沿时被认为是有效的，并且在清除之前保持有效</li>
+<li><strong>Level-sensitive</strong>: 仅当 GIC 的相关输入为高电平时才有效</li>
+</ul>
+<h3 id="中断号"><a href="#中断号" class="headerlink" title="中断号"></a>中断号</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830235356196.png" alt="中断号" loading="lazy"></p>
+<blockquote>
+<p>banked interrupt 意思是对于 <strong>SGI 和 PPI</strong>，虽然它们的 ID 在整个系统里一样（例如 Timer PPI 在所有核都是 <strong>ID30</strong>），但是 <strong>它们是私有的</strong>，每个 CPU 都有自己的一份，互不干扰。</p>
+</blockquote>
+<ul>
+<li><strong>SGI (0–15)</strong>：某核触发 SGI0，不会影响别的核的 SGI0。</li>
+<li><strong>PPI (16–31)</strong>：核 0 的 Timer PPI（比如 ID30）和核 1 的 Timer PPI（ID30）是独立的，它们不会共享。</li>
+</ul>
+<blockquote>
+<p>中断号 1020~1023是保留的</p>
+</blockquote>
+<p>  <img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830235300131.png" alt="Special Interrupt numbers" loading="lazy"></p>
+<h3 id="中断优先级"><a href="#中断优先级" class="headerlink" title="中断优先级"></a>中断优先级</h3><p>每个中断优先级设置在<strong>GICD_IPRIORITYRn</strong>寄存器中</p>
+<p><strong>优先级字段的宽度</strong></p>
+<ul>
+<li>每个中断优先级字段是8bit</li>
+<li>实际实现支持的优先级级数 &#x3D; 2ⁿ，n ∈ [4, 8]（即 <strong>16 ~ 256 级</strong>）。</li>
+<li>如果硬件实现的比 8 小，比如只实现 5 bit，则写入低 3 bit 是 <strong>RAZ&#x2F;WI</strong>（读为 0、写无效）。</li>
+</ul>
+<p><strong>数值大小与优先级</strong></p>
+<ul>
+<li>数值越小，优先级越高</li>
+<li>最大优先级值依赖实现</li>
+<li>初始化默认应当给所有中断一个中等优先级，避免打断系统调度，常见是0xa0或0x80</li>
+</ul>
+<h3 id="中断状态"><a href="#中断状态" class="headerlink" title="中断状态"></a>中断状态</h3><ul>
+<li><p><strong>inactive</strong> （不活跃状态）：<strong>中断处于无效状态</strong></p>
+</li>
+<li><p><strong>pending</strong> （等待状态）：<strong>中断处于有效状态，但是等待CPU响应该中断</strong></p>
+</li>
+<li><p><strong>active</strong> （活跃状态）：<strong>CPU已经响应该中断</strong></p>
+</li>
+<li><p><strong>active and pending</strong> （活跃并等待状态）：<strong>CPU正在响应该中断，但是该中断源又发送中断过来</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828194800627.png" alt="中断状态机" loading="lazy"></p>
+</li>
+</ul>
+<h3 id="中断路由"><a href="#中断路由" class="headerlink" title="中断路由"></a>中断路由</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829105109530.png" alt="Distributor" loading="lazy"></p>
+<p><strong>GICD_ITARGETSRn</strong> (<strong>Interrupt Processor Targets Registers</strong>)</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829104753310.png" alt="GICD_ITARGETSRn" loading="lazy"></p>
+<blockquote>
+<p>GICD_ITARGETSRn寄存器<strong>用来配置Distributor可以把中断路由到哪个CPU上</strong>，是一个 32 位寄存器，通常每<strong>个中断有一个对应的寄存器</strong>。</p>
+</blockquote>
+<ul>
+<li><strong>8bit来表示一个中断源，共四个中断源，每个bit代表能路由的CPU</strong></li>
+<li><strong>byte-accessible</strong></li>
+<li>某个bit设置了，说明该中断源可以路由到这个CPU上</li>
+<li><strong>前32个中断源的路由配置是硬件设置好的，RO</strong></li>
+<li>第33~1019号中断，可以由软件来配置其路由，RW</li>
+</ul>
+<p>对应<strong>计算方法</strong>：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830172455166.png" alt="计算方法" loading="lazy"></p>
+<blockquote>
+<p>假设m是中断ID, n是对应寄存器号</p>
+</blockquote>
+<ul>
+<li>GICD_ITARGETSRn寄存器与中断源的关系<ul>
+<li>每个GICD_ITARGETSRn控制四个中断源</li>
+<li><strong>n &#x3D;  m DIV 4</strong></li>
+<li>计算n后要加上GICD_ITARGETSRn寄存器的起始地址偏移0x800</li>
+</ul>
+</li>
+<li>Priority字段的字节偏移<ul>
+<li><strong>m MOD 4</strong>用来确定目标中断源对应的字节偏移<ul>
+<li><strong>偏移 0</strong> 对应寄存器的 <strong>[7:0]</strong> 位（即最低字节），对应中断 ID <strong>m % 4 &#x3D;&#x3D; 0</strong>。</li>
+<li><strong>偏移 1</strong> 对应寄存器的 <strong>[15:8]</strong> 位，适用于 <strong>m % 4 &#x3D;&#x3D; 1</strong>。</li>
+<li><strong>偏移 2</strong> 对应寄存器的 <strong>[23:16]</strong> 位，适用于 <strong>m % 4 &#x3D;&#x3D; 2</strong>。</li>
+<li><strong>偏移 3</strong> 对应寄存器的 <strong>[31:24]</strong> 位，适用于 <strong>m % 4 &#x3D;&#x3D; 3</strong>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>GICD_ITARGETSRn 是一个数组寄存器</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830172659368.png" alt="CPU targets" loading="lazy"></p>
+<h3 id="GICV2中断控制器"><a href="#GICV2中断控制器" class="headerlink" title="GICV2中断控制器"></a>GICV2中断控制器</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250828195150321.png" alt="GICV2中断控制器" loading="lazy"></p>
+<ul>
+<li><strong>The Distributor registers</strong> (<strong>GICD_</strong>)      包含了<strong>中断设置和配置</strong></li>
+<li><strong>The CPU Interface registers</strong> (<strong>GICC_</strong>)  包含<strong>CPU相关的特殊设置</strong></li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829104632703.png" alt="GIC logical partitioning" loading="lazy"></p>
+<p>中断传递的优先级和目标 core 都在 distributor 中配置。</p>
+<p>外围设备 distributor 发送的中断都处于待处理状态。distributor 确定最高优先级的待处理的中断，可以传递到 core 并将其转发到 CPU 接口，在 CPU 接口处，中断依次发送给 core，此时 core 接受 FIQ 或 IRQ 异常。core 执行异常处理程序作为响应。处理程序从 CPU 接口寄存器中查询中断 ID 并开始执行中断服务程序。完成后，处理程序必须写入 CPU 接口寄存器以报告处理结束。</p>
+<p>Distributor 提供了报告不同中断 ID 的当前状态的寄存器。在多核&#x2F;多处理器系统中，单个 GIC 可以由多个内核共享（在 GICv2 中最多 8 个）。GIC 提供寄存器来控制 SPI 所对应的内核。这个机制使操作系统能够跨内核共享和分发中断，并且协调工作。</p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>GIC 的寄存器实现都是<strong>外部 memory_map 形式</strong>。所有的核都可以访问公共的 Distributor，但是 CPU 接口是banked 的，即每个核使用相同的地址访问自己的私有 CPU 接口。一个内核不可能访问另一个内核的 CPU 接口。</p>
+<p>Distributor 包含许多寄存器，您可以使用它们来配置各个中断的属性。这些可配置的属性有：</p>
+<ul>
+<li><strong>中断优先级</strong>（<strong>GICD_IPRIORITY</strong>)，distributor 使用它来确定哪个中断接下来被转发到 CPU 接口。</li>
+<li><strong>中断配置</strong>（<strong>GICD_ICFGR</strong>）。这决定了中断是电平还是边缘敏感。不适用于 SGI。</li>
+<li><strong>一个中断目标 core</strong>（<strong>GICD_ITARGETSR</strong>）。这确定了中断可以路由到哪些 core。仅适用于 SPI。</li>
+<li><strong>中断启用或禁用状态</strong>（<strong>GICD_ISENABLERGICD_ICENABLER</strong>）。只有那些在 distributor 中启用的中断。<br>当它们处于待处理状态时有资格被路由到 cpu 接口。</li>
+<li><strong>中断安全</strong> (<strong>GICD_IGROUPR</strong>) 确定中断是否分配给安全或非安全。</li>
+<li><strong>中断状态</strong>。</li>
+</ul>
+<p>Distributor 还提供了优先级屏蔽，通过它可以防止低于某个优先级的中断到达内核。distributor 在确定是否可以将挂起的中断转发到特定内核时使用它每个内核上的 CPU 接口有助于微调中断控制和处理核</p>
+<p><strong>初始化</strong>：</p>
+<p>Distributor 和 CPU interface 在复位时都被禁用。GIC 必须在复位后初始化，然后才能向内核提供中断。</p>
+<p>在 Distributor 中，软件必须配置优先级、目标 core、安全性并启用各个中断。随后必须通过其控制寄存器(<strong>GICD_CTLR</strong>) <strong>启用 distributor</strong>。</p>
+<p>对于每个 CPU interface，软件必须对优先级掩码和优先级抢占进行设置。每个 CPU interface 本身必须通过控制寄存器 (<strong>GICD_CTLR</strong>) 启用。</p>
+<p>在 cpu 处理中断之前，软件通过设置使 cpu准备好接受中断向量表中的有效中断向量，并清除 PSTATE 中的中断屏蔽位，并设置路由控制。</p>
+<p>可以通过禁用 Distributor 来禁用系统中的整个中断机制。也可以通过禁用其 CPU 接口来禁用对单个内核的中断传递。也可以在分配器中禁用（或启用）各个中断。</p>
+<p>对于一个中断到达核心，单个中断、分配器和 CPU 接口必须全部启用。中断也需要有足够的优先级，即高于内核的优先掩码。</p>
+<p><strong>中断处理</strong></p>
+<p>当 core 接受了中断，就跳转到顶层中断向量表并且开始执行。顶层的<strong>中断处理程序从 CPU interface 读取寄存器以获得中断 ID</strong>。</p>
+<p>读取寄存器除了返回中断 ID 外，还会导致中断在 distributor 中被标记为活 active。一旦知道中断 ID（识别中断源），顶层处理程序就可以调度特定于设备的中断处理程序来服务中断。</p>
+<p>当中断处理程序完成执行时，顶层处理程序将相同的中断 ID 写入 CPU 接口块中的中断结束 (EoI) 寄存器，指示中断处理结束。</p>
+<p>除了移除活动状态，使最终的中断状态为 Inactive 或 pending（如果状态为 active and pending），这使 CPU 接口能够将更多挂起的中断转发到 core。这结束了单个中断的处理。</p>
+<p>在同一个内核上可能有多个中断等待服务，但是 CPU 接口一次只能发出一个中断信号。顶层中断处理程序可以重复上述顺序，直到读取到<strong>特殊中断 ID 值 1023</strong>，<strong>表示有在这个核心上没有更多的中断挂起</strong>。这个特殊的中断 ID 被称为<strong>虚假的中断标识</strong>。虚假中断 ID 是一个保留值，不能分配给系统。<strong>当顶层处理程序读取了虚</strong><br><strong>假中断 ID 后，它可以完成它的执行，并准备内核在中断之前恢复它正在执行的任务。</strong></p>
+<p>通用中断控制器 (GIC)通常管理来自多个中断源的输入。并将它们分发给 IRQ 或 FIQ 。</p>
+<h3 id="中断状态时序图"><a href="#中断状态时序图" class="headerlink" title="中断状态时序图"></a>中断状态时序图</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829105233126.png" alt="中断状态时序图" loading="lazy"></p>
+<blockquote>
+<p> M和N分别代表两个中断,Input表示中断信号,State表示中断状态机，nFIQCPU[n]表示连接到CPU核心的FIQ信号</p>
+<p> 假设M和N都是SPI中断，且N的优先级高于M</p>
+</blockquote>
+<h3 id="GICv2寄存器"><a href="#GICv2寄存器" class="headerlink" title="GICv2寄存器"></a>GICv2寄存器</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830162301992.png" alt="GIC寄存器后缀" loading="lazy"></p>
+<blockquote>
+<p>有些寄存器是按中断号来描述的，比如使用某几个比特位来描述一个中断号的相关属性，同一个寄存器可以n个，例如GICD_ISENABLERn寄存器，它是用来使能某个中断号的。“n”表示它有n个这样的寄存器</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829114953289.png" alt="GICD_ISENABLERn" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829115143868.png" alt="GICD_ISENABLERn的Set-enable bits" loading="lazy"></p>
+<p>计算方法：根据中断号计算对应寄存器</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829115241074.png" alt="计算方法" loading="lazy"></p>
+<p>对于有些寄存器，会提示：</p>
+<p><code>A register bit corresponding to an unimplemented interrupt is RAZ/WI.</code></p>
+<p><strong>RAZ</strong> &#x3D; <em>Read-As-Zero</em><br> 如果你读这个寄存器位，返回值永远是 <strong>0</strong>，即使你写过别的值。</p>
+<p><strong>WI</strong> &#x3D; <em>Write-Ignored</em><br> 如果你往这个位写入数据，<strong>硬件会忽略</strong>，不会改变，也不会报错。</p>
+<h4 id="GICD-CTLR"><a href="#GICD-CTLR" class="headerlink" title="GICD_CTLR"></a>GICD_CTLR</h4><blockquote>
+<p><strong>Distributor Control Register</strong></p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830231416178.png" alt="image-20250830231416178" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830231432858.png" alt="GICD_CTLR bit" loading="lazy"></p>
+<h4 id="GICD-ITARGETSRn"><a href="#GICD-ITARGETSRn" class="headerlink" title="GICD_ITARGETSRn"></a><strong>GICD_ITARGETSRn</strong></h4><blockquote>
+<p><strong>Interrupt Processor Targets Registers</strong>，见中断路由章节</p>
+</blockquote>
+<h4 id="GICD-TYPER-（Interrupt-Controller-Type-Register）"><a href="#GICD-TYPER-（Interrupt-Controller-Type-Register）" class="headerlink" title="GICD_TYPER （Interrupt Controller Type Register）"></a>GICD_TYPER （Interrupt Controller Type Register）</h4><blockquote>
+<p><strong>描述这个 GIC 的能力和配置参数</strong>，比如有多少中断、多少个 CPU 接口、是否支持某些特性等等。</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830173053302.png" alt="GICD_TYPER" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250830173102370.png" alt="GICD_TYPER bit" loading="lazy"></p>
+<h4 id="GICD-ICFGRn"><a href="#GICD-ICFGRn" class="headerlink" title="GICD_ICFGRn"></a>GICD_ICFGRn</h4><blockquote>
+<p>Interrupt Configuration Registers</p>
+</blockquote>
+<p>GIC用来配置<strong>中断触发类型</strong>的寄存器</p>
+<p>每个 <code>GICD_ICFGRn</code> 是 <strong>32 位寄存器</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831140137876.png" alt="GICD_ICFGRn" loading="lazy"></p>
+<p><strong>分布方式</strong></p>
+<ul>
+<li><p>每个中断需要 <strong>2 bit</strong> （<strong>Int_config</strong>）来描述，所以<strong>一个寄存器可以配置 16 个中断</strong>。</p>
+</li>
+<li><p>第 <code>n</code> 个寄存器（<code>ICFGRn</code>）对应的中断范围是：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">中断 ID = <span class="built_in">n</span>*<span class="number">16</span>  ~ (<span class="built_in">n</span>*<span class="number">16</span> + <span class="number">15</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>Int_config字段编码</strong></p>
+<p>根据 ARM GICv2 TRM（Table 4-18）：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831140152098.png" alt="GICD_ICFG Int_config.field" loading="lazy"></p>
+<p>对于<strong>PPI</strong>（Private Peripheral Interrupt）和<strong>SPI</strong>（Private Peripheral Interrupt）来说</p>
+<table>
+<thead>
+<tr>
+<th>Bit[1]</th>
+<th>Bit[0]</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>reversed</td>
+<td><strong>Level-sensitive</strong></td>
+</tr>
+<tr>
+<td>1</td>
+<td>reserved</td>
+<td><strong>Edge-triggered</strong></td>
+</tr>
+</tbody></table>
+<h4 id="GICD-ISENABLERn"><a href="#GICD-ISENABLERn" class="headerlink" title="GICD_ISENABLERn"></a>GICD_ISENABLERn</h4><blockquote>
+<p>Interrupt Set-Enable Registers</p>
+</blockquote>
+<p>负责<strong>打开中断转发</strong></p>
+<ul>
+<li><p><strong>GICD_ISENABLERn</strong>是<strong>32位寄存器</strong></p>
+</li>
+<li><p>每个 <code>GICD_ISENABLERn</code> 控制 <strong>32 个中断源</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831142342695.png" alt="GICD_ISENABLERn" loading="lazy"></p>
+</li>
+<li><p><strong>写 1</strong> → 使能对应的中断（让 Distributor 可以把它转发给 CPU interface）</p>
+</li>
+<li><p><strong>写 0</strong> → 没有作用</p>
+</li>
+<li><p><strong>读</strong> → 可以看到某个中断当前是否被使能（1&#x3D;已使能，0&#x3D;未使能）</p>
+</li>
+</ul>
+<p>根据中断号<strong>计算GICD_ISENABLERn的n</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831142421934.png" alt="GICD_ISENABLERn计算" loading="lazy"></p>
+<h4 id="GICD-ICENABLERn"><a href="#GICD-ICENABLERn" class="headerlink" title="GICD_ICENABLERn"></a>GICD_ICENABLERn</h4><blockquote>
+<p>Interrupt Clear-Enable Registers</p>
+</blockquote>
+<ul>
+<li>W1C (写 1 清除)，禁用某个中断（禁止分发到 CPU）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215408848.png" alt="GICD_ICEABLERn" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215417447.png" alt="GICD_ICEABLERn Clear-enable bit" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215423861.png" alt="GICD_ICENABLERn计算" loading="lazy"></p>
+<h4 id="GICD-ISACTIVERn"><a href="#GICD-ISACTIVERn" class="headerlink" title="GICD_ISACTIVERn"></a>GICD_ISACTIVERn</h4><blockquote>
+<p>Interrupt Set-Active Registers</p>
+</blockquote>
+<ul>
+<li>W1S（写1设置），软件可以<strong>把一个中断状态人为标记为 active</strong>。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215015317.png" alt="GICD_ISACTIVERn" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215029622.png" alt="GICD_ISACTIVERn Set-active bits" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215037371.png" alt="GICD_ISACTIVERn计算" loading="lazy"></p>
+<h4 id="GICD-ICACTIVERn"><a href="#GICD-ICACTIVERn" class="headerlink" title="GICD_ICACTIVERn"></a>GICD_ICACTIVERn</h4><blockquote>
+<p>Interrupt Clear-Active Registers</p>
+</blockquote>
+<ul>
+<li><p>W1C（写1清除），清除中断的 active 状态。</p>
+</li>
+<li><p>和 EOI（End of Interrupt）有点类似，但 <strong>EOI 是 CPU interface 寄存器</strong>，只能由当前 CPU 对自己接收的中断做“中断服务完成”的动作；</p>
+</li>
+<li><p><code>ICACTIVERn</code> 在 <strong>Distributor</strong>，软件可以<strong>全局地强制清除某个中断的 active 位</strong>。</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831214854607.png" alt="GICD_ICACTIVERn" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215056169.png" alt="GICD_ICACTIVERn Clear-active bits" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831215102023.png" alt="GICD_ICACTIVERn" loading="lazy"></p>
+<h4 id="GICD-IPRIORITYRn"><a href="#GICD-IPRIORITYRn" class="headerlink" title="GICD_IPRIORITYRn"></a>GICD_IPRIORITYRn</h4><blockquote>
+<p>Interrupt Priority Registers</p>
+</blockquote>
+<p>用于<strong>设置每个中断的优先级</strong></p>
+<ul>
+<li><p>每个中断占 8 bit</p>
+</li>
+<li><p>一个 32 位寄存器管理 4 个中断</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831152550466.png" alt="GICD_IPRIORITYRn" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831152601654.png" alt="GICD_IPRIORITYRn bit assignments" loading="lazy"></p>
+<p>地址计算：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831152618888.png" alt="GICD_IPRIORITYRn地址计算" loading="lazy"></p>
+<h4 id="GICC-CTLR"><a href="#GICC-CTLR" class="headerlink" title="GICC_CTLR"></a>GICC_CTLR</h4><blockquote>
+<p>CPU Interface Control Register</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831152322508.png" alt="GICC_CTLR" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831152337691.png" alt="GICC_CTLR bit assignment" loading="lazy"></p>
+<h4 id="GICC-PMR"><a href="#GICC-PMR" class="headerlink" title="GICC_PMR"></a>GICC_PMR</h4><blockquote>
+<p>Iterrupt Priority Mask Register</p>
+</blockquote>
+<p> <strong>CPU 接口的优先级屏蔽寄存器</strong>，它决定了 <strong>CPU 能够接收哪些优先级的中断</strong>。</p>
+<ul>
+<li>只有 <strong>优先级数值 ≤ PMR 的中断</strong> 才能被 CPU 接收。</li>
+<li>注意：GIC 的优先级是 <strong>数值越小，优先级越高</strong>。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831151830984.png" alt="GICC_PMR" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831151843672.png" alt="GICC_PMR bit assignment" loading="lazy"></p>
+<p><strong>使用举例</strong>：假设你的 GIC 实现有 8 bit 优先级：</p>
+<ol>
+<li>如果 <code>GICC_PMR = 0xff</code><ul>
+<li>CPU 接收所有优先级的中断（最常见的初始化设置）。</li>
+</ul>
+</li>
+<li>如果 <code>GICC_PMR = 0xa0</code><ul>
+<li>只接收 <strong>优先级值 ≤ 0xa0</strong> 的中断，优先级更“低”的中断会被屏蔽。</li>
+</ul>
+</li>
+<li>如果 <code>GICC_PMR = 0x0</code><ul>
+<li>只接收最高优先级（0）的中断，其他都屏蔽</li>
+</ul>
+</li>
+</ol>
+<h4 id="GICC-IAR"><a href="#GICC-IAR" class="headerlink" title="GICC_IAR"></a>GICC_IAR</h4><blockquote>
+<p>Interrupt Acknowledge Register</p>
+</blockquote>
+<p>当 CPU 收到 IRQ 信号时，软件需要从这个寄存器读取当前 <strong>pending 中断的 ID</strong>，并确认它是哪一个 IRQ。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831172449575.png" alt="GICC_IAR" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[9:0]</td>
+<td><strong>INTID</strong></td>
+<td>中断 ID（0~1019 表示有效中断号）</td>
+</tr>
+<tr>
+<td>[12:10]</td>
+<td><strong>CPUID</strong></td>
+<td>标识触发该中断的 CPU（多核系统有用）</td>
+</tr>
+<tr>
+<td>[31:13]</td>
+<td>Reserved</td>
+<td>保留，读出为 0</td>
+</tr>
+</tbody></table>
+<h4 id="GICC-EOIR"><a href="#GICC-EOIR" class="headerlink" title="GICC_EOIR"></a>GICC_EOIR</h4><blockquote>
+<p>End of Interrupt Register</p>
+</blockquote>
+<p>软件在完成中断处理后，必须写入这个寄存器，告诉 GIC：“这个 IRQ 已经处理完了，可以清除 active 状态，并允许后续相同中断再次触发”。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831172738732.png" alt="GICC_EOIR" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[9:0]</td>
+<td>INTID</td>
+<td>中断 ID（必须与 IAR 读出的中断号一致）</td>
+</tr>
+<tr>
+<td>[12:10]</td>
+<td>CPUID</td>
+<td>发出该中断的 CPU ID（多核系统使用）</td>
+</tr>
+<tr>
+<td>[31:13]</td>
+<td>Reserved</td>
+<td>保留，写 0</td>
+</tr>
+</tbody></table>
+<h3 id="树莓派4B的GIC400"><a href="#树莓派4B的GIC400" class="headerlink" title="树莓派4B的GIC400"></a>树莓派4B的GIC400</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829115524256.png" alt="GIC-400" loading="lazy"></p>
+<ul>
+<li>ARM Core的中断：<ul>
+<li>Core n HP tiemr IRQ</li>
+<li>Core n V timer IRQ</li>
+<li>Legacy FIQn</li>
+<li>Core n PS timer IRQ</li>
+<li><strong>Core n PNS timer IRQ</strong> (PPI ID <strong>30</strong>)</li>
+<li>Legacy IRQn</li>
+</ul>
+</li>
+<li>ARM local的中断<ul>
+<li>ARM Mailbox IRQs</li>
+<li>Core 0 PMU IRQ</li>
+<li>Core 1 PMU IRQ</li>
+<li>Core 2 PMU IRQ</li>
+<li>Core 3 PMU IRQ</li>
+<li>AXIERR IRQ</li>
+<li>Local timer IRQ</li>
+</ul>
+</li>
+<li>16个ARMC外设中断</li>
+<li>64个VC外设中断</li>
+<li>51个PCI相关的外设中断</li>
+</ul>
+<h4 id="访问GIC-400寄存器"><a href="#访问GIC-400寄存器" class="headerlink" title="访问GIC-400寄存器"></a><strong>访问GIC-400寄存器</strong></h4><ul>
+<li>树莓派4b上的GIC-400的基地址</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121750493.png" alt="GIC-400地址" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121853350.png" alt="GIC-400 register map" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121911817.png" alt="GIC-400 memory map" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829121943003.png" alt="GIC-400 memory map" loading="lazy"></p>
+<p><strong>访问</strong>：树莓派GIC400的**基地址 **+ GIC-400 <strong>memory map偏移</strong> + <strong>寄存器偏移</strong></p>
+<h4 id="GIC400的初始化流程"><a href="#GIC400的初始化流程" class="headerlink" title="GIC400的初始化流程"></a>GIC400的初始化流程</h4><ol>
+<li>设置distributor和CPU interface寄存器组的基地址</li>
+<li>读取<strong>GICD_TYPER</strong>寄存器，计算当前GIC最大支持多少个中断源</li>
+<li>初始化distributor<ol>
+<li><strong>Disable distributor</strong>，设置<strong>GICD_CTLR</strong>（这一步可以不做，因为复位时本来就是关闭的）</li>
+<li><strong>设置SPI中断的路由</strong><ol>
+<li>前32个中断怎么路由是GIC芯片固定的，因此先读<strong>GICD_ITARGETSRn</strong>前面的值，获取能路由的所有CPU</li>
+<li>将 <strong>SPI（Shared Peripheral Interrupt）中断</strong> 的路由设置为将中断分发到所有能路由的 CPU，因为SPI中断是Shared的中断，设置SPI的<strong>GICD_ITARGETSRn</strong></li>
+</ol>
+</li>
+<li><strong>设置SPI中断的触发类型，例如Level触发</strong>，设置<strong>GICD_ICFGRn</strong></li>
+<li><strong>Disactive和disable所有的SPI中断源</strong></li>
+<li><strong>打开SGI中断(0-15)，SMP会用到</strong></li>
+<li><strong>Enable distributor</strong>,设置<strong>GICD_CTLR</strong></li>
+</ol>
+</li>
+<li>初始化CPU interface<ol>
+<li>为前32个中断源设置默认中断优先级，设置<strong>GICD_IPRIORITYRn</strong></li>
+<li>设置<strong>GICC_PRM</strong>，设置中断优先级mask level</li>
+<li>Enable CPU interface，设置<strong>GICC_PRM</strong></li>
+</ol>
+</li>
+</ol>
+<h5 id="注册中断"><a href="#注册中断" class="headerlink" title="注册中断"></a><strong>注册中断</strong></h5><ol>
+<li>初始化外设</li>
+<li>查找该外设的中断在GIC-400的中断号，例如PNS timer的中断号为30</li>
+<li>设置<strong>GICD_ISENABLERn</strong>寄存器来enable这个中断号</li>
+<li>打开设备相关的中断，例如树莓派上的generic timer，需要打开ARM_LOCAL寄存器中的TIMER_CNTRL0寄存器中相关的enable位</li>
+<li>打开CPU的PSTATE中的I位</li>
+</ol>
+<h5 id="中断响应"><a href="#中断响应" class="headerlink" title="中断响应"></a><strong>中断响应</strong></h5><ol>
+<li>中断发生</li>
+<li>异常向量表</li>
+<li>跳转到GIC中断函数里，gic_handle_irq()</li>
+<li>读取<strong>GICC_IAR</strong>寄存器，获取中断号</li>
+<li>根据中断号来进行相应的中断处理，例如读取的中断号为30，说明的是PNS的generic timer，然后跳转到generic timer的处理函数里。</li>
+</ol>
+<h3 id="GIC中断实验1：实现generic-timer"><a href="#GIC中断实验1：实现generic-timer" class="headerlink" title="GIC中断实验1：实现generic timer"></a>GIC中断实验1：实现generic timer</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829133657152.png" alt="GIC中断实验1" loading="lazy"></p>
+<p><strong>GIC-400初始化</strong></p>
+<ol>
+<li>设置<strong>distributor</strong>和<strong>CPU interface</strong>寄存器组的基地址</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __GIC_V2_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __GIC_V2_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;asm/base.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GIC_V2_DISTRIBUTOR_OFFSET 0x1000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GIC_V2_CPU_INTERFACE_OFFSET 0x2000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GIC_V2_DISTRIBUTOR_BASE (GIC_400_BASE + GIC_V2_DISTRIBUTOR_OFFSET)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GIC_V2_CPU_INTERFACE_BASE (GIC_400_BASE + GIC_V2_CPU_INTERFACE_OFFSET)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_CTLR (GIC_V2_DISTRIBUTOR_BASE + 0x000)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_TYPER (GIC_V2_DISTRIBUTOR_BASE + 0x004)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_TYPER_ITLINESNUMBER 0x1f</span></span><br><span class="line"><span class="comment">// 直接用 n / 4 或 n / 16 会得到 寄存器索引</span></span><br><span class="line"><span class="comment">// 然后在地址计算上乘以 4（每个寄存器 4 字节）</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_ITARGETSRn(n) (GIC_V2_DISTRIBUTOR_BASE + 0x800 + (n / 4) * 4)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_ICFGRn(n) (GIC_V2_DISTRIBUTOR_BASE + 0xc00 + (n / 16) * 4)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_ICFG_LEVEL_SENSITIVE 0x0</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_ICFG_LEVEL_EDGE_TRIGGERED 0x2</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_ISENABLERn(n) (GIC_V2_DISTRIBUTOR_BASE + 0x100 + (n / 32) * 4)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_ICENABLERn(n) (GIC_V2_DISTRIBUTOR_BASE + 0x180 + (n / 32) * 4)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_ICACTIVERn(n) (GIC_V2_DISTRIBUTOR_BASE + 0x380 + (n / 32) * 4)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICD_IPRIORITYRn(n) (GIC_V2_DISTRIBUTOR_BASE + 0x400 + (n / 4) * 4)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DAFAULT_IPRIORITY 0xa0a0a0a0</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICC_PMR (GIC_V2_CPU_INTERFACE_BASE + 0x4)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICC_CTLR (GIC_V2_CPU_INTERFACE_BASE + 0x0)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICC_IAR (GIC_V2_CPU_INTERFACE_BASE + 0xc)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICC_IAR_CPU_ID_MASK 0x1c00</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICC_IAR_INT_ID_MASK 0x3ff</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GICC_EOIR (GIC_V2_CPU_INTERFACE_BASE + 0x10)</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">gic_init</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">gic_enable_irq</span><span class="params">(<span class="type">int</span> irq)</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>读取<strong>GICD_TYPER</strong>寄存器，计算当前GIC最大支持多少个中断源</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831220730571.png" alt="读取GICD_TYPER寄存器" loading="lazy"></p>
+<ol start="3">
+<li><p>初始化<strong>distributor</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831221034830.png" alt="初始化distributor" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831220807403.png" alt="gic_distributor_init" loading="lazy"></p>
+</li>
+<li><p>初始化CPU interface</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831220821697.png" alt="gic_cpu_init" loading="lazy"></p>
+</li>
+<li><p>打开PNS_TIMER_IRQ的路由</p>
+</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831220947964.png" alt="打开PNS_TIMER_IRQ路由" loading="lazy"></p>
+<ol start="4">
+<li>测试</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831221126852.png" alt="gic_irq_handle" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250831221107431.png" alt="测试" loading="lazy"></p>
+<h3 id="GIC中断实验2：实现树莓派上的System-Timer"><a href="#GIC中断实验2：实现树莓派上的System-Timer" class="headerlink" title="GIC中断实验2：实现树莓派上的System Timer"></a>GIC中断实验2：实现树莓派上的System Timer</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20250829142717776.png" alt="实验2" loading="lazy"></p>
+<h2 id="GICv3中断控制器"><a href="#GICv3中断控制器" class="headerlink" title="GICv3中断控制器"></a>GICv3中断控制器</h2><h3 id="GICv3比GICv2改进了哪些内容"><a href="#GICv3比GICv2改进了哪些内容" class="headerlink" title="GICv3比GICv2改进了哪些内容"></a>GICv3比GICv2改进了哪些内容</h3><ul>
+<li>GICv3兼容GICv2</li>
+<li>支持更多CPU数量，&gt;8</li>
+<li>支持message-base中断（<strong>Message Signaled Interrupt</strong>，<strong>MSI</strong>）</li>
+<li>支持<strong>ITS</strong>（<strong>Interrupt Translation Service</strong>）服务</li>
+<li>支持更多的硬件中断号，&gt;1020</li>
+<li>为了更好兼容ARMv8异常模型，支持<strong>中断组</strong>（Interrupt grouping）</li>
+<li>为了优化访问延时，<strong>提供系统寄存器的方式来访问CPU Interface</strong></li>
+</ul>
+<h3 id="GICv3支持的中断类型"><a href="#GICv3支持的中断类型" class="headerlink" title="GICv3支持的中断类型"></a>GICv3支持的中断类型</h3><ul>
+<li><strong>Private Peripheral Interrupt（PPI）</strong><ul>
+<li>PPI是指本地CPU特有的中断，比如CPU内部的定时器等。不同的CPU可以使用相同的PPI中断号</li>
+<li>PPI可以在group0和group1</li>
+<li>可以边沿触发（edge-triggered）或者水平触发（level-sensitve）</li>
+</ul>
+</li>
+<li><strong>Shared Peripheral Interrupt（SPI）</strong><ul>
+<li>SPI通常用于外设中断，它可以路由到任意一个CPU</li>
+<li>SPI可以在group0和group1</li>
+<li>可以边沿触发或者水平触发</li>
+</ul>
+</li>
+<li><strong>Software Generated Interrupt（SGI）</strong><ul>
+<li>SGI通常软件触发的中断，用于核间通信，例如IPI（Inter-Processor Interrupts）</li>
+<li>SGI只能边沿触发</li>
+</ul>
+</li>
+<li>新增：<strong>Locality-specific Peripheral Interrupt（LPI）</strong><ul>
+<li>在非安全中断组1</li>
+<li>边沿触发</li>
+<li>使用ITS服务</li>
+<li>没有active状态</li>
+<li>message-based中断</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010135558355.png" alt="LPI" loading="lazy"></p>
+<h3 id="有线中断与基于消息的中断"><a href="#有线中断与基于消息的中断" class="headerlink" title="有线中断与基于消息的中断"></a>有线中断与基于消息的中断</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009141946437.png" alt="有线中断" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009141956246.png" alt="基于消息的中断" loading="lazy"></p>
+<ul>
+<li>SPI和LPI都支持message-base中断<ul>
+<li>SPI的message-base中断不需要经过ITS，往<strong>GICD_SETSPI_NSR</strong>寄存器写入中断号触发中断</li>
+<li>LPI的message-base需要ITS</li>
+</ul>
+</li>
+</ul>
+<h3 id="中断号分配"><a href="#中断号分配" class="headerlink" title="中断号分配"></a>中断号分配</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009142233146.png" alt="中断号分配" loading="lazy"></p>
+<h3 id="中断状态机"><a href="#中断状态机" class="headerlink" title="中断状态机"></a>中断状态机</h3><ul>
+<li><strong>Inactive</strong> 不活跃状态</li>
+<li><strong>Pending</strong> 中断触发了，但是还没有被CPU响应（acknowledge）</li>
+<li><strong>Active</strong>  中断被CPU响应和处理</li>
+<li><strong>Active &amp; Pending</strong> 当前有一个中断正在被CPU响应和处理，这时有一个相同的中断触发了，这个新的中断被设置为active &amp; pending</li>
+<li><strong>LPI</strong>没有active和active &amp; pending状态</li>
+</ul>
+<blockquote>
+<p>问题：如果GIC在响应中断的过程中，又有一个相同的中断触发了，那怎么办？</p>
+<p>这里要分两种情况：</p>
+<ul>
+<li>如果GIC正在响应第一个中断时，即第一个中断的状态为active，此时第二个相同的中断触发，那么第二个中断的状态会变成 active &amp; pending，这样避免丢失了中断</li>
+<li>如果第一个中断还处于pending状态，此时又来了一个相同的中断，那么它们会merge成一个</li>
+</ul>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009142918490.png" alt="中断状态机" loading="lazy"></p>
+<h3 id="中断亲和性路由层级（Affinity-routing）"><a href="#中断亲和性路由层级（Affinity-routing）" class="headerlink" title="中断亲和性路由层级（Affinity routing）"></a>中断亲和性路由层级（Affinity routing）</h3><ul>
+<li>GICv3支持4级路由</li>
+<li>Level 0面对的是redistributor</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009143149657.png" alt="Distributor分发" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009143201412.png" alt="core的唯一标识" loading="lazy"></p>
+<h3 id="GIC-500的中断亲和性路由"><a href="#GIC-500的中断亲和性路由" class="headerlink" title="GIC-500的中断亲和性路由"></a>GIC-500的中断亲和性路由</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009143324963.png" alt="GIC-500的中断亲和性路由" loading="lazy"></p>
+<ul>
+<li>GIC-500支持两级的亲和性路由<ul>
+<li>Level 0 是 core</li>
+<li>Level 1 是 cluster</li>
+</ul>
+</li>
+<li>GIC-500最大支持128个cores以及32个cluster</li>
+</ul>
+<p>0.0.0.1表示第0个cluster中的第1个core</p>
+<p>0.0.1.1表示第1个cluster中的第1个core</p>
+<ul>
+<li>中断组与安全模式<ul>
+<li>ARMv8支持安全模式和非安全模式</li>
+<li>GICv3支持EL0~EL3，所以每个中断源都需要设置对应的中断组和安全模式<ul>
+<li>Group0用于EL3</li>
+<li>安全模式的Group1：用于Trust OS on EL2</li>
+<li>非安全模式的Group1：用于VMM或者OS</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009143825096.png" alt="中断组与安全模式" loading="lazy"></p>
+<p><strong>Group0使用FIQ，Group1根据情况使用IRQ or FIQ</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009143905363.png" alt="Group0,Group1" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009143925894.png" alt="Exception Level" loading="lazy"></p>
+<p><strong>例子</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009144136472.png" alt="Non-secure&#x2F;secure Group" loading="lazy"></p>
+<blockquote>
+<p>注意：中断是否会路由到EL3要看SCR_EL3寄存器FIQ和IRQ字段</p>
+</blockquote>
+<ul>
+<li>在非安全模式下：<ul>
+<li>非安全group1的中断直接在RichOS响应</li>
+<li>安全group1和Group0的FIQ中断路由到EL3</li>
+</ul>
+</li>
+<li>在安全模式下<ul>
+<li>安全group1的IRQ中断直接在Trusted OS响应</li>
+<li>非安全group1和group0的FIQ中断路由到EL3</li>
+</ul>
+</li>
+</ul>
+<h3 id="特殊中断号"><a href="#特殊中断号" class="headerlink" title="特殊中断号"></a>特殊中断号</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009144717625.png" alt="特殊中断号" loading="lazy"></p>
+<h4 id="1021号中断的使用1"><a href="#1021号中断的使用1" class="headerlink" title="1021号中断的使用1"></a>1021号中断的使用1</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009144819643.png" alt="例子: 陷入到EL3" loading="lazy"></p>
+<ol>
+<li>CPU运行在安全模式下的trusted os，此时来了一个非安全模式下的OS的中断，那么需要陷入到EL3的FIQ来处理</li>
+<li>CPU陷入到EL3的安全监视器，安全监视器会读取IAR寄存器，并且读到1021，说明这个中断是希望在非安全模式下处理的。切换到非安全模式的Rich OS</li>
+<li>CPU切换到非安全模式的Rich OS来处理这个中断</li>
+</ol>
+<h4 id="1021号中断的使用2"><a href="#1021号中断的使用2" class="headerlink" title="1021号中断的使用2"></a>1021号中断的使用2</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251009145147749.png" alt="例子: 陷入到EL2的情况" loading="lazy"></p>
+<ol>
+<li>CPU运行在安全模式下的trusted os，此时来了一个非安全模式下OS的中断。那么需要陷入到EL3的FIQ来处理。但是由于SCR_EL3.FIQ&#x3D;0，它只能在EL2中处理。</li>
+<li>EL2的Trusted OS执行SMC系统调用陷入到EL3</li>
+<li>安全监视器会读取IAR寄存器，并且读到1021，说明这个中断是希望在非安全模式下处理的。切换到非安全模式的Rich OS</li>
+<li>CPU切换到非安全模式的Rich OS来处理这个中断</li>
+</ol>
+<h3 id="GICC与ICC"><a href="#GICC与ICC" class="headerlink" title="GICC与ICC"></a>GICC与ICC</h3><blockquote>
+<p>**ICC（Interrupt Controller CPU interface）**特指 GIC 中 <strong>与 CPU 直接交互的接口部分</strong>，通过 <strong>系统寄存器（System Registers）</strong> 访问</p>
+</blockquote>
+<p><strong>为什么 GICv2 的 CPU 接口寄存器叫 <code>GICC_*</code>，而 GICv3 的却叫 <code>ICC_*</code>？</strong></p>
+<p>答案的核心在于：<strong>GICv2 和 GICv3 在 CPU 接口（CPU Interface）的实现方式上发生了根本性变化</strong> —— 从 <strong>内存映射 I&#x2F;O（MMIO）</strong> 转变为 <strong>系统寄存器（System Registers）</strong>。ARM 通过命名差异明确区分这两种架构。</p>
+<h3 id="中断优先级-1"><a href="#中断优先级-1" class="headerlink" title="中断优先级"></a>中断优先级</h3><ul>
+<li>GICv3支持8位优先级，最多256级别<ul>
+<li>支持2个安全模式时，最少支持32个中断优先级，最多支持256个</li>
+<li>支持1个安全模式时，最少支持16个中断优先级</li>
+</ul>
+</li>
+<li>中断优先级<ul>
+<li>数值越小，中断优先级越高，0表示最高优先级，255表示最低优先级，idle priority</li>
+<li><code>GICR_IPRIORITYR&lt;n&gt;</code> 设置PPI和SGI中断优先级</li>
+<li><code>GICD_IPRIORITYR&lt;n&gt;</code> 设置SPI中断优先级</li>
+<li>LPI配置表保存了LPI的中断优先级</li>
+</ul>
+</li>
+</ul>
+<h4 id="中断优先级分组寄存器（ICC-BPR0-EL1-ICC-BPR1-EL1）"><a href="#中断优先级分组寄存器（ICC-BPR0-EL1-ICC-BPR1-EL1）" class="headerlink" title="中断优先级分组寄存器（ICC_BPR0_EL1&#x2F;ICC_BPR1_EL1）"></a>中断优先级分组寄存器（ICC_BPR0_EL1&#x2F;ICC_BPR1_EL1）</h4><ul>
+<li>GIC 中每个中断都有一个 <strong>8 位优先级值（priority field）</strong>，数值越小，优先级越高（例如 0x00 是最高优先级，0xFF 是最低）。</li>
+<li>CPU 接口（CPU Interface）在决定是否 <strong>抢占当前正在处理的中断</strong> 时，会比较新中断和当前中断的优先级。</li>
+</ul>
+<p>但 GIC 并不是简单地比较整个 8 位值 —— 它通过 <strong>Binary Point Register（BPR）</strong> 将优先级划分为两个部分：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Group Priority（组优先级）</strong></td>
+<td>高位部分，用于决定能否抢占</td>
+</tr>
+<tr>
+<td><strong>Subpriority（子优先级）</strong></td>
+<td>低位部分，仅在组优先级相同时用于排序</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>ICC_BPR0_EL1</code>：用于 <strong>Group 0</strong> 中断</li>
+<li><code>ICC_BPR1_EL1</code>：用于 <strong>Group 1</strong> 中断</li>
+</ul>
+<blockquote>
+<p>注意：group1和group0的分组情况略有不同</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010105121747.png" alt="中断优先级分组寄存器" loading="lazy"></p>
+<h4 id="中断优先级阈值与运行中断优先级"><a href="#中断优先级阈值与运行中断优先级" class="headerlink" title="中断优先级阈值与运行中断优先级"></a>中断优先级阈值与运行中断优先级</h4><ul>
+<li>中断阈值<ul>
+<li>寄存器：<strong>ICC_PMR_EL1（Priority Mask Register）</strong></li>
+<li>PMR决定目标CPU的优先级阈值。GIC只有当pending中断的优先级高于这个中断优先级阈值，才会发送中断到CPU</li>
+<li>PMR为0，表示屏蔽了所有中断发送给CPU</li>
+</ul>
+</li>
+<li>Running priority<ul>
+<li>寄存器：<strong>ICC_RPR_EL1（Running Priority Register）</strong></li>
+<li><strong>只读寄存器</strong>，返回当前 CPU 上<strong>正在处理的最高优先级中断的 Group Priority</strong>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="中断优先级的抢占"><a href="#中断优先级的抢占" class="headerlink" title="中断优先级的抢占"></a>中断优先级的抢占</h4><ul>
+<li>GICv3<strong>支持中断抢占</strong>，当一个中断优先级同时满足下面条件<ul>
+<li><strong>优先级高于CPU接口的优先级阈值PMR</strong></li>
+<li><strong>Group priority高于正在处理的running prirority</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="GICv3内部架构"><a href="#GICv3内部架构" class="headerlink" title="GICv3内部架构"></a>GICv3内部架构</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010105724987.png" alt="GICv3内部架构" loading="lazy"></p>
+<ul>
+<li>Distributor：优先级排队，派发SPI和SGI到redistributor</li>
+<li>Redistributor：连接CPU interface。每个CPU一个redistributor</li>
+<li>CPU interface：发送中断给CPU，响应中断等</li>
+<li>ITS: 中断转换服务，把LPIs中断请求转换到中断号以及发送到redistributor</li>
+</ul>
+<h3 id="ITS服务（Interrupt-translation-service）"><a href="#ITS服务（Interrupt-translation-service）" class="headerlink" title="ITS服务（Interrupt translation service）"></a>ITS服务（Interrupt translation service）</h3><ul>
+<li>ITS作用：把设备（device_id）的Event_ID转成：<ul>
+<li>硬件中断号（INTID）</li>
+<li>目标redistributor</li>
+</ul>
+</li>
+<li>ITS转换过程<ul>
+<li>使用Device_ID来查询device table</li>
+<li>使用Event_ID来查询Interrupt translation table<ul>
+<li>物理中断号INTID</li>
+<li>interrupt collection number</li>
+</ul>
+</li>
+<li>由ICID来查询Collection table得到目标redistributor</li>
+</ul>
+</li>
+<li>ITS五张表<ul>
+<li>中断配置表configure table</li>
+<li>中断pending表</li>
+<li>device table</li>
+<li>Interrupt translation table</li>
+<li>Collection table</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010110352750.png" alt="Interrupt translation service" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010140039638.png" alt="Interrupt translation" loading="lazy"></p>
+<h4 id="配置表和pending表"><a href="#配置表和pending表" class="headerlink" title="配置表和pending表"></a>配置表和pending表</h4><ul>
+<li><p><strong>中断配置表</strong>用来存储每个LPI中断的优先级和enable位</p>
+<ul>
+<li>每个表项占8bit</li>
+<li>配置表基地址：GICR_PROPBASER.Physical_Address</li>
+<li>表项个数：2^(GICR_PROPBASER.IDbits)</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010111038377.png" alt="中断配置表" loading="lazy"></p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010110915247.png" alt="中断配置表表项" loading="lazy"></p>
+<ul>
+<li><strong>中断pending</strong> 用来表示每个LPI中断的pending状态<ul>
+<li>每个表项占1个bit</li>
+<li>每个redistributor有一个中断pending表</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010111028122.png" alt="Pending表" loading="lazy"></p>
+<h4 id="Device-Table的创建"><a href="#Device-Table的创建" class="headerlink" title="Device Table的创建"></a>Device Table的创建</h4><ul>
+<li><p>Device Table由OS软件创建</p>
+<ul>
+<li>分配内存，创建Table</li>
+<li>把表的基地址设置到GITS_BASER.Physical_Address</li>
+</ul>
+</li>
+<li><p>Device Table的重要参数在<code>GITS_BASER\&lt;n\&gt;</code>寄存器中</p>
+<ul>
+<li>表的类型：GITS_BASER.Type</li>
+<li>表项的大小：GITS_BASER.Entry_Size（8个字节）</li>
+<li>Table中每个page的大小：GITS_BASER.Page_Size（eg, 64KB）</li>
+<li>是否需要二级页表：GITS_BASER_Indirect</li>
+<li>设置表基地址：GITS_BASER.Physical_Address</li>
+<li>需要多少个表项：2^(device_id位宽)，device_id位宽在GITS_TYPER.devbits</li>
+</ul>
+</li>
+<li><p>Device Table支持1级或者2级表</p>
+</li>
+<li><p>Ddevice Table表项的内容由：</p>
+<ul>
+<li>软件通过command queue来发送命令给硬件，硬件来填充表项</li>
+<li>通过MAPD命令，把deviceID映射到ITT表中</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010112026541.png" alt="Device table一级表" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010112040856.png" alt="Device Table二级表" loading="lazy"></p>
+<ul>
+<li>Device Table的表项叫做DTE，用来指向ITT表的</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010135707597.png" alt="DDT表项DTE" loading="lazy"></p>
+<ul>
+<li>ITT的表项叫做ITE，用来描述EventID和最终物理ID号的关系</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010135818459.png" alt="ITT表项ITE" loading="lazy"></p>
+<h4 id="Interrupt-translation-table的创建"><a href="#Interrupt-translation-table的创建" class="headerlink" title="Interrupt translation table的创建"></a>Interrupt translation table的创建</h4><ul>
+<li>ITT表项用来映射 <strong>EventID -&gt; 物理中断号INTID以及ICID</strong></li>
+<li>ITT重要参数<ul>
+<li>ITT表项大小：GITS_TYPER.ITT_entry_size（eg：16字节）</li>
+<li>ITT表项个数：申请中断时请求的vector个数</li>
+<li>ITT表的基地址：由OS来分配</li>
+</ul>
+</li>
+<li>ITT表项的内容由：<ul>
+<li>软件通过command queue来发送命令给硬件，硬件来完成</li>
+<li>通过MAPD命令，把deviceID映射到ITT表中</li>
+</ul>
+</li>
+</ul>
+<h4 id="Collection-Table的创建"><a href="#Collection-Table的创建" class="headerlink" title="Collection Table的创建"></a>Collection Table的创建</h4><ul>
+<li><p>Collection Table表项用来映射：<strong>ICID -&gt; redistributor</strong></p>
+</li>
+<li><p><strong>这个表不需要在内存中分配内存</strong></p>
+</li>
+<li><p>Collection Table表项的内容由：</p>
+<ul>
+<li>软件通过command queue来发送命令给硬件，硬件来完成</li>
+<li>软件告知：redistributor的物理地址或者GICR_TYPER.Processor_Number</li>
+<li>通过MAPC命令来映射ICID -&gt; redistributor</li>
+<li>在GIC初始化的时候就遍历所有的redistributor，并且调用MAPC命令初始化</li>
+</ul>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">gic_smp_init<span class="function"><span class="params">()</span>-&gt;</span></span><br><span class="line">	遍历所有present CPU<span class="function"><span class="params">()</span>-&gt;</span></span><br><span class="line">		gic_starting_cpu<span class="function"><span class="params">()</span>-&gt;</span></span><br><span class="line">			its_cpu_init<span class="function"><span class="params">()</span>-&gt;</span></span><br><span class="line">				its_cpu_init_collections<span class="function"><span class="params">()</span>-&gt;</span></span><br><span class="line">					its_cpu_init_collection<span class="function"><span class="params">()</span>-&gt;</span></span><br><span class="line">						its_send_mapc()发送MAPC命令初始化collection table</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>Collection table的表项CTE</p>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010135921573.png" alt="collection table表项CTE" loading="lazy"></p>
+<h4 id="ITS-Command-Queue"><a href="#ITS-Command-Queue" class="headerlink" title="ITS Command Queue"></a>ITS Command Queue</h4><ul>
+<li>三个与command queue相关的寄存器<ul>
+<li>GITS_CBASER：指定command queue的大小和基地，基地址必须64KB对齐，大小必须4KB整数倍</li>
+<li>GITS_CREADR：ITS下一条要处理的command</li>
+<li>GITS_CWRITER：下一条要写入的command</li>
+</ul>
+</li>
+<li>常用的Command<ul>
+<li>MAPD：映射device ID到ITT table中<ul>
+<li><code>MAPD &lt;DeviceID&gt;, &lt;ITT_addr&gt;, &lt;size&gt;</code></li>
+</ul>
+</li>
+<li>MAPI：映射eventid和deviceid到ITT中<ul>
+<li><code>MAPI &lt;DeviceID&gt;, &lt;EventID&gt;,  &lt;Collection ID&gt;</code></li>
+</ul>
+</li>
+<li>MAPTI：映射eventid,deviceid以及硬件中断号到ITT中<ul>
+<li><code>MAPTI &lt;DeviceID&gt;, &lt;EventID&gt;, &lt;INTID&gt;, &lt;Collection ID&gt;</code></li>
+</ul>
+</li>
+<li>MAPC：映射collection id到目标redistributor<ul>
+<li><code>MAPC &lt;Collection ID&gt;, &lt;Target Redistributor&gt;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010113824599.png" alt="ITS Command Queue" loading="lazy"></p>
+<p><strong>例子</strong></p>
+<p>假设某个设备的Device ID为5，想把Event ID&#x3D;0映射到物理中断号8192中，ITT表的基地址为0x850000。对应的Collection ID为3，对应的目标redistributor的物理地址为0x78400000</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010114149986.png" alt="例子" loading="lazy"></p>
+<p><strong>linux内核中喜欢用vector表示eventid</strong></p>
+<h4 id="ITS在Linux中的实现"><a href="#ITS在Linux中的实现" class="headerlink" title="ITS在Linux中的实现"></a>ITS在Linux中的实现</h4><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010115024410.png" alt="qemu virtio device its" loading="lazy"></p>
+<h5 id="irq-domain中断控制域"><a href="#irq-domain中断控制域" class="headerlink" title="irq domain中断控制域"></a>irq domain中断控制域</h5><ul>
+<li>系统存在多级中断控制器的可能性<ul>
+<li>传统中断控制器-GIC</li>
+<li>可以抽象成中断控制器：GIC ITS，GPIO等</li>
+<li>虚拟中断控制器，platform irqdomain</li>
+</ul>
+</li>
+<li>IRQ Domain看作是IRQ Controller的软件抽象</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010115236509.png" alt="irq domain" loading="lazy"></p>
+<h5 id="ITS驱动框架"><a href="#ITS驱动框架" class="headerlink" title="ITS驱动框架"></a>ITS驱动框架</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010115535390.png" alt="ITS驱动代码" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010115545982.png" alt="ITS驱动框架" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010115730896.png" alt="OPS" loading="lazy"></p>
+<h5 id="创建MSI中断的API"><a href="#创建MSI中断的API" class="headerlink" title="创建MSI中断的API"></a>创建MSI中断的API</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010115937979.png" alt="MSI中断 platform device" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010115959287.png" alt="MSI中断 PCI device" loading="lazy"></p>
+<h5 id="Platform-device中使用MSI中断的例子-SMMUv3"><a href="#Platform-device中使用MSI中断的例子-SMMUv3" class="headerlink" title="Platform device中使用MSI中断的例子-SMMUv3"></a>Platform device中使用MSI中断的例子-SMMUv3</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010120438448.png" alt="SMMUv3" loading="lazy"></p>
+<h5 id="platform请求分配MSI中断流程图"><a href="#platform请求分配MSI中断流程图" class="headerlink" title="platform请求分配MSI中断流程图"></a>platform请求分配MSI中断流程图</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010121655276.png" alt="platform请求分配MSI中断流程图" loading="lazy"></p>
+<h5 id="PCI设备分配MSI中断流程图"><a href="#PCI设备分配MSI中断流程图" class="headerlink" title="PCI设备分配MSI中断流程图"></a>PCI设备分配MSI中断流程图</h5><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010122629205.png" alt="PCI设备分配MSI中断" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010122648639.png" alt="pci_alloc_irq_vectors_affinity" loading="lazy"></p>
+<h5 id="IO设备如何触发中断？"><a href="#IO设备如何触发中断？" class="headerlink" title="IO设备如何触发中断？"></a>IO设备如何触发中断？</h5><p>对于GICv3中断控制来说，IO设备需要往GITS_TRANSLATER寄存器写入event ID，即可触发MSI中断</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010134842066.png" alt="GITS_TRANSLATER" loading="lazy"></p>
+<p>Linux内核封装了一个struct msi_msg数据结构，包括了这个寄存器的地址，以及将要写入的数据</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">msi_msg</span>&#123;</span></span><br><span class="line">	u32 address_lo;</span><br><span class="line">	u32 address_hi;</span><br><span class="line">	u32 data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在irq_chip的ops有一个its_irq_compose_msi_msg回调函数，用来填充这个msi_msg，就是把GITS_TRANSLATER寄存器的物理地址写入到msi_msg-&gt;address字段里</p>
+<p>设备驱动程序在使用platform_msi_domain_alloc_irqs()注册MSI的时候，就会从msi_msg数据结构中获取到GITS_TRANSLATER寄存器的物理地址和eventID，然后写入到IO设备自己的寄存器（例如SMMU中的SMMU_EVENTQ_IRQ_CFGO和CFG1）里。</p>
+<p>设备要触发MSI，就会自动往自己寄存器里写入eventid，来触发中断。</p>
+<p>以SMMU为例：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010140250054.png" alt="SMMU" loading="lazy"></p>
+<h5 id="ITS-Debug-Tips"><a href="#ITS-Debug-Tips" class="headerlink" title="ITS Debug Tips"></a>ITS Debug Tips</h5><ul>
+<li>最新的qemu支持ITS。可以通过QEMU+linux kernel来单步调试ITS和MSI</li>
+<li>在kernel command line中添加”irq_gic_v3_its.dyndbg&#x3D;+pflmt irqdomain.dyndbg&#x3D;+pflmt”来打开相关的动态打印：</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/image-20251010135349580.png" alt="kenel启动日志" loading="lazy"></p>
+<ul>
+<li>可以在its_domain_ops回调中添加”dump_stack()”来打印调用函数关系calltrace</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2510220/">https://even629.com/posts/2510220/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ARM/">ARM</a></div><div class="post-share"><div class="social-share" data-image="/images/arm-logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ARM64%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E4%B9%8B%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">ARM64异常处理之中断处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">中断的处理过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E8%8E%93%E6%B4%BE4B%E4%B8%8A%E7%9A%84%E4%B8%AD%E6%96%AD%E6%BA%90"><span class="toc-number">1.2.</span> <span class="toc-text">树莓派4B上的中断源</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%91%E8%8E%93%E6%B4%BE4B%E7%9A%84Legacy-Interrupt-Routing"><span class="toc-number">2.</span> <span class="toc-text">树莓派4B的Legacy Interrupt Routing</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Legacy-IRQ-status-registers"><span class="toc-number">2.1.</span> <span class="toc-text">Legacy IRQ status registers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EL1%E7%9A%84Nonsecure-generic-timer%E7%9A%84%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">EL1的Nonsecure generic timer的中断处理流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E7%8E%B0%E5%9C%BA"><span class="toc-number">2.3.</span> <span class="toc-text">中断现场</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C1%EF%BC%9A%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E5%AE%9E%E7%8E%B0generic-timer"><span class="toc-number">2.4.</span> <span class="toc-text">中断实验1：在树莓派上实现generic timer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C2%EF%BC%9A%E4%BD%BF%E7%94%A8%E6%B1%87%E7%BC%96%E5%87%BD%E6%95%B0%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9D%A5%E4%BF%9D%E5%AD%98%E5%92%8C%E6%81%A2%E5%A4%8D%E4%B8%AD%E6%96%AD%E7%8E%B0%E5%9C%BA"><span class="toc-number">2.5.</span> <span class="toc-text">中断实验2：使用汇编函数的方式来保存和恢复中断现场</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GIC%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text">GIC中断控制器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GIC%E6%94%AF%E6%8C%81%E7%9A%84%E4%B8%AD%E6%96%AD%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.1.</span> <span class="toc-text">GIC支持的中断类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E7%9A%84%E8%A7%A6%E5%8F%91%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.2.</span> <span class="toc-text">中断的触发类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%8F%B7"><span class="toc-number">3.3.</span> <span class="toc-text">中断号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-number">3.4.</span> <span class="toc-text">中断优先级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E7%8A%B6%E6%80%81"><span class="toc-number">3.5.</span> <span class="toc-text">中断状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E8%B7%AF%E7%94%B1"><span class="toc-number">3.6.</span> <span class="toc-text">中断路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GICV2%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-number">3.7.</span> <span class="toc-text">GICV2中断控制器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE"><span class="toc-number">3.8.</span> <span class="toc-text">配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E7%8A%B6%E6%80%81%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="toc-number">3.9.</span> <span class="toc-text">中断状态时序图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GICv2%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">3.10.</span> <span class="toc-text">GICv2寄存器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-CTLR"><span class="toc-number">3.10.1.</span> <span class="toc-text">GICD_CTLR</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-ITARGETSRn"><span class="toc-number">3.10.2.</span> <span class="toc-text">GICD_ITARGETSRn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-TYPER-%EF%BC%88Interrupt-Controller-Type-Register%EF%BC%89"><span class="toc-number">3.10.3.</span> <span class="toc-text">GICD_TYPER （Interrupt Controller Type Register）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-ICFGRn"><span class="toc-number">3.10.4.</span> <span class="toc-text">GICD_ICFGRn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-ISENABLERn"><span class="toc-number">3.10.5.</span> <span class="toc-text">GICD_ISENABLERn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-ICENABLERn"><span class="toc-number">3.10.6.</span> <span class="toc-text">GICD_ICENABLERn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-ISACTIVERn"><span class="toc-number">3.10.7.</span> <span class="toc-text">GICD_ISACTIVERn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-ICACTIVERn"><span class="toc-number">3.10.8.</span> <span class="toc-text">GICD_ICACTIVERn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICD-IPRIORITYRn"><span class="toc-number">3.10.9.</span> <span class="toc-text">GICD_IPRIORITYRn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICC-CTLR"><span class="toc-number">3.10.10.</span> <span class="toc-text">GICC_CTLR</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICC-PMR"><span class="toc-number">3.10.11.</span> <span class="toc-text">GICC_PMR</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICC-IAR"><span class="toc-number">3.10.12.</span> <span class="toc-text">GICC_IAR</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GICC-EOIR"><span class="toc-number">3.10.13.</span> <span class="toc-text">GICC_EOIR</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E8%8E%93%E6%B4%BE4B%E7%9A%84GIC400"><span class="toc-number">3.11.</span> <span class="toc-text">树莓派4B的GIC400</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AEGIC-400%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">3.11.1.</span> <span class="toc-text">访问GIC-400寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GIC400%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">3.11.2.</span> <span class="toc-text">GIC400的初始化流程</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E6%96%AD"><span class="toc-number">3.11.2.1.</span> <span class="toc-text">注册中断</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%93%8D%E5%BA%94"><span class="toc-number">3.11.2.2.</span> <span class="toc-text">中断响应</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GIC%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C1%EF%BC%9A%E5%AE%9E%E7%8E%B0generic-timer"><span class="toc-number">3.12.</span> <span class="toc-text">GIC中断实验1：实现generic timer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GIC%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C2%EF%BC%9A%E5%AE%9E%E7%8E%B0%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E7%9A%84System-Timer"><span class="toc-number">3.13.</span> <span class="toc-text">GIC中断实验2：实现树莓派上的System Timer</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GICv3%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-number">4.</span> <span class="toc-text">GICv3中断控制器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GICv3%E6%AF%94GICv2%E6%94%B9%E8%BF%9B%E4%BA%86%E5%93%AA%E4%BA%9B%E5%86%85%E5%AE%B9"><span class="toc-number">4.1.</span> <span class="toc-text">GICv3比GICv2改进了哪些内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GICv3%E6%94%AF%E6%8C%81%E7%9A%84%E4%B8%AD%E6%96%AD%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.2.</span> <span class="toc-text">GICv3支持的中断类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%89%E7%BA%BF%E4%B8%AD%E6%96%AD%E4%B8%8E%E5%9F%BA%E4%BA%8E%E6%B6%88%E6%81%AF%E7%9A%84%E4%B8%AD%E6%96%AD"><span class="toc-number">4.3.</span> <span class="toc-text">有线中断与基于消息的中断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%8F%B7%E5%88%86%E9%85%8D"><span class="toc-number">4.4.</span> <span class="toc-text">中断号分配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="toc-number">4.5.</span> <span class="toc-text">中断状态机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E4%BA%B2%E5%92%8C%E6%80%A7%E8%B7%AF%E7%94%B1%E5%B1%82%E7%BA%A7%EF%BC%88Affinity-routing%EF%BC%89"><span class="toc-number">4.6.</span> <span class="toc-text">中断亲和性路由层级（Affinity routing）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GIC-500%E7%9A%84%E4%B8%AD%E6%96%AD%E4%BA%B2%E5%92%8C%E6%80%A7%E8%B7%AF%E7%94%B1"><span class="toc-number">4.7.</span> <span class="toc-text">GIC-500的中断亲和性路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E4%B8%AD%E6%96%AD%E5%8F%B7"><span class="toc-number">4.8.</span> <span class="toc-text">特殊中断号</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1021%E5%8F%B7%E4%B8%AD%E6%96%AD%E7%9A%84%E4%BD%BF%E7%94%A81"><span class="toc-number">4.8.1.</span> <span class="toc-text">1021号中断的使用1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1021%E5%8F%B7%E4%B8%AD%E6%96%AD%E7%9A%84%E4%BD%BF%E7%94%A82"><span class="toc-number">4.8.2.</span> <span class="toc-text">1021号中断的使用2</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GICC%E4%B8%8EICC"><span class="toc-number">4.9.</span> <span class="toc-text">GICC与ICC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E4%BC%98%E5%85%88%E7%BA%A7-1"><span class="toc-number">4.10.</span> <span class="toc-text">中断优先级</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E4%BC%98%E5%85%88%E7%BA%A7%E5%88%86%E7%BB%84%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%88ICC-BPR0-EL1-ICC-BPR1-EL1%EF%BC%89"><span class="toc-number">4.10.1.</span> <span class="toc-text">中断优先级分组寄存器（ICC_BPR0_EL1&#x2F;ICC_BPR1_EL1）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%88%E5%80%BC%E4%B8%8E%E8%BF%90%E8%A1%8C%E4%B8%AD%E6%96%AD%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-number">4.10.2.</span> <span class="toc-text">中断优先级阈值与运行中断优先级</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E4%BC%98%E5%85%88%E7%BA%A7%E7%9A%84%E6%8A%A2%E5%8D%A0"><span class="toc-number">4.10.3.</span> <span class="toc-text">中断优先级的抢占</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GICv3%E5%86%85%E9%83%A8%E6%9E%B6%E6%9E%84"><span class="toc-number">4.11.</span> <span class="toc-text">GICv3内部架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ITS%E6%9C%8D%E5%8A%A1%EF%BC%88Interrupt-translation-service%EF%BC%89"><span class="toc-number">4.12.</span> <span class="toc-text">ITS服务（Interrupt translation service）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E8%A1%A8%E5%92%8Cpending%E8%A1%A8"><span class="toc-number">4.12.1.</span> <span class="toc-text">配置表和pending表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Device-Table%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">4.12.2.</span> <span class="toc-text">Device Table的创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Interrupt-translation-table%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">4.12.3.</span> <span class="toc-text">Interrupt translation table的创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collection-Table%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">4.12.4.</span> <span class="toc-text">Collection Table的创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ITS-Command-Queue"><span class="toc-number">4.12.5.</span> <span class="toc-text">ITS Command Queue</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ITS%E5%9C%A8Linux%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.12.6.</span> <span class="toc-text">ITS在Linux中的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#irq-domain%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6%E5%9F%9F"><span class="toc-number">4.12.6.1.</span> <span class="toc-text">irq domain中断控制域</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ITS%E9%A9%B1%E5%8A%A8%E6%A1%86%E6%9E%B6"><span class="toc-number">4.12.6.2.</span> <span class="toc-text">ITS驱动框架</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAMSI%E4%B8%AD%E6%96%AD%E7%9A%84API"><span class="toc-number">4.12.6.3.</span> <span class="toc-text">创建MSI中断的API</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Platform-device%E4%B8%AD%E4%BD%BF%E7%94%A8MSI%E4%B8%AD%E6%96%AD%E7%9A%84%E4%BE%8B%E5%AD%90-SMMUv3"><span class="toc-number">4.12.6.4.</span> <span class="toc-text">Platform device中使用MSI中断的例子-SMMUv3</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#platform%E8%AF%B7%E6%B1%82%E5%88%86%E9%85%8DMSI%E4%B8%AD%E6%96%AD%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">4.12.6.5.</span> <span class="toc-text">platform请求分配MSI中断流程图</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#PCI%E8%AE%BE%E5%A4%87%E5%88%86%E9%85%8DMSI%E4%B8%AD%E6%96%AD%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">4.12.6.6.</span> <span class="toc-text">PCI设备分配MSI中断流程图</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IO%E8%AE%BE%E5%A4%87%E5%A6%82%E4%BD%95%E8%A7%A6%E5%8F%91%E4%B8%AD%E6%96%AD%EF%BC%9F"><span class="toc-number">4.12.6.7.</span> <span class="toc-text">IO设备如何触发中断？</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ITS-Debug-Tips"><span class="toc-number">4.12.6.8.</span> <span class="toc-text">ITS Debug Tips</span></a></li></ol></li></ol></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2512313/" title="Linux UART"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux UART"/></a><div class="content"><a class="title" href="/posts/2512313/" title="Linux UART">Linux UART</a><time datetime="2025-12-31T12:46:13.000Z" title="发表于 2025-12-31 20:46:13">2025-12-31</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '57ef6baac4a6d26eef029d01ab15baa0'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>
