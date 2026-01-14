@@ -1,0 +1,682 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux ADC | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux ADC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux ADC">
+<meta property="og:url" content="https://even629.com/posts/2601143/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="Linux ADC">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2026-01-13T13:18:00.000Z">
+<meta property="article:modified_time" content="2026-01-14T13:18:00.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2601143/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: even629","link":"链接: ","source":"来源: 常想一二，不思八九","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux ADC',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">89</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux ADC</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-13T13:18:00.000Z" title="发表于 2026-01-13 21:18:00">2026-01-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-14T13:18:00.000Z" title="更新于 2026-01-14 21:18:00">2026-01-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>18分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2601143/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-01-14</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<h1 id="ADC-基础"><a href="#ADC-基础" class="headerlink" title="ADC 基础"></a>ADC 基础</h1><h2 id="模拟信号与数字信号"><a href="#模拟信号与数字信号" class="headerlink" title="模拟信号与数字信号"></a>模拟信号与数字信号</h2><p><strong>模拟信号</strong>是一种连续变化的信号，其值可以在一定范围内取任意值。它在时间上和幅度上都是连续的，能够精确地反映自然界中的物理量变化。例如，温度传感器输出的电压信号、麦克风拾取的声音信号以及光敏电阻检测到的光强信号等，都属于模拟信号的范畴。</p>
+<p><strong>数字信号</strong>是一种离散的信号，其值只能在有限的范围内取特定的数值，通常以二进制形式表示。它的特点是时间上是离散的（采样点之间有固定的时间间隔），幅度上也是离散的（经过量化后的值）。例如，计算机中存储和处理的数据、MP3 文件中的音频数据以及 JPEG 图像文件中的像素值等，都是数字信号的具体体现。</p>
+<table>
+<thead>
+<tr>
+<th align="center">维度</th>
+<th align="center">模拟信号特点</th>
+<th align="center">数字信号特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">本质</td>
+<td align="center">连续变化、取值任意</td>
+<td align="center">离散取值、常以二进制表示</td>
+</tr>
+<tr>
+<td align="center">特性</td>
+<td align="center">时间 + 幅度均连续</td>
+<td align="center">时间（采样间隔）+ 幅度（量化值）均离散</td>
+</tr>
+<tr>
+<td align="center">优势</td>
+<td align="center">精准反映自然物理量变化</td>
+<td align="center">易存储 &#x2F; 传输 &#x2F; 处理、抗干扰能力强</td>
+</tr>
+<tr>
+<td align="center">典型场景</td>
+<td align="center">传感器原始信号、自然声光电信号</td>
+<td align="center">计算机数据、数字音视频文件</td>
+</tr>
+</tbody></table>
+<h2 id="ADC-概念"><a href="#ADC-概念" class="headerlink" title="ADC 概念"></a>ADC 概念</h2><p>ADC 是 <strong>Analog-to-Digital Converter</strong> 的缩写，可以翻译为<strong>模数转换器</strong>。它是一种电子设备或电路模块，用于<strong>将连续变化的模拟信号（如电压、电流等）转换为离散的数字信号</strong>。这些数字信号可以被计算机、微控制器或其他数字系统处理和存储。</p>
+<p>ADC 将模拟信号转换为数字信号通常分为<strong>采样</strong>、<strong>保持</strong>、<strong>量化</strong>以及<strong>编码</strong>四个步骤，每个步骤的定义以及作用如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">步骤</th>
+<th align="center">定义</th>
+<th align="center">作用</th>
+<th align="center">关键参数或特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">采样（Sampling）</td>
+<td align="center">以固定的时间间隔对模拟信号进行测量的过程。</td>
+<td align="center">将时间上连续的模拟信号离散化，为后续数字化处理奠定基础。</td>
+<td align="center">采样频率（Sampling Rate），即每秒采样的次数。根据奈奎斯特采样定理，采样频率至少是信号最高频率的两倍。</td>
+</tr>
+<tr>
+<td align="center">保持（Holding）</td>
+<td align="center">在采样完成后，将信号的瞬时值保持一段时间以便后续处理。</td>
+<td align="center">确保信号在量化过程中不会因快速变化而失真，提高转换的精度和稳定性。</td>
+<td align="center">无明确参数，主要目的是稳定信号。</td>
+</tr>
+<tr>
+<td align="center">量化（Quantization）</td>
+<td align="center">将采样得到的连续幅值映射到一组离散数值上的过程。</td>
+<td align="center">将幅度上连续的信号离散化，使其能够被数字系统表示。</td>
+<td align="center">分辨率（Resolution），通常用位数表示（如 8 位、10 位、12 位等）。分辨率越高，信号越精确。</td>
+</tr>
+<tr>
+<td align="center">编码（Encoding）</td>
+<td align="center">将量化后的数值转换为二进制代码的过程。</td>
+<td align="center">将离散的数值以数字系统可识别的形式表示出来，便于存储、传输和处理，使模拟信号能被计算机或其他数字设备使用。</td>
+<td align="center">无明确参数，重点是生成适合数字系统使用的二进制代码。</td>
+</tr>
+</tbody></table>
+<p>ADC 广泛应用于传感器信号采集、音频处理、图像处理、工业自动化以及医疗设备中：</p>
+<ol>
+<li>传感器信号采集：许多传感器输出的是模拟信号。例如，温度传感器、压力传感器、光敏传感器等采集到的环境数据通常以模拟信号形式存在。</li>
+<li>音频处理：麦克风拾取的声音信号是模拟信号。</li>
+<li>图像处理：摄像头捕捉的光信号本质上是模拟信号。</li>
+<li>工业自动化：各种物理量（如速度、位置、压力等）的测量通常依赖于传感器输出的模拟信号。</li>
+<li>医疗设备：许多生物信号（如心电图、脑电图等）是以模拟信号形式采集的。</li>
+</ol>
+<h2 id="ADC分辨率"><a href="#ADC分辨率" class="headerlink" title="ADC分辨率"></a>ADC分辨率</h2><p>ADC 的分辨率是指模数转换器能够区分的最小信号变化的能力。换句话说，它是 ADC 将模拟信号量化为离散数字值时的精细程度。在 ADC 中，分辨率越高，意味着它可以更精确地表示输入的模拟信号。当我们将数字信号通过 DAC（数模转换器）还原为模拟信号时，高分辨率的 ADC 能够生成更接近原始模拟信号的结果。</p>
+<p>ADC 的分辨率通常用位数来表示，例如 8 位、10 位、12 位等。位数决定了 ADC 能够输出的离散数值的数量，n 位 ADC 可以表示 2^n 个不同的数值。例如，8 位 ADC 可以表示 2^8&#x3D;256 个不同的数值；10 位 ADC 可以表示 2^10&#x3D; 1024 个不同的数值；12 位 ADC 可以表示 2^12&#x3D; 4096 个不同的数值。位数越高，分辨率越高，能够区分的信号变化越小。</p>
+<p>分辨率可以通过以下公式计算：<br>$$<br>\text{分辨率} &#x3D; \dfrac{\text{量程}}{2^n}<br>$$</p>
+<p>其中：</p>
+<ol>
+<li>量程是指 ADC 输入信号的最大范围（即参考电压范围）；</li>
+<li>n 是 ADC 的位数；</li>
+<li>2^n 表示 ADC 能够区分的离散数值总数。</li>
+</ol>
+<p>例子：假设一个 3 位 ADC 的参考电压（量程）为 2V，计算他的分辨率：</p>
+<ol>
+<li>量程 &#x3D; 2V</li>
+<li>位数为 3，2^n &#x3D; 2^3 &#x3D; 8；</li>
+</ol>
+<p>代入分辨率计算公式可得 2V&#x2F;8&#x3D; 0.25V。这意味着该 ADC 能够将输入信号分成 8 个离散的等级，每个等级之间的步长为 0.25V。</p>
+<p>除了分辨率，ADC的其他参数如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数</th>
+<th align="center">定义</th>
+<th align="center">作用或意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>采样时间（Sampling Time）</strong></td>
+<td align="center">完成一次采样所需的时间。</td>
+<td align="center">决定了 ADC 能够以多快的速度捕获输入信号的变化。如果采样时间过长，可能会导致信号失真或丢失细节。</td>
+</tr>
+<tr>
+<td align="center"><strong>转换时间（Conversion Time）</strong></td>
+<td align="center">将模拟信号转换为数字信号所需的时间。</td>
+<td align="center">直接影响 ADC 的速度和效率。较短的转换时间意味着 ADC 可以更快地处理信号。</td>
+</tr>
+<tr>
+<td align="center"><strong>采样频率（Sampling Frequency）</strong></td>
+<td align="center">每秒采集样本的次数，常用单位为 ksps（千次 &#x2F; 秒）或 Msps（百万次 &#x2F; 秒）。</td>
+<td align="center">决定了 ADC 对信号变化的捕捉能力。根据奈奎斯特采样定理，采样频率必须至少是信号最高频率的两倍，才能准确还原信号。</td>
+</tr>
+<tr>
+<td align="center"><strong>精度（Accuracy）</strong></td>
+<td align="center">ADC 输出的数字值与实际模拟输入值之间的误差。</td>
+<td align="center">反映了 ADC 的可靠性和测量质量，是衡量其性能的重要指标。</td>
+</tr>
+</tbody></table>
+<h2 id="RK3568-ADC"><a href="#RK3568-ADC" class="headerlink" title="RK3568 ADC"></a>RK3568 ADC</h2><p>在 RK3568 数据手册中的外设资源框图中可以找到，RK3568 这颗 SOC 总共有 <strong>8 路 SARADC</strong>。</p>
+<p><strong>SARADC</strong> （<strong>Successive Approximation Register Analog-to-Digital Converter</strong>）的中文名称为<strong>逐次逼近型 ADC</strong>；</p>
+<p>除了 SAR ADC 之外，还有两路 TS-ADC（Temperature Sensor ADC），他们分别用来检测 CPU 和 GPU 的温度，如果在一段时间内检测到温度过高，则会向处理器发出中断信号以采取降温措施；如果温度持续过高，将复位整个芯片，达到重启的效果。TS-ADC 只负责检测 CPU 和 GPU 的温度所以并未在底板引出。</p>
+<h3 id="ADC-按键"><a href="#ADC-按键" class="headerlink" title="ADC 按键"></a>ADC 按键</h3><p>ADC 按键 是 SARADC 外设，ADC 按键的工作原理是<strong>将多个按键连接到同一个 ADC 引脚上，并通过不同的分压电阻产生不同的电压，通过 ADC 测量该电压，并与预设的电压范围进行比对，从而判断哪个按键被按下</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859056.png" alt="Key Array" loading="lazy"></p>
+<blockquote>
+<p>有两路 ADC 分别被用在了 HW_ID 和 BOM_ID 上，用于不同电子设备的硬件识别，但由于topeet的外设都是通用的，所以这两路 ADC 并没有被用到。</p>
+</blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859110.png" alt="HW_ID" loading="lazy"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859171.png" alt="BOM_ID" loading="lazy"></p>
+<p>有 4 路 ADC 被连接到了 6pin 的座子上，原理图如下所示</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859223.png" alt="SARADC" loading="lazy"></p>
+<p>总结如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">ADC 接口</th>
+<th align="center">复用功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SARADC VIN0</td>
+<td align="center">用作按键引脚（音量 +，音量 -，HOME，BACK）</td>
+</tr>
+<tr>
+<td align="center">SARADC VIN1</td>
+<td align="center">用作 HW ID 引脚</td>
+</tr>
+<tr>
+<td align="center">SARADC VIN2</td>
+<td align="center">未使用</td>
+</tr>
+<tr>
+<td align="center">SARADC VIN3</td>
+<td align="center">用作 BOM ID 引脚</td>
+</tr>
+<tr>
+<td align="center">SARADC VIN4</td>
+<td align="center">未使用</td>
+</tr>
+<tr>
+<td align="center">SARADC VIN5</td>
+<td align="center">未使用</td>
+</tr>
+<tr>
+<td align="center">SARADC VIN6</td>
+<td align="center">未使用</td>
+</tr>
+<tr>
+<td align="center">SARADC VIN7</td>
+<td align="center">未使用</td>
+</tr>
+</tbody></table>
+<h3 id="逐次逼近型-ADC"><a href="#逐次逼近型-ADC" class="headerlink" title="逐次逼近型 ADC"></a>逐次逼近型 ADC</h3><p>逐次逼近型 ADC（<strong>Successive Approximation Register ADC</strong>，简称 SAR ADC）是一种常见的模数转换器，其工作原理基于逐次逼近算法。它通过逐步比较输入模拟信号与内部生成的参考电压，最终确定一个接近输入信号的数字值。SAR ADC 工作原理示意图如下所示</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859277.png" alt="SAR ADC" loading="lazy"></p>
+<p>由上图可知逼近寄存器型模数转换器（SAR ADC）主要由以下几个部分组成：</p>
+<ol>
+<li><strong>比较器（Comparator）</strong>：用于比较输入模拟信号 U1 和 D&#x2F;A 转换器（DAC）输出的参考电压 U0，并产生反馈信号。</li>
+<li><strong>N 位 D&#x2F;A 转换器（DAC）</strong>：将数字值转换为模拟电压，与输入信号进行比较，以逐步逼近目标值。</li>
+<li><strong>N 位逐次逼近寄存器（SAR）</strong>：用于存储当前的比较结果，并根据比较器的反馈调整数值，最终确定数字输出。</li>
+<li><strong>置数选择逻辑</strong>：控制逐次逼近寄存器的位选择过程，按二分法调整 DAC 的输出电压。</li>
+</ol>
+<p>工作过程：</p>
+<ol>
+<li>首先，模拟输入信号 U1 进入 ADC，并由采样电路暂存，以便进行后续处理。</li>
+<li>随后，逐次逼近寄存器（SAR）初始化，并通过置数选择逻辑电路的控制，按照二分法逐步确定最终的数字输出值。</li>
+</ol>
+<blockquote>
+<p>在转换过程中，SAR 从最高位开始假设为 1，并将当前的 N 位数字值传递给 D&#x2F;A 转换器。DAC 将其转换为模拟电压 U0，然后送入比较器，与输入信号 U1 进行比较。如果 U0 小于 U1，当前位保持 1；否则，当前位改为 0。这个过程不断重复，每次确定一位，直到所有 N 位都完成，形成最终的数字输出。</p>
+</blockquote>
+<ol start="3">
+<li>最终，SAR 将确定的 N 位数字值输出，完成一次模数转换。</li>
+</ol>
+<p>举例如下：</p>
+<p><strong>5 位逐次逼近型 ADC 在参考电压为 32mV、待测电压为 21.5mV 的情况</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859311.png" alt="5 位逐次逼近型 ADC 在参考电压为 32mV、待测电压为 21.5mV 的情况" loading="lazy"></p>
+<ol>
+<li>设置最高位：SAR 寄存器将最高位（第 5 位）设置为“1”，其余位为“0”，当前 SAR 值为 10000（二进制），即 16（十进制）。DAC 根据 SAR 值生成参考电压 U0&#x3D;16×1mV&#x3D;16 mV。比较器比较 U1&#x3D;21.5 mV,V_0 &#x3D;16，由于 U1&gt;U0，因此保留当前位为“1”。</li>
+<li>设置次高位：SAR 寄存器保持最高位为“1”，并将次高位（第 4 位）设置为“1”，此时 SAR 值为 11000（二进制），即 24（十进制）。DAC 生成参考电压 U0&#x3D;24×1 mV&#x3D;24 mV。比较器比较 U1&#x3D;21.5 m 和 U0&#x3D;24 mV，由于 U1&lt;U0，因此将当前位重置为“0”。</li>
+<li>设置第三位：SAR 寄存器保持前两位为“10”，并将第三位（第 3 位）设置为“1”，此时 SAR 值为 10100（二进制），即 20（十进制）。DAC 生成参考电压 U0&#x3D;20×1 mV&#x3D;20 mV。比较器比较 U1&#x3D;21.5 mV 和 U0&#x3D;20 mV，由于 U1&gt;U0，因此保留当前位为“1”。</li>
+<li>设置第四位：SAR 寄存器保持前三位为“101”，并将第四位（第 2 位）设置为“1”，此时 SAR 值为 10110（二进制），即 22（十进制）。DAC 生成参考电压 U0&#x3D;22×1 mV&#x3D;22 mV。比较器比较 U1&#x3D;21.5 mV 和 U0&#x3D;22 mV，由于 U1&lt;U0，因此将当前位重置为“0”。</li>
+<li>设置最低位：SAR 寄存器保持前四位为“1010”，并将最低位（第 1 位）设置为“1”，此时 SAR 值为 10101（二进制），即 21（十进制）。DAC 生成参考电压 U0&#x3D;21×1 mV&#x3D;21 mV。比较器比较 U1&#x3D;21.5 mV 和 U0&#x3D;21 mV，由于 U1&gt;U0，因此保留当前位为“1”。</li>
+<li>结果：经过逐次逼近后，SAR 寄存器的值为 10101（二进制），即 21（十进制）。</li>
+</ol>
+<h1 id="操作-ADC"><a href="#操作-ADC" class="headerlink" title="操作 ADC"></a>操作 ADC</h1><p>进入到<code>/sys/bus/iio/devices/iio:device0</code> 目录下</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859380.png" alt="&#x2F;sys&#x2F;bus&#x2F;iio&#x2F;devices&#x2F;iio:device0" loading="lazy"></p>
+<p>需要注意的是 <code>in_voltageX_raw</code> 和 <code>in_voltage_scale</code>。</p>
+<ul>
+<li><code>in_voltageX_raw</code> <strong>表示 ADC 某个通道的原始采样值</strong>，其中 X 是通道编号（如 0, 1, 2, …, 7）。它以整数形式存储 ADC 转换后的数字代码，用户可以通过读取该文件获取对应通道的未经缩放的原始数据。需要注意的是，这些值并未经过量程缩放，必须结合<code>in_voltage_scale</code> 进行计算才能得到实际电压值。</li>
+<li><code>in_voltage_scale</code> 是用于<strong>将 ADC 原始采样值转换为实际电压值的缩放因子</strong>，通常定义为 1.8&#x2F;1024。它以浮点数形式表示，单位可以是毫伏（mV）或伏特（V），具体取决于硬件实现。通过<strong>将 <code>in_voltageX_raw</code> 的原始值乘以<code>in_voltage_scale</code>，即可得到对应通道的实际电压值</strong>，从而实现从数字代码到物理量的转换</li>
+</ul>
+<p>这里以 ADC 的通道 7 为例进行演示，对应的硬件为底板的 J24 的第 5 脚，具体如下图所示</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260114211859223.png" alt="SARADC" loading="lazy"></p>
+<p>DC 的通道 7 对应的原始采样值为 <code>in_voltage7_raw</code>，使用 cat 命令进行读取，读取到的值如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cat</span> involtage7_raw</span><br><span class="line">1017</span><br></pre></td></tr></table></figure>
+
+<p>这里读取到的是未经缩放的原始数据，然后继续使用cat命令读取缩放因子 <code>in_voltage_scale</code> 的值，具体如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cat</span> in_voltage_scale</span><br><span class="line">1.757812500</span><br></pre></td></tr></table></figure>
+
+<p>然后将获取到的原始采样值与缩放因子相乘即可得到实际电压值 1017x1.757812500&#x3D;1787.6953125 mv&#x3D;1.787 V</p>
+<p>而除了上面的 SAR ADC 之外，还有着两路 TSADC，他们分别用来查询 CPU 和 GPU 的温度，</p>
+<p>查看 CPU 的温度：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /sys/class/thermal/thermal_zone0/temp</span><br></pre></td></tr></table></figure>
+
+<p>查看 GPU 的温度：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /sys/class/thermal/thermal_zone1/temp</span><br></pre></td></tr></table></figure>
+
+<h1 id="ADC-驱动程序"><a href="#ADC-驱动程序" class="headerlink" title="ADC 驱动程序"></a>ADC 驱动程序</h1><p>编写一个 ADC 驱动程序，通过杂项设备创建一个 ADC 设备节点，通过该节点来读取对应通道的 ADC 值。</p>
+<h2 id="API-函数"><a href="#API-函数" class="headerlink" title="API 函数"></a>API 函数</h2><h3 id="iio-channel-get"><a href="#iio-channel-get" class="headerlink" title="iio_channel_get()"></a>iio_channel_get()</h3><p><strong>函数原型</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> iio_channel *<span class="title function_">iio_channel_get</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *name, <span class="type">const</span> <span class="type">char</span> *channel_name)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>核心作用</strong></p>
+<p>从 Linux IIO 子系统中，根据「IIO 设备名」和「通道名」，获取一个对应的 <code>struct iio_channel</code> 通道结构体指针，后续所有对该 ADC 通道的操作都依赖这个指针。</p>
+<p><strong>参数说明</strong></p>
+<ul>
+<li><code>name</code>：指定要操作的 <strong>IIO 设备名称 &#x2F; ID</strong>，如果传 <code>NULL</code> 表示使用系统默认的 IIO 设备；SARADC 场景常用 <code>NULL</code> </li>
+<li><code>channel_name</code>：指定要打开的 ADC 通道名称，具体名称要和内核驱动匹配。</li>
+</ul>
+<p><strong>返回值</strong></p>
+<ul>
+<li>✅ 成功：返回有效的 <code>struct iio_channel *</code> 结构体指针（通道句柄）；</li>
+<li>❌ 失败：返回内核错误指针 <code>ERR_PTR(错误码)</code>，不能直接作为正常指针使用。</li>
+</ul>
+<h3 id="iio-channel-release"><a href="#iio-channel-release" class="headerlink" title="iio_channel_release()"></a>iio_channel_release()</h3><p>获取的通道句柄<strong>用完必须释放</strong>，否则造成内核资源泄漏，释放函数固定搭配：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">iio_channel_release</span><span class="params">(<span class="keyword">struct</span> iio_channel *channel)</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>参数：就是 <code>iio_channel_get</code> 获取到的通道指针</li>
+<li>特性：无返回值，安全调用即可。</li>
+</ul>
+<h3 id="struct-iio-channel"><a href="#struct-iio-channel" class="headerlink" title="struct iio_channel"></a>struct iio_channel</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">iio_channel</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">iio_device</span> *indio_dev;  <span class="comment">// 当前通道绑定的IIO设备（如SARADC设备）</span></span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *channel_name;      <span class="comment">// 通道名称，和入参channel_name一致</span></span><br><span class="line">    <span class="type">int</span> channel_index;             <span class="comment">// 通道索引，比如VIN0对应0，VIN3对应3</span></span><br><span class="line">    <span class="type">bool</span> is_output;                <span class="comment">// 是否为输出通道，ADC是「输入通道」固定为false</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="iio-read-channel-raw"><a href="#iio-read-channel-raw" class="headerlink" title="iio_read_channel_raw()"></a>iio_read_channel_raw()</h3><p><strong>函数原型</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">iio_read_channel_raw</span><span class="params">(<span class="keyword">struct</span> iio_channel *channel, <span class="type">int</span> *val)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>核心作用</strong></p>
+<p>从已经打开的 IIO 通道（ADC 通道）中，读取<strong>未经任何校准 &#x2F; 换算的原始整型数据</strong>，是 ADC 数据读取的核心函数。</p>
+<blockquote>
+<p>✔️ 你的 SARADC 场景：读取到的 <code>val</code> 就是 ADC 引脚采集到的电压对应的<strong>原始数字量</strong>（比如 10 位 ADC 就是 0~1023 的数值）。</p>
+</blockquote>
+<p><strong>参数说明</strong></p>
+<ul>
+<li><code>channel</code>：输入参数，<code>iio_channel_get</code> 成功返回的通道句柄，<strong>必须是有效指针</strong>；</li>
+<li><code>val</code>：输出参数，一个整型指针，函数执行成功后，采集到的 ADC 原始数据会被写入该地址指向的变量中。</li>
+</ul>
+<p><strong>返回值</strong></p>
+<ul>
+<li>✅ 成功：返回 <code>0</code>；</li>
+<li>❌ 失败：返回<strong>负数的内核错误码</strong>（如 -EINVAL 无效参数、-ENODEV 设备不存在等）。</li>
+</ul>
+<p><strong>关键注意点</strong></p>
+<p>读取到的 <code>val</code> 是 <strong>原始裸数据</strong>：</p>
+<ul>
+<li>无单位、无校准、无换算，只是 ADC 模数转换后的纯数字值；</li>
+<li>数值范围由 ADC 位数决定（比如 8 位 ADC：0<del>255；10 位 ADC：0</del>1023；12 位 ADC：0~4095）；</li>
+<li>如果需要换算成实际的电压值，需要自己写公式：<code>实际电压 = (原始值 / ADC最大量程) * ADC参考电压</code>。</li>
+</ul>
+<hr>
+<p><strong>内核驱动中标准写法</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 步骤1：定义变量</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">iio_channel</span> *<span class="title">adc_channel</span>;</span></span><br><span class="line"><span class="type">int</span> adc_raw_data;</span><br><span class="line"><span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 步骤2：获取ADC通道句柄 (示例：打开SARADC的VIN0通道)</span></span><br><span class="line">adc_channel = iio_channel_get(<span class="literal">NULL</span>, <span class="string">&quot;vin0&quot;</span>);</span><br><span class="line"><span class="comment">// 步骤3：判断通道获取是否成功</span></span><br><span class="line"><span class="keyword">if</span> (IS_ERR(adc_channel)) &#123;</span><br><span class="line">    ret = PTR_ERR(adc_channel); <span class="comment">// 提取错误码</span></span><br><span class="line">    printk(<span class="string">&quot;获取ADC通道失败: %d\n&quot;</span>, ret);</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 步骤4：读取ADC原始数据</span></span><br><span class="line">ret = iio_read_channel_raw(adc_channel, &amp;adc_raw_data);</span><br><span class="line"><span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    printk(<span class="string">&quot;读取ADC数据失败: %d\n&quot;</span>, ret);</span><br><span class="line">    iio_channel_release(adc_channel); <span class="comment">// 失败也要释放资源！</span></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line">printk(<span class="string">&quot;ADC原始采集值：%d\n&quot;</span>, adc_raw_data);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 步骤5：使用完通道，必须释放资源</span></span><br><span class="line">iio_channel_release(adc_channel);</span><br></pre></td></tr></table></figure>
+
+<h2 id="设备树"><a href="#设备树" class="headerlink" title="设备树"></a>设备树</h2><p>添加设备节点：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">adc7:</span> <span class="title class_">adc-test</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;myadc&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">io-channels</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;saradc</span> <span class="number">7</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
+
+<p>重点在 io-channels，意味要使用的是 ADC 的第 7 个通道</p>
+<h2 id="驱动程序"><a href="#驱动程序" class="headerlink" title="驱动程序"></a>驱动程序</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/fs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/uaccess.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/platform_device.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/iio/consumer.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/miscdevice.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/of.h&gt;</span>  <span class="comment">// 添加对设备树的支持</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CMD_READ_SCALE _IOR(<span class="string">&#x27;A&#x27;</span>, 0x1, int)  <span class="comment">// 定义 ioctl 命令</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">iio_channel</span> *<span class="title">adc_chan</span>;</span>  <span class="comment">// IIO 通道指针</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 文件操作：ioctl 实现</span></span><br><span class="line"><span class="type">static</span> <span class="type">long</span> <span class="title function_">adc_dev_ioctl</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">unsigned</span> <span class="type">int</span> cmd, <span class="type">unsigned</span> <span class="type">long</span> arg)</span> &#123;</span><br><span class="line">    <span class="type">int</span> scale = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (cmd) &#123;</span><br><span class="line">        <span class="keyword">case</span> CMD_READ_SCALE:</span><br><span class="line">            <span class="comment">// 从 ADC 通道读取原始值</span></span><br><span class="line">            <span class="keyword">if</span> (iio_read_channel_raw(adc_chan, &amp;scale) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                pr_err(<span class="string">&quot;Failed to read ADC channel raw value\n&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> -EIO;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 将数据复制到用户空间</span></span><br><span class="line">            <span class="keyword">if</span> (copy_to_user((<span class="type">int</span> *)arg, &amp;scale, <span class="keyword">sizeof</span>(scale))) &#123;</span><br><span class="line">                pr_err(<span class="string">&quot;Failed to copy data to user space\n&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> -EFAULT;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            pr_err(<span class="string">&quot;Invalid ioctl command\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> -EINVAL;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 文件操作结构体</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">adc_dev_fops</span> =</span> &#123;</span><br><span class="line">    .owner = THIS_MODULE,</span><br><span class="line">    .unlocked_ioctl = adc_dev_ioctl,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 杂项设备结构体</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">miscdevice</span> <span class="title">adc_dev</span> =</span> &#123;</span><br><span class="line">    .minor = MISC_DYNAMIC_MINOR,  <span class="comment">// 动态分配次设备号</span></span><br><span class="line">    .name = <span class="string">&quot;adc&quot;</span>,                <span class="comment">// 设备名称</span></span><br><span class="line">    .fops = &amp;adc_dev_fops,        <span class="comment">// 文件操作接口</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设备树匹配表</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">of_device_id</span> <span class="title">adc_driver_match</span>[] =</span> &#123;</span><br><span class="line">    &#123; .compatible = <span class="string">&quot;myadc&quot;</span> &#125;,</span><br><span class="line">    &#123; &#125;</span><br><span class="line">&#125;;</span><br><span class="line">MODULE_DEVICE_TABLE(of, adc_driver_match);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 平台设备探测函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">adc_driver_probe</span><span class="params">(<span class="keyword">struct</span> platform_device *pdev)</span> &#123;</span><br><span class="line">    <span class="comment">// 获取 IIO 通道</span></span><br><span class="line">    adc_chan = iio_channel_get(&amp;pdev-&gt;dev, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (IS_ERR(adc_chan)) &#123;</span><br><span class="line">        pr_err(<span class="string">&quot;Failed to get IIO channel\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> PTR_ERR(adc_chan);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册杂项设备</span></span><br><span class="line">    <span class="keyword">if</span> (misc_register(&amp;adc_dev)) &#123;</span><br><span class="line">        pr_err(<span class="string">&quot;Failed to register misc device\n&quot;</span>);</span><br><span class="line">        iio_channel_release(adc_chan);  <span class="comment">// 释放 IIO 通道</span></span><br><span class="line">        <span class="keyword">return</span> -ENODEV;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pr_info(<span class="string">&quot;ADC driver probed successfully\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 平台设备移除函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">adc_driver_remove</span><span class="params">(<span class="keyword">struct</span> platform_device *pdev)</span> &#123;</span><br><span class="line">    <span class="comment">// 注销杂项设备</span></span><br><span class="line">    misc_deregister(&amp;adc_dev);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 释放 IIO 通道</span></span><br><span class="line">    iio_channel_release(adc_chan);</span><br><span class="line"></span><br><span class="line">    pr_info(<span class="string">&quot;ADC driver removed successfully\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 平台设备驱动结构体</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">platform_driver</span> <span class="title">adc_driver</span> =</span> &#123;</span><br><span class="line">    .probe = adc_driver_probe,</span><br><span class="line">    .remove = adc_driver_remove,</span><br><span class="line">    .driver = &#123;</span><br><span class="line">        .name = <span class="string">&quot;myadc&quot;</span>,  <span class="comment">// 驱动名称</span></span><br><span class="line">        .owner = THIS_MODULE,</span><br><span class="line">        .of_match_table = adc_driver_match,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块初始化函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">adc_driver_init</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册平台设备驱动</span></span><br><span class="line">    ret = platform_driver_register(&amp;adc_driver);</span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        pr_err(<span class="string">&quot;Failed to register platform driver\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pr_info(<span class="string">&quot;ADC driver module loaded\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块退出函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">adc_driver_exit</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// 注销平台设备驱动</span></span><br><span class="line">    platform_driver_unregister(&amp;adc_driver);</span><br><span class="line"></span><br><span class="line">    pr_info(<span class="string">&quot;ADC driver module unloaded\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(adc_driver_init);</span><br><span class="line">module_exit(adc_driver_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;topeet&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;stdlib.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;unistd.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;sys/types.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;sys/stat.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;fcntl.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;sys/ioctl.h&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#define CMD_READ_SCALE _IOR(&#x27;A&#x27;, 1, int)</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    int scale = 0;</span><br><span class="line">    int fd;</span><br><span class="line">	<span class="built_in">float</span> value = 0.0;      // 用于存储计算后的实际电压值</span><br><span class="line"></span><br><span class="line">    // 打开设备文件</span><br><span class="line">    fd = open(<span class="string">&quot;/dev/adc&quot;</span>, O_RDWR);</span><br><span class="line">    <span class="keyword">if</span> (fd &lt; 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;open error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">return</span> -1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 使用 ioctl 读取 scale 值</span><br><span class="line">    <span class="keyword">if</span> (ioctl(fd, CMD_READ_SCALE, &amp;scale) &lt; 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ioctl error\n&quot;</span>);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="built_in">return</span> -1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	value = (1.8 / 1024) * (<span class="built_in">float</span>)scale;</span><br><span class="line"></span><br><span class="line">    // 打印读取到的 scale 值</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;val is %lf\n&quot;</span>, value);</span><br><span class="line"></span><br><span class="line">    // 关闭设备文件</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2601143/">https://even629.com/posts/2601143/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">89</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ADC-%E5%9F%BA%E7%A1%80"><span class="toc-text">ADC 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E6%8B%9F%E4%BF%A1%E5%8F%B7%E4%B8%8E%E6%95%B0%E5%AD%97%E4%BF%A1%E5%8F%B7"><span class="toc-text">模拟信号与数字信号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ADC-%E6%A6%82%E5%BF%B5"><span class="toc-text">ADC 概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ADC%E5%88%86%E8%BE%A8%E7%8E%87"><span class="toc-text">ADC分辨率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RK3568-ADC"><span class="toc-text">RK3568 ADC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ADC-%E6%8C%89%E9%94%AE"><span class="toc-text">ADC 按键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%90%E6%AC%A1%E9%80%BC%E8%BF%91%E5%9E%8B-ADC"><span class="toc-text">逐次逼近型 ADC</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C-ADC"><span class="toc-text">操作 ADC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ADC-%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F"><span class="toc-text">ADC 驱动程序</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#API-%E5%87%BD%E6%95%B0"><span class="toc-text">API 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#iio-channel-get"><span class="toc-text">iio_channel_get()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iio-channel-release"><span class="toc-text">iio_channel_release()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-iio-channel"><span class="toc-text">struct iio_channel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iio-read-channel-raw"><span class="toc-text">iio_read_channel_raw()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">设备树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F"><span class="toc-text">驱动程序</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601143/" title="Linux ADC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux ADC"/></a><div class="content"><a class="title" href="/posts/2601143/" title="Linux ADC">Linux ADC</a><time datetime="2026-01-13T13:18:00.000Z" title="发表于 2026-01-13 21:18:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601043/" title="Linux PWM"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux PWM"/></a><div class="content"><a class="title" href="/posts/2601043/" title="Linux PWM">Linux PWM</a><time datetime="2026-01-04T10:59:00.000Z" title="发表于 2026-01-04 18:59:00">2026-01-04</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'aedda59f9591abecf6f179bc940f0388'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><!-- hexo injector body_end end --></body></html>
