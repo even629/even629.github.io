@@ -1,0 +1,937 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>io_uring | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="io_uring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="io_uring">
+<meta property="og:url" content="https://even629.com/posts/2601261/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="io_uring">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2026-01-26T07:25:13.000Z">
+<meta property="article:modified_time" content="2026-01-26T06:25:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2601261/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'io_uring',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="/css/wow_animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.png);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">90</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav" style="--glass-border-radius: 2rem;"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">io_uring</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-26T07:25:13.000Z" title="发表于 2026-01-26 15:25:13">2026-01-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-26T06:25:13.000Z" title="更新于 2026-01-26 14:25:13">2026-01-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">9.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>35分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2601261/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p>
+</div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-01-26</p>
+</div></div><div class='timeline-item-content'><p>init</p>
+</div></div></div>
+
+<hr>
+<p><code>io_uring</code> 是 2019 年 <strong>Linux 5.1</strong> 内核首次引入的高性能 <strong>异步 I&#x2F;O 框架</strong>，能显著加速 I&#x2F;O 密集型应用的性能。 但如果你的应用<strong>已经在使用</strong> 传统 Linux AIO 了，<strong>并且使用方式恰当</strong>， 那 <code>io_uring</code> <strong>并不会带来太大的性能提升</strong>， 根据原文测试，即便打开高级特性，也只有 5%。除非你真的需要这 5% 的额外性能，否则 <strong>切换</strong>成 <code>io_uring</code> <strong>代价可能也挺大</strong>，因为要 <strong>重写应用</strong>来适配 <code>io_uring</code>（或者让依赖的平台或框架去适配，总之需要改代码）。</p>
+<p>既然性能跟传统 AIO 差不多，那为什么还称 <code>io_uring</code> 为革命性技术呢？</p>
+<ol>
+<li>它首先和最大的贡献在于：<strong>统一了 Linux 异步 I&#x2F;O 框架</strong>，<ul>
+<li>Linux AIO <strong>只支持 direct I&#x2F;O</strong> 模式的<strong>存储文件</strong> （storage file），而且主要用在<strong>数据库这一细分领域</strong>；</li>
+<li><code>io_uring</code> 支持存储文件和网络文件（network sockets），也支持更多的异步系统调用 （<code>accept/openat/stat/...</code>），而非仅限于 <code>read/write</code> 系统调用。</li>
+</ul>
+</li>
+<li>在<strong>设计上是真正的异步 I&#x2F;O</strong>，作为对比，Linux AIO 虽然也 是异步的，但仍然可能会阻塞，某些情况下的行为也无法预测；</li>
+<li><strong>灵活性和可扩展性</strong>非常好，甚至能基于 <code>io_uring</code> 重写所有系统调用，而 Linux AIO 设计时就没考虑扩展性。</li>
+</ol>
+<p>eBPF 也算是异步框架（事件驱动），但与 <code>io_uring</code> 没有本质联系，二者属于不同子系统， 并且在模型上有一个本质区别：</p>
+<ol>
+<li><strong>eBPF 对用户是透明的</strong>，只需升级内核（到合适的版本），<strong>应用程序无需任何改造</strong>；</li>
+<li><code>io_uring</code> 提供了<strong>新的系统调用和用户空间 API</strong>，因此<strong>需要应用程序做改造</strong>。</li>
+</ol>
+<p>本文介绍 Linux 异步 I&#x2F;O 的发展历史，<code>io_uring</code> 的原理和功能， 并给出了一些<strong>程序示例</strong>和<strong>性能压测</strong>结果。</p>
+<h1 id="Linux-I-O-系统调用演进"><a href="#Linux-I-O-系统调用演进" class="headerlink" title="Linux I&#x2F;O 系统调用演进"></a>Linux I&#x2F;O 系统调用演进</h1><h2 id="基于-fd-的阻塞式-I-O：read-write"><a href="#基于-fd-的阻塞式-I-O：read-write" class="headerlink" title="基于 fd 的阻塞式 I&#x2F;O：read()/write()"></a>基于 fd 的阻塞式 I&#x2F;O：<code>read()/write()</code></h2><p>作为大家最熟悉的读写方式，Linux 内核提供了<strong>基于文件描述符的系统调用</strong>， 这些描述符指向的可能是<strong>存储文件</strong>（storage file），也可能是 <strong>network sockets</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">read</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span> *buf, <span class="type">size_t</span> count)</span>;</span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">write</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="type">void</span> *buf, <span class="type">size_t</span> count)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>二者称为<strong>阻塞式系统调用</strong>（blocking system calls），因为程序调用 这些函数时会进入 sleep 状态，然后被调度出去（让出处理器），直到 I&#x2F;O 操作完成：</p>
+<ul>
+<li>如果数据在文件中，并且文件内容<strong>已经缓存在 page cache 中</strong>，调用会<strong>立即返回</strong>；</li>
+<li>如果数据在另一台机器上，就需要通过网络（例如 TCP）获取，会阻塞一段时间；</li>
+<li>如果数据在硬盘上，也会阻塞一段时间。</li>
+</ul>
+<p>但很容易想到，随着存储<strong>设备越来越快，程序越来越复杂</strong>， 阻塞式（blocking）已经这种最简单的方式已经不适用了。</p>
+<h2 id="非阻塞式-I-O：select-poll-epoll"><a href="#非阻塞式-I-O：select-poll-epoll" class="headerlink" title="非阻塞式 I&#x2F;O：select()/poll()/epoll()"></a>非阻塞式 I&#x2F;O：<code>select()/poll()/epoll()</code></h2><p>阻塞式之后，出现了一些新的、非阻塞的系统调用，例如 <code>select()</code>、<code>poll()</code> 以及更新的 <code>epoll()</code>。 应用程序在调用这些函数读写时不会阻塞，而是<strong>立即返回</strong>，返回的是一个 <strong>已经 ready 的文件描述符列表</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260127125426494.png" alt="epoll" loading="lazy"></p>
+<div class="tabs"><div class="nav-tabs"><button type="button" class="tab active">select</button><button type="button" class="tab">poll</button><button type="button" class="tab">epoll</button></div><div class="tab-contents"><div class="tab-item-content active"><p><strong>select()</strong></p>
+<ul>
+<li><strong>跨平台</strong>（Linux、Windows、macOS 都支持）</li>
+<li><strong>最大 fd 数受限</strong>：通常为 <code>FD_SETSIZE = 1024</code></li>
+<li><strong>使用位图（fd_set）</strong> 表示要监听的 fd 集合</li>
+<li>每次调用需：<ul>
+<li>将用户空间的 fd_set 拷贝到内核；</li>
+<li>内核遍历所有 fd 检查状态；</li>
+<li>返回时再将整个 fd_set 拷回用户空间；</li>
+<li>用户需遍历全部 fd 判断哪些就绪。</li>
+</ul>
+</li>
+<li><strong>仅支持水平触发（LT）</strong></li>
+<li><strong>缺点</strong>：<ul>
+<li>fd 数量上限低；</li>
+<li>每次调用都要全量拷贝 + 全量轮询 → O(n) 时间复杂度；</li>
+<li>编程繁琐（需维护三个 fd_set：读、写、异常）</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">select</span><span class="params">(<span class="type">int</span> nfds, fd_set *readfds, fd_set *writefds,</span></span><br><span class="line"><span class="params">           fd_set *exceptfds, <span class="keyword">struct</span> timeval *timeout)</span>;</span><br></pre></td></tr></table></figure></div><div class="tab-item-content"><p><strong>poll()</strong></p>
+<ul>
+<li><strong>Linux&#x2F;Unix 支持</strong>，<strong>Windows 不支持</strong></li>
+<li>使用 <code>struct pollfd</code> 数组替代位图，突破 1024 限制（仅受系统 ulimit 限制）</li>
+<li>仍需每次将整个数组传入内核，内核遍历检查，返回后用户仍需遍历找就绪 fd</li>
+<li><strong>仍为 O(n) 轮询模型</strong></li>
+<li><strong>仅支持 LT 模式</strong></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pollfd</span> &#123;</span></span><br><span class="line">    <span class="type">int</span>   fd;       <span class="comment">// 文件描述符</span></span><br><span class="line">    <span class="type">short</span> events;   <span class="comment">// 关注的事件（POLLIN, POLLOUT）</span></span><br><span class="line">    <span class="type">short</span> revents;  <span class="comment">// 实际发生的事件（由内核填写）</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">poll</span><span class="params">(<span class="keyword">struct</span> pollfd *fds, <span class="type">nfds_t</span> nfds, <span class="type">int</span> timeout)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>✅ 优点：无 1024 限制<br>❌ 缺点：性能仍差于 epoll（大规模连接下）</p></div><div class="tab-item-content"><p><strong>epoll()</strong></p>
+<ul>
+<li><p><strong>Linux 特有</strong>，不跨平台</p>
+</li>
+<li><p><strong>基于事件驱动 + 内核回调机制</strong></p>
+</li>
+<li><p><strong>三个核心函数</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">epoll_create</span><span class="params">(<span class="type">int</span> size)</span>;          <span class="comment">// 创建 epoll 实例（现多用 epoll_create1）</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">epoll_ctl</span><span class="params">(<span class="type">int</span> epfd, <span class="type">int</span> op, <span class="type">int</span> fd, <span class="keyword">struct</span> epoll_event *event)</span>; <span class="comment">// 注册/修改/删除 fd</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">epoll_wait</span><span class="params">(<span class="type">int</span> epfd, <span class="keyword">struct</span> epoll_event *events, <span class="type">int</span> maxevents, <span class="type">int</span> timeout)</span>; <span class="comment">// 等待事件</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>内核数据结构</strong>：</p>
+<ul>
+<li><strong>红黑树</strong>：存储所有注册的 fd（增删改 O(log n)）</li>
+<li><strong>就绪双向链表</strong>：当 fd 就绪，内核自动将其加入链表</li>
+</ul>
+</li>
+<li><p><code>epoll_wait()</code> <strong>直接返回就绪事件列表</strong>，无需遍历全部 fd → <strong>O(1) 获取就绪事件</strong></p>
+</li>
+<li><p><strong>支持两种触发模式</strong>：</p>
+<ul>
+<li><strong>LT（Level Triggered）</strong>：默认模式，只要缓冲区有数据就持续通知（类似 poll）</li>
+<li><strong>ET（Edge Triggered）</strong>：仅在状态变化时通知一次（如从不可读→可读），需配合非阻塞 I&#x2F;O，一次性读完数据</li>
+</ul>
+</li>
+</ul>
+<p>✅ 优点：</p>
+<ul>
+<li>高效处理 <strong>万级甚至百万级并发连接</strong>（如 Nginx、Redis、Kafka）</li>
+<li>无 fd 数量硬限制</li>
+<li>内存拷贝少（只在注册时传一次，事件发生时只返回就绪项）</li>
+</ul>
+<p>❌ 缺点：</p>
+<ul>
+<li>仅限 Linux</li>
+<li>ET 模式编程复杂（易漏读数据）</li>
+</ul>
+<blockquote>
+<p><code>epoll</code> 监控一个普通文件 fd <strong>没有意义</strong>——它会不断触发事件，但无法实现“异步通知数据到来”的目的。</p>
+</blockquote></div></div><div class="tab-to-top"><button type="button" aria-label="scroll to top"><i class="fas fa-arrow-up"></i></button></div></div>
+
+
+
+<div class="tip error"><p>但这种方式存在一个致命缺点：<strong>只支持 network sockets 和 pipes</strong> —— epoll() 甚至连 storage files 都不支持。 </p>
+</div>
+
+<h2 id="线程池方式"><a href="#线程池方式" class="headerlink" title="线程池方式"></a>线程池方式</h2><p>对于 storage I&#x2F;O，经典的解决思路是 <strong>thread pool</strong>： 主线程将 I&#x2F;O 分发给 worker 线程，后者代替主线程进行阻塞式读写，主线程不会阻塞。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260127125517755.png" alt="thread pool" loading="lazy"></p>
+<p>这种方式的问题是<strong>线程上下文切换开销可能非常大</strong>，后面性能压测会看到。</p>
+<h2 id="Direct-I-O（数据库软件）：绕过-page-cache"><a href="#Direct-I-O（数据库软件）：绕过-page-cache" class="headerlink" title="Direct I&#x2F;O（数据库软件）：绕过 page cache"></a>Direct I&#x2F;O（数据库软件）：绕过 page cache</h2><p>随后出现了更加灵活和强大的方式：<strong>数据库软件</strong>（database software） 有时 并不想使用操作系统的 page cache， 而是希望打开一个文件后，<strong>直接从设备读写这个文件</strong>（direct access to the device）。 这种方式称为<strong>直接访问</strong>（direct access）或<strong>直接 I&#x2F;O</strong>（direct I&#x2F;O），</p>
+<ul>
+<li>需要指定 <strong><code>O_DIRECT</code></strong> flag；</li>
+<li>需要<strong>应用自己管理自己的缓存</strong> —— 这正是数据库软件所希望的；</li>
+<li>是 <strong>zero-copy I&#x2F;O</strong>，因为应用的缓冲数据直接发送到设备，或者直接从设备读取。</li>
+</ul>
+<h2 id="异步-IO（AIO）"><a href="#异步-IO（AIO）" class="headerlink" title="异步 IO（AIO）"></a>异步 IO（AIO）</h2><p>前面提到，随着存储设备越来越快，主线程和 worker 线性之间的上下文切换开销占比越来越高。 现在市场上的一些设备，例如 Intel Optane，<strong>延迟已经低到和上下文切换一个量级</strong>（微秒 <code>us</code>）。换个方式描述， 更能让我们感受到这种开销： <strong>上下文每切换一次，我们就少一次 dispatch I&#x2F;O 的机会</strong>。</p>
+<blockquote>
+<p>dispatch I&#x2F;O 指<strong>提交（发起）一个 I&#x2F;O 请求</strong>给存储设备的动作。</p>
+<p>在高性能系统中（如数据库、KV 存储），目标是<strong>尽可能多地并发 dispatch I&#x2F;O</strong>，让设备满负荷工作（因为设备支持高队列深度，比如 NVMe 支持数千个并发命令）。</p>
+</blockquote>
+<p>因此，Linux <strong>2.6</strong> 内核引入了异步 I&#x2F;O（asynchronous I&#x2F;O）接口， 方便起见，本文简写为 <code>linux-aio</code>。AIO <strong>原理</strong>是很简单的：</p>
+<ul>
+<li>用户通过 <code>io_submit()</code> 提交 I&#x2F;O 请求，</li>
+<li>过一会再调用 <code>io_getevents()</code> 来检查哪些 events 已经 ready 了。</li>
+<li>使程序员<strong>能编写完全异步的代码</strong>。</li>
+</ul>
+<p>近期，Linux AIO 甚至支持了 <code>epoll()</code>：也就是说 不仅能提交 storage I&#x2F;O 请求，还能提交网络 I&#x2F;O 请求。照这样发展下去，linux-aio <strong>似乎能成为一个王者</strong>。但由于它糟糕的演进之路，这个愿望几乎不可能实现了。 我们从 <strong>Linus 标志性的激烈言辞中就能略窥一斑</strong>：</p>
+<blockquote>
+<p>Reply to: <a target="_blank" rel="noopener" href="https://lwn.net/Articles/671657/">to support opening files asynchronously</a></p>
+<p><em>So I think this is ridiculously ugly.</em></p>
+<p><em>AIO is a horrible ad-hoc design, with the main excuse being “other, less gifted people, made that design, and we are implementing it for compatibility because database people — who seldom have any shred of taste — actually use it”.</em></p>
+<p>— Linus Torvalds (on lwn.net)</p>
+</blockquote>
+<p>Linux AIO 确实问题缠身:</p>
+<ol>
+<li><strong>只支持 <code>O_DIRECT</code> 文件</strong>，因此<strong>对常规的非数据库应用</strong> （normal, non-database applications）<strong>几乎是无用的</strong>；</li>
+<li>接口在<strong>设计时并未考虑扩展性</strong>。虽然可以扩展 —— 确实这么做了 —— 但每加一个东西都相当复杂；</li>
+<li>虽然从<strong>技术上说接口是非阻塞的</strong>，但实际上有 很多可能的原因都会导致它阻塞，而且引发的方式难以预料。</li>
+</ol>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>以上可以清晰地看出 Linux I&#x2F;O 的演进：</p>
+<ul>
+<li>最开始是同步（阻塞式）系统调用；</li>
+<li>然后随着<strong>实际需求和具体场景</strong>，不断加入新的异步接口，还要保持与老接口的兼容和协同工作。</li>
+</ul>
+<p>另外也看到，在非阻塞式读写的问题上<strong>并没有形成统一方案</strong>：</p>
+<ol>
+<li>Network socket 领域：添加一个异步接口，然后去轮询（poll）请求是否完成（readiness）；</li>
+<li>Storage I&#x2F;O 领域：<strong>只针对某一细分领域</strong>（数据库）在某一特定时期的需求，添加了一个定制版的异步接口。</li>
+</ol>
+<p><strong>这就是 Linux I&#x2F;O 的演进历史</strong> —— 只着眼当前，出现一个问题就引入一种设计，而并没有多少前瞻性 —— 直到 <code>io_uring</code> 的出现。</p>
+<h1 id="io-uring"><a href="#io-uring" class="headerlink" title="io_uring"></a>io_uring</h1><p>io_uring 来自资深内核开发者 Jens Axboe 的想法，他在 Linux I&#x2F;O stack 领域颇有研究。 从最早的 <code>patch aio: support for IO polling</code> 可以看出，这项工作始于一个很简单的观察：随着设备越来越快， <strong>中断驱动（interrupt-driven）模式效率已经低于轮询模式</strong> （<code>polling for completions</code>） —— 这也是高性能领域最常见的主题之一。</p>
+<ul>
+<li><code>io_uring</code> 的<strong>基本逻辑与 linux-aio 是类似的</strong>：提供两个接口，一个将 I&#x2F;O 请求提交到内核，一个从内核接收完成事件。</li>
+<li>但随着开发深入，它逐渐变成了一个完全不同的接口：设计者开始从源头思考 <strong>如何支持完全异步的操作</strong>。</li>
+</ul>
+<h2 id="与-Linux-AIO-的不同"><a href="#与-Linux-AIO-的不同" class="headerlink" title="与 Linux AIO 的不同"></a>与 Linux AIO 的不同</h2><p><code>io_uring</code> 与 <code>linux-aio</code> 有着本质的不同：</p>
+<ol>
+<li><p><strong>在设计上是真正异步的</strong>（truly asynchronous）。只要 设置了合适的 flag，它在<strong>系统调用上下文中就只是将请求放入队列</strong>， 不会做其他任何额外的事情，<strong>保证了应用永远不会阻塞</strong>。</p>
+</li>
+<li><p><strong>支持任何类型的 I&#x2F;O</strong>：cached files、direct-access files 甚至 blocking sockets。</p>
+<p>由于设计上就是异步的（async-by-design nature），因此<strong>无需 poll+read&#x2F;write 来处理 sockets</strong>。 只需提交一个阻塞式读（blocking read），请求完成之后，就会出现在 completion ring。</p>
+</li>
+<li><p><strong>灵活、可扩展</strong>：基于 <code>io_uring</code> 甚至能重写（re-implement）Linux 的每个系统调用。</p>
+</li>
+</ol>
+<h2 id="原理及核心数据结构：SQ-CQ-SQE-CQE"><a href="#原理及核心数据结构：SQ-CQ-SQE-CQE" class="headerlink" title="原理及核心数据结构：SQ&#x2F;CQ&#x2F;SQE&#x2F;CQE"></a>原理及核心数据结构：SQ&#x2F;CQ&#x2F;SQE&#x2F;CQE</h2><p>每个 io_uring 实例都有<strong>两个环形队列</strong>（ring），在内核和应用程序之间共享：</p>
+<ul>
+<li><strong>提交队列</strong>：submission queue (SQ)</li>
+<li><strong>完成队列</strong>：completion queue (CQ)</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260127125604724.png" alt="io_uring" loading="lazy"></p>
+<p>这两个队列：</p>
+<ul>
+<li>都是<strong>单生产者、单消费者</strong>，size 是 2 的幂次；</li>
+<li>提供<strong>无锁接口</strong>（lock-less access interface），内部使用 <strong>内存屏障</strong>做同步（coordinated with memory barriers）。</li>
+</ul>
+<p><strong>使用方式</strong>：</p>
+<ul>
+<li>请求<ul>
+<li>应用创建 SQ entries (SQE)，更新 SQ tail；</li>
+<li>内核消费 SQE，更新 SQ head。</li>
+</ul>
+</li>
+<li>完成<ul>
+<li>内核为完成的一个或多个请求创建 CQ entries (CQE)，更新 CQ tail；</li>
+<li>应用消费 CQE，更新 CQ head。</li>
+<li>完成事件（completion events）可能以任意顺序到达，到总是与特定的 SQE 相关联的。</li>
+<li>消费 CQE 过程无需切换到内核态。</li>
+</ul>
+</li>
+</ul>
+<h2 id="带来的好处"><a href="#带来的好处" class="headerlink" title="带来的好处"></a>带来的好处</h2><p><code>io_uring</code> 这种请求方式还有一个好处是：原来需要多次系统调用（读或写），现在变成批处理一次提交。<code>io_uring</code> <strong>将这种批处理能力带给了</strong> storage I&#x2F;O 系统调用之外的 <strong>其他一些系统调用</strong>，包括：</p>
+<ul>
+<li><code>read</code></li>
+<li><code>write</code></li>
+<li><code>send</code></li>
+<li><code>recv</code></li>
+<li><code>accept</code></li>
+<li><code>openat</code></li>
+<li><code>stat</code></li>
+<li>专用的一些系统调用，例如 <code>fallocate</code></li>
+</ul>
+<p>此外，<code>io_uring</code> 使异步 I&#x2F;O 的使用场景也不再仅限于数据库应用，<strong>普通的 非数据库应用也能用</strong>。这一点值得重复一遍：</p>
+<blockquote>
+<p>虽然 <code>io_uring</code> 与 <code>aio</code> 有一些相似之处，但它的<strong>扩展性和架构是革命性的</strong>： 它<strong>将异步操作的强大能力带给了所有应用</strong>（及其开发者），而 <strong>不再仅限于是数据库应用这一细分领域</strong>。</p>
+</blockquote>
+<p>Avi Kivity 在 the Core C++ 2019 event 上 <a target="_blank" rel="noopener" href="https://www.scylladb.com/2020/03/26/avi-kivity-at-core-c-2019">有一次关于 async 的分享</a>。 核心点包括：<strong>从延迟上来说</strong>，</p>
+<ol>
+<li>现代多核、多 CPU 设备，其内部本身就是一个基础网络；</li>
+<li><strong>CPU 之间</strong>是另一个网络；</li>
+<li><strong>CPU 和磁盘 I&#x2F;O 之间</strong>又是一个网络。</li>
+</ol>
+<p>因此网络编程采用异步是明智的，而现在开发自己的应用也应该考虑异步。 这<strong>从根本上改变了 Linux 应用的设计方式</strong>：</p>
+<ul>
+<li>之前都是一段顺序代码流，需要系统调用时才执行系统调用，</li>
+<li>现在需要思考一个文件是否 ready，因而自然地引入 event-loop，不断通过共享 buffer 提交请求和接收结果。</li>
+</ul>
+<h2 id="三种工作模式"><a href="#三种工作模式" class="headerlink" title="三种工作模式"></a>三种工作模式</h2><p>io_uring 实例可工作在三种模式：</p>
+<ol>
+<li><p><strong>中断驱动模式</strong>（interrupt driven）</p>
+<p><strong>默认模式</strong>。可通过 io_uring_enter() 提交 I&#x2F;O 请求，然后直接检查 CQ 状态判断是否完成。</p>
+</li>
+<li><p><strong>轮询模式</strong>（polled）</p>
+<p>Busy-waiting for an I&#x2F;O completion，而不是通过异步 IRQ（Interrupt Request）接收通知。</p>
+<p>这种模式需要文件系统（如果有）和块设备（block device）支持轮询功能。 相比中断驱动方式，这种方式延迟更低（连系统调用都省了）， 但可能会消耗更多 CPU 资源。</p>
+<p>目前，只有指定了 <code>O_DIRECT</code> flag 打开的文件描述符，才能使用这种模式。当一个读 或写请求提交给轮询上下文（polled context）之后，应用（application）必须调用 <code>io_uring_enter()</code> 来轮询 CQ 队列，判断请求是否已经完成。</p>
+<p>对一个 io_uring 实例来说，<strong>不支持混合使用轮询和非轮询模式</strong>。</p>
+</li>
+<li><p><strong>内核轮询模式</strong>（kernel polled）</p>
+<p>这种模式中，会 <strong>创建一个内核线程</strong>（kernel thread）来执行 SQ 的轮询工作。</p>
+<p>使用这种模式的 io_uring 实例， <strong>应用无需切到到内核态</strong> 就能触发（issue）I&#x2F;O 操作。 通过 SQ 来提交 SQE，以及监控 CQ 的完成状态，应用无需任何系统调用，就能提交和收割 I&#x2F;O（submit and reap I&#x2F;Os）。</p>
+<p>如果内核线程的空闲时间超过了用户的配置值，它会通知应用，然后进入 idle 状态。 这种情况下，应用必须调用 <code>io_uring_enter()</code> 来唤醒内核线程。如果 I&#x2F;O 一直很繁忙，内核线性是不会 sleep 的。</p>
+</li>
+</ol>
+<h2 id="io-uring-系统调用-API"><a href="#io-uring-系统调用-API" class="headerlink" title="io_uring 系统调用 API"></a>io_uring 系统调用 API</h2><p>有三个：</p>
+<ul>
+<li><code>io_uring_setup(2)</code></li>
+<li><code>io_uring_register(2)</code></li>
+<li><code>io_uring_enter(2)</code></li>
+</ul>
+<p>下面展开介绍。完整文档见 <a target="_blank" rel="noopener" href="https://github.com/axboe/liburing/tree/master/man">manpage</a>。</p>
+<h3 id="io-uring-setup"><a href="#io-uring-setup" class="headerlink" title="io_uring_setup()"></a>io_uring_setup()</h3><p>执行异步 I&#x2F;O 需要先<strong>设置上下文</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">io_uring_setup</span><span class="params">(u32 entries, <span class="keyword">struct</span> io_uring_params *p)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这个系统调用</p>
+<ul>
+<li><strong>创建一个 SQ 和一个 CQ</strong>，</li>
+<li>queue size 至少 <code>entries</code> 个元素，</li>
+<li>返回一个文件描述符，随后用于在这个 io_uring 实例上执行操作。</li>
+</ul>
+<p>SQ 和 CQ 在应用和内核之间共享，避免了在初始化和完成 I&#x2F;O 时（initiating and completing I&#x2F;O）拷贝数据。</p>
+<p>对于参数 p：</p>
+<ul>
+<li>对于应用来讲是用来配置 io_uring，</li>
+<li>内核返回的 SQ&#x2F;CQ 配置信息也通过它带回来。</li>
+</ul>
+<p><code>io_uring_setup()</code> 成功时返回一个文件描述符（fd）。应用随后可以将这个 fd 传给 mmap(2) 系统调用，来 map the submission and completion queues 或者传给 <code>io_uring_register()</code> 或者<code>io_uring_enter()</code>system calls.</p>
+<h3 id="io-uring-register"><a href="#io-uring-register" class="headerlink" title="io_uring_register()"></a>io_uring_register()</h3><p>注册用于异步 I&#x2F;O 的<strong>文件或用户缓冲区</strong>（files or user buffers）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">io_uring_register</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> fd, <span class="type">unsigned</span> <span class="type">int</span> opcode, <span class="type">void</span> *arg, <span class="type">unsigned</span> <span class="type">int</span> nr_args)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>注册文件或用户缓冲区，使内核能<strong>长时间持有对该文件在内核内部的数据结构引用</strong>（internal kernel data structures associated with the files）， 或创建<strong>应用内存的长期映射</strong>（long term mappings of application memory associated with the buffers）， 这个操作只会在注册时执行一次，而不是每个 I&#x2F;O 请求都会处理，因此减少了 per-I&#x2F;O overhead。</p>
+<h4 id="注册的缓冲区（buffer）性质"><a href="#注册的缓冲区（buffer）性质" class="headerlink" title="注册的缓冲区（buffer）性质"></a>注册的缓冲区（buffer）性质</h4><ul>
+<li>Registered buffers 将会<strong>被锁定在内存中</strong>（be locked in memory），并<strong>计入用户的 RLIMIT_MEMLOCK</strong> 资源限制。</li>
+<li>此外，每个 buffer 有 <strong>1GB 的大小限制</strong>。</li>
+<li>当前，buffers 必须是<strong>匿名、非文件后端的内存</strong>（anonymous, non-file-backed memory），例如 malloc(3) or mmap(2) with the MAP_ANONYMOUS flag set 返回的内存。</li>
+<li>Huge pages 也是支持的。整个 huge page 都会被 pin 到内核，即使只用到了其中一部分。</li>
+<li>已经注册的 buffer 无法调整大小，想调整只能先 unregister，再重新 register 一个新的。</li>
+</ul>
+<h4 id="通过-eventfd-订阅-completion-事件"><a href="#通过-eventfd-订阅-completion-事件" class="headerlink" title="通过 eventfd() 订阅 completion 事件"></a>通过 <code>eventfd()</code> 订阅 completion 事件</h4><p>可以用 <code>eventfd(2)</code> 订阅 io_uring 实例的 completion events。 将 eventfd 描述符通过这个系统调用注册就行了。</p>
+<blockquote>
+<p>The credentials of the running application can be registered with io_uring which returns an id associated with those credentials. Applications wishing to share a ring between separate users&#x2F;processes can pass in this credential id in the SQE personality field. If set, that particular SQE will be issued with these credentials.</p>
+</blockquote>
+<h3 id="io-uring-enter"><a href="#io-uring-enter" class="headerlink" title="io_uring_enter()"></a>io_uring_enter()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">io_uring_enter</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> fd, <span class="type">unsigned</span> <span class="type">int</span> to_submit, <span class="type">unsigned</span> <span class="type">int</span> min_complete, <span class="type">unsigned</span> <span class="type">int</span> flags, <span class="type">sigset_t</span> *sig)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这个系统调用用于初始化和完成（initiate and complete）I&#x2F;O，使用共享的 SQ 和 CQ。 单次调用同时执行：</p>
+<ol>
+<li>提交新的 I&#x2F;O 请求</li>
+<li>等待 I&#x2F;O 完成</li>
+</ol>
+<p>参数：</p>
+<ol>
+<li><code>fd</code> 是 <code>io_uring_setup()</code> 返回的文件描述符；</li>
+<li><code>to_submit</code> 指定了 SQ 中提交的 I&#x2F;O 数量；</li>
+<li>依据不同模式：<ul>
+<li>默认模式，如果指定了 <code>min_complete</code>，会等待这个数量的 I&#x2F;O 事件完成再返回；</li>
+<li>如果 io_uring 是 polling 模式，这个参数表示：<ul>
+<li>0：要求内核返回当前以及完成的所有 events，无阻塞；</li>
+<li>非零：如果有事件完成，内核仍然立即返回；如果没有完成事件，内核会 poll，等待指定的次数完成，或者这个进程的时间片用完。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>注意：对于 interrupt driven I&#x2F;O，<strong>应用无需进入内核就能检查 CQ 的 event completions</strong>。</p>
+<p><code>io_uring_enter()</code> 支持很多操作，包括：</p>
+<ul>
+<li>Open, close, and stat files</li>
+<li>Read and write into multiple buffers or pre-mapped buffers</li>
+<li>Socket I&#x2F;O operations</li>
+<li>Synchronize file state</li>
+<li>Asynchronously monitor a set of file descriptors</li>
+<li>Create a timeout linked to a specific operation in the ring</li>
+<li>Attempt to cancel an operation that is currently in flight</li>
+<li>Create I&#x2F;O chains</li>
+<li>Ordered execution within a chain</li>
+<li>Parallel execution of multiple chains</li>
+</ul>
+<p>当这个系统调用返回时，表示一定数量的 SEQ 已经被消费和提交了，此时可以安全的重用队列中的 SEQ。 此时 IO 提交有可能还停留在异步上下文中，即实际上 SQE 可能还没有被提交 —— 不过 用户不用关心这些细节 —— 当随后内核需要使用某个特定的 SQE 时，它已经复制了一份。</p>
+<h2 id="高级特性"><a href="#高级特性" class="headerlink" title="高级特性"></a>高级特性</h2><p><code>io_uring</code> 提供了一些用于特殊场景的高级特性：</p>
+<ol>
+<li><strong>File registration</strong>（文件注册）：每次发起一个指定文件描述的操 作，内核都需要<strong>花费一些时钟周期</strong>（cycles）<strong>将文件描述符映射到内部表示</strong>。 对于那些<strong>针对同一文件进行重复操作</strong>的场景，<code>io_uring</code> 支持<strong>提前注册这些文件</strong>，后面直接查找就行了。</li>
+<li><strong>Buffer registration</strong>（缓冲区注册）：与 file registration 类 似，direct I&#x2F;O 场景中，内核需要 map&#x2F;unmap memory areas。<code>io_uring</code> 支持提前 注册这些缓冲区（buffers）。</li>
+<li><strong>Poll ring</strong>（轮询环形缓冲区）：对于非常快是设备，处理中断的开 销是比较大的。<code>io_uring</code> 允许用户关闭中断，使用轮询模式。前面“三种工作模式”小节 也介绍到了这一点。</li>
+<li><strong>Linked operations</strong>（链接操作）：允许用户发送串联的请求。这两 个请求同时提交，但后面的会等前面的处理完才开始执行。</li>
+</ol>
+<h2 id="用户空间库-liburing"><a href="#用户空间库-liburing" class="headerlink" title="用户空间库 liburing"></a>用户空间库 <code>liburing</code></h2><p><a target="_blank" rel="noopener" href="https://github.com/axboe/liburing/"><code>liburing</code></a> 提供了一个简单的高层 API， 可用于一些基本场景，应用程序避免了直接使用更底层的系统调用。 此外，这个 API 还避免了一些重复操作的代码，如设置 io_uring 实例。</p>
+<p>举个例子，在 <code>io_uring_setup()</code> 的 manpage 描述中，调用这个系统调用获得一个 ring 文 件描述符之后，应用必须调用 <code>mmap()</code> 来这样的逻辑需要一段略长的代码，而用 <code>liburing</code> 的话，下面的函数已经将上述流程封装好了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">io_uring_queue_init</span><span class="params">(<span class="type">unsigned</span> entries, <span class="keyword">struct</span> io_uring *ring, <span class="type">unsigned</span> flags)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>下一节来看两个例子基于 liburing 的例子。</p>
+<h1 id="基于-liburing-的示例应用"><a href="#基于-liburing-的示例应用" class="headerlink" title="基于 liburing 的示例应用"></a>基于 liburing 的示例应用</h1><p>编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/axboe/liburing.git</span><br><span class="line">$ git checkout -b liburing-2.0 tags/liburing-2.0</span><br><span class="line"></span><br><span class="line">$ <span class="built_in">cd</span> liburing</span><br><span class="line">$ <span class="built_in">ls</span> examples/</span><br><span class="line">io_uring-cp  io_uring-cp.c  io_uring-test  io_uring-test.c  link-cp  link-cp.c  Makefile  ucontext-cp  ucontext-cp.c</span><br><span class="line"></span><br><span class="line">$ make -j4</span><br><span class="line"></span><br><span class="line">$ ./examples/io_uring-test &lt;file&gt;</span><br><span class="line">Submitted=4, completed=4, bytes=16384</span><br><span class="line"></span><br><span class="line">$ ./examples/link-cp &lt;in-file&gt; &lt;out-file&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="io-uring-test"><a href="#io-uring-test" class="headerlink" title="io_uring-test"></a>io_uring-test</h2><p>这个程序使用 4 个 SQE，从输入文件中<strong>读取最多 16KB 数据</strong>。</p>
+<h3 id="源码及注释"><a href="#源码及注释" class="headerlink" title="源码及注释"></a>源码及注释</h3><p>为方便看清主要逻辑，忽略了一些错误处理代码，完整代码见 <a target="_blank" rel="noopener" href="https://github.com/axboe/liburing/blob/liburing-2.0/examples/io_uring-test.c">io_uring-test.c</a>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SPDX-License-Identifier: MIT */</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Simple app that demonstrates how to setup an io_uring interface,</span></span><br><span class="line"><span class="comment"> * submit and complete IO against it, and then tear it down.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * gcc -Wall -O2 -D_GNU_SOURCE -o io_uring-test io_uring-test.c -luring</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;liburing.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> QD    4 <span class="comment">// io_uring 队列长度</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="type">int</span> i, fd, pending, done;</span><br><span class="line">    <span class="type">void</span> *buf;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. 初始化一个 io_uring 实例</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_uring</span> <span class="title">ring</span>;</span></span><br><span class="line">    ret = io_uring_queue_init(QD,    <span class="comment">// 队列长度</span></span><br><span class="line">                              &amp;ring, <span class="comment">// io_uring 实例</span></span><br><span class="line">                              <span class="number">0</span>);    <span class="comment">// flags，0 表示默认配置，例如使用中断驱动模式</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 打开输入文件，注意这里指定了 O_DIRECT flag，内核轮询模式需要这个 flag，见前面介绍</span></span><br><span class="line">    fd = open(argv[<span class="number">1</span>], O_RDONLY | O_DIRECT);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">sb</span>;</span></span><br><span class="line">    fstat(fd, &amp;sb); <span class="comment">// 获取文件信息，例如文件长度，后面会用到</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 初始化 4 个读缓冲区</span></span><br><span class="line">    <span class="type">ssize_t</span> fsize = <span class="number">0</span>;             <span class="comment">// 程序的最大读取长度</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">iovec</span> *<span class="title">iovecs</span> =</span> <span class="built_in">calloc</span>(QD, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> iovec));</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; QD; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (posix_memalign(&amp;buf, <span class="number">4096</span>, <span class="number">4096</span>))</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        iovecs[i].iov_base = buf;  <span class="comment">// 起始地址</span></span><br><span class="line">        iovecs[i].iov_len = <span class="number">4096</span>;  <span class="comment">// 缓冲区大小</span></span><br><span class="line">        fsize += <span class="number">4096</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4. 依次准备 4 个 SQE 读请求，指定将随后读入的数据写入 iovecs </span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_uring_sqe</span> *<span class="title">sqe</span>;</span></span><br><span class="line">    offset = <span class="number">0</span>;</span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        sqe = io_uring_get_sqe(&amp;ring);  <span class="comment">// 获取可用 SQE</span></span><br><span class="line">        io_uring_prep_readv(sqe,        <span class="comment">// 用这个 SQE 准备一个待提交的 read 操作</span></span><br><span class="line">                            fd,         <span class="comment">// 从 fd 打开的文件中读取数据</span></span><br><span class="line">                            &amp;iovecs[i], <span class="comment">// iovec 地址，读到的数据写入 iovec 缓冲区</span></span><br><span class="line">                            <span class="number">1</span>,          <span class="comment">// iovec 数量</span></span><br><span class="line">                            offset);    <span class="comment">// 读取操作的起始地址偏移量</span></span><br><span class="line">        offset += iovecs[i].iov_len;    <span class="comment">// 更新偏移量，下次使用</span></span><br><span class="line">        i++;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (offset &gt; sb.st_size)        <span class="comment">// 如果超出了文件大小，停止准备后面的 SQE</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5. 提交 SQE 读请求</span></span><br><span class="line">    ret = io_uring_submit(&amp;ring);       <span class="comment">// 4 个 SQE 一次提交，返回提交成功的 SQE 数量</span></span><br><span class="line">    <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;io_uring_submit: %s\n&quot;</span>, strerror(-ret));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ret != i) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;io_uring_submit submitted less %d\n&quot;</span>, ret);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 6. 等待读请求完成（CQE）</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_uring_cqe</span> *<span class="title">cqe</span>;</span></span><br><span class="line">    done = <span class="number">0</span>;</span><br><span class="line">    pending = ret;</span><br><span class="line">    fsize = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; pending; i++) &#123;</span><br><span class="line">        io_uring_wait_cqe(&amp;ring, &amp;cqe);  <span class="comment">// 等待系统返回一个读完成事件</span></span><br><span class="line">        done++;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (cqe-&gt;res != <span class="number">4096</span> &amp;&amp; cqe-&gt;res + fsize != sb.st_size) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;ret=%d, wanted 4096\n&quot;</span>, cqe-&gt;res);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        fsize += cqe-&gt;res;</span><br><span class="line">        io_uring_cqe_seen(&amp;ring, cqe);   <span class="comment">// 更新 io_uring 实例的完成队列</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 7. 打印统计信息</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Submitted=%d, completed=%d, bytes=%lu\n&quot;</span>, pending, done, (<span class="type">unsigned</span> <span class="type">long</span>) fsize);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 8. 清理工作</span></span><br><span class="line">    close(fd);</span><br><span class="line">    io_uring_queue_exit(&amp;ring);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他说明"><a href="#其他说明" class="headerlink" title="其他说明"></a>其他说明</h3><p>代码中已经添加了注释，这里再解释几点：</p>
+<ul>
+<li>每个 SQE 都执行一个 allocated buffer，后者是用 <code>iovec</code> 结构描述的；</li>
+<li>第 3 &amp; 4 步：初始化所有 SQE，用于接下来的 <code>IORING_OP_READV</code> 操作，后者 <strong>提供了 <code>readv(2)</code> 系统调用的异步接口</strong>。</li>
+<li>操作完成之后，这个 SQE iovec buffer 中存放的是相关 <code>readv</code> 操作的结果；</li>
+<li>接下来调用 <code>io_uring_wait_cqe()</code> 来 reap CQE，并通过 <code>cqe-&gt;res</code> 字段验证读取的字节数；</li>
+<li><code>io_uring_cqe_seen()</code> 通知内核这个 CQE 已经被消费了。</li>
+</ul>
+<h2 id="link-cp"><a href="#link-cp" class="headerlink" title="link-cp"></a>link-cp</h2><p>link-cp 使用 io_uring 高级特性 SQE chaining 特性来复制文件。</p>
+<h3 id="I-O-chain"><a href="#I-O-chain" class="headerlink" title="I&#x2F;O chain"></a>I&#x2F;O chain</h3><p>io_uring 支持创建 I&#x2F;O chain。一个 chain 内的 I&#x2F;O 是顺序执行的，多个 I&#x2F;O chain 可以并行执行。</p>
+<p><code>io_uring_enter()</code> manpage 中对 <code>IOSQE_IO_LINK</code> 有 <a target="_blank" rel="noopener" href="https://www.mankier.com/2/io_uring_enter#Description-IOSQE_IO_LINK">详细解释</a>：</p>
+<blockquote>
+<p>When this flag is specified, it forms a link with the next SQE in the submission ring. That next SQE will not be started before this one completes. This, in effect, forms a chain of SQEs, which can be arbitrarily long. The tail of the chain is denoted by the first SQE that does not have this flag set. This flag has no effect on previous SQE submissions, nor does it impact SQEs that are outside of the chain tail. This means that multiple chains can be executing in parallel, or chains and individual SQEs. Only members inside the chain are serialized. A chain of SQEs will be broken, if any request in that chain ends in error. io_uring considers any unexpected result an error. This means that, eg, a short read will also terminate the remainder of the chain. If a chain of SQE links is broken, the remaining unstarted part of the chain will be terminated and completed with -ECANCELED as the error code. Available since 5.3.</p>
+</blockquote>
+<p>为实现复制文件功能，link-cp 创建一个长度为 2 的 SQE chain。</p>
+<ul>
+<li>第一个 SQE 是一个读请求，将数据从输入文件读到 buffer；</li>
+<li>第二个请求，与第一个请求是 linked，是一个写请求，将数据从 buffer 写入输出文件。</li>
+</ul>
+<h3 id="源码及注释-1"><a href="#源码及注释-1" class="headerlink" title="源码及注释"></a>源码及注释</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SPDX-License-Identifier: MIT */</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Very basic proof-of-concept for doing a copy with linked SQEs. Needs a</span></span><br><span class="line"><span class="comment"> * bit of error handling and short read love.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;liburing.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> QD    64         <span class="comment">// io_uring 队列长度</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BS    (32*1024)</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">io_data</span> &#123;</span></span><br><span class="line">    <span class="type">size_t</span> offset;</span><br><span class="line">    <span class="type">int</span> index;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">iovec</span> <span class="title">iov</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> infd, outfd;</span><br><span class="line"><span class="type">static</span> <span class="type">unsigned</span> inflight;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建一个 read-&gt;write SQE chain</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">queue_rw_pair</span><span class="params">(<span class="keyword">struct</span> io_uring *ring, <span class="type">off_t</span> size, <span class="type">off_t</span> offset)</span> &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_uring_sqe</span> *<span class="title">sqe</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_data</span> *<span class="title">data</span>;</span></span><br><span class="line">    <span class="type">void</span> *ptr;</span><br><span class="line"></span><br><span class="line">    ptr = <span class="built_in">malloc</span>(size + <span class="keyword">sizeof</span>(*data));</span><br><span class="line">    data = ptr + size;</span><br><span class="line">    data-&gt;index = <span class="number">0</span>;</span><br><span class="line">    data-&gt;offset = offset;</span><br><span class="line">    data-&gt;iov.iov_base = ptr;</span><br><span class="line">    data-&gt;iov.iov_len = size;</span><br><span class="line"></span><br><span class="line">    sqe = io_uring_get_sqe(ring);                            <span class="comment">// 获取可用 SQE</span></span><br><span class="line">    io_uring_prep_readv(sqe, infd, &amp;data-&gt;iov, <span class="number">1</span>, offset);   <span class="comment">// 准备 read 请求</span></span><br><span class="line">    sqe-&gt;flags |= IOSQE_IO_LINK;                             <span class="comment">// 设置为 LINK 模式</span></span><br><span class="line">    io_uring_sqe_set_data(sqe, data);                        <span class="comment">// 设置 data</span></span><br><span class="line"></span><br><span class="line">    sqe = io_uring_get_sqe(ring);                            <span class="comment">// 获取另一个可用 SQE</span></span><br><span class="line">    io_uring_prep_writev(sqe, outfd, &amp;data-&gt;iov, <span class="number">1</span>, offset); <span class="comment">// 准备 write 请求</span></span><br><span class="line">    io_uring_sqe_set_data(sqe, data);                        <span class="comment">// 设置 data</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 处理完成（completion）事件：释放 SQE 的内存缓冲区，通知内核已经消费了 CQE。</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">handle_cqe</span><span class="params">(<span class="keyword">struct</span> io_uring *ring, <span class="keyword">struct</span> io_uring_cqe *cqe)</span> &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_data</span> *<span class="title">data</span> =</span> io_uring_cqe_get_data(cqe);       <span class="comment">// 获取 CQE</span></span><br><span class="line">    data-&gt;index++;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (cqe-&gt;res &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (cqe-&gt;res == -ECANCELED) &#123;</span><br><span class="line">            queue_rw_pair(ring, BS, data-&gt;offset);</span><br><span class="line">            inflight += <span class="number">2</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;cqe error: %s\n&quot;</span>, strerror(cqe-&gt;res));</span><br><span class="line">            ret = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (data-&gt;index == <span class="number">2</span>) &#123;        <span class="comment">// read-&gt;write chain 完成，释放缓冲区内存</span></span><br><span class="line">        <span class="type">void</span> *ptr = (<span class="type">void</span> *) data - data-&gt;iov.iov_len;</span><br><span class="line">        <span class="built_in">free</span>(ptr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    io_uring_cqe_seen(ring, cqe);  <span class="comment">// 通知内核已经消费了 CQE 事件</span></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">copy_file</span><span class="params">(<span class="keyword">struct</span> io_uring *ring, <span class="type">off_t</span> insize)</span> &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_uring_cqe</span> *<span class="title">cqe</span>;</span></span><br><span class="line">    <span class="type">size_t</span> this_size;</span><br><span class="line">    <span class="type">off_t</span> offset;</span><br><span class="line"></span><br><span class="line">    offset = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (insize) &#123;                      <span class="comment">// 数据还没处理完</span></span><br><span class="line">        <span class="type">int</span> has_inflight = inflight;      <span class="comment">// 当前正在进行中的 SQE 数量</span></span><br><span class="line">        <span class="type">int</span> depth;  <span class="comment">// SQE 阈值，当前进行中的 SQE 数量（inflight）超过这个值之后，需要阻塞等待 CQE 完成</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (insize &amp;&amp; inflight &lt; QD) &#123; <span class="comment">// 数据还没处理完，io_uring 队列也还没用完</span></span><br><span class="line">            this_size = BS;</span><br><span class="line">            <span class="keyword">if</span> (this_size &gt; insize)       <span class="comment">// 最后一段数据不足 BS 大小</span></span><br><span class="line">                this_size = insize;</span><br><span class="line"></span><br><span class="line">            queue_rw_pair(ring, this_size, offset); <span class="comment">// 创建一个 read-&gt;write chain，占用两个 SQE</span></span><br><span class="line">            offset += this_size;</span><br><span class="line">            insize -= this_size;</span><br><span class="line">            inflight += <span class="number">2</span>;                <span class="comment">// 正在进行中的 SQE 数量 +2</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (has_inflight != inflight)     <span class="comment">// 如果有新创建的 SQE，</span></span><br><span class="line">            io_uring_submit(ring);        <span class="comment">// 就提交给内核</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (insize)                       <span class="comment">// 如果还有 data 等待处理，</span></span><br><span class="line">            depth = QD;                   <span class="comment">// 阈值设置 SQ 的队列长度，即 SQ 队列用完才开始阻塞等待 CQE；</span></span><br><span class="line">        <span class="keyword">else</span>                              <span class="comment">// data 处理已经全部提交，</span></span><br><span class="line">            depth = <span class="number">1</span>;                    <span class="comment">// 阈值设置为 1，即只要还有 SQE 未完成，就阻塞等待 CQE</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 下面这个 while 只有 SQ 队列用完或 data 全部提交之后才会执行到</span></span><br><span class="line">        <span class="keyword">while</span> (inflight &gt;= depth) &#123;       <span class="comment">// 如果所有 SQE 都已经用完，或者所有 data read-&gt;write 请求都已经提交</span></span><br><span class="line">            io_uring_wait_cqe(ring, &amp;cqe);<span class="comment">// 等待内核 completion 事件</span></span><br><span class="line">            handle_cqe(ring, cqe);        <span class="comment">// 处理 completion 事件：释放 SQE 内存缓冲区，通知内核 CQE 已消费</span></span><br><span class="line">            inflight--;                   <span class="comment">// 正在进行中的 SQE 数量 -1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">setup_context</span><span class="params">(<span class="type">unsigned</span> entries, <span class="keyword">struct</span> io_uring *ring)</span> &#123;</span><br><span class="line">    io_uring_queue_init(entries, ring, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">get_file_size</span><span class="params">(<span class="type">int</span> fd, <span class="type">off_t</span> *size)</span> &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">st</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fstat(fd, &amp;st) &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">if</span> (S_ISREG(st.st_mode)) &#123;</span><br><span class="line">        *size = st.st_size;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (S_ISBLK(st.st_mode)) &#123;</span><br><span class="line">        <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> bytes;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (ioctl(fd, BLKGETSIZE64, &amp;bytes) != <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        *size = bytes;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">io_uring</span> <span class="title">ring</span>;</span></span><br><span class="line">    <span class="type">off_t</span> insize;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">    infd = open(argv[<span class="number">1</span>], O_RDONLY);</span><br><span class="line">    outfd = open(argv[<span class="number">2</span>], O_WRONLY | O_CREAT | O_TRUNC, <span class="number">0644</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (setup_context(QD, &amp;ring))</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (get_file_size(infd, &amp;insize))</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    ret = copy_file(&amp;ring, insize);</span><br><span class="line"></span><br><span class="line">    close(infd);</span><br><span class="line">    close(outfd);</span><br><span class="line">    io_uring_queue_exit(&amp;ring);</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他说明-1"><a href="#其他说明-1" class="headerlink" title="其他说明"></a>其他说明</h3><p>代码中实现了三个函数：</p>
+<ol>
+<li><p><code>copy_file()</code>：高层复制循环逻辑；它会调用 <code>queue_rw_pair(ring, this_size, offset)</code> 来构造 SQE pair； 并通过一次 <code>io_uring_submit()</code> 调用将所有构建的 SQE pair 提交。</p>
+<p>这个函数维护了一个最大 DQ 数量的 inflight SQE，只要数据 copy 还在进行中；否则，即数据已经全部读取完成，就开始等待和收割所有的 CQE。</p>
+</li>
+<li><p><code>queue_rw_pair()</code> 构造一个 read-write SQE pair.</p>
+<p>read SQE 的 <code>IOSQE_IO_LINK</code> flag 表示开始一个 chain，write SQE 不用设置这个 flag，标志着这个 chain 的结束。 用户 data 字段设置为同一个 data 描述符，并且在随后的 completion 处理中会用到。</p>
+</li>
+<li><p><code>handle_cqe()</code> 从 CQE 中提取之前由 <code>queue_rw_pair()</code> 保存的 data 描述符，并在描述符中记录处理进展（index）。</p>
+<p>如果之前请求被取消，它还会重新提交 read-write pair。</p>
+<p>一个 CQE pair 的两个 member 都处理完成之后（<code>index==2</code>），释放共享的 data descriptor。 最后通知内核这个 CQE 已经被消费。</p>
+</li>
+</ol>
+<h1 id="io-uring-性能压测（基于-fio）"><a href="#io-uring-性能压测（基于-fio）" class="headerlink" title="io_uring 性能压测（基于 fio）"></a>io_uring 性能压测（基于 fio）</h1><p><strong>对于已经在使用 linux-aio 的应用</strong>，例如 ScyllaDB， <strong>不要期望换成 io_uring 之后能获得大幅的性能提升</strong>，这是因为： <code>io_uring</code> 性能相关的底层机制与 <code>linux-aio</code> 并无本质不同（都是异步提交，轮询结果）。</p>
+<p>在此，本文也希望使读者明白：<code>io_uring</code> <strong>首先和最重要的贡献</strong>在于： <strong>将 linux-aio 的所有优良特性带给了普罗大众</strong>（而非局限于数据库这样的细分领域）。</p>
+<h2 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h2><p>本节使用 <code>fio</code> 测试 4 种模式：</p>
+<ol>
+<li><code>synchronous reads</code></li>
+<li><code>posix-aio</code> (implemented as a thread pool)</li>
+<li><code>linux-aio</code></li>
+<li><code>io_uring</code></li>
+</ol>
+<p>硬件：</p>
+<ul>
+<li>NVMe 存储设备，物理极限能打到 <strong>3.5M IOPS</strong>。</li>
+<li>8 核处理器</li>
+</ul>
+<h2 id="场景一：direct-I-O-1KB-随机读（绕过-page-cache）"><a href="#场景一：direct-I-O-1KB-随机读（绕过-page-cache）" class="headerlink" title="场景一：direct I&#x2F;O 1KB 随机读（绕过 page cache）"></a>场景一：direct I&#x2F;O <code>1KB</code> 随机读（绕过 page cache）</h2><p>第一组测试中，我们希望所有的读请求都能<strong>命中存储设备</strong>（all reads to hit the storage），<strong>完全绕开操作系统的页缓存</strong>（page cache）。</p>
+<p>测试配置：</p>
+<ul>
+<li>8 个 CPU 执行 72 <code>fio</code> job，</li>
+<li>每个 job 随机读取 4 个文件，</li>
+<li><code>iodepth=8</code>（number of I&#x2F;O units to keep in flight against the file.）。</li>
+</ul>
+<p>这种配置<strong>保证了 CPU 处于饱和状态</strong>，便于观察 I&#x2F;O 性能。 如果 CPU 数量足够多，那每组测试都可能会打满设备带宽，结果对 I&#x2F;O 压测就没意义了。</p>
+<p>表 1. Direct I&#x2F;O（绕过系统页缓存）：1KB 随机读，CPU 100% 下的 I&#x2F;O 性能</p>
+<table>
+<thead>
+<tr>
+<th><strong>backend</strong></th>
+<th><strong>IOPS</strong></th>
+<th><strong>context switches</strong></th>
+<th><strong>IOPS ±% vs io_uring</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>sync</td>
+<td>814,000</td>
+<td>27,625,004</td>
+<td><strong>-42.6%</strong></td>
+</tr>
+<tr>
+<td>posix-aio (thread pool)</td>
+<td>433,000</td>
+<td>64,112,335</td>
+<td><strong>-69.4%</strong></td>
+</tr>
+<tr>
+<td>linux-aio</td>
+<td>1,322,000</td>
+<td>10,114,149</td>
+<td><strong>-6.7%</strong></td>
+</tr>
+<tr>
+<td>io_uring (basic)</td>
+<td>1,417,000</td>
+<td>11,309,574</td>
+<td><strong>—</strong></td>
+</tr>
+<tr>
+<td>io_uring (enhanced)</td>
+<td>1,486,000</td>
+<td>11,483,468</td>
+<td><strong>4.9%</strong></td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260127125632385.png" alt="benchmark1" loading="lazy"></p>
+<p>几点分析：</p>
+<ol>
+<li><code>io_uring</code> 相比 <code>linux-aio</code> 确实有一定提升，但并非革命性的。</li>
+<li>开启高级特性，例如 buffer &amp; file registration 之后性能有进一步提升 —— 但也还 没有到为了这些性能而重写整个应用的地步，除非你是搞数据库研发，想榨取硬件的最后一分性能。</li>
+<li><code>io_uring</code> and <code>linux-aio</code> <strong>都比同步 read 接口快 2 倍，而后者又比 posix-aio 快 2 倍</strong> —— 初看有点差异。但看看<strong>上下文切换次数</strong>，就不难理解为什么 posix-aio 这么慢了。<ul>
+<li>同步 read 性能差是因为：在这种没有 page cache 的情况下， <strong>每次 read 系统调用都会阻塞，因此就会涉及一次上下文切换</strong>。</li>
+<li><code>posix-aio</code> 性能更差是因为：不仅内核和应用程序之间要频繁上下文切换，线程池的<strong>多个线程之间也在频繁切换</strong>。</li>
+</ul>
+</li>
+</ol>
+<h2 id="场景二：buffered-I-O-1KB-随机读（数据提前加载到内存，100-hot-cache）"><a href="#场景二：buffered-I-O-1KB-随机读（数据提前加载到内存，100-hot-cache）" class="headerlink" title="场景二：buffered I&#x2F;O 1KB 随机读（数据提前加载到内存，100% hot cache）"></a>场景二：buffered I&#x2F;O <code>1KB</code> 随机读（数据提前加载到内存，100% hot cache）</h2><p>第二组测试 buffered I&#x2F;O：</p>
+<ol>
+<li>将文件数据提前加载到内存，然后再测随机读。<ul>
+<li>由于<strong>数据全部在 page cache</strong>，因此<strong>同步 read 永远不会阻塞</strong>。</li>
+<li>这种场景下，我们预期<strong>同步读和 io_uring 的性能差距不大（都是最好的）</strong>。</li>
+</ul>
+</li>
+<li>其他测试条件不变。</li>
+</ol>
+<p>表 2. Buffered I&#x2F;O（数据全部来自 page cache，100% hot cache）：1KB 随机读，100% CPU 下的 I&#x2F;O 性能</p>
+<table>
+<thead>
+<tr>
+<th><strong>Backend</strong></th>
+<th><strong>IOPS</strong></th>
+<th><strong>context switches</strong></th>
+<th><strong>IOPS ±% vs io_uring</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>sync</td>
+<td>4,906,000</td>
+<td>105,797</td>
+<td><strong>-2.3%</strong></td>
+</tr>
+<tr>
+<td>posix-aio (thread pool)</td>
+<td>1,070,000</td>
+<td>114,791,187</td>
+<td><strong>-78.7%</strong></td>
+</tr>
+<tr>
+<td>linux-aio</td>
+<td>4,127,000</td>
+<td>105,052</td>
+<td><strong>-17.9%</strong></td>
+</tr>
+<tr>
+<td>io_uring</td>
+<td>5,024,000</td>
+<td>106,683</td>
+<td><strong>—</strong></td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260127125651661.png" alt="benchmark2" loading="lazy"></p>
+<p>结果分析：</p>
+<ol>
+<li><p>同步读和 <code>io_uring</code> 性能差距确实很小，二者都是最好的。</p>
+<p>但注意，<strong>实际的应用</strong>不可能一直 100% 时间执行 IO 操作，因此 基于同步读的真实应用性能<strong>还是要比基于 io_uring 要差的</strong>，因为 io_uring 会将多个系统调用批处理化。</p>
+</li>
+<li><p><code>posix-aio</code> 性能最差，直接原因是<strong>上下文切换次数太多</strong>，这也和场景相关： 在这种 <strong>CPU 饱和的情况下</strong>，它的线程池反而是累赘，会完全拖慢性能。</p>
+</li>
+<li><p><code>linux-aio</code> 并<strong>不是针对 buffered I&#x2F;O 设计的</strong>，在这种 page cache 直接返回的场景， 它的<strong>异步接口反而会造成性能损失</strong> —— 将操作分 为 dispatch 和 consume 两步不但没有性能收益，反而有额外开销。</p>
+</li>
+</ol>
+<h2 id="性能测试小结"><a href="#性能测试小结" class="headerlink" title="性能测试小结"></a>性能测试小结</h2><p>最后再次提醒，本节是极端应用&#x2F;场景（<strong>100% CPU + 100% cache miss&#x2F;hit</strong>）测试， 真实应用的行为通常处于同步读和异步读之间：时而一些阻塞操作，时而一些非阻塞操作。 但不管怎么说，用了 io_uring 之后，用户就无需担心同步和异步各占多少比例了，因为它<strong>在任何场景下都表现良好</strong>。</p>
+<ol>
+<li>如果操作是非阻塞的，<code>io_uring</code> 不会有额外开销；</li>
+<li>如果操作是阻塞式的，也没关系，<code>io_uring</code> 是完全异步的，并且不依赖线程池或昂贵的上下文切换来实现这种异步能力；</li>
+</ol>
+<p>本文测试的都是随机读，但对<strong>其他类型的操作</strong>，<code>io_uring</code> 表现也是非常良好的。例如：</p>
+<ol>
+<li>打开&#x2F;关闭文件</li>
+<li>设置定时器</li>
+<li>通过 network sockets 传输数据</li>
+</ol>
+<p>而且<strong>使用的是同一套 io_uring 接口</strong>。</p>
+<h2 id="ScyllaDB-与-io-uring"><a href="#ScyllaDB-与-io-uring" class="headerlink" title="ScyllaDB 与 io_uring"></a>ScyllaDB 与 io_uring</h2><p>Scylla 重度依赖 direct I&#x2F;O，从一开始就使用 <code>linux-aio</code>。 在我们转向 <code>io_uring</code> 的过程中，最开始测试显示对某些 workloads，能取得 50% 以上的性能提升。 但<strong>深入研究之后发现</strong>，这是因为我们<strong>之前的 linux-aio 用的不够好</strong>。 这也揭示了一个<strong>经常被忽视的事实</strong>：获得高性能没有那么难（前提是你得弄对了）。 在对比 <code>io_uring</code> 和 <code>linux-aio</code> 应用之后，我们<strong>很快改进了一版，二者的性能差距就消失了</strong>。 但坦率地说，解决这个问题<strong>需要一些工作量</strong>，因为要改动一个已经使用 了很多年的基于 <code>linux-aio</code> 的接口。而对 <code>io_uring</code> 应用来说，做类似的改动是轻而 易举的。</p>
+<p>以上只是一个场景，<code>io_uring</code> 相比 <code>linux-aio</code> 的<strong>优势</strong>是能应用于 file I&#x2F;O 之外的场景。 此外，它还自带了特殊的 <a target="_blank" rel="noopener" href="https://www.p99conf.io/">高性能</a> 接口，例如 buffer registration、file registration、轮询模式等等。</p>
+<p>启用 <code>io_uring</code> 高级特性之后，我们看到性能确实有提升：Intel Optane 设备，单个 CPU 读取 512 字节，观察到 5% 的性能提升。与 表 1 &amp; 2 对得上。虽然 5% 的提升 看上去不是太大，但对于希望压榨出硬件所有性能的数据库来说，还是非常宝贵的。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>Linux AIO</th>
+<th>io_uring（带 buffer&#x2F;file registration + poll）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>吞吐量 (Throughput)</td>
+<td>330 MB&#x2F;s</td>
+<td>346 MB&#x2F;s</td>
+</tr>
+<tr>
+<td>平均延迟 (Avg Latency)</td>
+<td>1549 μs</td>
+<td>1470 μs</td>
+</tr>
+<tr>
+<td>P50 延迟 (中位数)</td>
+<td>1547 μs</td>
+<td>1468 μs</td>
+</tr>
+<tr>
+<td>P95 延迟</td>
+<td>1694 μs</td>
+<td>1558 μs</td>
+</tr>
+<tr>
+<td>P99 延迟</td>
+<td>1703 μs</td>
+<td>1613 μs</td>
+</tr>
+<tr>
+<td>P99.9 延迟</td>
+<td>1950 μs</td>
+<td>1674 μs</td>
+</tr>
+<tr>
+<td>最大延迟 (Max Latency)</td>
+<td>2177 μs</td>
+<td>1829 μs</td>
+</tr>
+</tbody></table>
+<p>使用 1 个 CPU 从 Intel Optane 设备读取 512 字节。1000 并发请求。linux-aio 和 io_uring basic interface 性能差异很小。 但启用 io_uring 高级特性后，有 5% 的性能差距。</p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" target="_blank" rel="noopener" href="https://arthurchiao.art/blog/intro-to-io-uring-zh/">Linux 异步 I/O 框架 io_uring</a></div>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2601261/">https://even629.com/posts/2601261/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/Linux/">Linux</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">90</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">72</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide" style="background-image:url(/img/happy_new_year1.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year2.jpg)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year3.webp)"></div> <div class="swiper-slide" style="background-image:url(/img/happy_new_year4.gif)"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-I-O-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%BC%94%E8%BF%9B"><span class="toc-number">1.</span> <span class="toc-text">Linux I&#x2F;O 系统调用演进</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-fd-%E7%9A%84%E9%98%BB%E5%A1%9E%E5%BC%8F-I-O%EF%BC%9Aread-write"><span class="toc-number">1.1.</span> <span class="toc-text">基于 fd 的阻塞式 I&#x2F;O：read()&#x2F;write()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%BC%8F-I-O%EF%BC%9Aselect-poll-epoll"><span class="toc-number">1.2.</span> <span class="toc-text">非阻塞式 I&#x2F;O：select()&#x2F;poll()&#x2F;epoll()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">线程池方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Direct-I-O%EF%BC%88%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BD%AF%E4%BB%B6%EF%BC%89%EF%BC%9A%E7%BB%95%E8%BF%87-page-cache"><span class="toc-number">1.4.</span> <span class="toc-text">Direct I&#x2F;O（数据库软件）：绕过 page cache</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5-IO%EF%BC%88AIO%EF%BC%89"><span class="toc-number">1.5.</span> <span class="toc-text">异步 IO（AIO）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.6.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#io-uring"><span class="toc-number">2.</span> <span class="toc-text">io_uring</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E-Linux-AIO-%E7%9A%84%E4%B8%8D%E5%90%8C"><span class="toc-number">2.1.</span> <span class="toc-text">与 Linux AIO 的不同</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E5%8F%8A%E6%A0%B8%E5%BF%83%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9ASQ-CQ-SQE-CQE"><span class="toc-number">2.2.</span> <span class="toc-text">原理及核心数据结构：SQ&#x2F;CQ&#x2F;SQE&#x2F;CQE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="toc-number">2.3.</span> <span class="toc-text">带来的好处</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.4.</span> <span class="toc-text">三种工作模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#io-uring-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-API"><span class="toc-number">2.5.</span> <span class="toc-text">io_uring 系统调用 API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#io-uring-setup"><span class="toc-number">2.5.1.</span> <span class="toc-text">io_uring_setup()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#io-uring-register"><span class="toc-number">2.5.2.</span> <span class="toc-text">io_uring_register()</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%EF%BC%88buffer%EF%BC%89%E6%80%A7%E8%B4%A8"><span class="toc-number">2.5.2.1.</span> <span class="toc-text">注册的缓冲区（buffer）性质</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-eventfd-%E8%AE%A2%E9%98%85-completion-%E4%BA%8B%E4%BB%B6"><span class="toc-number">2.5.2.2.</span> <span class="toc-text">通过 eventfd() 订阅 completion 事件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#io-uring-enter"><span class="toc-number">2.5.3.</span> <span class="toc-text">io_uring_enter()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7"><span class="toc-number">2.6.</span> <span class="toc-text">高级特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E5%BA%93-liburing"><span class="toc-number">2.7.</span> <span class="toc-text">用户空间库 liburing</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-liburing-%E7%9A%84%E7%A4%BA%E4%BE%8B%E5%BA%94%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">基于 liburing 的示例应用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#io-uring-test"><span class="toc-number">3.1.</span> <span class="toc-text">io_uring-test</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%8F%8A%E6%B3%A8%E9%87%8A"><span class="toc-number">3.1.1.</span> <span class="toc-text">源码及注释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E8%AF%B4%E6%98%8E"><span class="toc-number">3.1.2.</span> <span class="toc-text">其他说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#link-cp"><span class="toc-number">3.2.</span> <span class="toc-text">link-cp</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#I-O-chain"><span class="toc-number">3.2.1.</span> <span class="toc-text">I&#x2F;O chain</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%8F%8A%E6%B3%A8%E9%87%8A-1"><span class="toc-number">3.2.2.</span> <span class="toc-text">源码及注释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E8%AF%B4%E6%98%8E-1"><span class="toc-number">3.2.3.</span> <span class="toc-text">其他说明</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#io-uring-%E6%80%A7%E8%83%BD%E5%8E%8B%E6%B5%8B%EF%BC%88%E5%9F%BA%E4%BA%8E-fio%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">io_uring 性能压测（基于 fio）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">4.1.</span> <span class="toc-text">测试环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9Adirect-I-O-1KB-%E9%9A%8F%E6%9C%BA%E8%AF%BB%EF%BC%88%E7%BB%95%E8%BF%87-page-cache%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">场景一：direct I&#x2F;O 1KB 随机读（绕过 page cache）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9Abuffered-I-O-1KB-%E9%9A%8F%E6%9C%BA%E8%AF%BB%EF%BC%88%E6%95%B0%E6%8D%AE%E6%8F%90%E5%89%8D%E5%8A%A0%E8%BD%BD%E5%88%B0%E5%86%85%E5%AD%98%EF%BC%8C100-hot-cache%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">场景二：buffered I&#x2F;O 1KB 随机读（数据提前加载到内存，100% hot cache）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B0%8F%E7%BB%93"><span class="toc-number">4.4.</span> <span class="toc-text">性能测试小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ScyllaDB-%E4%B8%8E-io-uring"><span class="toc-number">4.5.</span> <span class="toc-text">ScyllaDB 与 io_uring</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">5.</span> <span class="toc-text">参考文献</span></a></li></ol></div></div></div><div class="card-widget card-recent-post liquidGlass-wrapper"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/2601261/" title="io_uring"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="io_uring"/></a><div class="content"><a class="title" href="/posts/2601261/" title="io_uring">io_uring</a><time datetime="2026-01-26T07:25:13.000Z" title="发表于 2026-01-26 15:25:13">2026-01-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601133/" title="Linux 网络设备"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux 网络设备"/></a><div class="content"><a class="title" href="/posts/2601133/" title="Linux 网络设备">Linux 网络设备</a><time datetime="2026-01-13T14:00:00.000Z" title="发表于 2026-01-13 22:00:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601143/" title="Linux ADC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux ADC"/></a><div class="content"><a class="title" href="/posts/2601143/" title="Linux ADC">Linux ADC</a><time datetime="2026-01-13T13:18:00.000Z" title="发表于 2026-01-13 21:18:00">2026-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601093/" title="Linux CAN"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux CAN"/></a><div class="content"><a class="title" href="/posts/2601093/" title="Linux CAN">Linux CAN</a><time datetime="2026-01-09T07:56:00.000Z" title="发表于 2026-01-09 15:56:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601063/" title="Linux Watchdog"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux Watchdog"/></a><div class="content"><a class="title" href="/posts/2601063/" title="Linux Watchdog">Linux Watchdog</a><time datetime="2026-01-06T05:09:00.000Z" title="发表于 2026-01-06 13:09:00">2026-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2601053/" title="Linux RTC"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/linux_cover.webp" onerror="this.onerror=null;this.src='/img/404.svg'" alt="Linux RTC"/></a><div class="content"><a class="title" href="/posts/2601053/" title="Linux RTC">Linux RTC</a><time datetime="2026-01-05T14:09:00.000Z" title="发表于 2026-01-05 22:09:00">2026-01-05</time></div></div></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.stopSakura();"><i class="fa-solid fa-feather"></i><span data-zh="樱花特效" data-en="toggle sakura"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '354f6300587886032aaa6389a57f0170'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script src="/js/sakura.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="150"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('container');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '800ms');
+    arr[i].setAttribute('data-wow-delay', '0ms');
+    arr[i].setAttribute('data-wow-offset', '0');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="/js/wowjs/wow.min.js"></script><script defer src="/js/wowjs/wow_init.js"></script><!-- hexo injector body_end end --></body></html>
