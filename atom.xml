@@ -6,7 +6,7 @@
   <link href="https://even629.com/atom.xml" rel="self"/>
   
   <link href="https://even629.com/"/>
-  <updated>2026-03-21T09:09:13.000Z</updated>
+  <updated>2026-03-24T09:01:13.000Z</updated>
   <id>https://even629.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>leetcode每日一题 P2906 构造乘积矩阵</title>
+    <link href="https://even629.com/posts/2906/"/>
+    <id>https://even629.com/posts/2906/</id>
+    <published>2026-03-24T09:01:13.000Z</published>
+    <updated>2026-03-24T09:01:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<hr><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-03-24</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div><hr><p>题目：</p><div class="tag link"><a class="link-card" title="P2906 构造乘积矩阵" href="https://leetcode.cn/problems/construct-product-matrix/description/?envType=daily-question&envId=2026-03-24"><div class="left"><img src="https://leetcode.cn/favicon.ico"/></div><div class="right"><p class="text">P2906 构造乘积矩阵</p><p class="url">https://leetcode.cn/problems/construct-product-matrix/description/?envType=daily-question&envId=2026-03-24</p></div></a></div><p>前缀和换皮题目，注意相乘时可能超过int表示的最大值</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> std::vector;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MODULO_NUM 12345</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt; &gt; <span class="built_in">constructProductMatrix</span>(vector&lt;vector&lt;<span class="type">int</span>&gt; &gt; &amp;grid)</span><br><span class="line">        &#123;</span><br><span class="line">                <span class="comment">// 1 &lt;= n == grid.length &lt;= 105</span></span><br><span class="line">                <span class="comment">// 1 &lt;= m == grid[i].length &lt;= 105</span></span><br><span class="line">                <span class="comment">// 2 &lt;= n * m &lt;= 105</span></span><br><span class="line">                <span class="comment">// 1 &lt;= grid[i][j] &lt;= 109</span></span><br><span class="line">                <span class="type">int</span> i, j, m = grid.<span class="built_in">size</span>(), n = grid[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">                <span class="type">int</span> total = m * n, last;</span><br><span class="line">                vector&lt;vector&lt;<span class="type">int</span>&gt; &gt; <span class="built_in">product_matrix</span>(m, (<span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n, <span class="number">0</span>)));</span><br><span class="line">                <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">prefix_product</span><span class="params">(total, <span class="number">1</span>)</span></span>;</span><br><span class="line">                <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">suffix_product</span><span class="params">(total, <span class="number">1</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// prefix</span></span><br><span class="line">                last = grid[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">                <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                                <span class="keyword">if</span> (i == <span class="number">0</span> &amp;&amp; j == <span class="number">0</span>)</span><br><span class="line">                                        <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">                                prefix_product[i * n + j] =</span><br><span class="line">                                        (<span class="type">long</span>)((<span class="type">long</span>)last * (<span class="type">long</span>)prefix_product[i * n + j - <span class="number">1</span>]) %</span><br><span class="line">                                        MODULO_NUM;</span><br><span class="line">                                last = grid[i][j];</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// suffix</span></span><br><span class="line">                last = grid[m - <span class="number">1</span>][n - <span class="number">1</span>];</span><br><span class="line">                <span class="keyword">for</span> (i = m - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (j = n - <span class="number">1</span>; j &gt;= <span class="number">0</span>; j--) &#123;</span><br><span class="line">                                <span class="keyword">if</span> (i == m - <span class="number">1</span> &amp;&amp; j == n - <span class="number">1</span>)</span><br><span class="line">                                        <span class="keyword">continue</span>;</span><br><span class="line">                                suffix_product[i * n + j] =</span><br><span class="line">                                        (<span class="type">long</span>)((<span class="type">long</span>)last * (<span class="type">long</span>)suffix_product[i * n + j + <span class="number">1</span>]) %</span><br><span class="line">                                        MODULO_NUM;</span><br><span class="line">                                last = grid[i][j];</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                                product_matrix[i][j] = (<span class="type">long</span>)((<span class="type">long</span>)prefix_product[i * n + j] *</span><br><span class="line">                                                              (<span class="type">long</span>)suffix_product[i * n + j]) %</span><br><span class="line">                                                       MODULO_NUM;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> product_matrix;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><!-- flag of hidden posts -->]]></content>
+    
+    
+    <summary type="html">前缀和</summary>
+    
+    
+    
+    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
+    
+    
+    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
+    
+    <category term="前缀和" scheme="https://even629.com/tags/%E5%89%8D%E7%BC%80%E5%92%8C/"/>
+    
+    <category term="leetcode每日一题" scheme="https://even629.com/tags/leetcode%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/"/>
+    
+  </entry>
   
   <entry>
     <title>leetcode热题100 P1143 最长公共子序列</title>
@@ -35,9 +60,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
   </entry>
   
@@ -60,9 +85,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
   </entry>
   
@@ -85,11 +110,11 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
+    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
     <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     <category term="栈" scheme="https://even629.com/tags/%E6%A0%88/"/>
-    
-    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
   </entry>
   
@@ -112,9 +137,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     <category term="0-1背包问题" scheme="https://even629.com/tags/0-1%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/"/>
     
@@ -139,9 +164,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
   </entry>
   
@@ -164,9 +189,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
   </entry>
   
@@ -189,9 +214,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
   </entry>
   
@@ -214,9 +239,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="贪心" scheme="https://even629.com/tags/%E8%B4%AA%E5%BF%83/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="贪心" scheme="https://even629.com/tags/%E8%B4%AA%E5%BF%83/"/>
     
   </entry>
   
@@ -239,9 +264,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="堆" scheme="https://even629.com/tags/%E5%A0%86/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="堆" scheme="https://even629.com/tags/%E5%A0%86/"/>
     
   </entry>
   
@@ -264,11 +289,11 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
+    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
     <category term="栈" scheme="https://even629.com/tags/%E6%A0%88/"/>
     
     <category term="单调栈" scheme="https://even629.com/tags/%E5%8D%95%E8%B0%83%E6%A0%88/"/>
-    
-    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
   </entry>
   
@@ -291,11 +316,11 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
+    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
     <category term="栈" scheme="https://even629.com/tags/%E6%A0%88/"/>
     
     <category term="单调栈" scheme="https://even629.com/tags/%E5%8D%95%E8%B0%83%E6%A0%88/"/>
-    
-    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
   </entry>
   
@@ -318,9 +343,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="栈" scheme="https://even629.com/tags/%E6%A0%88/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="栈" scheme="https://even629.com/tags/%E6%A0%88/"/>
     
   </entry>
   
@@ -343,9 +368,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="双指针" scheme="https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="双指针" scheme="https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/"/>
     
   </entry>
   
@@ -368,9 +393,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="双指针" scheme="https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="双指针" scheme="https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/"/>
     
   </entry>
   
@@ -393,9 +418,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="双指针" scheme="https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="双指针" scheme="https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/"/>
     
   </entry>
   
@@ -443,9 +468,9 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
+    
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     <category term="回溯" scheme="https://even629.com/tags/%E5%9B%9E%E6%BA%AF/"/>
     
@@ -495,38 +520,11 @@
     
     <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="BFS" scheme="https://even629.com/tags/BFS/"/>
-    
     <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
     <category term="图" scheme="https://even629.com/tags/%E5%9B%BE/"/>
     
-  </entry>
-  
-  <entry>
-    <title>leetcode热题100 P437 路径总和 III</title>
-    <link href="https://even629.com/posts/437/"/>
-    <id>https://even629.com/posts/437/</id>
-    <published>2026-03-15T07:34:13.000Z</published>
-    <updated>2026-03-15T07:34:13.000Z</updated>
-    
-    <content type="html"><![CDATA[<hr><div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-03-15</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div><hr><p>题目：</p><div class="tag link"><a class="link-card" title="P437 路径总和 III" href="https://leetcode.cn/problems/path-sum-iii/description/?envType=study-plan-v2&envId=top-100-liked"><div class="left"><img src="https://leetcode.cn/favicon.ico"/></div><div class="right"><p class="text">P437 路径总和 III</p><p class="url">https://leetcode.cn/problems/path-sum-iii/description/?envType=study-plan-v2&envId=top-100-liked</p></div></a></div><p>使用前缀和 + 回溯的方法</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">TreeNode</span> &#123;</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        TreeNode *left;</span><br><span class="line">        TreeNode *right;</span><br><span class="line">        <span class="built_in">TreeNode</span>()</span><br><span class="line">                : <span class="built_in">val</span>(<span class="number">0</span>)</span><br><span class="line">                , <span class="built_in">left</span>(<span class="literal">nullptr</span>)</span><br><span class="line">                , <span class="built_in">right</span>(<span class="literal">nullptr</span>)</span><br><span class="line">        &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">TreeNode</span>(<span class="type">int</span> x)</span><br><span class="line">                : <span class="built_in">val</span>(x)</span><br><span class="line">                , <span class="built_in">left</span>(<span class="literal">nullptr</span>)</span><br><span class="line">                , <span class="built_in">right</span>(<span class="literal">nullptr</span>)</span><br><span class="line">        &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">TreeNode</span>(<span class="type">int</span> x, TreeNode *left, TreeNode *right)</span><br><span class="line">                : <span class="built_in">val</span>(x)</span><br><span class="line">                , <span class="built_in">left</span>(left)</span><br><span class="line">                , <span class="built_in">right</span>(right)</span><br><span class="line">        &#123;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unordered_map&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> std::unordered_map;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        unordered_map&lt;<span class="type">long</span> <span class="type">long</span>, <span class="type">int</span>&gt; prefix_sum;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">int</span> <span class="title">preorder</span><span class="params">(TreeNode *root, <span class="type">long</span> <span class="type">long</span> curr_sum, <span class="type">int</span> targetSum)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (root == <span class="literal">nullptr</span>)</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="type">int</span> ret = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                curr_sum += root-&gt;val;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (prefix_sum.<span class="built_in">count</span>(curr_sum - targetSum))</span><br><span class="line">                        ret += prefix_sum[curr_sum - targetSum];</span><br><span class="line"></span><br><span class="line">                prefix_sum[curr_sum]++;</span><br><span class="line"></span><br><span class="line">                ret += <span class="built_in">preorder</span>(root-&gt;left, curr_sum, targetSum);</span><br><span class="line">                ret += <span class="built_in">preorder</span>(root-&gt;right, curr_sum, targetSum);</span><br><span class="line"></span><br><span class="line">                prefix_sum[curr_sum]--; <span class="comment">// 回溯</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> ret;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="type">int</span> <span class="title">pathSum</span><span class="params">(TreeNode *root, <span class="type">int</span> targetSum)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">                prefix_sum[<span class="number">0</span>] = <span class="number">1</span>; <span class="comment">// 有一个为0的，即自身</span></span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">preorder</span>(root, <span class="number">0</span>, targetSum);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> std::cout;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">            10</span></span><br><span class="line"><span class="comment">           /  \</span></span><br><span class="line"><span class="comment">          5   -3</span></span><br><span class="line"><span class="comment">         / \    \</span></span><br><span class="line"><span class="comment">        3   2    11</span></span><br><span class="line"><span class="comment">       / \   \</span></span><br><span class="line"><span class="comment">      3  -2   1</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">        TreeNode *root = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        root-&gt;left = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">5</span>);</span><br><span class="line">        root-&gt;right = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">-3</span>);</span><br><span class="line"></span><br><span class="line">        root-&gt;left-&gt;left = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">3</span>);</span><br><span class="line">        root-&gt;left-&gt;right = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        root-&gt;right-&gt;right = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">11</span>);</span><br><span class="line"></span><br><span class="line">        root-&gt;left-&gt;left-&gt;left = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">3</span>);</span><br><span class="line">        root-&gt;left-&gt;left-&gt;right = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">-2</span>);</span><br><span class="line"></span><br><span class="line">        root-&gt;left-&gt;right-&gt;right = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> targetSum = <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line">        Solution sol;</span><br><span class="line">        cout &lt;&lt; sol.<span class="built_in">pathSum</span>(root, targetSum) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure><!-- flag of hidden posts -->]]></content>
-    
-    
-    <summary type="html">前缀和 + DFS</summary>
-    
-    
-    
-    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
-    
-    
-    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
-    
-    <category term="前缀和" scheme="https://even629.com/tags/%E5%89%8D%E7%BC%80%E5%92%8C/"/>
-    
-    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
-    
-    <category term="二叉树" scheme="https://even629.com/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/"/>
+    <category term="BFS" scheme="https://even629.com/tags/BFS/"/>
     
   </entry>
   
