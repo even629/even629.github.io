@@ -1,1 +1,57 @@
-#category-bar{padding:7px 11px;background:0 0;display:flex;position:relative;height:auto;width:100%;margin-bottom:20px;flex-wrap:wrap}#category-bar #category-bar-box{display:flex;white-space:nowrap;transition:.3s;justify-content:space-between;flex-wrap:wrap;user-select:none;align-items:center;height:auto}#category-bar .category-bar-items{width:100%;white-space:nowrap;display:flex;align-items:center;flex-wrap:wrap;gap:2px;justify-content:center;height:auto;font-size:1.2em}#category-bar .category-bar-items::-webkit-scrollbar{display:none}#category-bar .category-bar-items .category-bar-item sup{font-size:.75em;color:#999;margin-left:4px;opacity:.8}#category-bar .category-bar-items .category-bar-item a{padding:.1rem .5rem;margin-right:6px;font-weight:700;border-radius:8px;display:flex;align-items:center;height:auto}#category-bar .category-bar-items .category-bar-item.select a{background:#3eb8be;color:var(--btn-color)}#category-bar .category-bar-items .category-bar-item.select sup{background:#3eb8be;color:var(--btn-color)}
+#category-bar {
+  padding: 7px 11px;
+  background: none;
+  display: flex;
+  position: relative;
+  height: auto;
+  width: 100%;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+#category-bar #category-bar-box {
+  display: flex;
+  white-space: nowrap;
+  transition: 0.3s;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  user-select: none;
+  align-items: center;
+  height: auto;
+}
+#category-bar .category-bar-items {
+  width: 100%;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+  height: auto;
+  font-size: 1.2em;
+}
+#category-bar .category-bar-items::-webkit-scrollbar {
+  display: none;
+}
+#category-bar .category-bar-items .category-bar-item sup {
+  font-size: 0.75em;
+  color: #999;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+#category-bar .category-bar-items .category-bar-item a {
+  padding: 0.1rem 0.5rem;
+  margin-right: 6px;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  height: auto;
+}
+#category-bar .category-bar-items .category-bar-item.select a {
+  background: #3eb8be;
+  color: var(--btn-color);
+}
+#category-bar .category-bar-items .category-bar-item.select sup {
+  background: #3eb8be;
+  color: var(--btn-color);
+}
