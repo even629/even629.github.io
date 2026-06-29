@@ -1,0 +1,479 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Rpmsg Char Driver | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="drivers&#x2F;rpmsg&#x2F;rpmsg_char.c 分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rpmsg Char Driver">
+<meta property="og:url" content="https://even629.com/posts/202606290/index.html">
+<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:description" content="drivers&#x2F;rpmsg&#x2F;rpmsg_char.c 分析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="article:published_time" content="2026-06-29T14:00:13.000Z">
+<meta property="article:modified_time" content="2026-06-29T14:00:13.000Z">
+<meta property="article:author" content="even629">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/202606290/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":2000,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Rpmsg Char Driver',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
+</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Rpmsg Char Driver</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-29T14:00:13.000Z" title="发表于 2026-06-29 22:00:13">2026-06-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-29T14:00:13.000Z" title="更新于 2026-06-29 22:00:13">2026-06-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/202606290/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+<details class="folding-tag" green open><summary> 时间轴 </summary>
+              <div class='content'>
+              <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-06-29</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+              </div>
+            </details>
+<hr>
+<blockquote>
+<p>linux 5.10.238</p>
+</blockquote>
+<h1 id="module-init-module-exit">module_init / module_exit</h1>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> RPMSG_DEV_MAX	(MINORMASK + 1)</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">dev_t</span> rpmsg_major;</span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="keyword">class</span> *<span class="title">rpmsg_class</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">rpmsg_char_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">	ret = alloc_chrdev_region(&amp;rpmsg_major, <span class="number">0</span>, RPMSG_DEV_MAX, <span class="string">&quot;rpmsg&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		pr_err(<span class="string">&quot;rpmsg: failed to allocate char dev region\n&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> ret;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	rpmsg_class = class_create(THIS_MODULE, <span class="string">&quot;rpmsg&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(rpmsg_class)) &#123;</span><br><span class="line">		pr_err(<span class="string">&quot;failed to create rpmsg class\n&quot;</span>);</span><br><span class="line">		unregister_chrdev_region(rpmsg_major, RPMSG_DEV_MAX);</span><br><span class="line">		<span class="keyword">return</span> PTR_ERR(rpmsg_class);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ret = register_rpmsg_driver(&amp;rpmsg_chrdev_driver);</span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		pr_err(<span class="string">&quot;rpmsgchr: failed to register rpmsg driver\n&quot;</span>);</span><br><span class="line">		class_destroy(rpmsg_class);</span><br><span class="line">		unregister_chrdev_region(rpmsg_major, RPMSG_DEV_MAX);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line">postcore_initcall(rpmsg_char_init);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">rpmsg_chrdev_exit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	unregister_rpmsg_driver(&amp;rpmsg_chrdev_driver);</span><br><span class="line">	class_destroy(rpmsg_class);</span><br><span class="line">	unregister_chrdev_region(rpmsg_major, RPMSG_DEV_MAX);</span><br><span class="line">&#125;</span><br><span class="line">module_exit(rpmsg_chrdev_exit);</span><br><span class="line"></span><br><span class="line">MODULE_ALIAS(<span class="string">&quot;rpmsg:rpmsg_chrdev&quot;</span>);</span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL v2&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p><code>rpmsg_char.c</code>  是一个字符设备驱动，层次结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">     用户空间进程</span><br><span class="line">         │  read/write/ioctl  ← rpmsg_char.c 提供的接口</span><br><span class="line">┌────────▼─────────┐</span><br><span class="line">│  rpmsg_char.c    │  字符设备层：把 rpmsg 暴露成 /dev/rpmsg_ctrl* 和 /dev/rpmsg*</span><br><span class="line">│  (本文件)         │  负责 endpoint 的<span class="string">&quot;实例化 + 收发缓冲队列&quot;</span></span><br><span class="line">└────────┬─────────┘</span><br><span class="line">         │  rpmsg_create_ept / rpmsg_send / rpmsg_trysend / 回调 ...</span><br><span class="line">┌────────▼─────────┐</span><br><span class="line">│  rpmsg_core.c    │  总线核心层：bus_type、设备/驱动匹配、API 包装函数</span><br><span class="line">│                  │  (rpmsg_create_ept 等只是转发到 backend 的 ops)</span><br><span class="line">└────────┬─────────┘</span><br><span class="line">         │  rpmsg_endpoint_ops / rpmsg_device_ops</span><br><span class="line">┌────────▼─────────┐</span><br><span class="line">│virtio_rpmsg_bus.c│  传输后端层：基于 virtqueue 的真正收发、endpoint idr 管理、</span><br><span class="line">│                  │  name service、TX 缓冲分配/回收、<span class="number">15</span>s 超时阻塞发送</span><br><span class="line">└──────────────────┘</span><br><span class="line">         │  virtqueue (rx/tx)</span><br><span class="line">     远程处理器 (DSP/MCU/另一个核)</span><br></pre></td></tr></table></figure>
+<p>注意它用的是 <code>postcore_initcall</code>，比 <code>module_init</code> 早，因为<code> rpmsg_core.c</code> 的总线也用 <code>postcore_initcall</code>，两者都在驱动模型就绪后注册。</p>
+<p><code>rpmsg_char_init</code> 做三件事：</p>
+<ol>
+<li><code>alloc_chrdev_region(&amp;rpmsg_major, 0, RPMSG_DEV_MAX, &quot;rpmsg&quot;) </code>—— 动态申请主设备号，<code>RPMSG_DEV_MAX = MINORMASK+1</code>（即全部次设备号空间）。</li>
+<li><code>class_create(THIS_MODULE, &quot;rpmsg&quot;)</code>—— 创建 <code>/sys/class/rpmsg</code>，这样 <code>cdev_device_add</code> 后会自动在 <code>/dev/</code> 下生成设备节点（依赖 <code>udev</code>/<code>devtmpfs</code>）。</li>
+<li><code>register_rpmsg_driver(&amp;rpmsg_chrdev_driver)</code> —— 注册一个 rpmsg 驱动（不是平台驱动！是挂在 rpmsg 总线上的驱动）。</li>
+</ol>
+<p>而 <code>rpmsg_chrdev_driver</code> 如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_driver</span> <span class="title">rpmsg_chrdev_driver</span> =</span> &#123;</span><br><span class="line">	.probe = rpmsg_chrdev_probe,</span><br><span class="line">	.remove = rpmsg_chrdev_remove,</span><br><span class="line">	.drv = &#123;</span><br><span class="line">		.name = <span class="string">&quot;rpmsg_chrdev&quot;</span>,</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h1 id="关键数据结构">关键数据结构</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:left">设备节点</th>
+<th style="text-align:left">struct</th>
+<th style="text-align:left">谁创建</th>
+<th style="text-align:left">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>控制设备</strong></td>
+<td style="text-align:left"><code>/dev/rpmsg_ctrl0</code></td>
+<td style="text-align:left"><code>rpmsg_ctrldev</code></td>
+<td style="text-align:left"><code>rpmsg_chrdev_probe</code></td>
+<td style="text-align:left">一个 channel 一个；用户通过 ioctl 在它上面&quot;创建端点&quot;</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>端点设备</strong></td>
+<td style="text-align:left"><code>/dev/rpmsg0</code></td>
+<td style="text-align:left"><code>rpmsg_eptdev</code></td>
+<td style="text-align:left"><code>rpmsg_ctrldev_ioctl(CREATE)</code></td>
+<td style="text-align:left">一个端点一个；用户 read/write/poll 它来收发消息</td>
+</tr>
+</tbody>
+</table>
+<p>这种&quot;控制设备 + 数据设备&quot;的分离是 Linux 里很经典的模式：<strong>控制节点用来实例化数据节点，数据节点承载真正的 IO</strong>。</p>
+<h2 id="struct-rpmsg-ctrldev">struct rpmsg_ctrldev</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * struct rpmsg_ctrldev - control device for instantiating endpoint devices</span></span><br><span class="line"><span class="comment"> * @rpdev:	underlaying rpmsg device</span></span><br><span class="line"><span class="comment"> * @cdev:	cdev for the ctrl device</span></span><br><span class="line"><span class="comment"> * @dev:	device for the ctrl device</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_ctrldev</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_device</span> *<span class="title">rpdev</span>;</span>   <span class="comment">// 底层 rpmsg 通道设备</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">cdev</span>;</span>              <span class="comment">// 字符设备</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">device</span> <span class="title">dev</span>;</span>             <span class="comment">// 嵌入的 device，挂在 rpmsg_class 下</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="struct-rpmsg-eptdev">struct rpmsg_eptdev</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * struct rpmsg_eptdev - endpoint device context</span></span><br><span class="line"><span class="comment"> * @dev:	endpoint device</span></span><br><span class="line"><span class="comment"> * @cdev:	cdev for the endpoint device</span></span><br><span class="line"><span class="comment"> * @rpdev:	underlaying rpmsg device</span></span><br><span class="line"><span class="comment"> * @chinfo:	info used to open the endpoint</span></span><br><span class="line"><span class="comment"> * @ept_lock:	synchronization of @ept modifications</span></span><br><span class="line"><span class="comment"> * @ept:	rpmsg endpoint reference, when open</span></span><br><span class="line"><span class="comment"> * @queue_lock:	synchronization of @queue operations</span></span><br><span class="line"><span class="comment"> * @queue:	incoming message queue</span></span><br><span class="line"><span class="comment"> * @readq:	wait object for incoming queue</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_eptdev</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">device</span> <span class="title">dev</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">cdev</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_device</span> *<span class="title">rpdev</span>;</span>          <span class="comment">// 底层通道</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_channel_info</span> <span class="title">chinfo</span>;</span>    <span class="comment">// open 时用的通道信息(name/src/dst)</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">ept_lock</span>;</span>               <span class="comment">// 保护 ept 指针的修改</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_endpoint</span> *<span class="title">ept</span>;</span>          <span class="comment">// open 时才创建的真实端点，可为 NULL</span></span><br><span class="line"></span><br><span class="line">    <span class="type">spinlock_t</span> queue_lock;               <span class="comment">// 保护接收队列</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sk_buff_head</span> <span class="title">queue</span>;</span>           <span class="comment">// 接收消息队列（每条消息一个 skb）</span></span><br><span class="line">    <span class="type">wait_queue_head_t</span> readq;             <span class="comment">// 阻塞读的等待队列</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>锁和等待队列：</p>
+<ul>
+<li><code>struct mutex ept_lock;</code>：保护 ept 指针。ept 会在三种情况下变 NULL：<code>release</code>、<code>destroy ioctl</code>、父设备 <code>remove</code>。读/写路径要先拿这个锁确认 ept 还活着。</li>
+<li><code> spinlock_t queue_lock;</code>：保护 queue（skb 链表）。回调 <code>rpmsg_ept_cb</code>在中断/原子上下文里入队，read_iter 在进程上下文出队，所以这里用自旋锁且 cb 里用 <code>spin_lock</code>，read 里用 <code>spin_lock_irqsave</code>。</li>
+<li><code>wait_queue_head_t readq;</code>：<code>rpmsg_ept_cb</code> 入队后 <code>wake_up_interruptible</code>，<code>read_iter</code> 在队列空时 <code>wait_event_interruptible</code>。这是典型的&quot;生产者-消费者 + 等待队列&quot;。</li>
+</ul>
+<h1 id="rpmsg-driver">rpmsg_driver</h1>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_driver</span> <span class="title">rpmsg_chrdev_driver</span> =</span> &#123;</span><br><span class="line">	.probe = rpmsg_chrdev_probe,</span><br><span class="line">	.remove = rpmsg_chrdev_remove,</span><br><span class="line">	.drv = &#123;</span><br><span class="line">		.name = <span class="string">&quot;rpmsg_chrdev&quot;</span>,</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>注意：这里没有定义callback函数</p>
+<h2 id="rpmsg-chrdev-probe">rpmsg_chrdev_probe()</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">rpmsg_chrdev_probe</span><span class="params">(<span class="keyword">struct</span> rpmsg_device *rpdev)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_ctrldev</span> *<span class="title">ctrldev</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">	ctrldev = kzalloc(<span class="keyword">sizeof</span>(*ctrldev), GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (!ctrldev)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line">	ctrldev-&gt;rpdev = rpdev;</span><br><span class="line"></span><br><span class="line">	dev = &amp;ctrldev-&gt;dev;</span><br><span class="line">	device_initialize(dev);</span><br><span class="line">	dev-&gt;parent = &amp;rpdev-&gt;dev;</span><br><span class="line">	dev-&gt;<span class="class"><span class="keyword">class</span> =</span> rpmsg_class;</span><br><span class="line"></span><br><span class="line">	cdev_init(&amp;ctrldev-&gt;cdev, &amp;rpmsg_ctrldev_fops);</span><br><span class="line">	ctrldev-&gt;cdev.owner = THIS_MODULE;</span><br><span class="line"></span><br><span class="line">	ret = ida_simple_get(&amp;rpmsg_minor_ida, <span class="number">0</span>, RPMSG_DEV_MAX, GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">goto</span> free_ctrldev;</span><br><span class="line">	dev-&gt;devt = MKDEV(MAJOR(rpmsg_major), ret);</span><br><span class="line"></span><br><span class="line">	ret = ida_simple_get(&amp;rpmsg_ctrl_ida, <span class="number">0</span>, <span class="number">0</span>, GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">goto</span> free_minor_ida;</span><br><span class="line">	dev-&gt;id = ret;</span><br><span class="line">	dev_set_name(&amp;ctrldev-&gt;dev, <span class="string">&quot;rpmsg_ctrl%d&quot;</span>, ret);</span><br><span class="line"></span><br><span class="line">	ret = cdev_device_add(&amp;ctrldev-&gt;cdev, &amp;ctrldev-&gt;dev);</span><br><span class="line">	<span class="keyword">if</span> (ret)</span><br><span class="line">		<span class="keyword">goto</span> free_ctrl_ida;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* We can now rely on the release function for cleanup */</span></span><br><span class="line">	dev-&gt;release = rpmsg_ctrldev_release_device;</span><br><span class="line"></span><br><span class="line">	dev_set_drvdata(&amp;rpdev-&gt;dev, ctrldev);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line"></span><br><span class="line">free_ctrl_ida:</span><br><span class="line">	ida_simple_remove(&amp;rpmsg_ctrl_ida, dev-&gt;id);</span><br><span class="line">free_minor_ida:</span><br><span class="line">	ida_simple_remove(&amp;rpmsg_minor_ida, MINOR(dev-&gt;devt));</span><br><span class="line">free_ctrldev:</span><br><span class="line">	put_device(dev);</span><br><span class="line">	kfree(ctrldev);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="rpmsg-chrdev-remove">rpmsg_chrdev_remove()</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">rpmsg_chrdev_remove</span><span class="params">(<span class="keyword">struct</span> rpmsg_device *rpdev)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_ctrldev</span> *<span class="title">ctrldev</span> =</span> dev_get_drvdata(&amp;rpdev-&gt;dev);</span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Destroy all endpoints */</span></span><br><span class="line">	ret = device_for_each_child(&amp;ctrldev-&gt;dev, <span class="literal">NULL</span>, rpmsg_eptdev_destroy);</span><br><span class="line">	<span class="keyword">if</span> (ret)</span><br><span class="line">		dev_warn(&amp;rpdev-&gt;dev, <span class="string">&quot;failed to nuke endpoints: %d\n&quot;</span>, ret);</span><br><span class="line"></span><br><span class="line">	cdev_device_del(&amp;ctrldev-&gt;cdev, &amp;ctrldev-&gt;dev);</span><br><span class="line">	put_device(&amp;ctrldev-&gt;dev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="rpmsg-ctrldev-控制节点">rpmsg_ctrldev 控制节点</h1>
+<h2 id="file-operations">file_operations</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">rpmsg_ctrldev_fops</span> =</span> &#123;</span><br><span class="line">	.owner = THIS_MODULE,</span><br><span class="line">	.open = rpmsg_ctrldev_open,</span><br><span class="line">	.release = rpmsg_ctrldev_release,</span><br><span class="line">	.unlocked_ioctl = rpmsg_ctrldev_ioctl,</span><br><span class="line">	.compat_ioctl = compat_ptr_ioctl,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="rpmsg-ctrldev-open">rpmsg_ctrldev_open</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">rpmsg_ctrldev_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *filp)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_ctrldev</span> *<span class="title">ctrldev</span> =</span> cdev_to_ctrldev(inode-&gt;i_cdev);</span><br><span class="line"></span><br><span class="line">	get_device(&amp;ctrldev-&gt;dev);</span><br><span class="line">	filp-&gt;private_data = ctrldev;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="rpmsg-ctrldev-release">rpmsg_ctrldev_release</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">rpmsg_ctrldev_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *filp)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_ctrldev</span> *<span class="title">ctrldev</span> =</span> cdev_to_ctrldev(inode-&gt;i_cdev);</span><br><span class="line"></span><br><span class="line">	put_device(&amp;ctrldev-&gt;dev);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>probe 函数中有<code>dev-&gt;release = rpmsg_ctrldev_release_device;</code>，因此实际 <code>release</code> 函数为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">rpmsg_ctrldev_release_device</span><span class="params">(<span class="keyword">struct</span> device *dev)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_ctrldev</span> *<span class="title">ctrldev</span> =</span> dev_to_ctrldev(dev);</span><br><span class="line"></span><br><span class="line">	ida_simple_remove(&amp;rpmsg_ctrl_ida, dev-&gt;id);</span><br><span class="line">	ida_simple_remove(&amp;rpmsg_minor_ida, MINOR(dev-&gt;devt));</span><br><span class="line">	kfree(ctrldev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="rpmsg-ctrldev-ioctl">rpmsg_ctrldev_ioctl</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">long</span> <span class="title function_">rpmsg_ctrldev_ioctl</span><span class="params">(<span class="keyword">struct</span> file *fp, <span class="type">unsigned</span> <span class="type">int</span> cmd,</span></span><br><span class="line"><span class="params">				<span class="type">unsigned</span> <span class="type">long</span> arg)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_ctrldev</span> *<span class="title">ctrldev</span> =</span> fp-&gt;private_data;</span><br><span class="line">	<span class="type">void</span> __user *argp = (<span class="type">void</span> __user *)arg;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_endpoint_info</span> <span class="title">eptinfo</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_channel_info</span> <span class="title">chinfo</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (cmd != RPMSG_CREATE_EPT_IOCTL)</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (copy_from_user(&amp;eptinfo, argp, <span class="keyword">sizeof</span>(eptinfo)))</span><br><span class="line">		<span class="keyword">return</span> -EFAULT;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">memcpy</span>(chinfo.name, eptinfo.name, RPMSG_NAME_SIZE);</span><br><span class="line">	chinfo.name[RPMSG_NAME_SIZE<span class="number">-1</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">	chinfo.src = eptinfo.src;</span><br><span class="line">	chinfo.dst = eptinfo.dst;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> rpmsg_eptdev_create(ctrldev, chinfo);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="rpmsg-eptdev-create">rpmsg_eptdev_create</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">rpmsg_eptdev_create</span><span class="params">(<span class="keyword">struct</span> rpmsg_ctrldev *ctrldev,</span></span><br><span class="line"><span class="params">			       <span class="keyword">struct</span> rpmsg_channel_info chinfo)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_device</span> *<span class="title">rpdev</span> =</span> ctrldev-&gt;rpdev;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpmsg_eptdev</span> *<span class="title">eptdev</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">	eptdev = kzalloc(<span class="keyword">sizeof</span>(*eptdev), GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (!eptdev)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line">	dev = &amp;eptdev-&gt;dev;</span><br><span class="line">	eptdev-&gt;rpdev = rpdev;</span><br><span class="line">	eptdev-&gt;chinfo = chinfo;</span><br><span class="line"></span><br><span class="line">	mutex_init(&amp;eptdev-&gt;ept_lock);</span><br><span class="line">	spin_lock_init(&amp;eptdev-&gt;queue_lock);</span><br><span class="line">	skb_queue_head_init(&amp;eptdev-&gt;<span class="built_in">queue</span>);</span><br><span class="line">	init_waitqueue_head(&amp;eptdev-&gt;readq);</span><br><span class="line"></span><br><span class="line">	device_initialize(dev);</span><br><span class="line">	dev-&gt;<span class="class"><span class="keyword">class</span> =</span> rpmsg_class;</span><br><span class="line">	dev-&gt;parent = &amp;ctrldev-&gt;dev;</span><br><span class="line">	dev-&gt;groups = rpmsg_eptdev_groups;</span><br><span class="line">	dev_set_drvdata(dev, eptdev);</span><br><span class="line"></span><br><span class="line">	cdev_init(&amp;eptdev-&gt;cdev, &amp;rpmsg_eptdev_fops);</span><br><span class="line">	eptdev-&gt;cdev.owner = THIS_MODULE;</span><br><span class="line"></span><br><span class="line">	ret = ida_simple_get(&amp;rpmsg_minor_ida, <span class="number">0</span>, RPMSG_DEV_MAX, GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">goto</span> free_eptdev;</span><br><span class="line">	dev-&gt;devt = MKDEV(MAJOR(rpmsg_major), ret);</span><br><span class="line"></span><br><span class="line">	ret = ida_simple_get(&amp;rpmsg_ept_ida, <span class="number">0</span>, <span class="number">0</span>, GFP_KERNEL);</span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">goto</span> free_minor_ida;</span><br><span class="line">	dev-&gt;id = ret;</span><br><span class="line">	dev_set_name(dev, <span class="string">&quot;rpmsg%d&quot;</span>, ret);</span><br><span class="line"></span><br><span class="line">	ret = cdev_device_add(&amp;eptdev-&gt;cdev, &amp;eptdev-&gt;dev);</span><br><span class="line">	<span class="keyword">if</span> (ret)</span><br><span class="line">		<span class="keyword">goto</span> free_ept_ida;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* We can now rely on the release function for cleanup */</span></span><br><span class="line">	dev-&gt;release = rpmsg_eptdev_release_device;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line"></span><br><span class="line">free_ept_ida:</span><br><span class="line">	ida_simple_remove(&amp;rpmsg_ept_ida, dev-&gt;id);</span><br><span class="line">free_minor_ida:</span><br><span class="line">	ida_simple_remove(&amp;rpmsg_minor_ida, MINOR(dev-&gt;devt));</span><br><span class="line">free_eptdev:</span><br><span class="line">	put_device(dev);</span><br><span class="line">	kfree(eptdev);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="compat-ptr-ioctl">compat_ptr_ioctl</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_COMPAT</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * compat_ptr_ioctl - generic implementation of .compat_ioctl file operation</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This is not normally called as a function, but instead set in struct</span></span><br><span class="line"><span class="comment"> * file_operations as</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     .compat_ioctl = compat_ptr_ioctl,</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * On most architectures, the compat_ptr_ioctl() just passes all arguments</span></span><br><span class="line"><span class="comment"> * to the corresponding -&gt;ioctl handler. The exception is arch/s390, where</span></span><br><span class="line"><span class="comment"> * compat_ptr() clears the top bit of a 32-bit pointer value, so user space</span></span><br><span class="line"><span class="comment"> * pointers to the second 2GB alias the first 2GB, as is the case for</span></span><br><span class="line"><span class="comment"> * native 32-bit s390 user space.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The compat_ptr_ioctl() function must therefore be used only with ioctl</span></span><br><span class="line"><span class="comment"> * functions that either ignore the argument or pass a pointer to a</span></span><br><span class="line"><span class="comment"> * compatible data type.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * If any ioctl command handled by fops-&gt;unlocked_ioctl passes a plain</span></span><br><span class="line"><span class="comment"> * integer instead of a pointer, or any of the passed data types</span></span><br><span class="line"><span class="comment"> * is incompatible between 32-bit and 64-bit architectures, a proper</span></span><br><span class="line"><span class="comment"> * handler is required instead of compat_ptr_ioctl.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">long</span> <span class="title function_">compat_ptr_ioctl</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">unsigned</span> <span class="type">int</span> cmd, <span class="type">unsigned</span> <span class="type">long</span> arg)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (!file-&gt;f_op-&gt;unlocked_ioctl)</span><br><span class="line">		<span class="keyword">return</span> -ENOIOCTLCMD;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> file-&gt;f_op-&gt;unlocked_ioctl(file, cmd, (<span class="type">unsigned</span> <span class="type">long</span>)compat_ptr(arg));</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(compat_ptr_ioctl);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>直接使用 <code>fs/ioctl.c</code> 中的<code>compat_ptr_ioctl</code>实现</p>
+<h1 id="rpmsg-eptdev-ept节点">rpmsg_eptdev ept节点</h1>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/202606290/">https://even629.com/posts/202606290/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#module-init-module-exit"><span class="toc-number">1.</span> <span class="toc-text">module_init &#x2F; module_exit</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">关键数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-rpmsg-ctrldev"><span class="toc-number">2.1.</span> <span class="toc-text">struct rpmsg_ctrldev</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-rpmsg-eptdev"><span class="toc-number">2.2.</span> <span class="toc-text">struct rpmsg_eptdev</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#rpmsg-driver"><span class="toc-number">3.</span> <span class="toc-text">rpmsg_driver</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#rpmsg-chrdev-probe"><span class="toc-number">3.1.</span> <span class="toc-text">rpmsg_chrdev_probe()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rpmsg-chrdev-remove"><span class="toc-number">3.2.</span> <span class="toc-text">rpmsg_chrdev_remove()</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#rpmsg-ctrldev-%E6%8E%A7%E5%88%B6%E8%8A%82%E7%82%B9"><span class="toc-number">4.</span> <span class="toc-text">rpmsg_ctrldev 控制节点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#file-operations"><span class="toc-number">4.1.</span> <span class="toc-text">file_operations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rpmsg-ctrldev-open"><span class="toc-number">4.2.</span> <span class="toc-text">rpmsg_ctrldev_open</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rpmsg-ctrldev-release"><span class="toc-number">4.3.</span> <span class="toc-text">rpmsg_ctrldev_release</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rpmsg-ctrldev-ioctl"><span class="toc-number">4.4.</span> <span class="toc-text">rpmsg_ctrldev_ioctl</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#rpmsg-eptdev-create"><span class="toc-number">4.4.1.</span> <span class="toc-text">rpmsg_eptdev_create</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#compat-ptr-ioctl"><span class="toc-number">4.5.</span> <span class="toc-text">compat_ptr_ioctl</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#rpmsg-eptdev-ept%E8%8A%82%E7%82%B9"><span class="toc-number">5.</span> <span class="toc-text">rpmsg_eptdev ept节点</span></a></li></ol></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
+
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (true) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
+    }
+  }
+
+  showKatex()
+})()</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liyQTymWpBETlDO8',
+      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
+      repo: 'even629.github.io',
+      owner: 'even629',
+      admin: ['even629'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '9571a1cd1750ecfeb80cd0c794338c6a'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script>(()=>{let d=document,c='style',s=d.createElement(c);s.textContent="@font-face{font-family:'Dymon-ShouXieTi';font-display:swap;src:url(/font/Dymon-ShouXieTi.otf) format('opentype')}@font-face{font-family:'FiraCode-Regular';font-display:swap;font-variant-ligatures:common-ligatures discretionary-ligatures;font-feature-settings:'liga' on;src:url(/font/FiraCode-Regular.ttf) format('truetype')}";window.addEventListener('load',()=>d.head.appendChild(s))})()</script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
+<filter
+  id="glass-distortion"
+  x="0%"
+  y="0%"
+  width="100%"
+  height="100%"
+  filterUnits="objectBoundingBox"
+>
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.01 0.01"
+    numOctaves="1"
+    seed="5"
+    result="turbulence"
+  />
+  <!-- Seeds: 14, 17,  -->
+
+  <feComponentTransfer in="turbulence" result="mapped">
+    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+  </feComponentTransfer>
+
+  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+  <feSpecularLighting
+    in="softMap"
+    surfaceScale="5"
+    specularConstant="1"
+    specularExponent="100"
+    lighting-color="white"
+    result="specLight"
+  >
+    <fePointLight x="-200" y="-200" z="300" />
+  </feSpecularLighting>
+
+  <feComposite
+    in="specLight"
+    operator="arithmetic"
+    k1="0"
+    k2="1"
+    k3="1"
+    k4="0"
+    result="litImage"
+  />
+
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="softMap"
+    scale="20"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+  </filter>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><script defer data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><!-- hexo injector body_end end --></body></html>
