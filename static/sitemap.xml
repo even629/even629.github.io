@@ -443,15 +443,6 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/index.html</loc>
-    
-    <lastmod>2026-01-14</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/link/index.html</loc>
     
     <lastmod>2026-01-14</lastmod>
@@ -470,6 +461,15 @@
   </url>
   
   <url>
+    <loc>https://even629.com/tags/index.html</loc>
+    
+    <lastmod>2026-01-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://even629.com/charts/index.html</loc>
     
     <lastmod>2026-01-14</lastmod>
@@ -479,7 +479,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/index.html</loc>
+    <loc>https://even629.com/equipment/index.html</loc>
     
     <lastmod>2026-01-14</lastmod>
     
@@ -488,7 +488,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/equipment/index.html</loc>
+    <loc>https://even629.com/categories/index.html</loc>
     
     <lastmod>2026-01-14</lastmod>
     
@@ -3121,28 +3121,14 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/Hardware/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/Misc/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/WSL/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/tags/hexo/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/Hardware/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3157,6 +3143,20 @@
   
   <url>
     <loc>https://even629.com/tags/GNU/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/Misc/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/WSL/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3191,7 +3191,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/UEFI/</loc>
+    <loc>https://even629.com/tags/AI/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3199,13 +3199,6 @@
   
   <url>
     <loc>https://even629.com/tags/tools/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/AI/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3226,6 +3219,13 @@
   </url>
   
   <url>
+    <loc>https://even629.com/tags/UEFI/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://even629.com/tags/leetcode%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
@@ -3240,7 +3240,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E6%A8%A1%E6%8B%9F/</loc>
+    <loc>https://even629.com/tags/%E6%95%B0%E7%BB%84/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3254,6 +3254,13 @@
   </url>
   
   <url>
+    <loc>https://even629.com/tags/leetcode%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%85%B8150%E9%A2%98/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://even629.com/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
@@ -3261,14 +3268,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E6%95%B0%E7%BB%84/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/leetcode%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%85%B8150%E9%A2%98/</loc>
+    <loc>https://even629.com/tags/BFS/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3289,7 +3289,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/BFS/</loc>
+    <loc>https://even629.com/tags/%E6%A8%A1%E6%8B%9F/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3317,13 +3317,6 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/tags/%E5%B7%AE%E5%88%86/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
@@ -3339,6 +3332,13 @@
   
   <url>
     <loc>https://even629.com/tags/%E7%9F%A9%E9%98%B5/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3373,13 +3373,6 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/tags/%E5%A0%86/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
@@ -3394,28 +3387,14 @@
   </url>
   
   <url>
+    <loc>https://even629.com/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://even629.com/tags/%E5%8D%95%E8%B0%83%E6%A0%88/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/%E5%B9%B6%E6%9F%A5%E9%9B%86/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/%E7%A9%B7%E4%B8%BE/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3429,7 +3408,56 @@
   </url>
   
   <url>
+    <loc>https://even629.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E7%A9%B7%E4%B8%BE/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E5%9B%9E%E6%BA%AF/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E5%B9%B6%E6%9F%A5%E9%9B%86/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/%E5%88%86%E6%B2%BB/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/tags/0-1%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3443,7 +3471,7 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E5%88%86%E6%B2%BB/</loc>
+    <loc>https://even629.com/tags/%E5%9B%BE/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3458,13 +3486,6 @@
   
   <url>
     <loc>https://even629.com/tags/BST/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/%E5%9B%BE/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3493,13 +3514,6 @@
   
   <url>
     <loc>https://even629.com/tags/%E6%B5%AE%E7%82%B9%E6%95%B0/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/%E5%9B%9E%E6%BA%AF/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3555,20 +3569,6 @@
   </url>
   
   <url>
-    <loc>https://even629.com/tags/%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/tags/0-1%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/tags/driver/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
@@ -3606,21 +3606,14 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/Hardware/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://even629.com/categories/Misc/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://even629.com/categories/hexo/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/categories/Hardware/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3634,14 +3627,14 @@
   </url>
   
   <url>
-    <loc>https://even629.com/categories/programming/</loc>
+    <loc>https://even629.com/categories/Misc/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://even629.com/categories/UEFI/</loc>
+    <loc>https://even629.com/categories/programming/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -3656,6 +3649,13 @@
   
   <url>
     <loc>https://even629.com/categories/virtualization/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://even629.com/categories/UEFI/</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

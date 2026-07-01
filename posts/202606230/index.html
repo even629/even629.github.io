@@ -172,9 +172,9 @@ if (true) {
             </details>
 <hr>
 <blockquote>
-<p>linux 5.10.238<br>
-<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260701223610663.png" alt="rpmsg.drawio"></p>
+<p>linux 5.10.238</p>
 </blockquote>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260701223610663.png" alt="rpmsg.drawio"></p>
 <h2 id="rpmsg-结构">rpmsg 结构</h2>
 <p>rpmsg 有三层：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">┌────────────────────────────────────────┐</span><br><span class="line">│ 业务层：rpmsg_driver                     │  ← 写业务的地方</span><br><span class="line">│ （rpmsg_tty / rpmsg_chrdev / 自定义）    │</span><br><span class="line">├────────────────────────────────────────┤</span><br><span class="line">│ rpmsg 总线 / core：rpmsg_core.c         │  ← 匹配 device 和 driver</span><br><span class="line">│ rpmsg_device / rpmsg_endpoint          │</span><br><span class="line">├────────────────────────────────────────┤</span><br><span class="line">│ transport 后端：virtio_rpmsg_bus.c      │  ← 本博客重点分析的代码</span><br><span class="line">│ （virtio_driver，搬运消息、造 channel）   │</span><br><span class="line">├────────────────────────────────────────┤</span><br><span class="line">│ virtio 总线 / vring                     │</span><br><span class="line">└────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
