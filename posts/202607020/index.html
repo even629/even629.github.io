@@ -1,18 +1,18 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Remote Processor Framework | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="时间轴                               时间轴2026-07-02init                              TODO 参考资料 [1]AMP相关：1 Linux remoteproc子系统(基于STM32MP157)概览 [2]【STM32MP157 异核通信框架学习篇】（10）Linux下Remoteproc相关API (上) [3]Li">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>IPCC | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="IPCC（进程间通信控制器）是用于实现异构CPU间信号交换的硬件模块，通过硬件中断机制通知处理器处理共享内存中的数据，其本身不负责数据传输。STM32MP157的IPCC包含6个双向通道，支持单工和全双工模式，ST官方将其映射为RemoteProc框架控制协处理器生命周期，以及RPMsg框架实现核间通信，并通过划分独立寄存器区防止访问冲突。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Remote Processor Framework">
+<meta property="og:title" content="IPCC">
 <meta property="og:url" content="https://even629.com/posts/202607020/index.html">
 <meta property="og:site_name" content="常想一二，不思八九">
-<meta property="og:description" content="时间轴                               时间轴2026-07-02init                              TODO 参考资料 [1]AMP相关：1 Linux remoteproc子系统(基于STM32MP157)概览 [2]【STM32MP157 异核通信框架学习篇】（10）Linux下Remoteproc相关API (上) [3]Li">
+<meta property="og:description" content="IPCC（进程间通信控制器）是用于实现异构CPU间信号交换的硬件模块，通过硬件中断机制通知处理器处理共享内存中的数据，其本身不负责数据传输。STM32MP157的IPCC包含6个双向通道，支持单工和全双工模式，ST官方将其映射为RemoteProc框架控制协处理器生命周期，以及RPMsg框架实现核间通信，并通过划分独立寄存器区防止访问冲突。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="og:image" content="https://even629.com/images/openamp_cover.png">
 <meta property="article:published_time" content="2026-07-02T15:17:13.000Z">
 <meta property="article:modified_time" content="2026-07-02T15:17:13.000Z">
 <meta property="article:author" content="even629">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="GNU">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/202607020/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+<meta name="twitter:image" content="https://even629.com/images/openamp_cover.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/202607020/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
     (() => {
       
     const saveToLocal = {
@@ -141,7 +141,7 @@
   },
   autoDarkmode: false
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'Remote Processor Framework',
+  title: 'IPCC',
   isPost: true,
   isHome: false,
   isHighlightShrink: false,
@@ -164,20 +164,653 @@ window.addEventListener('load',()=> { preloader.endLoading() })
 if (true) {
   document.addEventListener('pjax:send', () => { preloader.initLoading() })
   document.addEventListener('pjax:complete', () => { preloader.endLoading() })
-}</script><div id="web_bg" style="background-image: url(/img/12bb_background.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">96</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Remote Processor Framework</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-02T15:17:13.000Z" title="发表于 2026-07-02 23:17:13">2026-07-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-02T15:17:13.000Z" title="更新于 2026-07-02 23:17:13">2026-07-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">55</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>1分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/202607020/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
+}</script><div id="web_bg" style="background-image: url(/img/12bb_background.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/openAMP.png);"><nav class="liquidGlass-wrapper" id="nav"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">IPCC</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-02T15:17:13.000Z" title="发表于 2026-07-02 23:17:13">2026-07-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-02T15:17:13.000Z" title="更新于 2026-07-02 23:17:13">2026-07-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/202607020/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
 <details class="folding-tag" green open><summary> 时间轴 </summary>
               <div class='content'>
               <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-07-02</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
               </div>
             </details>
+<div class="tip key"><p>IPCC（进程间通信控制器）是用于实现异构CPU间信号交换的硬件模块，通过硬件中断机制通知处理器处理共享内存中的数据，其本身不负责数据传输。STM32MP157的IPCC包含6个双向通道，支持单工和全双工模式，ST官方将其映射为RemoteProc框架控制协处理器生命周期，以及RPMsg框架实现核间通信，并通过划分独立寄存器区防止访问冲突。</p>
+</div>
 <hr>
-<p>TODO</p>
-<h1 id="参考资料">参考资料</h1>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" target="_blank" rel="noopener" href="https://www.cnblogs.com/arnoldlu/p/18280216">AMP相关：1 Linux remoteproc子系统(基于STM32MP157)概览</a></div>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[2]"></span><a class="reference-anchor" href="#referto_[2]">[2]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" target="_blank" rel="noopener" href="https://blog.csdn.net/qq_54050349/article/details/154883097">【STM32MP157 异核通信框架学习篇】（10）Linux下Remoteproc相关API (上)</a></div>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[3]"></span><a class="reference-anchor" href="#referto_[3]">[3]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" target="_blank" rel="noopener" href="https://wiki.st.com/stm32mpu/wiki/Linux_remoteproc_framework_overview">Linux remoteproc framework overview</a></div>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[4]"></span><a class="reference-anchor" href="#referto_[4]">[4]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" target="_blank" rel="noopener" href="https://www.kernel.org/doc/html/latest/staging/remoteproc.html">Remote Processor Framework</a></div>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/202607020/">https://even629.com/posts/202607020/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">96</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(async () => {
+<p><strong>IPC</strong>（ <strong>Inter -Process Communication</strong>，进程间通信）是指两个进程（广义的进程间，包括异构核心的进程）的数据之间发生交互，它是通过处理器间通信控制器 <strong>IPCC</strong>（<strong>Inter-Process Communication controller</strong> ，IPC 控制器）来实现的，IPCC属于硬件部分，用于在两个CPU之间进行信号交换，邮箱依赖于IPCC，STM32MP157的 IPCC 硬件模块有 6 个双向通道，每个通道分为两个子通道，6 个双向通道则共有 12 个子通道。如图所示是 A7 内核和 M4 内核通过 IPCC 进行通信的结构框图。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704141048294.png" alt="IPC 通信结构框图"></p>
+<p><strong>当一个数据包被放入共享内存时，CPU 需要中断或“通知”另一个 CPU 有新的数据包在共享内存中要处理，另外一个 CPU 收到信号后就去处理了，这是使用 IPCC 硬件中断机制来完成的</strong>。</p>
+<p>A7 内核的中断控制器是 GIC，M4 内核的中断控制器是 NVIC。IPCC 的作用就好比放哨员，什么时候有数据可以接收，什么时候可以发送数据，整个过程是由 IPCC 来控制的。</p>
+<p><strong>IPCC只是提供了处理器之间信息交换的机制，它并不具有数据传输功能</strong>，也就是说，<strong>处理器之间要交互的数据</strong>并不是在 IPCC 中传输的，<strong>是在共享内存中传输的</strong>。</p>
+<h2 id="IPCC-通道">IPCC 通道</h2>
+<p>IPCC 的 6 个通信的工作模式可分为单工、半双工和全双工：</p>
+<ul>
+<li>从 CPU1 到 CPU2 的方向有 6 个通道（P1_TO_P2 子通道，P1 代表 CPU1，P2 代表CPU2）</li>
+<li>从 CPU2 到 CPU1 的方向有 6 个通道（P2_TO_P1 子通道，P1 代表 CPU1，P2 代表CPU2）</li>
+</ul>
+<p>如下表所示，在 ST 官方配置的 IPCC 通信模型中，这 6 个通道被当做不同的软件框架来使用，其中：</p>
+<ul>
+<li>通道 3 为单工模式，被当做 RemoteProc 框架，主处理器可通过该框架来加载协处理器的固件以及控制协处理器的生命周期；</li>
+<li>通道 2 为全双工模式，被当做 RPMsg 框架，用于将 A7 的消息传输到 M4；</li>
+<li>通道 1 为全双工模式，被当做 RPMsg 框架，用于将 M4 的消息传输到 A7。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>通道</strong></th>
+<th><strong>模式</strong></th>
+<th><strong>用法</strong></th>
+<th><strong>软件客户端框架：Cortex-A7(非安全)</strong></th>
+<th><strong>软件客户端框架：Cortex-M4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>通道 1</td>
+<td>全双工</td>
+<td>从 Cortex-M4 到 Cortex-A7 的 RPMsg 传输：<br /> 1. Cortex-M4 使用该信道来指示一个消息可用<br /> 2. Cortex-A7 使用该信道以指示该消息被处理</td>
+<td>RPMsg 框架</td>
+<td>OpenAMP</td>
+</tr>
+<tr>
+<td>通道 2</td>
+<td>全双工</td>
+<td>从 Cortex-A7 到 Cortex-M4 的 RPMsg 传输： <br />1. Cortex-A7 使用该信道来指示一个消息可用 <br />2. Cortex-M4 使用该信道以指示该消息被处理</td>
+<td>RPMsg 框架</td>
+<td>OpenAMP</td>
+</tr>
+<tr>
+<td>通道 3</td>
+<td>单工</td>
+<td>Cortex-M4 关闭请求</td>
+<td>RemoteProc 框架</td>
+<td>CprocSync cube utility</td>
+</tr>
+<tr>
+<td>通道 4/5/6</td>
+<td></td>
+<td>未使用</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>单工通信</strong>： 指信号只在一个方向上传输，仅能发送或接收</p>
+<p><strong>半双工通信</strong>：信号可以在俩个方向上传输，但某一个时刻只允许发送或接收(单总线和 I2C 都是半双工通信)</p>
+<p><strong>全双工通信</strong>：全双工通信指数据同时在两个方向上传输</p>
+</blockquote>
+<p>可以看到，在ST配置好的框架中:</p>
+<ol>
+<li>RemoteProc软件框架解决了远程处理器生命周期的问题</li>
+<li>RPMsg软件框架解决了核间通信的问题</li>
+</ol>
+<p>这两个就是在多核处理器通信中关心的问题！</p>
+<p>在Linux内核下已经有ST移植好RemoteProc和RPMsg软件框架，在M4使用的OpenAMP库中也有对应的RemoteProc和RPMsg软件框架，M4主要依赖OpenAMP库中已有的软件框架来实现和A7通信。</p>
+<blockquote>
+<p>注意: 为了便于主核能够控制协处理器，因此在linux端设计了OpenAMP框架，但是同时为了兼容linux端OpenAMP框架，M4的相关产商也设计了一个OpenAMP框架，两者是可对接的，但是还是有一定区别，但是名字一样</p>
+</blockquote>
+<p>STM32MP157的A7和M4实际上是通过通道1和通道2来传递数据的：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704150729153.png" alt="Cortex-A7和Cortex-M4之间传递数据"></p>
+<h2 id="IPCC-寄存器">IPCC 寄存器</h2>
+<p>和IPCC相关的8个寄存器，寄存器区被分成两个区域，每个处理器占用一个区域，防止读——写访问冲突，如下表中，前4个寄存器被处理器1占用，后4个寄存器被处理器2占用。</p>
+<p>IPCC为处理器提供专用的中断，每个处理器都有自己的状态屏蔽寄存器位、每个通道的设置或清除寄存器位。</p>
+<table>
+<thead>
+<tr>
+<th><strong>寄存器</strong></th>
+<th><strong>说明</strong></th>
+<th><strong>位（n表示1~6）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IPCC_C1CR</td>
+<td>使能/关闭    处理器1 TX通道空闲中断/RX通道占用中断</td>
+<td>TXFIE、RXOIE</td>
+</tr>
+<tr>
+<td>IPCC_C1MR</td>
+<td>屏蔽/不屏蔽 处理器1 TX通道X空闲中断/RX通道X占用中断</td>
+<td>CHnFM、CHnOM</td>
+</tr>
+<tr>
+<td>IPCC_C1SCR</td>
+<td>处理器1 TX/RX   通道X状态位 设置/清零</td>
+<td>CHnS、CHnC</td>
+</tr>
+<tr>
+<td>IPCC_C1TOC2SR</td>
+<td>通道被占用/空闲</td>
+<td>CHnF</td>
+</tr>
+<tr>
+<td>IPCC_C2CR</td>
+<td>使能/关闭    处理器2 TX通道空闲中断/RX通道占用中断</td>
+<td>TXFIE、RXOIE</td>
+</tr>
+<tr>
+<td>IPCC_C2MR</td>
+<td>屏蔽/不屏蔽 处理器2 TX通道X空闲中断/RX通道X占用中断</td>
+<td>CHnFM、CHnOM</td>
+</tr>
+<tr>
+<td>IPCC_C2SCR</td>
+<td>处理器2 TX/RX   通道X状态位 设置/清零</td>
+<td>CHnS、CHnC</td>
+</tr>
+<tr>
+<td>IPCC_C2TOC1SR</td>
+<td>通道被占用/空闲</td>
+<td>CHnF</td>
+</tr>
+</tbody>
+</table>
+<h3 id="IPCC-C1CR">IPCC_C1CR</h3>
+<p>IPCC 处理器1 控制寄存器</p>
+<table>
+<thead>
+<tr>
+<th><strong>31</strong></th>
+<th><strong>30</strong></th>
+<th><strong>29</strong></th>
+<th><strong>28</strong></th>
+<th><strong>27</strong></th>
+<th><strong>26</strong></th>
+<th><strong>25</strong></th>
+<th><strong>24</strong></th>
+<th><strong>23</strong></th>
+<th><strong>22</strong></th>
+<th><strong>21</strong></th>
+<th><strong>20</strong></th>
+<th><strong>19</strong></th>
+<th><strong>18</strong></th>
+<th><strong>17</strong></th>
+<th><strong>16</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td><strong>TXFIE</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>rw</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><strong>15</strong></th>
+<th><strong>14</strong></th>
+<th><strong>13</strong></th>
+<th><strong>12</strong></th>
+<th><strong>11</strong></th>
+<th><strong>10</strong></th>
+<th><strong>9</strong></th>
+<th><strong>8</strong></th>
+<th><strong>7</strong></th>
+<th><strong>6</strong></th>
+<th><strong>5</strong></th>
+<th><strong>4</strong></th>
+<th><strong>3</strong></th>
+<th><strong>2</strong></th>
+<th><strong>1</strong></th>
+<th><strong>0</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td><strong>RXOIE</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>rw</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>第17~ 31和第1~15位，保留位，必须保持在复位值。</li>
+<li>第16位，TXFIE：处理器1发送（TX）通道 空闲中断 使能位，与 <strong>IPCC_C1TOC2SR</strong>关联，当该位为：
+<ul>
+<li>1：使能处理器1发送（TX）通道空闲中断；</li>
+<li>0：关闭处理器1发送（TX）通道空闲中断。</li>
+</ul>
+</li>
+<li>第0位，RXOIE：处理器1接收（RX）通道占用中断使能位，与<strong>IPCC_C2TOC1SR</strong>关联，当该位为：
+<ul>
+<li>1：使能处理器1接收（RX）通道占用中断；</li>
+<li>0：关闭处理器1接收（RX）通道占用中断。</li>
+</ul>
+</li>
+</ul>
+<h3 id="IPCC-C1MR">IPCC_C1MR</h3>
+<p>IPCC 处理器1屏蔽寄存器</p>
+<table>
+<thead>
+<tr>
+<th><strong>31</strong></th>
+<th><strong>30</strong></th>
+<th><strong>29</strong></th>
+<th><strong>28</strong></th>
+<th><strong>27</strong></th>
+<th><strong>26</strong></th>
+<th><strong>25</strong></th>
+<th><strong>24</strong></th>
+<th><strong>23</strong></th>
+<th><strong>22</strong></th>
+<th><strong>21</strong></th>
+<th><strong>20</strong></th>
+<th><strong>19</strong></th>
+<th><strong>18</strong></th>
+<th><strong>17</strong></th>
+<th><strong>16</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td><strong>CH6FM</strong></td>
+<td><strong>CH5FM</strong></td>
+<td><strong>CH4FM</strong></td>
+<td><strong>CH3FM</strong></td>
+<td><strong>CH2FM</strong></td>
+<td><strong>CH1FM</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><strong>15</strong></th>
+<th><strong>14</strong></th>
+<th><strong>13</strong></th>
+<th><strong>12</strong></th>
+<th><strong>11</strong></th>
+<th><strong>10</strong></th>
+<th><strong>9</strong></th>
+<th><strong>8</strong></th>
+<th><strong>7</strong></th>
+<th><strong>6</strong></th>
+<th><strong>5</strong></th>
+<th><strong>4</strong></th>
+<th><strong>3</strong></th>
+<th><strong>2</strong></th>
+<th><strong>1</strong></th>
+<th><strong>0</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td><strong>CH6OM</strong></td>
+<td><strong>CH5OM</strong></td>
+<td><strong>CH4OM</strong></td>
+<td><strong>CH3OM</strong></td>
+<td><strong>CH2OM</strong></td>
+<td><strong>CH1OM</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>第22~ 31位和第6~15位，保留位，必须保持在复位值。</p>
+</li>
+<li>
+<p>第16~ 21位，<strong>CH1FM</strong>~<strong>CH6FM</strong>，处理器1发送（TX）通道X空闲中断屏蔽位，与 <strong>IPCC_C1TOC2SR.CHxF</strong>关联，当该位为：</p>
+<ul>
+<li>1：发送（TX）通道X空闲中断被屏蔽；</li>
+<li>0：发送（TX）通道X空闲中断未被屏蔽。</li>
+</ul>
+</li>
+<li>
+<p>第0，5位，<strong>CH1OM</strong> <strong>CH6OM</strong>，处理器1接收（RX）通道X占用中断屏蔽位，与<strong>IPCC_C2TOC1SR.CHxF</strong>相关，当该位为：</p>
+<ul>
+<li>1：接收（RX）通道X占用中断被屏蔽；</li>
+<li>0：接收（RX）通道X占用中断未被屏蔽。</li>
+</ul>
+</li>
+</ul>
+<h3 id="IPCC-C1SCR">IPCC_C1SCR</h3>
+<p>IPCC 处理器1 状态设置清除寄存器</p>
+<table>
+<thead>
+<tr>
+<th><strong>31</strong></th>
+<th><strong>30</strong></th>
+<th><strong>29</strong></th>
+<th><strong>28</strong></th>
+<th><strong>27</strong></th>
+<th><strong>26</strong></th>
+<th><strong>25</strong></th>
+<th><strong>24</strong></th>
+<th><strong>23</strong></th>
+<th><strong>22</strong></th>
+<th><strong>21</strong></th>
+<th><strong>20</strong></th>
+<th><strong>19</strong></th>
+<th><strong>18</strong></th>
+<th><strong>17</strong></th>
+<th><strong>16</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td><strong>CH6FM</strong></td>
+<td><strong>CH5FM</strong></td>
+<td><strong>CH4FM</strong></td>
+<td><strong>CH3FM</strong></td>
+<td><strong>CH2FM</strong></td>
+<td><strong>CH1FM</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><strong>15</strong></th>
+<th><strong>14</strong></th>
+<th><strong>13</strong></th>
+<th><strong>12</strong></th>
+<th><strong>11</strong></th>
+<th><strong>10</strong></th>
+<th><strong>9</strong></th>
+<th><strong>8</strong></th>
+<th><strong>7</strong></th>
+<th><strong>6</strong></th>
+<th><strong>5</strong></th>
+<th><strong>4</strong></th>
+<th><strong>3</strong></th>
+<th><strong>2</strong></th>
+<th><strong>1</strong></th>
+<th><strong>0</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td>Res</td>
+<td><strong>CH6OM</strong></td>
+<td><strong>CH5OM</strong></td>
+<td><strong>CH4OM</strong></td>
+<td><strong>CH3OM</strong></td>
+<td><strong>CH2OM</strong></td>
+<td><strong>CH1OM</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+<td>rw</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>第22~ 31位和第6~15位，保留位，必须保持在复位值。</li>
+<li>第16~ 21位，CH1S~CH6S，处理器1发送（TX）通道X状态设置位，与<strong>IPCC_C1TOC2SR.CHxF</strong> 相关，当设置该位：
+<ul>
+<li>1：处理器1发送（TX）通道X状态位被设置，即将CHnF设置为1，表示通道被占用；</li>
+<li>0：无动作。</li>
+</ul>
+</li>
+<li>第0~ 5位，CH1C~CH6C，处理器1接收（RX）通道X状态清除位，与<strong>IPCC_C2TOC1SR.CHxF</strong>关联，当设置该位：
+<ul>
+<li>1：处理器1接收（RX）通道X状态位清零；</li>
+<li>0：无动作</li>
+</ul>
+</li>
+</ul>
+<h2 id="IPCC-功能描述">IPCC 功能描述</h2>
+<p>IPCC 对处理器通信的控制，其实是通过中断的方式来实现的，称为核间中断（IPI），在每个处理器上都有两条中断线，分别是：</p>
+<ul>
+<li>一条用于 RX 通道占用（发送处理器发布数据）；</li>
+<li>一条用于TX通道空闲（接收处理器读取通信数据）。</li>
+</ul>
+<p>每个通道都有中断屏蔽：</p>
+<ul>
+<li><strong>通道占用屏蔽（位 CHnOM）；</strong></li>
+<li><strong>通道空闲屏蔽（位CHnFM）。</strong></li>
+</ul>
+<blockquote>
+<p>在计算机、单片机或硬件外设（如 DMA、Mailbox、IPCC 等通信控制器）的上下文中，<strong>“屏蔽”（Mask）的意思是“关掉”或“过滤”掉某个中断信号，不让它上报给 CPU</strong>。</p>
+</blockquote>
+<p>每个子通道都有两种工作模式：</p>
+<ul>
+<li>单工模式（每个通道都有自己的通信数据存储位置）；</li>
+<li>半双工模式（与双向通信数据信息存储位置关联的单个通道）。</li>
+</ul>
+<p>通信的数据位于共享内存中（注意，共享内存不是 IPCC 的一部分），每次通信，IPCC 模块提供一个<strong>通道状态标志位 CHnF</strong>（n 可取值 1~6，表示对应的通道）：</p>
+<ul>
+<li><strong>当 CHnF=0 时，表示相关的通道是空闲的</strong>（也可以认为通信的数据已经被接收处理器读取了，此时通道处于空闲状态了），<strong>这个时候发送处理器可以占用这个通道用于发送数据；</strong></li>
+<li><strong>当 CHnF=1 时，表示相关的通道已经被占用了</strong>（即通信数据已经被发送处理器发布了），<strong>这个时候接收处理器可以去访问该通道以读取数据。</strong></li>
+</ul>
+<p>IPCC 为通道管理提供非阻塞信令机制：</p>
+<ul>
+<li>消息可用性中断；</li>
+<li>通道流控制（如生成一个 TX 通道空闲中断，则称为流开启，当通道被占用时，则称为流关闭）。</li>
+</ul>
+<p>应用程序受益于基于非阻塞中断的消息交换和通道流控制来进行核间通信，每个子通道会有一个传输方向：</p>
+<ul>
+<li>从 CPU1 发送并由 CPU2 接收；</li>
+<li>或者从 CPU2 发送并由 CPU1 接收。</li>
+</ul>
+<h3 id="单工发送模式">单工发送模式</h3>
+<p>如下图所示为 IPCC 单工发送模式示意图。</p>
+<ul>
+<li>当通道状态标志为通道占用时（CHnF=1），这是因为接收方没有从先前的消息中释放通道，这个时候，通道空闲中断被取消屏蔽，然后等待 TX 空闲中断。</li>
+<li>一旦接收方释放了通道，就会产生通道空闲中断（流开启）。当产生通道空闲中断时，通道空闲中断被屏蔽，消息可以写入数据缓冲区。随后，通道状态标志被设置为已占用，这会触发接收端的通道占用中断。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704154125102.png" alt="单工发送"></p>
+<h3 id="单工接收模式">单工接收模式</h3>
+<p>如下图所示为 IPCC  单工发送模式示意图。当产生通道占用中断时，接收端确定是哪个通道被占用，并屏蔽相应的通道占用中断，随后，可以从共享内存中读取数据，一旦读取数据，通道状态标志 CHnF 将被清除（CHnF=0），通道占用中断被取消屏蔽</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704155039584.png" alt="单工接收"></p>
+<h3 id="半双工发送模式">半双工发送模式</h3>
+<p>如下图所示为 IPCC 半双工发送模式示意图。</p>
+<p>半双工过程允许使用单个共享缓冲区将消息从发送方传输到接收方，然后将响应（Response pending）从接收方发送回发送方。</p>
+<p><strong>发送端发送数据过程：</strong></p>
+<ul>
+<li>软件变量 response pending=1 表示发送端等待接收端的应答</li>
+<li>response pending=0 表示获得接收端的应答。</li>
+</ul>
+<p>首先，发送方检查通道状态标志，如果通道状态标志指示通道被占用（CHnF=1），即由于接收方尚未发送对先前消息的响应，则发送方等待响应，如果通道空闲，发送方可以将消息写入共享内存中。</p>
+<p>随后，通道状态标志被设置为被占用，这会触发接收端的 RX 通道占用中断，一旦通道状态标志 CHnF=1，通道空闲中断被取消屏蔽。通道空闲中断表示接收方发送的响应是否可用，当产生通道空闲中断时（响应就绪），发送方确定释放哪个通道并屏蔽相应的通道空闲中断，随后，可以从共享内存中读取响应。</p>
+<p><strong>接收端的响应过程：</strong></p>
+<p>接收处理器等待软件变量 response pending 是否等于 1，如果等于 1，则接收端将响应写入共享内存中（发布响应），一旦发布了响应，通道状态标志 CHnF 被 CHnC 清除，则 CHnF 为 0，且接收端取消屏蔽通道占用中断（CHnOM = 0）。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704155549798.png" alt="半双工发送模式"></p>
+<h3 id="半双工接收模式">半双工接收模式</h3>
+<p>如下图所示为 IPCC 半双工接收模式示意图。</p>
+<ul>
+<li>接收端读取数据：当产生通道占用中断时，接收端判断哪个通道被占用，并屏蔽响应的通道占用中断，随后从共享内存中接收数据，只有在接收方将响应发送到共享内存中后，通道才会被释放。</li>
+<li>发送端读取响应：为了接收响应，通道空闲中断被取消屏蔽，发送处理器会检查那个通道变为空闲，屏蔽相关的通道空闲中断，然后从共享内存中读取响应</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704160207681.png" alt="IPCC半双工接收"></p>
+<p>IPCC 为 6 个双向通道提供了一种非阻塞信令机制，以原子方式发布和检索通信数据。非阻塞方式允许处理器以非阻塞的方式交换信息，例如读取数据，当不满足条件、未能立刻得到结果时，先挂起进程，然后每隔一段时间去检查是否满足条件了，若满足，则进行读取操作，若不满足，则不读取，这就是非阻塞方式。</p>
+<p>以上描述的通信过程可以用如下图来表示，通信的处理器都可以访问共享的内存，围绕共享内存，从主处理器到协处理器以及从协处理器到主处理器的方向可以配置一根中断线，即<strong>内核间中断（PPI，简称核中断）</strong>，核中断发起方首先将消息数据写到共享内存中，然后发起核间中断，被中断的核线程在中断服务程序中读取该共享内存，以获得发起方通知的数据。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704160316524.png" alt="共享内存和核间中断"></p>
+<h2 id="Mailbox-框架">Mailbox 框架</h2>
+<p>Mailbox（邮箱）框架和 IPCC 紧密联系，Mailbox 是一种驱动架构，它依赖于硬件平台来实现，例如，STM32MP157 平台的 Mailbox 依赖 IPCC 外设，其 Mailbox 框架如下图所示： （Mailbox算是一种消息传输的工具，底层依赖IPCC，但是IPCC不传输数据，Mailbox在基于IPCC的基础上可以进行消息数据的传递）</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704160911458.png" alt="Mailbox框架"></p>
+<p>上层应用如何知道数据已经发送完毕或者已经接收完全了呢？这个工作就交给 Mailbox 框架来处理，Mailbox 的实现分为邮箱控制器（Mailbox contoller）和邮箱客户端（Mailbox client）：</p>
+<ul>
+<li>
+<p>邮箱控制器主要负责配置和处理来自 IPCC 外设的消息队列或者中断请求（IRQ），并为负责发送或接收通知消息的邮箱客户端提供一个通用的 API。</p>
+</li>
+<li>
+<p>邮箱客户端主要负责发送或接收通知消息，它通过邮箱控制器提供的通道来发送或接收通知消息，这个通道就是 IPCC 通道。</p>
+</li>
+</ul>
+<p>用户可以自己定义邮箱客户端，如上图 所示，Linux 下的邮箱控制器是 <code>stm32_ipcc</code>，它配置和控制 IPCC 外设，可以提供邮箱服务。<code>stm32_rproc</code> 是远程处理器平台 驱动程序 ，它主要处理与远程处理器关联的平台资源（例如寄存器、看门狗、复位、时钟和存储器），可将对应回调函数注册到 Remoteproc 框架中，还可以通过邮箱框架将通知消息转发到远程处理器。</p>
+<p>邮箱框架的大概工作流程是：</p>
+<ol>
+<li>先注册邮箱控制器；</li>
+<li>邮箱客户端发送数据前，先申请通道；</li>
+<li>客户端发送数据；</li>
+<li>邮箱客户端记录数据；</li>
+<li>邮箱控制器将底层接收到的数据回调给上层应用；</li>
+<li>当数据发完时，邮箱控制器通知上层当前数据已经发送完成；</li>
+<li>邮箱客户端释放通道。</li>
+</ol>
+<p>关于 Mailbox 框架，在 Linux 内核源码 <code>drivers/mailbox</code> 目录下有相关的驱动。</p>
+<h2 id="参考资料">参考资料</h2>
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" href=" https://blog.csdn.net/qq_54050349/article/details/154745995">【STM32MP157 异核通信框架学习篇】（2）IPCC通信框架</a></div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/202607020/">https://even629.com/posts/202607020/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a></div><div class="post-share"><div class="social-share" data-image="/images/openamp_cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IPCC-%E9%80%9A%E9%81%93"><span class="toc-number">1.</span> <span class="toc-text">IPCC 通道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IPCC-%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">IPCC 寄存器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IPCC-C1CR"><span class="toc-number">2.1.</span> <span class="toc-text">IPCC_C1CR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IPCC-C1MR"><span class="toc-number">2.2.</span> <span class="toc-text">IPCC_C1MR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IPCC-C1SCR"><span class="toc-number">2.3.</span> <span class="toc-text">IPCC_C1SCR</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IPCC-%E5%8A%9F%E8%83%BD%E6%8F%8F%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">IPCC 功能描述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E5%B7%A5%E5%8F%91%E9%80%81%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.1.</span> <span class="toc-text">单工发送模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E5%B7%A5%E6%8E%A5%E6%94%B6%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.2.</span> <span class="toc-text">单工接收模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8A%E5%8F%8C%E5%B7%A5%E5%8F%91%E9%80%81%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.3.</span> <span class="toc-text">半双工发送模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8A%E5%8F%8C%E5%B7%A5%E6%8E%A5%E6%94%B6%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.4.</span> <span class="toc-text">半双工接收模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mailbox-%E6%A1%86%E6%9E%B6"><span class="toc-number">4.</span> <span class="toc-text">Mailbox 框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(async () => {
   const showKatex = () => {
     document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
   }
