@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux高级字符设备进阶 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux高级字符设备进阶探讨了内核驱动开发的核心辅助机制。主要讲解了&#96;container_of&#96;宏通过成员偏移获取结构体起始地址的原理，内核循环双链表&#96;list_head&#96;的创建、节点增删与遍历操作，以及进程睡眠机制和基于双循环链表实现的等待队列及其初始化方法。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux高级字符设备进阶 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了Linux高级字符设备驱动开发中的内核核心工具与机制，详细讨论了container_of宏的原理、内核循环双链表的创建与操作方法，以及进程睡眠机制与等待队列的初始化与实现。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux高级字符设备进阶">
 <meta property="og:url" content="https://even629.com/posts/2511133/index.html">
 <meta property="og:site_name" content="常想一二，不思八九">
-<meta property="og:description" content="Linux高级字符设备进阶探讨了内核驱动开发的核心辅助机制。主要讲解了&#96;container_of&#96;宏通过成员偏移获取结构体起始地址的原理，内核循环双链表&#96;list_head&#96;的创建、节点增删与遍历操作，以及进程睡眠机制和基于双循环链表实现的等待队列及其初始化方法。">
+<meta property="og:description" content="本文介绍了Linux高级字符设备驱动开发中的内核核心工具与机制，详细讨论了container_of宏的原理、内核循环双链表的创建与操作方法，以及进程睡眠机制与等待队列的初始化与实现。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://even629.com/images/linux_cover.webp">
 <meta property="article:published_time" content="2025-11-13T12:31:13.000Z">
@@ -171,7 +171,7 @@ if (true) {
               <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-13</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
               </div>
             </details>
-<div class="tip key"><p>Linux高级字符设备进阶探讨了内核驱动开发的核心辅助机制。主要讲解了<code>container_of</code>宏通过成员偏移获取结构体起始地址的原理，内核循环双链表<code>list_head</code>的创建、节点增删与遍历操作，以及进程睡眠机制和基于双循环链表实现的等待队列及其初始化方法。</p>
+<div class="tip key"><p>本文介绍了Linux高级字符设备驱动开发中的内核核心工具与机制，详细讨论了container_of宏的原理、内核循环双链表的创建与操作方法，以及进程睡眠机制与等待队列的初始化与实现。</p>
 </div>
 <hr>
 <p><strong>Linux 驱动笔记</strong></p>

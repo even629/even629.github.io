@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Rpmsg Core | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Rpmsg 是 Linux 中不绑定具体传输的总线抽象，允许通过提供特定接口接入多种后端实现。其核心机制采用基于多项约束组合的打分系统进行设备与驱动匹配，并在 probe 流程中依次完成电源域关联、端点动态创建与接收回调绑定以及驱动初始化通知。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Rpmsg Core | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了Linux 5.10.23中Rpmsg Core的总线抽象机制及其backend的接入方式，并详细讨论了设备与驱动的匹配打分规则与设备探测流程。本文总结了探测过程中的电源域关联、Endpoint自动创建与动态地址分配等核心逻辑，揭示了rpmsg框架在硬件电源管理和端点通信中的实现细节。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Rpmsg Core">
 <meta property="og:url" content="https://even629.com/posts/202606270/index.html">
 <meta property="og:site_name" content="常想一二，不思八九">
-<meta property="og:description" content="Rpmsg 是 Linux 中不绑定具体传输的总线抽象，允许通过提供特定接口接入多种后端实现。其核心机制采用基于多项约束组合的打分系统进行设备与驱动匹配，并在 probe 流程中依次完成电源域关联、端点动态创建与接收回调绑定以及驱动初始化通知。">
+<meta property="og:description" content="本文介绍了Linux 5.10.23中Rpmsg Core的总线抽象机制及其backend的接入方式，并详细讨论了设备与驱动的匹配打分规则与设备探测流程。本文总结了探测过程中的电源域关联、Endpoint自动创建与动态地址分配等核心逻辑，揭示了rpmsg框架在硬件电源管理和端点通信中的实现细节。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://even629.com/images/openamp_cover.png">
 <meta property="article:published_time" content="2026-06-27T07:17:13.000Z">
@@ -170,7 +170,7 @@ if (true) {
               <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-06-27</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
               </div>
             </details>
-<div class="tip key"><p>Rpmsg 是 Linux 中不绑定具体传输的总线抽象，允许通过提供特定接口接入多种后端实现。其核心机制采用基于多项约束组合的打分系统进行设备与驱动匹配，并在 probe 流程中依次完成电源域关联、端点动态创建与接收回调绑定以及驱动初始化通知。</p>
+<div class="tip key"><p>本文介绍了Linux 5.10.23中Rpmsg Core的总线抽象机制及其backend的接入方式，并详细讨论了设备与驱动的匹配打分规则与设备探测流程。本文总结了探测过程中的电源域关联、Endpoint自动创建与动态地址分配等核心逻辑，揭示了rpmsg框架在硬件电源管理和端点通信中的实现细节。</p>
 </div>
 <hr>
 <blockquote>

@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM Exception Model | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ARM 异常模型涵盖 EL0–EL3 权限划分、同步&#x2F;异步异常类型、异常入口与返回流程，以及 ESR、ELR、SPSR 等关键寄存器作用；异常处理依赖向量表分发，返回地址规则因中断、普通同步异常和系统调用而异，路由可由 SCR_EL3、HCR_EL2 等寄存器配置。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM Exception Model | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了ARM64架构的异常模型，详细讨论了异常等级、术语定义以及同步与异步异常的分类。同时，本文总结了异常入口与返回阶段中硬件和操作系统的处理机制，并阐述了基于系统配置寄存器的异常路由规则。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ARM Exception Model">
 <meta property="og:url" content="https://even629.com/posts/2510160/index.html">
 <meta property="og:site_name" content="常想一二，不思八九">
-<meta property="og:description" content="ARM 异常模型涵盖 EL0–EL3 权限划分、同步&#x2F;异步异常类型、异常入口与返回流程，以及 ESR、ELR、SPSR 等关键寄存器作用；异常处理依赖向量表分发，返回地址规则因中断、普通同步异常和系统调用而异，路由可由 SCR_EL3、HCR_EL2 等寄存器配置。">
+<meta property="og:description" content="本文介绍了ARM64架构的异常模型，详细讨论了异常等级、术语定义以及同步与异步异常的分类。同时，本文总结了异常入口与返回阶段中硬件和操作系统的处理机制，并阐述了基于系统配置寄存器的异常路由规则。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://even629.com/images/arm-logo.png">
 <meta property="article:published_time" content="2025-10-16T07:25:13.000Z">
@@ -168,7 +168,7 @@ if (true) {
               <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-16</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
               </div>
             </details>
-<div class="tip key"><p>ARM 异常模型涵盖 EL0–EL3 权限划分、同步/异步异常类型、异常入口与返回流程，以及 ESR、ELR、SPSR 等关键寄存器作用；异常处理依赖向量表分发，返回地址规则因中断、普通同步异常和系统调用而异，路由可由 SCR_EL3、HCR_EL2 等寄存器配置。</p>
+<div class="tip key"><p>本文介绍了ARM64架构的异常模型，详细讨论了异常等级、术语定义以及同步与异步异常的分类。同时，本文总结了异常入口与返回阶段中硬件和操作系统的处理机制，并阐述了基于系统配置寄存器的异常路由规则。</p>
 </div>
 <p>参考文档：</p>
 <div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>

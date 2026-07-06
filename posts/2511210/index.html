@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>QOM | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="QOM 是 QEMU 用纯 C 实现的对象模型，提供继承、封装和多态，用于组织设备、MemoryRegion、Machine 等组件；以 edu 设备为例，梳理类型注册、类初始化及继承接口处理的核心流程。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>QOM | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了 QEMU Object Model (QOM) 的面向对象建模机制及其运作过程，并以 edu 设备建模源码为例，深入剖析了类型的注册、类型的初始化与对象的实例化三个核心阶段，详细阐述了类型信息如何在加载阶段构建链表并在 main 函数中完成全局注册，以及类初始化过程中的继承与接口处理逻辑。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="QOM">
 <meta property="og:url" content="https://even629.com/posts/2511210/index.html">
 <meta property="og:site_name" content="常想一二，不思八九">
-<meta property="og:description" content="QOM 是 QEMU 用纯 C 实现的对象模型，提供继承、封装和多态，用于组织设备、MemoryRegion、Machine 等组件；以 edu 设备为例，梳理类型注册、类初始化及继承接口处理的核心流程。">
+<meta property="og:description" content="本文介绍了 QEMU Object Model (QOM) 的面向对象建模机制及其运作过程，并以 edu 设备建模源码为例，深入剖析了类型的注册、类型的初始化与对象的实例化三个核心阶段，详细阐述了类型信息如何在加载阶段构建链表并在 main 函数中完成全局注册，以及类初始化过程中的继承与接口处理逻辑。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://even629.com/images/qemu_cover.png">
 <meta property="article:published_time" content="2025-11-21T10:00:13.000Z">
@@ -168,7 +168,7 @@ if (true) {
               <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-21</p></div></div><div class='timeline-item-content'><ol><li>init</li></ol></div></div></div>
               </div>
             </details>
-<div class="tip key"><p>QOM 是 QEMU 用纯 C 实现的对象模型，提供继承、封装和多态，用于组织设备、MemoryRegion、Machine 等组件；以 edu 设备为例，梳理类型注册、类初始化及继承接口处理的核心流程。</p>
+<div class="tip key"><p>本文介绍了 QEMU Object Model (QOM) 的面向对象建模机制及其运作过程，并以 edu 设备建模源码为例，深入剖析了类型的注册、类型的初始化与对象的实例化三个核心阶段，详细阐述了类型信息如何在加载阶段构建链表并在 main 函数中完成全局注册，以及类初始化过程中的继承与接口处理逻辑。</p>
 </div>
 <h1 id="环境">环境</h1>
 <h2 id="源码">源码</h2>

@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM TLB | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ARMv8 TLB缓存VA到PA转换及权限、内存类型、ASID&#x2F;VMID等属性，地址翻译由TTBR选择页表，Cortex-A72采用分级TLB结构。ASID与nG属性区分进程私有&#x2F;全局TLB以解决同名问题，连续块条目提升覆盖范围；页表修改后需用TLBI失效并配合屏障保证生效。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARM TLB | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了ARMv8架构下TLB的工作原理与维护机制，详细讨论了TLB的背景知识、多级设计、表项属性以及重名与同名问题的解决方案。此外，本文总结了ASID技术在进程切换及Linux内核中的应用、连续块缓存功能、TLBI指令的使用场景与格式，并说明了修改页表后进行TLB刷新的正确流程及相关控制寄存器。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ARM TLB">
 <meta property="og:url" content="https://even629.com/posts/2510261/index.html">
 <meta property="og:site_name" content="常想一二，不思八九">
-<meta property="og:description" content="ARMv8 TLB缓存VA到PA转换及权限、内存类型、ASID&#x2F;VMID等属性，地址翻译由TTBR选择页表，Cortex-A72采用分级TLB结构。ASID与nG属性区分进程私有&#x2F;全局TLB以解决同名问题，连续块条目提升覆盖范围；页表修改后需用TLBI失效并配合屏障保证生效。">
+<meta property="og:description" content="本文介绍了ARMv8架构下TLB的工作原理与维护机制，详细讨论了TLB的背景知识、多级设计、表项属性以及重名与同名问题的解决方案。此外，本文总结了ASID技术在进程切换及Linux内核中的应用、连续块缓存功能、TLBI指令的使用场景与格式，并说明了修改页表后进行TLB刷新的正确流程及相关控制寄存器。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://even629.com/images/arm-logo.png">
 <meta property="article:published_time" content="2025-10-26T09:33:13.000Z">
@@ -168,7 +168,7 @@ if (true) {
               <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-10-26</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
               </div>
             </details>
-<div class="tip key"><p>ARMv8 TLB缓存VA到PA转换及权限、内存类型、ASID/VMID等属性，地址翻译由TTBR选择页表，Cortex-A72采用分级TLB结构。ASID与nG属性区分进程私有/全局TLB以解决同名问题，连续块条目提升覆盖范围；页表修改后需用TLBI失效并配合屏障保证生效。</p>
+<div class="tip key"><p>本文介绍了ARMv8架构下TLB的工作原理与维护机制，详细讨论了TLB的背景知识、多级设计、表项属性以及重名与同名问题的解决方案。此外，本文总结了ASID技术在进程切换及Linux内核中的应用、连续块缓存功能、TLBI指令的使用场景与格式，并说明了修改页表后进行TLB刷新的正确流程及相关控制寄存器。</p>
 </div>
 <p>参考文档：</p>
 <div class="tag link"><a class="link-card" title="Arm Architecture Reference Manual Armv8" target="_blank" rel="noopener" href="https://developer.arm.com/documentation/ddi0487/fc/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://developer.arm.com/shared/common/img/favicon/favicon.ico"/></div><div class="right"><p class="text">Arm Architecture Reference Manual Armv8</p><p class="url">https://developer.arm.com/documentation/ddi0487/fc/</p></div></a></div>

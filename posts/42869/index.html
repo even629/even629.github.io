@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>最小Linux系统编译与运行 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="记录在 Win11 WSL2&#x2F;Arch Linux 环境下编译 BusyBox 与 Linux 内核、构建最小根文件系统并用 QEMU 运行的流程，包括补丁处理、menuconfig 报错修复、init 配置、设备与库文件添加，以及 Emacs 配合 clangd、dts-lsp 阅读源码和设备树的配置。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>最小Linux系统编译与运行 | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了最小Linux系统的编译与运行过程，详细讨论了在特定环境下编译Busybox时的报错处理与补丁应用、根文件系统配置文件的创建与打包，以及Linux内核的编译步骤。此外，本文还总结了使用Emacs结合clangd和dts-lsp阅读源码与设备树的配置方法，并展示了通过QEMU运行系统的最终结果。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="最小Linux系统编译与运行">
 <meta property="og:url" content="https://even629.com/posts/42869/index.html">
 <meta property="og:site_name" content="常想一二，不思八九">
-<meta property="og:description" content="记录在 Win11 WSL2&#x2F;Arch Linux 环境下编译 BusyBox 与 Linux 内核、构建最小根文件系统并用 QEMU 运行的流程，包括补丁处理、menuconfig 报错修复、init 配置、设备与库文件添加，以及 Emacs 配合 clangd、dts-lsp 阅读源码和设备树的配置。">
+<meta property="og:description" content="本文介绍了最小Linux系统的编译与运行过程，详细讨论了在特定环境下编译Busybox时的报错处理与补丁应用、根文件系统配置文件的创建与打包，以及Linux内核的编译步骤。此外，本文还总结了使用Emacs结合clangd和dts-lsp阅读源码与设备树的配置方法，并展示了通过QEMU运行系统的最终结果。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://even629.com/images/linux_cover.webp">
 <meta property="article:published_time" content="2025-06-22T16:25:13.000Z">
@@ -170,7 +170,7 @@ if (true) {
               <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-06-23</p></div></div><div class='timeline-item-content'><p>init</p></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-05</p></div></div><div class='timeline-item-content'><p>busybox build error in archlinux</p></div></div></div>
               </div>
             </details>
-<div class="tip key"><p>记录在 Win11 WSL2/Arch Linux 环境下编译 BusyBox 与 Linux 内核、构建最小根文件系统并用 QEMU 运行的流程，包括补丁处理、menuconfig 报错修复、init 配置、设备与库文件添加，以及 Emacs 配合 clangd、dts-lsp 阅读源码和设备树的配置。</p>
+<div class="tip key"><p>本文介绍了最小Linux系统的编译与运行过程，详细讨论了在特定环境下编译Busybox时的报错处理与补丁应用、根文件系统配置文件的创建与打包，以及Linux内核的编译步骤。此外，本文还总结了使用Emacs结合clangd和dts-lsp阅读源码与设备树的配置方法，并展示了通过QEMU运行系统的最终结果。</p>
 </div>
 <hr>
 <h1 id="环境">环境</h1>
