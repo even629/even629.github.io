@@ -1,178 +1,235 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux SPI | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了Linux驱动开发中的SPI总线基础知识，详细阐述了SPI协议的全双工同步通信特点、主从结构设计及多从设备连接模式，并解析了SCLK、MOSI、MISO和CS四根信号线的硬件连接原理与基于串行移位寄存器的数据通信机制。">
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文介绍了Linux驱动开发中的SPI总线基础知识，详细阐述了SPI协议的全双工同步通信特点、主从结构设计及多从设备连接模式，并解析了SCLK、MOSI、MISO和CS四根信号线的硬件连接原理与基于串行移位寄存器的数据通信机制。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux SPI">
 <meta property="og:url" content="https://even629.com/posts/2512303/index.html">
-<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:site_name" content="even629">
 <meta property="og:description" content="本文介绍了Linux驱动开发中的SPI总线基础知识，详细阐述了SPI协议的全双工同步通信特点、主从结构设计及多从设备连接模式，并解析了SCLK、MOSI、MISO和CS四根信号线的硬件连接原理与基于串行移位寄存器的数据通信机制。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143841712.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143854714.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143907231.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143913697.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143920334.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144110634.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144106614.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143935687.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143940236.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143947810.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144004882.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144017427.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144021289.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144030581.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144052698.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144134950.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144141950.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144154098.png">
 <meta property="article:published_time" content="2025-12-30T06:35:13.000Z">
 <meta property="article:modified_time" content="2025-12-30T06:35:13.000Z">
 <meta property="article:author" content="even629">
-<meta property="article:tag" content="Linux">
 <meta property="article:tag" content="GNU">
+<meta property="article:tag" content="Linux">
 <meta property="article:tag" content="driver">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2512303/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preload" href="/img/12bb_together.gif" as="image" fetchpriority="high"><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
-    (() => {
-      
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
-
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!true && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
-      
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
-        }
-      }
-
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
-
-      const theme = saveToLocal.get('theme')
+<meta name="twitter:image" content="https://even629.com/images/logo.png">
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
         
       
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
-    
       
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":2000,"highlightFullpage":true,"highlightMacStyle":true},
-  copy: {
-    success: '复制成功',
-    error: '复制失败',
-    noSupport: '浏览器不支持'
-  },
-  relativeDate: {
-    homepage: false,
-    post: false
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
-  copyright: undefined,
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
-    buttonText: '加载更多'
-  },
-  isPhotoFigcaption: true,
-  islazyload: true,
-  isAnchor: true,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'Linux SPI',
-  isPost: true,
-  isHome: false,
-  isHighlightShrink: false,
-  isToc: true,
-  isShuoshuo: false
-}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
-</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
-  endLoading: () => {
-    document.body.style.overflow = 'auto';
-    document.getElementById('loading-box').classList.add("loaded")
-  },
-  initLoading: () => {
-    document.body.style.overflow = '';
-    document.getElementById('loading-box').classList.remove("loaded")
+      
+    
+    <!-- title -->
+    <title>Linux SPI</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
 
-  }
-}
-window.addEventListener('load',()=> { preloader.endLoading() })
 
-if (true) {
-  document.addEventListener('pjax:send', () => { preloader.initLoading() })
-  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
-}</script><div id="web_bg" style="background-image: url(/img/12bb_background.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux SPI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-30T06:35:13.000Z" title="发表于 2025-12-30 14:35:13">2025-12-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-30T06:35:13.000Z" title="更新于 2025-12-30 14:35:13">2025-12-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">15.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>71分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2512303/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
-<details class="folding-tag" green open><summary> 时间轴 </summary>
-              <div class='content'>
-              <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-30</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
-              </div>
-            </details>
-<div class="tip key"><p>本文介绍了Linux驱动开发中的SPI总线基础知识，详细阐述了SPI协议的全双工同步通信特点、主从结构设计及多从设备连接模式，并解析了SCLK、MOSI、MISO和CS四根信号线的硬件连接原理与基于串行移位寄存器的数据通信机制。</p>
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+    
+	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
+	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+	<!-- Fancybox lightbox CSS (post pages only) -->
+	
+	  
+	    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+	    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css" /></noscript>
+	  
+	
+	<!-- mathjax (legacy, use KaTeX above) -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/en/posts/2512303/">EN</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2512303/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2512303/&text=Linux SPI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2512303/&is_video=false&description=Linux SPI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Linux SPI&body=Check out this article: https://even629.com/posts/2512303/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2512303/&name=Linux SPI&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2512303/&t=Linux SPI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <span class="toc-percentage"></span>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E5%9F%BA%E7%A1%80"><span class="toc-text">SPI 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E7%89%B9%E7%82%B9"><span class="toc-text">SPI 特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E7%A1%AC%E4%BB%B6%E8%BF%9E%E6%8E%A5"><span class="toc-text">SPI 硬件连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86"><span class="toc-text">SPI 通信原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E6%9E%81%E6%80%A7%E5%92%8C%E7%9B%B8%E4%BD%8D"><span class="toc-text">SPI 极性和相位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#iTOP-RK3568-%E5%A4%84%E7%90%86%E5%99%A8%E4%B8%AD%E7%9A%84-SPI-%E6%8E%A5%E5%8F%A3"><span class="toc-text">iTOP-RK3568 处理器中的 SPI 接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mcp2515"><span class="toc-text">mcp2515</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E5%AD%90%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6"><span class="toc-text">SPI 子系统框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E5%B1%82"><span class="toc-text">SPI设备驱动层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI%E9%80%82%E9%85%8D%E5%99%A8%E9%A9%B1%E5%8A%A8%E5%B1%82"><span class="toc-text">SPI适配器驱动层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E6%A0%B8%E5%BF%83%E5%B1%82"><span class="toc-text">SPI 核心层</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%9A%E7%94%A8-SPI-%E5%A4%96%E8%AE%BE%E6%A1%86%E6%9E%B6%E7%BC%96%E5%86%99"><span class="toc-text">通用 SPI 外设框架编写</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">设备树</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reg-%E5%92%8C-spi-max-frequency%E5%B1%9E%E6%80%A7"><span class="toc-text">reg 和 spi-max-frequency属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#rockchip-spi-probe"><span class="toc-text">rockchip_spi_probe()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#devm-spi-register-controller"><span class="toc-text">devm_spi_register_controller()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#spi-register-controller"><span class="toc-text">spi_register_controller()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-register-spi-devices"><span class="toc-text">of_register_spi_devices()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-register-spi-device"><span class="toc-text">of_register_spi_device()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-spi-parse-dt"><span class="toc-text">of_spi_parse_dt()</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87%E7%A4%BA%E4%BE%8B"><span class="toc-text">注册字符设备示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E9%80%9A%E4%BF%A1%E6%B5%81%E7%A8%8B"><span class="toc-text">SPI 通信流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-write"><span class="toc-text">spi_write()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-spi-device"><span class="toc-text">struct spi_device</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-read"><span class="toc-text">spi_read()</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-spi-transfer"><span class="toc-text">struct spi_transfer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync-transfer"><span class="toc-text">spi_sync_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync"><span class="toc-text">spi_sync()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync-2"><span class="toc-text">__spi_sync()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-pump-messages"><span class="toc-text">__spi_pump_messages()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-write-then-read"><span class="toc-text">spi_write_then_read()</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mcp2515-%E9%A9%B1%E5%8A%A8%E7%BC%96%E5%86%99"><span class="toc-text">mcp2515 驱动编写</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E9%80%9A%E7%94%A8-SPI-%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8"><span class="toc-text">Linux 通用 SPI 设备驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spidev-test-%E5%B7%A5%E5%85%B7"><span class="toc-text">spidev_test 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spidev-fdx-%E5%B7%A5%E5%85%B7"><span class="toc-text">spidev_fdx 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%B8%AD%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-SPI"><span class="toc-text">应用程序中如何使用 SPI</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%A8%A1%E6%8B%9F-SPI"><span class="toc-text">Linux 中使用模拟 SPI</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A7%BB%E6%A4%8D%E5%AE%98%E6%96%B9-mcp2515-%E9%A9%B1%E5%8A%A8"><span class="toc-text">移植官方 mcp2515 驱动</span></a></li></ol>
+      </div>
+    
+  </span>
 </div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+      <img class="post-cover" src="/images/linux_cover.webp" alt="Cover image for Linux SPI" />
+    
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Linux SPI
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">even629</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-12-30T06:35:13.000Z" class="dt-published" itemprop="datePublished">2025-12-30</time>
+        
+        (Updated: <time datetime="2025-12-30T06:35:13.000Z" class="dt-updated" itemprop="dateModified">2025-12-30</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/tags/Linux/" rel="tag">Linux</a>, <a class="p-category" href="/tags/driver/" rel="tag">driver</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <hr>
+<details class="folding-tag" ><summary> 时间轴 </summary>
+            <div class='content'>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-30</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+            </div>
+          </details>
+<blockquote>
+本文介绍了Linux驱动开发中的SPI总线基础知识，详细阐述了SPI协议的全双工同步通信特点、主从结构设计及多从设备连接模式，并解析了SCLK、MOSI、MISO和CS四根信号线的硬件连接原理与基于串行移位寄存器的数据通信机制。
+</blockquote>
 <hr>
 <p><strong>Linux 驱动笔记</strong></p>
 <table>
@@ -185,107 +242,107 @@ if (true) {
 <tbody>
 <tr>
 <td><strong>1. Linux 驱动框架</strong></td>
-<td><div class="tag link"><a class="link-card" title="Linux 驱动框架" href="https://even629.com/posts/2511093/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">Linux 驱动框架</p><p class="url">https://even629.com/posts/2511093/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="Linux 驱动框架" href="https://even629.com/posts/2511093/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">Linux 驱动框架</p><p class="url">https://even629.com/posts/2511093/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>2. Linux 驱动加载逻辑</strong></td>
-<td><div class="tag link"><a class="link-card" title="Linux 驱动加载逻辑" href="https://even629.com/posts/2511100/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">Linux 驱动加载逻辑</p><p class="url">https://even629.com/posts/2511100/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="Linux 驱动加载逻辑" href="https://even629.com/posts/2511100/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">Linux 驱动加载逻辑</p><p class="url">https://even629.com/posts/2511100/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>3. 字符设备基础</strong></td>
-<td><div class="tag link"><a class="link-card" title="字符设备基础" href="https://even629.com/posts/2511113/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">字符设备基础</p><p class="url">https://even629.com/posts/2511113/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="字符设备基础" href="https://even629.com/posts/2511113/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">字符设备基础</p><p class="url">https://even629.com/posts/2511113/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>4. 并发与竞争</strong></td>
-<td><div class="tag link"><a class="link-card" title="并发与竞争" href="https://even629.com/posts/2511123/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">并发与竞争</p><p class="url">https://even629.com/posts/2511123/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="并发与竞争" href="https://even629.com/posts/2511123/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">并发与竞争</p><p class="url">https://even629.com/posts/2511123/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>5. 高级字符设备进阶</strong></td>
-<td><div class="tag link"><a class="link-card" title="高级字符设备进阶" href="https://even629.com/posts/2511133/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">高级字符设备进阶</p><p class="url">https://even629.com/posts/2511133/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="高级字符设备进阶" href="https://even629.com/posts/2511133/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">高级字符设备进阶</p><p class="url">https://even629.com/posts/2511133/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>6. 中断</strong></td>
-<td><div class="tag link"><a class="link-card" title="中断" href="https://even629.com/posts/2511143/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">中断</p><p class="url">https://even629.com/posts/2511143/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="中断" href="https://even629.com/posts/2511143/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">中断</p><p class="url">https://even629.com/posts/2511143/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>7. 平台总线</strong></td>
-<td><div class="tag link"><a class="link-card" title="平台总线" href="https://even629.com/posts/2511153/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">平台总线</p><p class="url">https://even629.com/posts/2511153/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="平台总线" href="https://even629.com/posts/2511153/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">平台总线</p><p class="url">https://even629.com/posts/2511153/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>8. 设备树</strong></td>
-<td><div class="tag link"><a class="link-card" title="设备树" href="https://even629.com/posts/2511300/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">设备树</p><p class="url">https://even629.com/posts/2511300/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="设备树" href="https://even629.com/posts/2511300/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">设备树</p><p class="url">https://even629.com/posts/2511300/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>9. 设备模型</strong></td>
-<td><div class="tag link"><a class="link-card" title="设备模型" href="https://even629.com/posts/2512013/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">设备模型</p><p class="url">https://even629.com/posts/2512013/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="设备模型" href="https://even629.com/posts/2512013/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">设备模型</p><p class="url">https://even629.com/posts/2512013/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>10. 热插拔</strong></td>
-<td><div class="tag link"><a class="link-card" title="热插拔" href="https://even629.com/posts/2512023/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">热插拔</p><p class="url">https://even629.com/posts/2512023/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="热插拔" href="https://even629.com/posts/2512023/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">热插拔</p><p class="url">https://even629.com/posts/2512023/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>11. pinctrl 子系统</strong></td>
-<td><div class="tag link"><a class="link-card" title="pinctrl 子系统" href="https://even629.com/posts/2512160/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">pinctrl 子系统</p><p class="url">https://even629.com/posts/2512160/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="pinctrl 子系统" href="https://even629.com/posts/2512160/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">pinctrl 子系统</p><p class="url">https://even629.com/posts/2512160/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>12. gpio 子系统</strong></td>
-<td><div class="tag link"><a class="link-card" title="gpio 子系统" href="https://even629.com/posts/2512173/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">gpio 子系统</p><p class="url">https://even629.com/posts/2512173/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="gpio 子系统" href="https://even629.com/posts/2512173/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">gpio 子系统</p><p class="url">https://even629.com/posts/2512173/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>13. 输入子系统</strong></td>
-<td><div class="tag link"><a class="link-card" title="输入子系统" href="https://even629.com/posts/2512183/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">输入子系统</p><p class="url">https://even629.com/posts/2512183/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="输入子系统" href="https://even629.com/posts/2512183/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">输入子系统</p><p class="url">https://even629.com/posts/2512183/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>14. 单总线</strong></td>
-<td><div class="tag link"><a class="link-card" title="单总线" href="https://even629.com/posts/2512233/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">单总线</p><p class="url">https://even629.com/posts/2512233/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="单总线" href="https://even629.com/posts/2512233/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">单总线</p><p class="url">https://even629.com/posts/2512233/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>15. I2C</strong></td>
-<td><div class="tag link"><a class="link-card" title="I2C" href="https://even629.com/posts/2512283/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">I2C</p><p class="url">https://even629.com/posts/2512283/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="I2C" href="https://even629.com/posts/2512283/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">I2C</p><p class="url">https://even629.com/posts/2512283/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>16. SPI</strong></td>
-<td><div class="tag link"><a class="link-card" title="SPI" href="https://even629.com/posts/2512303/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">SPI</p><p class="url">https://even629.com/posts/2512303/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="SPI" href="https://even629.com/posts/2512303/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">SPI</p><p class="url">https://even629.com/posts/2512303/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>17. UART</strong></td>
-<td><div class="tag link"><a class="link-card" title="UART" href="https://even629.com/posts/2512313/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">UART</p><p class="url">https://even629.com/posts/2512313/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="UART" href="https://even629.com/posts/2512313/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">UART</p><p class="url">https://even629.com/posts/2512313/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>18. PWM</strong></td>
-<td><div class="tag link"><a class="link-card" title="PWM" href="https://even629.com/posts/2601043/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">PWM</p><p class="url">https://even629.com/posts/2601043/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="PWM" href="https://even629.com/posts/2601043/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">PWM</p><p class="url">https://even629.com/posts/2601043/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>19. RTC</strong></td>
-<td><div class="tag link"><a class="link-card" title="RTC" href="https://even629.com/posts/2601053/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">RTC</p><p class="url">https://even629.com/posts/2601053/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="RTC" href="https://even629.com/posts/2601053/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">RTC</p><p class="url">https://even629.com/posts/2601053/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>20. Watchdog</strong></td>
-<td><div class="tag link"><a class="link-card" title="Watchdog" href="https://even629.com/posts/2601063/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">Watchdog</p><p class="url">https://even629.com/posts/2601063/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="Watchdog" href="https://even629.com/posts/2601063/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">Watchdog</p><p class="url">https://even629.com/posts/2601063/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>21. CAN</strong></td>
-<td><div class="tag link"><a class="link-card" title="CAN" href="https://even629.com/posts/2601093/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">CAN</p><p class="url">https://even629.com/posts/2601093/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="CAN" href="https://even629.com/posts/2601093/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">CAN</p><p class="url">https://even629.com/posts/2601093/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>22. 网络设备</strong></td>
-<td><div class="tag link"><a class="link-card" title="网络设备" href="https://even629.com/posts/2601133/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">网络设备</p><p class="url">https://even629.com/posts/2601133/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="网络设备" href="https://even629.com/posts/2601133/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">网络设备</p><p class="url">https://even629.com/posts/2601133/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>23. ADC</strong></td>
-<td><div class="tag link"><a class="link-card" title="ADC" href="https://even629.com/posts/2601143/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">ADC</p><p class="url">https://even629.com/posts/2601143/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="ADC" href="https://even629.com/posts/2601143/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">ADC</p><p class="url">https://even629.com/posts/2601143/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>24. IIO</strong></td>
-<td><div class="tag link"><a class="link-card" title="IIO" href="https://even629.com/posts/2602153"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">IIO</p><p class="url">https://even629.com/posts/2602153</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="IIO" href="https://even629.com/posts/2602153"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">IIO</p><p class="url">https://even629.com/posts/2602153</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>25. USB</strong></td>
-<td><div class="tag link"><a class="link-card" title="USB" href="https://even629.com/posts/2602163"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">USB</p><p class="url">https://even629.com/posts/2602163</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="USB" href="https://even629.com/posts/2602163"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">USB</p><p class="url">https://even629.com/posts/2602163</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>26. LCD</strong></td>
-<td><div class="tag link"><a class="link-card" title="LCD" href="https://even629.com/posts/2602173"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">LCD</p><p class="url">https://even629.com/posts/2602173</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="LCD" href="https://even629.com/posts/2602173"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">LCD</p><p class="url">https://even629.com/posts/2602173</p></div></a></div></td>
 </tr>
 </tbody>
 </table>
@@ -322,7 +379,7 @@ if (true) {
 </ul>
 </li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143841712.png" alt="并行通信与串行通信"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143841712.png" alt="并行通信与串行通信"><figcaption>并行通信与串行通信</figcaption></figure></p>
 <ul>
 <li>
 <p><strong>主从结构设计</strong>: SPI 协议将通信设备分为主设备和从设备</p>
@@ -336,13 +393,13 @@ if (true) {
 <ul>
 <li>
 <p>在<strong>常规模式</strong>下，每个从设备（Slave）都有独立的片选（Chip Select, CS）信号线。主设备（Master）通过拉低相应的 CS 线来选择从设备进行通信，具体示意图如下所示：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143854714.png" alt="常规模式"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143854714.png" alt="常规模式"><figcaption>常规模式</figcaption></figure></p>
 </li>
 <li>
 <p><strong>菊花链模式</strong>下，<wavy>从设备会串联在一起</wavy>，数据从主设备传输到第一个从设备，然后从第一个从设备传输到下一个，从而形成链式结构，具体连接示意图如下所示：</p>
 </li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143907231.png" alt="菊花链模式"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143907231.png" alt="菊花链模式"><figcaption>菊花链模式</figcaption></figure></p>
 </li>
 </ul>
 <h2 id="SPI-硬件连接">SPI 硬件连接</h2>
@@ -378,7 +435,7 @@ if (true) {
 <p>CS/SS 线连接主设备的片选输出到从设备的片选输入</p>
 </li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143913697.png" alt="主设备和从设备之间的连接关系"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143913697.png" alt="主设备和从设备之间的连接关系"><figcaption>主设备和从设备之间的连接关系</figcaption></figure></p>
 <h2 id="SPI-通信原理">SPI 通信原理</h2>
 <p>SPI 总线在进行数据传输时，具有以下特点：</p>
 <ul>
@@ -387,7 +444,7 @@ if (true) {
 <li><strong>字节传输</strong>：<wavy>一个字节传输完成之后，无需应答信号即可开启下一个字节的传输。</wavy></li>
 </ul>
 <p>SPI 是单通信协议，意味着总线中只有一个主设备能发起通信，而 SPI 主设备和从设备都有一个<strong>串行移位寄存器</strong>，如下图所示：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143920334.png" alt="SPI 主设备和从设备都有一个串行移位寄存器"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143920334.png" alt="SPI 主设备和从设备都有一个串行移位寄存器"><figcaption>SPI 主设备和从设备都有一个串行移位寄存器</figcaption></figure></p>
 <p>当 SPI 主设备想读/写从设备时，它<strong>首先要拉低从设备对应的 CS 线</strong>（CS 线是低电平有效），接着开始发送工作脉冲到时钟线上，在相应的脉冲时间上，<strong>主设备把信号发送到 MOSI 实现“写”，同时可对 MISO 采样实现“读”</strong>。</p>
 <p><strong>在一个 SPI时钟周期内，收发是同时进行的</strong>：</p>
 <ul>
@@ -415,19 +472,19 @@ if (true) {
 <ol>
 <li>CPOL=0, CPHA=0: 时钟空闲为低电平,数据在时钟的第一个边沿(上升沿)被采样</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144110634.png" alt="CPOL=0, CPHA=0"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144110634.png" alt="CPOL=0, CPHA=0"><figcaption>CPOL=0, CPHA=0</figcaption></figure></p>
 <ol start="2">
 <li>CPOL=0, CPHA=1: 时钟空闲为低电平,数据在时钟的第二个边沿(下降沿)被采样</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144106614.png" alt="CPOL=0, CPHA=1"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144106614.png" alt="CPOL=0, CPHA=1"><figcaption>CPOL=0, CPHA=1</figcaption></figure></p>
 <ol start="3">
 <li>CPOL=1, CPHA=0: 时钟空闲为高电平,数据在时钟的第一个边沿(下降沿)被采样</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143935687.png" alt="CPOL=1, CPHA=0"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143935687.png" alt="CPOL=1, CPHA=0"><figcaption>CPOL=1, CPHA=0</figcaption></figure></p>
 <ol start="4">
 <li>CPOL=1, CPHA=1: 时钟空闲为高电平,数据在时钟的第二个边沿(上升沿)被采样</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143940236.png" alt="CPOL=1, CPHA=1"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143940236.png" alt="CPOL=1, CPHA=1"><figcaption>CPOL=1, CPHA=1</figcaption></figure></p>
 <blockquote>
 <p>注意：<strong>主设备和从设备必须配置相同的 CPOL 和 CPHA,否则无法正常通信。</strong></p>
 <p>而在一般情况下,主设备会配置 CPOL 和 CPHA,从设备则需要根据主设备的设置进行匹配</p>
@@ -438,7 +495,7 @@ if (true) {
 <li>1 个控制器支持 1 个片选输出其余 3 个控制器各支持 2 个片选输出</li>
 <li>支持主机模式和从机模式,可通过软件进行配置切换</li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143947810.png" alt="RK3568核心板Datasheet"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230143947810.png" alt="RK3568核心板Datasheet"><figcaption>RK3568核心板Datasheet</figcaption></figure></p>
 <p>其中这里的 4 路 SPI 接口指的是硬件 SPI，在 SOC 上有专用的硬件 SPI 电路，关于硬件 I2C的介绍如下所示：</p>
 <p><strong>硬件 SPI</strong>:</p>
 <ul>
@@ -760,7 +817,7 @@ if (true) {
 <p><strong>每个 SPI 控制器各自有两组 pinctrl，但某一个硬件 SPI 只能由一组 pinctrl 引脚进行复用</strong>。</p>
 <h2 id="mcp2515">mcp2515</h2>
 <p>该模块不仅可以实现 SPI 转 CAN 的功能，还可以实现 TTL 转 485 的功能，相关的原理图如下所示：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144004882.png" alt="mcp2515"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144004882.png" alt="mcp2515"><figcaption>mcp2515</figcaption></figure></p>
 <p>上述原理图中总共涉及到了两个芯片，分别为 <strong>MCP2515 SPI 转 CAN 芯片</strong>和 <strong>MCP2551 CAN 收发器芯片</strong>，这里主要对 MCP2515 芯片进行介绍。</p>
 <p>MCP2515 是一款独立的 CAN 协议控制器，完全支持 CAN V2.0B 技术规范。它通过标准的SPI 接口与控制器连接。主要特点如下：</p>
 <ol>
@@ -772,9 +829,9 @@ if (true) {
 <li>错误检测和处理：内置错误检测和处理机制，保证数据传输的准确性。</li>
 </ol>
 <p>SPI 转 CAN 模块与 iTOP-RK3568 开发板具体的连接示意图如下所示</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144017427.png" alt="SPI 转 CAN 模块与 iTOP-RK3568 开发板具体的连接"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144017427.png" alt="SPI 转 CAN 模块与 iTOP-RK3568 开发板具体的连接"><figcaption>SPI 转 CAN 模块与 iTOP-RK3568 开发板具体的连接</figcaption></figure></p>
 <h1 id="SPI-子系统框架">SPI 子系统框架</h1>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144021289.png" alt="SPI 子系统框架"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144021289.png" alt="SPI 子系统框架"><figcaption>SPI 子系统框架</figcaption></figure></p>
 <p>可以将上面这一 SPI 子系统划分为三个层次，分别为用户空间、内核空间和硬件层，内核空间就包括 SPI 设备驱动层、SPI 核心层和 SPI 适配器驱动层，而本章的主要内容就是介绍 SPI 子系统框架中的内核空间。</p>
 <h2 id="SPI设备驱动层">SPI设备驱动层</h2>
 <p>SPI 设备驱动层的主要作用是编写驱动程序，使 SPI 外设能够正常工作。它创建了对应的设备节点，提供了标准化的接口，使得上层应用程序能够方便地与 SPI 设备进行交互。</p>
@@ -871,7 +928,7 @@ if (true) {
 <h1 id="通用-SPI-外设框架编写">通用 SPI 外设框架编写</h1>
 <h2 id="设备树">设备树</h2>
 <p>SPI 转 CAN 模块要接的 iTOP-RK3568 的引脚</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144030581.png" alt="SPI 转 CAN 模块要接的 iTOP-RK3568 的引脚"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144030581.png" alt="SPI 转 CAN 模块要接的 iTOP-RK3568 的引脚"><figcaption>SPI 转 CAN 模块要接的 iTOP-RK3568 的引脚</figcaption></figure></p>
 <p>可以根据引脚的网络标号得到要使能的 SPI 控制器为 SPI0，然后开始对 iTOP-RK3568 的设备树进行修改</p>
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">&amp;spi0</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line">	pinctrl<span class="number">-0</span> = <span class="params">&lt;<span class="variable">&amp;spi0m1_cs0</span> <span class="variable">&amp;spi0m1_pins</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	pinctrl<span class="number">-1</span> = <span class="params">&lt;<span class="variable">&amp;spi0m1_cs0</span> <span class="variable">&amp;spi0m1_pins_hs</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line"><span class="symbol"></span></span><br><span class="line"><span class="symbol">	mcp2515:</span><span class="title class_">mcp2515@0</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;my-mcp2515&quot;</span><span class="punctuation">;</span></span><br><span class="line">		<span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">		<span class="attr">spi-max-frequency</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">10000000</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">		<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
 <p>第 3-4 行，指定了要使用的 <code>spi pinctrl</code> 引脚，默认情况下使用的 spi0 控制器 pinctrl 引脚为 <code>spi0m0_cs0</code> 和 <code>spi0m0_pins</code>，而实际用的是第二组 pinctrl 引脚。</p>
@@ -942,7 +999,7 @@ if (true) {
 <li>环回模式</li>
 </ul>
 <emp>只有在配置模式下，才能对关键寄存器进行初始化和配置</emp>，当 MCP2515 上电或者复位时，器件会自动进入配置模式，而 MCP2515 提供了一系列的 SPI 指令，SPI 指令表如下图所示：
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144052698.png" alt="MCP2515 指令集">通过向 MCP2515 发送上述 SPI 指令就能实现复位、读、写等操作，复位操作对应的指令格式为 <code>11000000</code>。示例</p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144052698.png" alt="MCP2515 指令集"><figcaption>MCP2515 指令集</figcaption></figure>通过向 MCP2515 发送上述 SPI 指令就能实现复位、读、写等操作，复位操作对应的指令格式为 <code>11000000</code>。示例</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">spi_device</span> *<span class="title">spi_dev</span>;</span> <span class="comment">// SPI 设备指针</span></span><br><span class="line"><span class="comment">// MCP2515 芯片复位函数</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">mcp2515_reset</span><span class="params">(<span class="type">void</span>)</span>&#123;</span><br><span class="line">	<span class="type">int</span> ret;</span><br><span class="line">	<span class="type">char</span> write_buf[] = &#123;<span class="number">0xc0</span>&#125;; <span class="comment">// 复位指令 0x11000000 即 0xc0</span></span><br><span class="line">	ret = spi_write(spi_dev, write_buf, <span class="keyword">sizeof</span>(write_buf)); <span class="comment">// 发送复位命令</span></span><br><span class="line">	<span class="keyword">if</span>(ret &lt; <span class="number">0</span>)&#123;</span><br><span class="line">		printk(<span class="string">&quot;spi_write is error\n&quot;</span>); <span class="comment">// 打印错误信息</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>完整驱动如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/spi/spi.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/cdev.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/fs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kdev_t.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/uaccess.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CNF1 0x2a <span class="comment">// 寄存器定义</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CNF2 0x29</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CNF3 0x28</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RXB0CTRL 0x60</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CANINTE 0x2b</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CANCTRL 0xf <span class="comment">// CAN控制寄存器</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TXB0CTRL 0x30 <span class="comment">//发送缓冲器控制寄存器地址</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CANINTF 0x2c</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mcp2515_drv_data</span> &#123;</span></span><br><span class="line">        <span class="type">dev_t</span> dev_num; <span class="comment">// 设备号</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">mcp2515_cdev</span>;</span> <span class="comment">// 字符设备结构体</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="keyword">class</span> *<span class="title">mcp2515_class</span>;</span> <span class="comment">// 设备类</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">mcp2515_device</span>;</span> <span class="comment">// 设备</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">spi_device</span> *<span class="title">spi_dev</span>;</span> <span class="comment">// SPI设备指针</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515芯片复位函数</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">mcp2515_reset</span><span class="params">(<span class="keyword">struct</span> spi_device *spi_dev)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> ret;</span><br><span class="line">        <span class="type">char</span> write_buf[] = &#123; <span class="number">0xc0</span> &#125;; <span class="comment">// 复位指令0x11000000即0xc0</span></span><br><span class="line">        ret = spi_write(spi_dev, write_buf, <span class="keyword">sizeof</span>(write_buf)); <span class="comment">// 发送复位命令</span></span><br><span class="line">        <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                printk(<span class="string">&quot;spi_write is error\n&quot;</span>); <span class="comment">// 打印错误信息</span></span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515读寄存器函数</span></span><br><span class="line"><span class="type">char</span> <span class="title function_">mcp2515_read_reg</span><span class="params">(<span class="keyword">struct</span> spi_device *spi_dev, <span class="type">char</span> reg)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">char</span> write_buf[] = &#123; <span class="number">0x03</span>, reg &#125;; <span class="comment">// SPI写缓冲区写入SPI读指令0x03</span></span><br><span class="line">        <span class="type">char</span> read_buf; <span class="comment">// SPI读缓冲区</span></span><br><span class="line">        <span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">        ret = spi_write_then_read(spi_dev, write_buf, <span class="keyword">sizeof</span>(write_buf), &amp;read_buf,</span><br><span class="line">                                  <span class="keyword">sizeof</span>(read_buf)); <span class="comment">// 调用SPI写读函数</span></span><br><span class="line">        <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                printk(<span class="string">&quot;spi_write_then_read error\n&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> ret;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> read_buf;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//  MCP2515写寄存器函数</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">mcp2515_write_reg</span><span class="params">(<span class="keyword">struct</span> spi_device *spi_dev, <span class="type">char</span> reg, <span class="type">char</span> value)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> ret;</span><br><span class="line">        <span class="type">char</span> write_buf[] = &#123; <span class="number">0x02</span>, reg, value &#125;; <span class="comment">// SPI写缓冲区，用于发送写寄存器命令</span></span><br><span class="line"></span><br><span class="line">        ret = spi_write(spi_dev, write_buf, <span class="keyword">sizeof</span>(write_buf)); <span class="comment">// 发送SPI写命令</span></span><br><span class="line">        <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                printk(<span class="string">&quot;mcp2515_write_reg error\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515修改寄存器位函数</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">mcp2515_change_regbit</span><span class="params">(<span class="keyword">struct</span> spi_device *spi_dev, <span class="type">char</span> reg, <span class="type">char</span> mask, <span class="type">char</span> value)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> ret;</span><br><span class="line">        <span class="type">char</span> write_buf[] = &#123; <span class="number">0x05</span>, reg, mask, value &#125;; <span class="comment">// SPI写缓冲区，用于发送修改寄存器位命令</span></span><br><span class="line"></span><br><span class="line">        ret = spi_write(spi_dev, write_buf, <span class="keyword">sizeof</span>(write_buf)); <span class="comment">// 发送SPI写命令</span></span><br><span class="line">        <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                printk(<span class="string">&quot;mcp2515_change_regbit error\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打开设备文件的回调函数</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mcp2515_open</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">mcp2515_drv_data</span> *<span class="title">drv_data</span> =</span></span><br><span class="line">                container_of(inode-&gt;i_cdev, <span class="keyword">struct</span> mcp2515_drv_data, mcp2515_cdev);</span><br><span class="line">        file-&gt;private_data = drv_data;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">// 返回成功</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读设备操作函数，从设备读取数据到用户缓冲区</span></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">mcp2515_read</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">char</span> __user *buf, <span class="type">size_t</span> size, <span class="type">loff_t</span> *offset)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">char</span> r_kbuf[<span class="number">13</span>] = &#123; <span class="number">0</span> &#125;; <span class="comment">// 内核缓冲区，用于存储从设备读取的数据</span></span><br><span class="line">        <span class="type">int</span> i;</span><br><span class="line">        <span class="type">int</span> ret;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">mcp2515_drv_data</span> *<span class="title">drv_data</span> =</span> file-&gt;private_data;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">spi_device</span> *<span class="title">spi_dev</span> =</span> drv_data-&gt;spi_dev;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 等待接收缓冲区满标志位被设置</span></span><br><span class="line">        <span class="keyword">while</span> (!(mcp2515_read_reg(spi_dev, CANINTF) &amp; (<span class="number">1</span> &lt;&lt; <span class="number">0</span>)))</span><br><span class="line">                ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从接收缓冲区读取数据到内核缓冲区</span></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="keyword">sizeof</span>(r_kbuf); i++) &#123;</span><br><span class="line">                r_kbuf[i] = mcp2515_read_reg(spi_dev, <span class="number">0x61</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 清除接收缓冲区满标志位</span></span><br><span class="line">        mcp2515_change_regbit(spi_dev, CANINTF, <span class="number">0x01</span>, <span class="number">0x00</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将内核缓冲区的数据复制到用户缓冲区</span></span><br><span class="line">        ret = copy_to_user(buf, r_kbuf, size);</span><br><span class="line">        <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">                printk(<span class="string">&quot;copy_to_user r_kbuf is error\n&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">// 返回-1表示复制数据失败</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">// 返回0表示成功读取数据</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写设备操作函数</span></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">mcp2515_write</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">const</span> <span class="type">char</span> __user *buf, <span class="type">size_t</span> size, <span class="type">loff_t</span> *offset)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">char</span> w_kbuf[<span class="number">13</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">        <span class="type">int</span> ret;</span><br><span class="line">        <span class="type">int</span> i;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">mcp2515_drv_data</span> *<span class="title">drv_data</span> =</span> file-&gt;private_data;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">spi_device</span> *<span class="title">spi_dev</span> =</span> drv_data-&gt;spi_dev;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置TXB0CTRL寄存器的部分位</span></span><br><span class="line">        mcp2515_change_regbit(spi_dev, TXB0CTRL, <span class="number">0x03</span>, <span class="number">0x03</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从用户空间复制数据到内核缓冲区</span></span><br><span class="line">        ret = copy_from_user(w_kbuf, buf, size);</span><br><span class="line">        <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">                printk(<span class="string">&quot;copy_from_user w_kbuf is error\n&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将数据写入MCP2515寄存器</span></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="keyword">sizeof</span>(w_kbuf); i++) &#123;</span><br><span class="line">                mcp2515_write_reg(spi_dev, <span class="number">0x31</span> + i, w_kbuf[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置TXB0CTRL寄存器的部分位，启动发送</span></span><br><span class="line">        mcp2515_change_regbit(spi_dev, TXB0CTRL, <span class="number">0x08</span>, <span class="number">0x08</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 等待发送完成</span></span><br><span class="line">        <span class="keyword">while</span> (!(mcp2515_read_reg(spi_dev, CANINTF) &amp; (<span class="number">1</span> &lt;&lt; <span class="number">2</span>)))</span><br><span class="line">                ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 清除发送完成标志</span></span><br><span class="line">        mcp2515_change_regbit(spi_dev, CANINTF, <span class="number">0x04</span>, <span class="number">0x00</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭设备文件的回调函数</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mcp2515_release</span><span class="params">(<span class="keyword">struct</span> inode *inode, <span class="keyword">struct</span> file *file)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">// 返回成功</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设备文件操作集合</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">mcp2515_fops</span> =</span> &#123;</span><br><span class="line">        .open = mcp2515_open,</span><br><span class="line">        .read = mcp2515_read,</span><br><span class="line">        .write = mcp2515_write,</span><br><span class="line">        .release = mcp2515_release,</span><br><span class="line">        .owner = THIS_MODULE,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515设备初始化函数</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mcp2515_probe</span><span class="params">(<span class="keyword">struct</span> spi_device *spi)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">int</span> ret, value;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">mcp2515_drv_data</span> *<span class="title">drv_data</span>;</span></span><br><span class="line">        drv_data = kzalloc(<span class="keyword">sizeof</span>(*drv_data), GFP_KERNEL);</span><br><span class="line">        <span class="keyword">if</span> (!drv_data) &#123;</span><br><span class="line">                ret = -ENOMEM;</span><br><span class="line">                <span class="keyword">goto</span> kzalloc_err;</span><br><span class="line">        &#125;</span><br><span class="line">        spi_set_drvdata(spi, drv_data);</span><br><span class="line"></span><br><span class="line">        drv_data-&gt;spi_dev = spi; <span class="comment">// 保存SPI设备指针</span></span><br><span class="line">        <span class="comment">// 分配字符设备号</span></span><br><span class="line">        ret = alloc_chrdev_region(&amp;drv_data-&gt;dev_num, <span class="number">0</span>, <span class="number">1</span>, <span class="string">&quot;mcp2515&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                pr_err(<span class="string">&quot;alloc_chrdev_region error\n&quot;</span>);</span><br><span class="line">                <span class="keyword">goto</span> alloc_chrdev_err;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 初始化字符设备</span></span><br><span class="line">        cdev_init(&amp;drv_data-&gt;mcp2515_cdev, &amp;mcp2515_fops);</span><br><span class="line">        drv_data-&gt;mcp2515_cdev.owner = THIS_MODULE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加字符设备</span></span><br><span class="line">        ret = cdev_add(&amp;drv_data-&gt;mcp2515_cdev, drv_data-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                pr_err(<span class="string">&quot;cdev_add error\n&quot;</span>);</span><br><span class="line">                <span class="keyword">goto</span> cdev_add_err;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建设备类</span></span><br><span class="line">        drv_data-&gt;mcp2515_class = class_create(THIS_MODULE, <span class="string">&quot;spi_to_can&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(drv_data-&gt;mcp2515_class)) &#123;</span><br><span class="line">                pr_err(<span class="string">&quot;mcp2515_class error\n&quot;</span>);</span><br><span class="line">                ret = PTR_ERR(drv_data-&gt;mcp2515_class);</span><br><span class="line">                <span class="keyword">goto</span> class_create_err;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建设备</span></span><br><span class="line">        drv_data-&gt;mcp2515_device =</span><br><span class="line">                device_create(drv_data-&gt;mcp2515_class, <span class="literal">NULL</span>, drv_data-&gt;dev_num, <span class="literal">NULL</span>, <span class="string">&quot;mcp2515&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (IS_ERR(drv_data-&gt;mcp2515_device)) &#123;</span><br><span class="line">                pr_err(<span class="string">&quot;mcp2515_device error\n&quot;</span>);</span><br><span class="line">                ret = PTR_ERR(drv_data-&gt;mcp2515_device);</span><br><span class="line">                <span class="keyword">goto</span> device_create_err;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        mcp2515_reset(spi); <span class="comment">// 复位MCP2515设备</span></span><br><span class="line">        value = mcp2515_read_reg(spi, <span class="number">0x0e</span>); <span class="comment">// 读取寄存器值</span></span><br><span class="line">        pr_info(<span class="string">&quot;value is %x\n&quot;</span>, value); <span class="comment">// 打印读取的值</span></span><br><span class="line"></span><br><span class="line">        mcp2515_write_reg(spi, CNF1, <span class="number">0x01</span>); <span class="comment">// 写入寄存器配置值</span></span><br><span class="line">        mcp2515_write_reg(spi, CNF2, <span class="number">0xb1</span>);</span><br><span class="line">        mcp2515_write_reg(spi, CNF3, <span class="number">0x05</span>);</span><br><span class="line"></span><br><span class="line">        mcp2515_write_reg(spi, RXB0CTRL, <span class="number">0x60</span>);</span><br><span class="line">        mcp2515_write_reg(spi, CANINTE, <span class="number">0x05</span>);</span><br><span class="line">        mcp2515_change_regbit(spi, CANCTRL, <span class="number">0xe0</span>, <span class="number">0x40</span>);</span><br><span class="line"></span><br><span class="line">        value = mcp2515_read_reg(spi, <span class="number">0x0e</span>); <span class="comment">// 读取寄存器值</span></span><br><span class="line">        pr_info(<span class="string">&quot;value is %x\n&quot;</span>, value); <span class="comment">// 打印读取的值</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">// 返回成功</span></span><br><span class="line"></span><br><span class="line">device_create_err:</span><br><span class="line">        class_destroy(drv_data-&gt;mcp2515_class);</span><br><span class="line">class_create_err:</span><br><span class="line">        cdev_del(&amp;drv_data-&gt;mcp2515_cdev);</span><br><span class="line">cdev_add_err:</span><br><span class="line">        unregister_chrdev_region(drv_data-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">alloc_chrdev_err:</span><br><span class="line">        kfree(drv_data);</span><br><span class="line">kzalloc_err:</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515 SPI设备的移除函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">mcp2515_remove</span><span class="params">(<span class="keyword">struct</span> spi_device *spi)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">mcp2515_drv_data</span> *<span class="title">drv_data</span> =</span> spi_get_drvdata(spi);</span><br><span class="line">        device_destroy(drv_data-&gt;mcp2515_class, drv_data-&gt;dev_num);</span><br><span class="line">        class_destroy(drv_data-&gt;mcp2515_class);</span><br><span class="line">        cdev_del(&amp;drv_data-&gt;mcp2515_cdev);</span><br><span class="line">        unregister_chrdev_region(drv_data-&gt;dev_num, <span class="number">1</span>);</span><br><span class="line">        kfree(drv_data);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515设备匹配表,用于设备树匹配</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">of_device_id</span> <span class="title">mcp2515_of_match_table</span>[] =</span> &#123; &#123; .compatible = <span class="string">&quot;my-mcp2515&quot;</span> &#125;, &#123;&#125; &#125;;</span><br><span class="line">MODULE_DEVICE_TABLE(of, mcp2515_of_match_table);</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515设备ID匹配表,用于总线匹配</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">spi_device_id</span> <span class="title">mcp2515_id_table</span>[] =</span> &#123; &#123; <span class="string">&quot;mcp2515&quot;</span>, <span class="number">0</span> &#125;, &#123;&#125; &#125;;</span><br><span class="line">MODULE_DEVICE_TABLE(spi, mcp2515_id_table);</span><br><span class="line"></span><br><span class="line"><span class="comment">// MCP2515 SPI驱动结构体</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">spi_driver</span> <span class="title">spi_mcp2515</span> =</span> &#123;</span><br><span class="line">        .probe = mcp2515_probe, <span class="comment">// 探测函数</span></span><br><span class="line">        .remove = mcp2515_remove, <span class="comment">// 移除函数</span></span><br><span class="line">        .driver = &#123;</span><br><span class="line">                .name = <span class="string">&quot;mcp2515&quot;</span>, <span class="comment">// 驱动名称</span></span><br><span class="line">                .owner = THIS_MODULE, <span class="comment">// 所属模块</span></span><br><span class="line">                .of_match_table = mcp2515_of_match_table, <span class="comment">// 设备树匹配表</span></span><br><span class="line">        &#125;,</span><br><span class="line">        .id_table = mcp2515_id_table, <span class="comment">// 设备ID匹配表</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 驱动初始化函数</span></span><br><span class="line">module_spi_driver(spi_mcp2515);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;even629 &lt;asqwgo@outlook.com&gt;&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;This is a test sample for spi driver&quot;</span>);</span><br></pre></td></tr></table></figure>
@@ -979,17 +1036,17 @@ if (true) {
 <ul>
 <li>读取设备信息：<code>spidev_test -D /dev/spidevX.Y -s 1000000</code></li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144134950.png" alt="读取设备信息"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144134950.png" alt="读取设备信息"><figcaption>读取设备信息</figcaption></figure></p>
 <p>这会使用 1 MHz 的时钟频率从 SPI 设备读取数据，默认情况下以十六进制显示</p>
 <ul>
 <li>写入和读取数据：<code>spidev_test -D /dev/spidevX.Y -s 1000000 -b 8 -d 1000 -H -p 'hello'</code></li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144141950.png" alt="写入和读取数据"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144141950.png" alt="写入和读取数据"><figcaption>写入和读取数据</figcaption></figure></p>
 <p>这条命令会向 SPI 设备写入字符串 ‘hello’，并以十六进制模式显示设备的响应数据。<code>-b 8</code>指定每个字的位数为 8，<code>-d 1000</code> 设置 1000 微秒的延迟。</p>
 </li>
 <li>
 <p><strong>连续传输</strong>：<code>spidev_test -D /dev/spidevX.Y -s 1000000 -b 8 -p 'abcdefgh'</code></p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144154098.png" alt="连续传输"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20251230144154098.png" alt="连续传输"><figcaption>连续传输</figcaption></figure></p>
 </li>
 </ul>
 <p>这个示例将连续发送字节 ‘abcdefgh’ 到 SPI 设备。</p>
@@ -1077,230 +1134,212 @@ if (true) {
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mcp2515-gpio<span class="punctuation">&#123;</span></span><br><span class="line"><span class="symbol">	mcp2515_int:</span><span class="title class_">mcp2515-int</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">rockchip,pins</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0</span> RK_PB0 RK_FUNC_GPIO <span class="variable">&amp;pcfg_pull_none</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
 <p>测试</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ifconfig -a</span><br><span class="line"><span class="comment"># 回环测试</span></span><br><span class="line">ip <span class="built_in">link</span> <span class="built_in">set</span> can1 down</span><br><span class="line">ip <span class="built_in">link</span> <span class="built_in">set</span> can1 <span class="built_in">type</span> can bitrate 250000</span><br><span class="line">ip <span class="built_in">link</span> <span class="built_in">set</span> can1 <span class="built_in">type</span> can loopback on</span><br><span class="line">ip <span class="built_in">link</span> <span class="built_in">set</span> up can1</span><br><span class="line">candump can1 -L &amp;</span><br><span class="line">cansend can1 123#1122334455667788</span><br></pre></td></tr></table></figure>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2512303/">https://even629.com/posts/2512303/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E5%9F%BA%E7%A1%80"><span class="toc-text">SPI 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E7%89%B9%E7%82%B9"><span class="toc-text">SPI 特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E7%A1%AC%E4%BB%B6%E8%BF%9E%E6%8E%A5"><span class="toc-text">SPI 硬件连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86"><span class="toc-text">SPI 通信原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E6%9E%81%E6%80%A7%E5%92%8C%E7%9B%B8%E4%BD%8D"><span class="toc-text">SPI 极性和相位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#iTOP-RK3568-%E5%A4%84%E7%90%86%E5%99%A8%E4%B8%AD%E7%9A%84-SPI-%E6%8E%A5%E5%8F%A3"><span class="toc-text">iTOP-RK3568 处理器中的 SPI 接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mcp2515"><span class="toc-text">mcp2515</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E5%AD%90%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6"><span class="toc-text">SPI 子系统框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E5%B1%82"><span class="toc-text">SPI设备驱动层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI%E9%80%82%E9%85%8D%E5%99%A8%E9%A9%B1%E5%8A%A8%E5%B1%82"><span class="toc-text">SPI适配器驱动层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E6%A0%B8%E5%BF%83%E5%B1%82"><span class="toc-text">SPI 核心层</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%9A%E7%94%A8-SPI-%E5%A4%96%E8%AE%BE%E6%A1%86%E6%9E%B6%E7%BC%96%E5%86%99"><span class="toc-text">通用 SPI 外设框架编写</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">设备树</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reg-%E5%92%8C-spi-max-frequency%E5%B1%9E%E6%80%A7"><span class="toc-text">reg 和 spi-max-frequency属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#rockchip-spi-probe"><span class="toc-text">rockchip_spi_probe()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#devm-spi-register-controller"><span class="toc-text">devm_spi_register_controller()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#spi-register-controller"><span class="toc-text">spi_register_controller()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-register-spi-devices"><span class="toc-text">of_register_spi_devices()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-register-spi-device"><span class="toc-text">of_register_spi_device()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-spi-parse-dt"><span class="toc-text">of_spi_parse_dt()</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87%E7%A4%BA%E4%BE%8B"><span class="toc-text">注册字符设备示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E9%80%9A%E4%BF%A1%E6%B5%81%E7%A8%8B"><span class="toc-text">SPI 通信流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-write"><span class="toc-text">spi_write()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-spi-device"><span class="toc-text">struct spi_device</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-read"><span class="toc-text">spi_read()</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-spi-transfer"><span class="toc-text">struct spi_transfer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync-transfer"><span class="toc-text">spi_sync_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync"><span class="toc-text">spi_sync()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync-2"><span class="toc-text">__spi_sync()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-pump-messages"><span class="toc-text">__spi_pump_messages()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-write-then-read"><span class="toc-text">spi_write_then_read()</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mcp2515-%E9%A9%B1%E5%8A%A8%E7%BC%96%E5%86%99"><span class="toc-text">mcp2515 驱动编写</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E9%80%9A%E7%94%A8-SPI-%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8"><span class="toc-text">Linux 通用 SPI 设备驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spidev-test-%E5%B7%A5%E5%85%B7"><span class="toc-text">spidev_test 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spidev-fdx-%E5%B7%A5%E5%85%B7"><span class="toc-text">spidev_fdx 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%B8%AD%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-SPI"><span class="toc-text">应用程序中如何使用 SPI</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%A8%A1%E6%8B%9F-SPI"><span class="toc-text">Linux 中使用模拟 SPI</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A7%BB%E6%A4%8D%E5%AE%98%E6%96%B9-mcp2515-%E9%A9%B1%E5%8A%A8"><span class="toc-text">移植官方 mcp2515 驱动</span></a></li></ol></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(async () => {
-  const showKatex = () => {
-    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
-  }
 
-  if (!window.katex_js_css) {
-    window.katex_js_css = true
-    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
-    if (true) {
-      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
-    }
-  }
+  </div>
+</article>
 
-  showKatex()
-})()</script><script>(() => {
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
 
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
 
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+          <li><a href="/en/">EN</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E5%9F%BA%E7%A1%80"><span class="toc-text">SPI 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E7%89%B9%E7%82%B9"><span class="toc-text">SPI 特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E7%A1%AC%E4%BB%B6%E8%BF%9E%E6%8E%A5"><span class="toc-text">SPI 硬件连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86"><span class="toc-text">SPI 通信原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E6%9E%81%E6%80%A7%E5%92%8C%E7%9B%B8%E4%BD%8D"><span class="toc-text">SPI 极性和相位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#iTOP-RK3568-%E5%A4%84%E7%90%86%E5%99%A8%E4%B8%AD%E7%9A%84-SPI-%E6%8E%A5%E5%8F%A3"><span class="toc-text">iTOP-RK3568 处理器中的 SPI 接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mcp2515"><span class="toc-text">mcp2515</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E5%AD%90%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6"><span class="toc-text">SPI 子系统框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E5%B1%82"><span class="toc-text">SPI设备驱动层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI%E9%80%82%E9%85%8D%E5%99%A8%E9%A9%B1%E5%8A%A8%E5%B1%82"><span class="toc-text">SPI适配器驱动层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPI-%E6%A0%B8%E5%BF%83%E5%B1%82"><span class="toc-text">SPI 核心层</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%9A%E7%94%A8-SPI-%E5%A4%96%E8%AE%BE%E6%A1%86%E6%9E%B6%E7%BC%96%E5%86%99"><span class="toc-text">通用 SPI 外设框架编写</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">设备树</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reg-%E5%92%8C-spi-max-frequency%E5%B1%9E%E6%80%A7"><span class="toc-text">reg 和 spi-max-frequency属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#rockchip-spi-probe"><span class="toc-text">rockchip_spi_probe()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#devm-spi-register-controller"><span class="toc-text">devm_spi_register_controller()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#spi-register-controller"><span class="toc-text">spi_register_controller()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-register-spi-devices"><span class="toc-text">of_register_spi_devices()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-register-spi-device"><span class="toc-text">of_register_spi_device()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#of-spi-parse-dt"><span class="toc-text">of_spi_parse_dt()</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87%E7%A4%BA%E4%BE%8B"><span class="toc-text">注册字符设备示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPI-%E9%80%9A%E4%BF%A1%E6%B5%81%E7%A8%8B"><span class="toc-text">SPI 通信流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-write"><span class="toc-text">spi_write()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-spi-device"><span class="toc-text">struct spi_device</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-read"><span class="toc-text">spi_read()</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-spi-transfer"><span class="toc-text">struct spi_transfer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync-transfer"><span class="toc-text">spi_sync_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync"><span class="toc-text">spi_sync()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-sync-2"><span class="toc-text">__spi_sync()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spi-pump-messages"><span class="toc-text">__spi_pump_messages()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spi-write-then-read"><span class="toc-text">spi_write_then_read()</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mcp2515-%E9%A9%B1%E5%8A%A8%E7%BC%96%E5%86%99"><span class="toc-text">mcp2515 驱动编写</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E9%80%9A%E7%94%A8-SPI-%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8"><span class="toc-text">Linux 通用 SPI 设备驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spidev-test-%E5%B7%A5%E5%85%B7"><span class="toc-text">spidev_test 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spidev-fdx-%E5%B7%A5%E5%85%B7"><span class="toc-text">spidev_fdx 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%B8%AD%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-SPI"><span class="toc-text">应用程序中如何使用 SPI</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%A8%A1%E6%8B%9F-SPI"><span class="toc-text">Linux 中使用模拟 SPI</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A7%BB%E6%A4%8D%E5%AE%98%E6%96%B9-mcp2515-%E9%A9%B1%E5%8A%A8"><span class="toc-text">移植官方 mcp2515 驱动</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2512303/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2512303/&text=Linux SPI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2512303/&is_video=false&description=Linux SPI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Linux SPI&body=Check out this article: https://even629.com/posts/2512303/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2512303/&title=Linux SPI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2512303/&name=Linux SPI&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2512303/&t=Linux SPI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2026
+    even629
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/en/posts/2512303/">EN</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+  
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
       }
-
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
     })
-  }
-
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
-
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
-
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
-
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
-  }
-
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
-  const option = null
-
-  const commentCount = n => {
-    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
-    if (isCommentCount) {
-      isCommentCount.textContent= n
-    }
-  }
-
-  const initGitalk = (el, path) => {
-    if (isShuoshuo) {
-      window.shuoshuoComment.destroyGitalk = () => {
-        if (el.children.length) {
-          el.innerHTML = ''
-          el.classList.add('no-comment')
-        }
-      }
-    }
-
-    const gitalk = new Gitalk({
-      clientID: 'Ov23liyQTymWpBETlDO8',
-      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
-      repo: 'even629.github.io',
-      owner: 'even629',
-      admin: ['even629'],
-      updateCountCallback: commentCount,
-      ...option,
-      id: isShuoshuo ? path : (option && option.id) || '4fbbafcb116e331e1f69be80efcdac62'
-    })
-
-    gitalk.render('gitalk-container')
-  }
-
-  const loadGitalk = async(el, path) => {
-    if (typeof Gitalk === 'function') initGitalk(el, path)
-    else {
-      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
-      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
-      initGitalk(el, path)
-    }
-  }
-
-  if (isShuoshuo) {
-    'Gitalk' === 'Gitalk'
-      ? window.shuoshuoComment = { loadComment: loadGitalk }
-      : window.loadOtherComment = loadGitalk
-    return
-  }
-
-  if ('Gitalk' === 'Gitalk' || !false) {
-    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
-    else loadGitalk()
-  } else {
-    window.loadOtherComment = loadGitalk
-  }
-})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script>(()=>{let d=document,c='style',s=d.createElement(c);s.textContent="@font-face{font-family:'Dymon-ShouXieTi';font-display:swap;src:url(/font/Dymon-ShouXieTi.otf) format('opentype')}@font-face{font-family:'FiraCode-Regular';font-display:swap;font-variant-ligatures:common-ligatures discretionary-ligatures;font-feature-settings:'liga' on;src:url(/font/FiraCode-Regular.ttf) format('truetype')}";window.addEventListener('load',()=>d.head.appendChild(s))})()</script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
-<filter
-  id="glass-distortion"
-  x="0%"
-  y="0%"
-  width="100%"
-  height="100%"
-  filterUnits="objectBoundingBox"
->
-  <feTurbulence
-    type="fractalNoise"
-    baseFrequency="0.01 0.01"
-    numOctaves="1"
-    seed="5"
-    result="turbulence"
-  />
-  <!-- Seeds: 14, 17,  -->
-
-  <feComponentTransfer in="turbulence" result="mapped">
-    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
-    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
-    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
-  </feComponentTransfer>
-
-  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
-
-  <feSpecularLighting
-    in="softMap"
-    surfaceScale="5"
-    specularConstant="1"
-    specularExponent="100"
-    lighting-color="white"
-    result="specLight"
-  >
-    <fePointLight x="-200" y="-200" z="300" />
-  </feSpecularLighting>
-
-  <feComposite
-    in="specLight"
-    operator="arithmetic"
-    k1="0"
-    k2="1"
-    k3="1"
-    k4="0"
-    result="litImage"
-  />
-
-  <feDisplacementMap
-    in="SourceGraphic"
-    in2="softMap"
-    scale="20"
-    xChannelSelector="R"
-    yChannelSelector="G"
-  />
-  </filter>
-</svg>
-<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
-POWERMODE.shake = true;
-POWERMODE.mobile = true;
-document.body.addEventListener('input', POWERMODE);
-</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
-  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
-
-  window.pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: pjaxSelectors,
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
   })
+  </script>
 
-  const triggerPjaxFn = (val) => {
-    if (!val) return
-    Object.values(val).forEach(fn => fn())
-  }
 
-  document.addEventListener('pjax:send', () => {
-    // removeEventListener
-    btf.removeGlobalFnEvent('pjaxSendOnce')
-    btf.removeGlobalFnEvent('themeChange')
+<script src="/js/main.js"></script>
 
-    // reset readmode
-    const $bodyClassList = document.body.classList
-    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
 
-    triggerPjaxFn(window.globalFn.pjaxSend)
-  })
+<script src="/js/tabs.js"></script>
 
-  document.addEventListener('pjax:complete', () => {
-    btf.removeGlobalFnEvent('pjaxCompleteOnce')
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-      const newScript = document.createElement('script')
-      const content = item.text || item.textContent || item.innerHTML || ""
-      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-      newScript.appendChild(document.createTextNode(content))
-      item.parentNode.replaceChild(newScript, item)
-    })
 
-    triggerPjaxFn(window.globalFn.pjaxComplete)
-  })
+  
+<script src="/js/toc.js"></script>
 
-  document.addEventListener('pjax:error', e => {
-    if (e.request.status === 404) {
-      pjax.loadUrl('/404.html')
-    }
-  })
-})()</script><script defer data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><!-- hexo injector body_end end --></body></html>
+  
+<script src="/js/outdate.js"></script>
+
+
+<!-- Fancybox lightbox (post pages only) -->
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
+  
+  
+<script src="/js/lightbox.js"></script>
+
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'even629/even629.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', utterances_issue_term);
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

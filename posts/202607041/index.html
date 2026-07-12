@@ -1,177 +1,196 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Remoteproc resource table | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了远程处理器固件映像中资源表的结构与作用，详细阐述了主处理器在加载固件后如何通过解码资源表来分配物理内存等系统资源、配置Virtio设备，并创建RPMsg通道以实现核间通信。同时，本文结合STM32MP15C的参考代码，总结了Remoteproc框架下资源条目的具体定义及基于OpenAMP的动态资源管理实现方式。">
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文介绍了远程处理器固件映像中资源表的结构与作用，详细阐述了主处理器在加载固件后如何通过解码资源表来分配物理内存等系统资源、配置Virtio设备，并创建RPMsg通道以实现核间通信。同时，本文结合STM32MP15C的参考代码，总结了Remoteproc框架下资源条目的具体定义及基于OpenAMP的动态资源管理实现方式。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Remoteproc resource table">
 <meta property="og:url" content="https://even629.com/posts/202607041/index.html">
-<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:site_name" content="even629">
 <meta property="og:description" content="本文介绍了远程处理器固件映像中资源表的结构与作用，详细阐述了主处理器在加载固件后如何通过解码资源表来分配物理内存等系统资源、配置Virtio设备，并创建RPMsg通道以实现核间通信。同时，本文结合STM32MP15C的参考代码，总结了Remoteproc框架下资源条目的具体定义及基于OpenAMP的动态资源管理实现方式。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://even629.com/images/openamp_cover.png">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704175912870.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260705232719484.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260708225927453.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260709214809525.png">
 <meta property="article:published_time" content="2026-07-04T09:42:13.000Z">
 <meta property="article:modified_time" content="2026-07-04T09:42:13.000Z">
 <meta property="article:author" content="even629">
-<meta property="article:tag" content="Linux">
 <meta property="article:tag" content="GNU">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://even629.com/images/openamp_cover.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/202607041/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preload" href="/img/12bb_together.gif" as="image" fetchpriority="high"><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
-    (() => {
-      
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
-
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!true && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
-      
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
-        }
-      }
-
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
-
-      const theme = saveToLocal.get('theme')
+<meta name="twitter:image" content="https://github.githubassets.com/favicons/favicon.svg">
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
         
       
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
-    
       
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":2000,"highlightFullpage":true,"highlightMacStyle":true},
-  copy: {
-    success: '复制成功',
-    error: '复制失败',
-    noSupport: '浏览器不支持'
-  },
-  relativeDate: {
-    homepage: false,
-    post: false
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
-  copyright: undefined,
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
-    buttonText: '加载更多'
-  },
-  isPhotoFigcaption: true,
-  islazyload: true,
-  isAnchor: true,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'Remoteproc resource table',
-  isPost: true,
-  isHome: false,
-  isHighlightShrink: false,
-  isToc: true,
-  isShuoshuo: false
-}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
-</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
-  endLoading: () => {
-    document.body.style.overflow = 'auto';
-    document.getElementById('loading-box').classList.add("loaded")
-  },
-  initLoading: () => {
-    document.body.style.overflow = '';
-    document.getElementById('loading-box').classList.remove("loaded")
+      
+    
+    <!-- title -->
+    <title>Remoteproc resource table</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
 
-  }
-}
-window.addEventListener('load',()=> { preloader.endLoading() })
 
-if (true) {
-  document.addEventListener('pjax:send', () => { preloader.initLoading() })
-  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
-}</script><div id="web_bg" style="background-image: url(/img/12bb_background.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/openAMP.png);"><nav class="liquidGlass-wrapper" id="nav"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Remoteproc resource table</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-04T09:42:13.000Z" title="发表于 2026-07-04 17:42:13">2026-07-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-04T09:42:13.000Z" title="更新于 2026-07-04 17:42:13">2026-07-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">10.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>48分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/202607041/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
-<details class="folding-tag" green open><summary> 时间轴 </summary>
-              <div class='content'>
-              <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-07-04</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
-              </div>
-            </details>
-<div class="tip key"><p>本文介绍了远程处理器固件映像中资源表的结构与作用，详细阐述了主处理器在加载固件后如何通过解码资源表来分配物理内存等系统资源、配置Virtio设备，并创建RPMsg通道以实现核间通信。同时，本文结合STM32MP15C的参考代码，总结了Remoteproc框架下资源条目的具体定义及基于OpenAMP的动态资源管理实现方式。</p>
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+    
+	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
+	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+	<!-- Fancybox lightbox CSS (post pages only) -->
+	
+	  
+	    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+	    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css" /></noscript>
+	  
+	
+	<!-- mathjax (legacy, use KaTeX above) -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/en/posts/202607041/">EN</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/202607041/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/202607041/&text=Remoteproc resource table"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/202607041/&is_video=false&description=Remoteproc resource table"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Remoteproc resource table&body=Check out this article: https://even629.com/posts/202607041/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/202607041/&name=Remoteproc resource table&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/202607041/&t=Remoteproc resource table"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <span class="toc-percentage"></span>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E5%A4%84%E7%90%86%E5%99%A8%E5%9B%BA%E4%BB%B6%E6%98%A0%E5%83%8F"><span class="toc-text">远程处理器固件映像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E8%A1%A8"><span class="toc-text">资源表</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#linux-%E5%AE%9A%E4%B9%89%E7%9A%84-struct-resource-table"><span class="toc-text">linux 定义的 struct resource_table</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-fw-rsc-hdr"><span class="toc-text">struct fw_rsc_hdr</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-carveout"><span class="toc-text">struct fw_rsc_carveout</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-devmem"><span class="toc-text">struct fw_rsc_devmem</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-trace"><span class="toc-text">struct fw_rsc_trace</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-vring"><span class="toc-text">struct fw_rsc_vdev_vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev"><span class="toc-text">struct fw_rsc_vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-rproc-mem-entry"><span class="toc-text">struct rproc_mem_entry</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STM32MP15C-%E7%9A%84-rsc-table-%E5%AE%9E%E7%8E%B0"><span class="toc-text">STM32MP15C 的 rsc_table 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#attribute-%E6%A0%87%E8%AE%B0"><span class="toc-text">attribute 标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-shared-resource-table"><span class="toc-text">struct shared_resource_table</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-2"><span class="toc-text">struct fw_rsc_vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-vring-2"><span class="toc-text">struct fw_rsc_vdev_vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-trace-2"><span class="toc-text">struct fw_rsc_trace</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rsc-table-%E5%AE%9E%E4%BE%8B"><span class="toc-text">rsc_table 实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vdev"><span class="toc-text">vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vring"><span class="toc-text">vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cm-trace"><span class="toc-text">cm_trace</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#resource-table-init"><span class="toc-text">resource_table_init()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%92%8C%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D"><span class="toc-text">存储和系统资源分配</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#reserved-memory"><span class="toc-text">reserved-memory</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mcuram2"><span class="toc-text">mcuram2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vdev0vring0%E3%80%81vdev0vring1-%E3%80%81vdev0buffer"><span class="toc-text">vdev0vring0、vdev0vring1 、vdev0buffer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mcuram"><span class="toc-text">mcuram</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#retram"><span class="toc-text">retram</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-2"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#m4-system-resources"><span class="toc-text">m4_system_resources</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC"><span class="toc-text">链接脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-text">链接脚本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E5%9C%B0%E5%9D%80"><span class="toc-text">入口地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%AE%9A%E4%B9%89"><span class="toc-text">内存区域定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%93%BE%E6%8E%A5%E5%AE%9A%E4%B9%89"><span class="toc-text">段链接定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stm32mp15xx-m4-ld"><span class="toc-text">stm32mp15xx_m4.ld</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+      </div>
+    
+  </span>
 </div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+      <img class="post-cover" src="/images/openamp_cover.png" alt="Cover image for Remoteproc resource table" />
+    
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Remoteproc resource table
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">even629</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-07-04T09:42:13.000Z" class="dt-published" itemprop="datePublished">2026-07-04</time>
+        
+        (Updated: <time datetime="2026-07-04T09:42:13.000Z" class="dt-updated" itemprop="dateModified">2026-07-04</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/tags/Linux/" rel="tag">Linux</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <hr>
+<details class="folding-tag" ><summary> 时间轴 </summary>
+            <div class='content'>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-07-04</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+            </div>
+          </details>
+<blockquote>
+本文介绍了远程处理器固件映像中资源表的结构与作用，详细阐述了主处理器在加载固件后如何通过解码资源表来分配物理内存等系统资源、配置Virtio设备，并创建RPMsg通道以实现核间通信。同时，本文结合STM32MP15C的参考代码，总结了Remoteproc框架下资源条目的具体定义及基于OpenAMP的动态资源管理实现方式。
+</blockquote>
 <hr>
 <p>参考代码：</p>
 <p>STM32CubeMP1 MPU Firmware Package</p>
@@ -179,7 +198,7 @@ if (true) {
 <li>STM32MP157C-EV1 RevC</li>
 <li>STM32MP157C-DK2 RevC</li>
 </ul>
-<div class="tag link"><a class="link-card" title="STM32CubeMP1" target="_blank" rel="noopener" href="https://github.com/STMicroelectronics/STM32CubeMP1/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://github.githubassets.com/favicons/favicon.svg"/></div><div class="right"><p class="text">STM32CubeMP1</p><p class="url">https://github.com/STMicroelectronics/STM32CubeMP1/</p></div></a></div> 
+<div class="tag link"><a class="link-card" title="STM32CubeMP1" target="_blank" rel="noopener" href="https://github.com/STMicroelectronics/STM32CubeMP1/"><div class="left"><img loading="lazy" src="https://github.githubassets.com/favicons/favicon.svg"/></div><div class="right"><p class="text">STM32CubeMP1</p><p class="url">https://github.com/STMicroelectronics/STM32CubeMP1/</p></div></a></div> 
 <h1 id="远程处理器固件映像">远程处理器固件映像</h1>
 <p>远程处理器的固件映像一般包括：</p>
 <ul>
@@ -189,7 +208,7 @@ if (true) {
 <li>OpenAMP 的库。</li>
 </ul>
 <p>主处理器将远程处理器的固件加载到远程处理器的内核中后，会去解码固件映像以获取关联的资源，并为固件代码段和数据留出内存，在启动远程处理器后，主处理器创建 RPMsg 通道，RPMsg 通道用于远程通信。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704175912870.png" alt="remoteproc_image.drawio"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260704175912870.png" alt="remoteproc_image.drawio"><figcaption>remoteproc_image.drawio</figcaption></figure></p>
 <p>远程处理器的资源包含：</p>
 <ul>
 <li>远程处理器在上电之前需要的系统资源，例如分配给远程处理器的连续物理内存，还有分配给远程处理器的外围设备（这些设备可以是保留的、未使用的），这些资源在 <code>stm32mp157-m4-srm.dtsi</code> 设备树文件的资源管理器（即 <code>m4_system_resources</code> 节点）中配置。</li>
@@ -362,7 +381,7 @@ if (true) {
 <p>三种 <code>#if</code> 分支表示这份 M4 代码在三种拓扑下，表由谁来填 <code>resource_table</code>：Linux 加载（静态）、M4 master 运行时填、M4 slave 等填。</p>
 </blockquote>
 <h3 id="总结">总结</h3>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260705232719484.png" alt="resource_table"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260705232719484.png" alt="resource_table"><figcaption>resource_table</figcaption></figure></p>
 <p>这份 <code>rsc_table.c</code> 就是 M4 固件向 Linux 提交的&quot;资源需求清单&quot;：</p>
 <ul>
 <li>声明一个 <code>virtio-rpmsg</code> 设备（id=7，2 个 vring，name-service 特性）</li>
@@ -398,7 +417,7 @@ if (true) {
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">retram:</span> <span class="title class_">retram@38000000</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">compatible</span> <span class="operator">=</span> <span class="string">&quot;shared-dma-pool&quot;</span><span class="punctuation">;</span></span><br><span class="line">        <span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x38000000</span> <span class="number">0x10000</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">        <span class="attr">no-map</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
 <p><code>retram</code> 子节点的起始地址是 0x38000000，地址长度 0x10000 为 64KB，属于 RAM aliases里的RETRAM区域，此区域和BOOT存储区域的RETRAM区域对应，它们是同一个物理地址。RETRAM 用于存放 M4 内核的中断向量表（中断向量表从0x00000000 开始），默认情况下，RETRAM起始地址为0x38000000，它会重新映射到0x00000000以执行M4的代码。</p>
 <h3 id="总结-2">总结</h3>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260708225927453.png" alt="SRAM的地址分配情况"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260708225927453.png" alt="SRAM的地址分配情况"><figcaption>SRAM的地址分配情况</figcaption></figure></p>
 <table>
 <thead>
 <tr>
@@ -532,7 +551,7 @@ if (true) {
 <p><code>/DISCARD/</code>：是一个特殊的段名，如果使用这个段名作为输出，那么所有符合条件的段都被丢弃。</p>
 </li>
 </ul>
-<p>关于更多链接脚本语法，参考本站：<div class="tag link"><a class="link-card" title="GNU LD" href="https://even629.com/posts/50001/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">GNU LD</p><p class="url">https://even629.com/posts/50001/</p></div></a></div></p>
+<p>关于更多链接脚本语法，参考本站：<div class="tag link"><a class="link-card" title="GNU LD" href="https://even629.com/posts/50001/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">GNU LD</p><p class="url">https://even629.com/posts/50001/</p></div></a></div></p>
 <h3 id="stm32mp15xx-m4-ld"><code>stm32mp15xx_m4.ld</code></h3>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">******************************************************************************</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">**  File        : LinkerScript.ld</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">**  Abstract    : Linker script for STM32MP1 series</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">**                Set heap size, stack size and stack location according</span></span><br><span class="line"><span class="comment">**                to application requirements.</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">**                Set memory bank area and size if external memory is used.</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">**  Target      : STMicroelectronics STM32</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">**  Distribution: The file is distributed “as is,” without any warranty</span></span><br><span class="line"><span class="comment">**                of any kind.</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">*****************************************************************************</span></span><br><span class="line"><span class="comment">** @attention</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment">** &lt;h2&gt;&lt;center&gt;&amp;copy; Copyright (c) 2019 STMicroelectronics. </span></span><br><span class="line"><span class="comment">** All rights reserved.&lt;/center&gt;&lt;/h2&gt;</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">** This software component is licensed by ST under BSD 3-Clause license,</span></span><br><span class="line"><span class="comment">** the &quot;License&quot;; You may not use this file except in compliance with the </span></span><br><span class="line"><span class="comment">** License. You may obtain a copy of the License at:</span></span><br><span class="line"><span class="comment">**                       opensource.org/licenses/BSD-3-Clause</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">*****************************************************************************</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Entry Point */</span></span><br><span class="line">ENTRY(Reset_Handler)</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Highest address of the user mode stack */</span></span><br><span class="line">_estack = <span class="number">0x10040000</span>;    <span class="comment">/* end of RAM */</span></span><br><span class="line"></span><br><span class="line">_Min_Heap_Size = <span class="number">0x200</span>;      <span class="comment">/* required amount of heap  */</span></span><br><span class="line">_Min_Stack_Size = <span class="number">0x400</span>; <span class="comment">/* required amount of stack */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Memories definition */</span></span><br><span class="line">MEMORY</span><br><span class="line">&#123;</span><br><span class="line">  m_interrupts (RX)  : ORIGIN = <span class="number">0x00000000</span>, LENGTH = <span class="number">0x00000298</span></span><br><span class="line">  m_text       (RX)  : ORIGIN = <span class="number">0x10000000</span>, LENGTH = <span class="number">0x00020000</span></span><br><span class="line">  m_data       (RW)  : ORIGIN = <span class="number">0x10020000</span>, LENGTH = <span class="number">0x00020000</span></span><br><span class="line">  m_ipc_shm    (RW)  : ORIGIN = <span class="number">0x10040000</span>, LENGTH = <span class="number">0x00008000</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/* Symbols needed for OpenAMP to enable rpmsg */</span></span><br><span class="line">__OPENAMP_region_start__  = ORIGIN(m_ipc_shm);</span><br><span class="line">__OPENAMP_region_end__ = ORIGIN(m_ipc_shm)+LENGTH(m_ipc_shm);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Sections */</span></span><br><span class="line">SECTIONS</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">/* The startup code into ROM memory */</span></span><br><span class="line">   <span class="comment">/* 中断向量表，放在RETRAM */</span></span><br><span class="line">  .isr_vector :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    KEEP(*(.isr_vector)) <span class="comment">/* Startup code */</span></span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_interrupts</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">  <span class="comment">/* The program code and other data into ROM memory */</span></span><br><span class="line">  .text :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    *(.text)           <span class="comment">/* .text sections (code) */</span></span><br><span class="line">    *(.text*)          <span class="comment">/* .text* sections (code) */</span></span><br><span class="line">    *(.glue_7)         <span class="comment">/* glue arm to thumb code */</span></span><br><span class="line">    *(.glue_7t)        <span class="comment">/* glue thumb to arm code */</span></span><br><span class="line">    *(.eh_frame)</span><br><span class="line"></span><br><span class="line">    KEEP (*(.init))</span><br><span class="line">    KEEP (*(.fini))</span><br><span class="line"></span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    _etext = .;        <span class="comment">/* define a global symbols at end of code */</span></span><br><span class="line">  &#125; &gt; m_text</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Constant data into ROM memory*/</span></span><br><span class="line">  .rodata :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    *(.rodata)         <span class="comment">/* .rodata sections (constants, strings, etc.) */</span></span><br><span class="line">    *(.rodata*)        <span class="comment">/* .rodata* sections (constants, strings, etc.) */</span></span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_text</span><br><span class="line"></span><br><span class="line">  .ARM.extab   : &#123; </span><br><span class="line">  	. = ALIGN(<span class="number">4</span>);</span><br><span class="line">  	*(.ARM.extab* .gnu.linkonce.armextab.*)</span><br><span class="line">  	. = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_text</span><br><span class="line">  </span><br><span class="line">  .ARM : &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    __exidx_start = .;</span><br><span class="line">    *(.ARM.exidx*)</span><br><span class="line">    __exidx_end = .;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_text</span><br><span class="line"></span><br><span class="line">  .preinit_array     :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    PROVIDE_HIDDEN (__preinit_array_start = .);</span><br><span class="line">    KEEP (*(.preinit_array*))</span><br><span class="line">    PROVIDE_HIDDEN (__preinit_array_end = .);</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_text</span><br><span class="line">  </span><br><span class="line">  .init_array :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    PROVIDE_HIDDEN (__init_array_start = .);</span><br><span class="line">    KEEP (*(SORT(.init_array.*)))</span><br><span class="line">    KEEP (*(.init_array*))</span><br><span class="line">    PROVIDE_HIDDEN (__init_array_end = .);</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_text</span><br><span class="line">  </span><br><span class="line">  .fini_array :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    PROVIDE_HIDDEN (__fini_array_start = .);</span><br><span class="line">    KEEP (*(SORT(.fini_array.*)))</span><br><span class="line">    KEEP (*(.fini_array*))</span><br><span class="line">    PROVIDE_HIDDEN (__fini_array_end = .);</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_text</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Used by the startup to initialize data */</span></span><br><span class="line">  __DATA_ROM = .;</span><br><span class="line">  _sidata = LOADADDR(.data);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Initialized data sections */</span></span><br><span class="line">  .data :  AT(__DATA_ROM)</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    _sdata = .;        <span class="comment">/* create a global symbol at data start */</span></span><br><span class="line">    *(.data)           <span class="comment">/* .data sections */</span></span><br><span class="line">    *(.data*)          <span class="comment">/* .data* sections */</span></span><br><span class="line"></span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    _edata = .;        <span class="comment">/* define a global symbol at data end */</span></span><br><span class="line">  &#125; &gt; m_data</span><br><span class="line"></span><br><span class="line">  __DATA_END = __DATA_ROM + (_edata - _sdata);</span><br><span class="line">  text_end = ORIGIN(m_text) + LENGTH(m_text);</span><br><span class="line">  ASSERT(__DATA_END &lt;= text_end, <span class="string">&quot;region m_text overflowed with text and data&quot;</span>)</span><br><span class="line"></span><br><span class="line">  .resource_table :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    KEEP (*(.resource_table*))</span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  &#125; &gt; m_data</span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Uninitialized data section into RAM memory */</span></span><br><span class="line">  . = ALIGN(<span class="number">4</span>);</span><br><span class="line">  .bss :</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">/* This is used by the startup in order to initialize the .bss secion */</span></span><br><span class="line">    _sbss = .;         <span class="comment">/* define a global symbol at bss start */</span></span><br><span class="line">    __bss_start__ = _sbss;</span><br><span class="line">    *(.bss)</span><br><span class="line">    *(.bss*)</span><br><span class="line">    *(COMMON)</span><br><span class="line"></span><br><span class="line">    . = ALIGN(<span class="number">4</span>);</span><br><span class="line">    _ebss = .;         <span class="comment">/* define a global symbol at bss end */</span></span><br><span class="line">    __bss_end__ = _ebss;</span><br><span class="line">  &#125; &gt; m_data</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* User_heap_stack section, used to check that there is enough RAM left */</span></span><br><span class="line">  ._user_heap_stack :</span><br><span class="line">  &#123;</span><br><span class="line">    . = ALIGN(<span class="number">8</span>);</span><br><span class="line">    PROVIDE ( end = . );</span><br><span class="line">    PROVIDE ( _end = . );</span><br><span class="line">    . = . + _Min_Heap_Size;</span><br><span class="line">    . = . + _Min_Stack_Size;</span><br><span class="line">    . = ALIGN(<span class="number">8</span>);</span><br><span class="line">  &#125; &gt; m_data</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Remove information from the compiler libraries */</span></span><br><span class="line">  /DISCARD/ :</span><br><span class="line">  &#123;</span><br><span class="line">    libc.a ( * )</span><br><span class="line">    libm.a ( * )</span><br><span class="line">    libgcc.a ( * )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  .ARM.attributes <span class="number">0</span> : &#123; *(.ARM.attributes) &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>分析：</p>
@@ -593,241 +612,223 @@ if (true) {
 <p>如果跑 Linux操作系统，在 Linux 设备树下已经默认将 SRAM4 当做了 Linux 功能的 DMA 了，如果要释放这部分区域，在设备树下将对应节点删除释放即可（但不建议这么做，A7 可能会异常）</p>
 </li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260709214809525.png" alt="几个SRAM区域"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260709214809525.png" alt="几个SRAM区域"><figcaption>几个SRAM区域</figcaption></figure></p>
 <p>综合以上分析，总结如下：</p>
 <ul>
 <li>如果不跑 A7，只运行 M4（M4 可以跑裸机、RTOS）：SRAM1~SRAM4 可以完全分配给M4；</li>
 <li>如果同时跑 A7 和 M4（例如双核通信）：SRAM1 和 SRAM2 是单独给 M4 用的，SRAM3的部分地址是 M4 和 A7 一起使用的，SRAM4 在 Linux 下单独配置了 DMA，即被 A7 占用了。 如果要修改 MEMORY 中的地址区域范围，一定要联系内存映射表的地址范围来修改。</li>
 </ul>
 <h1 id="参考资料">参考资料</h1>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" href=" https://blog.csdn.net/qq_54050349/article/details/154799522">Remoteproc 相关驱动简析 ---- 资源表</a></div>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[2]"></span><a class="reference-anchor" href="#referto_[2]">[2]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" href=" https://blog.csdn.net/qq_54050349/article/details/154804306">Remoteproc 相关驱动简析 ---- 存储和系统资源分配</a></div>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[3]"></span><a class="reference-anchor" href="#referto_[3]">[3]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" href=" https://blog.csdn.net/qq_54050349/article/details/154834025">Remoteproc 相关驱动简析 ---- 链接脚本</a></div>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[4]"></span><a class="reference-anchor" href="#referto_[4]">[4]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" href=" http://47.111.11.73/docs/boards/arm-linux/zdyzmp157hxb.html">正点原子STM32MP157核心板</a></div>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/202607041/">https://even629.com/posts/202607041/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a></div><div class="post-share"><div class="social-share" data-image="/images/openamp_cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E5%A4%84%E7%90%86%E5%99%A8%E5%9B%BA%E4%BB%B6%E6%98%A0%E5%83%8F"><span class="toc-number">1.</span> <span class="toc-text">远程处理器固件映像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">资源表</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#linux-%E5%AE%9A%E4%B9%89%E7%9A%84-struct-resource-table"><span class="toc-number">2.1.</span> <span class="toc-text">linux 定义的 struct resource_table</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-fw-rsc-hdr"><span class="toc-number">2.1.1.</span> <span class="toc-text">struct fw_rsc_hdr</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-carveout"><span class="toc-number">2.1.1.1.</span> <span class="toc-text">struct fw_rsc_carveout</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-devmem"><span class="toc-number">2.1.1.2.</span> <span class="toc-text">struct fw_rsc_devmem</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-trace"><span class="toc-number">2.1.1.3.</span> <span class="toc-text">struct fw_rsc_trace</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-vring"><span class="toc-number">2.1.1.4.</span> <span class="toc-text">struct fw_rsc_vdev_vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev"><span class="toc-number">2.1.1.5.</span> <span class="toc-text">struct fw_rsc_vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-rproc-mem-entry"><span class="toc-number">2.1.1.6.</span> <span class="toc-text">struct rproc_mem_entry</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STM32MP15C-%E7%9A%84-rsc-table-%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.2.</span> <span class="toc-text">STM32MP15C 的 rsc_table 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#attribute-%E6%A0%87%E8%AE%B0"><span class="toc-number">2.2.1.</span> <span class="toc-text">attribute 标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-shared-resource-table"><span class="toc-number">2.2.2.</span> <span class="toc-text">struct shared_resource_table</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-2"><span class="toc-number">2.2.2.1.</span> <span class="toc-text">struct fw_rsc_vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-vring-2"><span class="toc-number">2.2.2.2.</span> <span class="toc-text">struct fw_rsc_vdev_vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-trace-2"><span class="toc-number">2.2.2.3.</span> <span class="toc-text">struct fw_rsc_trace</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rsc-table-%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.2.3.</span> <span class="toc-text">rsc_table 实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vdev"><span class="toc-number">2.2.3.1.</span> <span class="toc-text">vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vring"><span class="toc-number">2.2.3.2.</span> <span class="toc-text">vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cm-trace"><span class="toc-number">2.2.3.3.</span> <span class="toc-text">cm_trace</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#resource-table-init"><span class="toc-number">2.2.4.</span> <span class="toc-text">resource_table_init()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">2.2.5.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%92%8C%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D"><span class="toc-number">3.</span> <span class="toc-text">存储和系统资源分配</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#reserved-memory"><span class="toc-number">3.1.</span> <span class="toc-text">reserved-memory</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mcuram2"><span class="toc-number">3.1.1.</span> <span class="toc-text">mcuram2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vdev0vring0%E3%80%81vdev0vring1-%E3%80%81vdev0buffer"><span class="toc-number">3.1.2.</span> <span class="toc-text">vdev0vring0、vdev0vring1 、vdev0buffer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mcuram"><span class="toc-number">3.1.3.</span> <span class="toc-text">mcuram</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#retram"><span class="toc-number">3.1.4.</span> <span class="toc-text">retram</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-2"><span class="toc-number">3.1.5.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#m4-system-resources"><span class="toc-number">3.2.</span> <span class="toc-text">m4_system_resources</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC"><span class="toc-number">3.3.</span> <span class="toc-text">链接脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-number">3.3.1.</span> <span class="toc-text">链接脚本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E5%9C%B0%E5%9D%80"><span class="toc-number">3.3.1.1.</span> <span class="toc-text">入口地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%AE%9A%E4%B9%89"><span class="toc-number">3.3.1.2.</span> <span class="toc-text">内存区域定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%93%BE%E6%8E%A5%E5%AE%9A%E4%B9%89"><span class="toc-number">3.3.1.3.</span> <span class="toc-text">段链接定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stm32mp15xx-m4-ld"><span class="toc-number">3.3.2.</span> <span class="toc-text">stm32mp15xx_m4.ld</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(async () => {
-  const showKatex = () => {
-    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
-  }
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="Remoteproc 相关驱动简析 ---- 资源表" href=" https://blog.csdn.net/qq_54050349/article/details/154799522">Remoteproc 相关驱动简析 ---- 资源表</a></div>
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[2]"></span><a class="reference-anchor" href="#referto_[2]">[2]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="Remoteproc 相关驱动简析 ---- 存储和系统资源分配" href=" https://blog.csdn.net/qq_54050349/article/details/154804306">Remoteproc 相关驱动简析 ---- 存储和系统资源分配</a></div>
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[3]"></span><a class="reference-anchor" href="#referto_[3]">[3]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="Remoteproc 相关驱动简析 ---- 链接脚本" href=" https://blog.csdn.net/qq_54050349/article/details/154834025">Remoteproc 相关驱动简析 ---- 链接脚本</a></div>
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[4]"></span><a class="reference-anchor" href="#referto_[4]">[4]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="正点原子STM32MP157核心板" href=" http://47.111.11.73/docs/boards/arm-linux/zdyzmp157hxb.html">正点原子STM32MP157核心板</a></div>
 
-  if (!window.katex_js_css) {
-    window.katex_js_css = true
-    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
-    if (true) {
-      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
-    }
-  }
+  </div>
+</article>
 
-  showKatex()
-})()</script><script>(() => {
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
 
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
 
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+          <li><a href="/en/">EN</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E5%A4%84%E7%90%86%E5%99%A8%E5%9B%BA%E4%BB%B6%E6%98%A0%E5%83%8F"><span class="toc-text">远程处理器固件映像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E8%A1%A8"><span class="toc-text">资源表</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#linux-%E5%AE%9A%E4%B9%89%E7%9A%84-struct-resource-table"><span class="toc-text">linux 定义的 struct resource_table</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-fw-rsc-hdr"><span class="toc-text">struct fw_rsc_hdr</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-carveout"><span class="toc-text">struct fw_rsc_carveout</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-devmem"><span class="toc-text">struct fw_rsc_devmem</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-trace"><span class="toc-text">struct fw_rsc_trace</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-vring"><span class="toc-text">struct fw_rsc_vdev_vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev"><span class="toc-text">struct fw_rsc_vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-rproc-mem-entry"><span class="toc-text">struct rproc_mem_entry</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STM32MP15C-%E7%9A%84-rsc-table-%E5%AE%9E%E7%8E%B0"><span class="toc-text">STM32MP15C 的 rsc_table 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#attribute-%E6%A0%87%E8%AE%B0"><span class="toc-text">attribute 标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-shared-resource-table"><span class="toc-text">struct shared_resource_table</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-2"><span class="toc-text">struct fw_rsc_vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-vdev-vring-2"><span class="toc-text">struct fw_rsc_vdev_vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#struct-fw-rsc-trace-2"><span class="toc-text">struct fw_rsc_trace</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rsc-table-%E5%AE%9E%E4%BE%8B"><span class="toc-text">rsc_table 实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vdev"><span class="toc-text">vdev</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vring"><span class="toc-text">vring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cm-trace"><span class="toc-text">cm_trace</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#resource-table-init"><span class="toc-text">resource_table_init()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%92%8C%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D"><span class="toc-text">存储和系统资源分配</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#reserved-memory"><span class="toc-text">reserved-memory</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mcuram2"><span class="toc-text">mcuram2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vdev0vring0%E3%80%81vdev0vring1-%E3%80%81vdev0buffer"><span class="toc-text">vdev0vring0、vdev0vring1 、vdev0buffer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mcuram"><span class="toc-text">mcuram</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#retram"><span class="toc-text">retram</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-2"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#m4-system-resources"><span class="toc-text">m4_system_resources</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC"><span class="toc-text">链接脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-text">链接脚本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E5%9C%B0%E5%9D%80"><span class="toc-text">入口地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%AE%9A%E4%B9%89"><span class="toc-text">内存区域定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%93%BE%E6%8E%A5%E5%AE%9A%E4%B9%89"><span class="toc-text">段链接定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stm32mp15xx-m4-ld"><span class="toc-text">stm32mp15xx_m4.ld</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/202607041/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/202607041/&text=Remoteproc resource table"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/202607041/&is_video=false&description=Remoteproc resource table"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Remoteproc resource table&body=Check out this article: https://even629.com/posts/202607041/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/202607041/&title=Remoteproc resource table"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/202607041/&name=Remoteproc resource table&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/202607041/&t=Remoteproc resource table"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2026
+    even629
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/en/posts/202607041/">EN</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+  
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
       }
-
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
     })
-  }
-
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
-
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
-
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
-
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
-  }
-
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
-  const option = null
-
-  const commentCount = n => {
-    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
-    if (isCommentCount) {
-      isCommentCount.textContent= n
-    }
-  }
-
-  const initGitalk = (el, path) => {
-    if (isShuoshuo) {
-      window.shuoshuoComment.destroyGitalk = () => {
-        if (el.children.length) {
-          el.innerHTML = ''
-          el.classList.add('no-comment')
-        }
-      }
-    }
-
-    const gitalk = new Gitalk({
-      clientID: 'Ov23liyQTymWpBETlDO8',
-      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
-      repo: 'even629.github.io',
-      owner: 'even629',
-      admin: ['even629'],
-      updateCountCallback: commentCount,
-      ...option,
-      id: isShuoshuo ? path : (option && option.id) || 'fd2810665568d47d4a0d260ed7a4f907'
-    })
-
-    gitalk.render('gitalk-container')
-  }
-
-  const loadGitalk = async(el, path) => {
-    if (typeof Gitalk === 'function') initGitalk(el, path)
-    else {
-      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
-      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
-      initGitalk(el, path)
-    }
-  }
-
-  if (isShuoshuo) {
-    'Gitalk' === 'Gitalk'
-      ? window.shuoshuoComment = { loadComment: loadGitalk }
-      : window.loadOtherComment = loadGitalk
-    return
-  }
-
-  if ('Gitalk' === 'Gitalk' || !false) {
-    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
-    else loadGitalk()
-  } else {
-    window.loadOtherComment = loadGitalk
-  }
-})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script>(()=>{let d=document,c='style',s=d.createElement(c);s.textContent="@font-face{font-family:'Dymon-ShouXieTi';font-display:swap;src:url(/font/Dymon-ShouXieTi.otf) format('opentype')}@font-face{font-family:'FiraCode-Regular';font-display:swap;font-variant-ligatures:common-ligatures discretionary-ligatures;font-feature-settings:'liga' on;src:url(/font/FiraCode-Regular.ttf) format('truetype')}";window.addEventListener('load',()=>d.head.appendChild(s))})()</script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
-<filter
-  id="glass-distortion"
-  x="0%"
-  y="0%"
-  width="100%"
-  height="100%"
-  filterUnits="objectBoundingBox"
->
-  <feTurbulence
-    type="fractalNoise"
-    baseFrequency="0.01 0.01"
-    numOctaves="1"
-    seed="5"
-    result="turbulence"
-  />
-  <!-- Seeds: 14, 17,  -->
-
-  <feComponentTransfer in="turbulence" result="mapped">
-    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
-    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
-    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
-  </feComponentTransfer>
-
-  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
-
-  <feSpecularLighting
-    in="softMap"
-    surfaceScale="5"
-    specularConstant="1"
-    specularExponent="100"
-    lighting-color="white"
-    result="specLight"
-  >
-    <fePointLight x="-200" y="-200" z="300" />
-  </feSpecularLighting>
-
-  <feComposite
-    in="specLight"
-    operator="arithmetic"
-    k1="0"
-    k2="1"
-    k3="1"
-    k4="0"
-    result="litImage"
-  />
-
-  <feDisplacementMap
-    in="SourceGraphic"
-    in2="softMap"
-    scale="20"
-    xChannelSelector="R"
-    yChannelSelector="G"
-  />
-  </filter>
-</svg>
-<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
-POWERMODE.shake = true;
-POWERMODE.mobile = true;
-document.body.addEventListener('input', POWERMODE);
-</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
-  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
-
-  window.pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: pjaxSelectors,
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
   })
+  </script>
 
-  const triggerPjaxFn = (val) => {
-    if (!val) return
-    Object.values(val).forEach(fn => fn())
-  }
 
-  document.addEventListener('pjax:send', () => {
-    // removeEventListener
-    btf.removeGlobalFnEvent('pjaxSendOnce')
-    btf.removeGlobalFnEvent('themeChange')
+<script src="/js/main.js"></script>
 
-    // reset readmode
-    const $bodyClassList = document.body.classList
-    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
 
-    triggerPjaxFn(window.globalFn.pjaxSend)
-  })
+<script src="/js/tabs.js"></script>
 
-  document.addEventListener('pjax:complete', () => {
-    btf.removeGlobalFnEvent('pjaxCompleteOnce')
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-      const newScript = document.createElement('script')
-      const content = item.text || item.textContent || item.innerHTML || ""
-      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-      newScript.appendChild(document.createTextNode(content))
-      item.parentNode.replaceChild(newScript, item)
-    })
 
-    triggerPjaxFn(window.globalFn.pjaxComplete)
-  })
+  
+<script src="/js/toc.js"></script>
 
-  document.addEventListener('pjax:error', e => {
-    if (e.request.status === 404) {
-      pjax.loadUrl('/404.html')
-    }
-  })
-})()</script><script defer data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><!-- hexo injector body_end end --></body></html>
+  
+<script src="/js/outdate.js"></script>
+
+
+<!-- Fancybox lightbox (post pages only) -->
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
+  
+  
+<script src="/js/lightbox.js"></script>
+
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'even629/even629.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', utterances_issue_term);
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>

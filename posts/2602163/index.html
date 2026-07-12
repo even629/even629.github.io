@@ -1,178 +1,259 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux USB | 常想一二，不思八九</title><meta name="author" content="even629"><meta name="copyright" content="even629"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍了Linux USB驱动的基础知识，详细梳理了USB的技术发展历程、物理接口分类及其与传输协议版本的关系、USB版本命名的演变规则，并结合RK3568处理器阐述了USB Host与Slave的接口配置。">
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文介绍了Linux USB驱动的基础知识，详细梳理了USB的技术发展历程、物理接口分类及其与传输协议版本的关系、USB版本命名的演变规则，并结合RK3568处理器阐述了USB Host与Slave的接口配置。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux USB">
 <meta property="og:url" content="https://even629.com/posts/2602163/index.html">
-<meta property="og:site_name" content="常想一二，不思八九">
+<meta property="og:site_name" content="even629">
 <meta property="og:description" content="本文介绍了Linux USB驱动的基础知识，详细梳理了USB的技术发展历程、物理接口分类及其与传输协议版本的关系、USB版本命名的演变规则，并结合RK3568处理器阐述了USB Host与Slave的接口配置。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://even629.com/images/linux_cover.webp">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://even629.com/images/logo.png">
+<meta property="og:image" content="https://www.usb.org/sites/default/files/usb-favicon-logo-square.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234052279.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234155415.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234209500.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234213586.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234217791.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234224429.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234228444.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234233495.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234237726.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234243247.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234246588.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234250588.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234257348.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234301779.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234308347.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319211.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319244.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319279.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319322.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319353.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319387.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319421.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319455.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319493.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319528.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319559.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319596.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319628.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319657.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319691.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319727.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319759.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319791.png">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319825.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319865.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319898.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319934.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319984.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234320017.png">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
 <meta property="article:published_time" content="2026-02-16T12:47:00.000Z">
 <meta property="article:modified_time" content="2026-02-16T12:47:00.000Z">
 <meta property="article:author" content="even629">
-<meta property="article:tag" content="Linux">
 <meta property="article:tag" content="GNU">
+<meta property="article:tag" content="Linux">
 <meta property="article:tag" content="driver">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://even629.com/images/linux_cover.webp"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://even629.com/posts/2602163/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preload" href="/img/12bb_together.gif" as="image" fetchpriority="high"><meta name="baidu-site-verification" content="codeva-g8sPzVXu98"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://npm.elemecdn.com/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
-    (() => {
-      
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
-
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!true && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
-      
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
-        }
-      }
-
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
-
-      const theme = saveToLocal.get('theme')
+<meta name="twitter:image" content="https://even629.com/images/logo.png">
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
         
       
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
-    
       
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"中"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":2000,"highlightFullpage":true,"highlightMacStyle":true},
-  copy: {
-    success: '复制成功',
-    error: '复制失败',
-    noSupport: '浏览器不支持'
-  },
-  relativeDate: {
-    homepage: false,
-    post: false
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
-  copyright: undefined,
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
-    buttonText: '加载更多'
-  },
-  isPhotoFigcaption: true,
-  islazyload: true,
-  isAnchor: true,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'Linux USB',
-  isPost: true,
-  isHome: false,
-  isHighlightShrink: false,
-  isToc: true,
-  isShuoshuo: false
-}</script><link rel='preload', href='/img/avatar.png', as='image'><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><link rel="stylesheet" href="/css/custom_card_author.css"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/font.css"><link rel="stylesheet" href="/css/right_menu.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/newYear.css"><link rel="stylesheet" href="/css/music.css"><link rel="stylesheet" href="/css/beautify_label_h.css"><link rel="stylesheet" href="/css/equipment.css"><link rel="stylesheet" href="/css/liquid_glass.css"><link rel="stylesheet" href="/css/tag_plugin_plus.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.css"><span id="fps"></span><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="常想一二，不思八九" type="application/atom+xml">
-</head><body><div class="float-box left top"></div><div class="float-box left bottom"></div><div class="float-box right top"></div><div class="float-box right bottom"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
-  endLoading: () => {
-    document.body.style.overflow = 'auto';
-    document.getElementById('loading-box').classList.add("loaded")
-  },
-  initLoading: () => {
-    document.body.style.overflow = '';
-    document.getElementById('loading-box').classList.remove("loaded")
+      
+    
+    <!-- title -->
+    <title>Linux USB</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
 
-  }
-}
-window.addEventListener('load',()=> { preloader.endLoading() })
 
-if (true) {
-  document.addEventListener('pjax:send', () => { preloader.initLoading() })
-  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
-}</script><div id="web_bg" style="background-image: url(/img/12bb_background.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/linux_top_image.jpg);"><nav class="liquidGlass-wrapper" id="nav"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box" style="display:flex;align-items:center;justify-content:center;width:100%"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" alt="Logo"></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/charts/"><i class="fa-fw fas fa-solid fa-chart-simple"></i><span> 统计</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heart"></i><span> 分享</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comment"></i><span> 说说</span></a></li><li><a class="site-page child" href="/equipment/"><i class="fa-fw fa-solid fa-toolbox"></i><span> 装备</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-solid fa-link"></i><span> 友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-solid fa-comments"></i><span> 留言</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><!-- 显示当前标题名称--><center id="name-container"><a id="page-name" href="javascript:rmf.scrollToTop()">常想一二，不思八九</a></center></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></div></nav><div id="post-info"><h1 class="post-title">Linux USB</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-16T12:47:00.000Z" title="发表于 2026-02-16 20:47:00">2026-02-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-16T12:47:00.000Z" title="更新于 2026-02-16 20:47:00">2026-02-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">21.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>95分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/2602163/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><hr>
-<details class="folding-tag" green open><summary> 时间轴 </summary>
-              <div class='content'>
-              <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-02-16</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
-              </div>
-            </details>
-<div class="tip key"><p>本文介绍了Linux USB驱动的基础知识，详细梳理了USB的技术发展历程、物理接口分类及其与传输协议版本的关系、USB版本命名的演变规则，并结合RK3568处理器阐述了USB Host与Slave的接口配置。</p>
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+    
+	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
+	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+	<!-- Fancybox lightbox CSS (post pages only) -->
+	
+	  
+	    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+	    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css" /></noscript>
+	  
+	
+	<!-- mathjax (legacy, use KaTeX above) -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/en/posts/2602163/">EN</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2602163/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2602163/&text=Linux USB"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2602163/&is_video=false&description=Linux USB"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Linux USB&body=Check out this article: https://even629.com/posts/2602163/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2602163/&name=Linux USB&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2602163/&t=Linux USB"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <span class="toc-percentage"></span>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E5%9F%BA%E7%A1%80"><span class="toc-text">USB 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8E%A5%E5%8F%A3%E5%88%86%E7%B1%BB"><span class="toc-text">USB 接口分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E7%89%88%E6%9C%AC"><span class="toc-text">USB 版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RK3568-USB%E6%8E%A5%E5%8F%A3"><span class="toc-text">RK3568 USB接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#topeet-RK3568-USB"><span class="toc-text">topeet RK3568 USB</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E6%80%BB%E7%BA%BF%E6%9E%B6%E6%9E%84%E4%B8%8E%E8%AE%BE%E5%A4%87%E4%BA%A4%E4%BA%92%E6%9C%BA%E5%88%B6"><span class="toc-text">USB 总线架构与设备交互机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8B%93%E6%89%91%E7%BB%93%E6%9E%84"><span class="toc-text">USB 拓扑结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E8%AE%BE%E5%A4%87%E7%8A%B6%E6%80%81%E8%BF%81%E7%A7%BB"><span class="toc-text">USB 设备状态迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E8%AE%BE%E5%A4%87%E7%A1%AC%E4%BB%B6%E8%AF%86%E5%88%AB"><span class="toc-text">USB 设备硬件识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OTG-%E5%8F%8C%E8%A7%92%E8%89%B2%E5%88%87%E6%8D%A2"><span class="toc-text">OTG 双角色切换</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E5%8D%8F%E8%AE%AE"><span class="toc-text">USB 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">USB 描述符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">设备描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">配置描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">接口描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E7%82%B9%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">端点描述符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F"><span class="toc-text">USB 通信数据格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F"><span class="toc-text">域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%85"><span class="toc-text">包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-text">事务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#USB-%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="toc-text">USB 传输方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%9E%9A%E4%B8%BE"><span class="toc-text">USB 枚举</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%B3%A2%E5%BD%A2"><span class="toc-text">USB 波形</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80"><span class="toc-text">应用编程基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-%E5%BA%93%E7%AE%80%E4%BB%8B"><span class="toc-text">libusb 库简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-%E7%BC%96%E8%AF%91"><span class="toc-text">libusb 编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-API"><span class="toc-text">libusb API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-init"><span class="toc-text">libusb_init()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-device-list"><span class="toc-text">libusb_get_device_list()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-device-list"><span class="toc-text">libusb_free_device_list()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-open-device-with-vid-pid"><span class="toc-text">libusb_open_device_with_vid_pid()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-open"><span class="toc-text">libusb_open()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-device-descriptor"><span class="toc-text">libusb_get_device_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-config-descriptor"><span class="toc-text">libusb_get_config_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-config-descriptor"><span class="toc-text">libusb_free_config_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-bulk-transfer"><span class="toc-text">libusb_bulk_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-interrupt-transfer"><span class="toc-text">libusb_interrupt_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-set-auto-detach-kernel-driver"><span class="toc-text">libusb_set_auto_detach_kernel_driver()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-claim-interface"><span class="toc-text">libusb_claim_interface()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-alloc-transfer"><span class="toc-text">libusb_alloc_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-fill-interrupt-transfer"><span class="toc-text">libusb_fill_interrupt_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-submit-transfer"><span class="toc-text">libusb_submit_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-cancel-transfer"><span class="toc-text">libusb_cancel_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-transfer"><span class="toc-text">libusb_free_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-handle-events"><span class="toc-text">libusb_handle_events()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6"><span class="toc-text">USB 驱动开发框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E9%94%AE%E7%9B%98%E9%A9%B1%E5%8A%A8%E7%A4%BA%E4%BE%8B"><span class="toc-text">USB 键盘驱动示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-usb-driver-driver"><span class="toc-text">struct usb_driver *driver</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-usb-device-id"><span class="toc-text">struct usb_device_id</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#usb-register"><span class="toc-text">usb_register()</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-register-driver"><span class="toc-text">usb_register_driver()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-device-match"><span class="toc-text">usb_device_match()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-match-id"><span class="toc-text">usb_match_id()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-match-one-id"><span class="toc-text">usb_match_one_id()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#usb-deregister"><span class="toc-text">usb_deregister()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-Request-Block"><span class="toc-text">USB Request Block</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#USB-%E9%80%9A%E8%AE%AF%E6%AD%A5%E9%AA%A4"><span class="toc-text">USB 通讯步骤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UDC-%E4%B8%8E-Gadget-%E9%A9%B1%E5%8A%A8"><span class="toc-text">UDC 与 Gadget 驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%86-iTOP-RK3568-%E5%BC%80%E5%8F%91%E6%9D%BF%E9%85%8D%E7%BD%AE%E4%B8%BA-USB-%E7%BD%91%E5%8D%A1%E8%AE%BE%E5%A4%87"><span class="toc-text">将 iTOP-RK3568 开发板配置为 USB 网卡设备</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#host-%E5%92%8C-phy-%E9%A9%B1%E5%8A%A8"><span class="toc-text">host 和 phy 驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4G-%E6%A8%A1%E5%9D%97%E7%A7%BB%E6%A4%8D"><span class="toc-text">4G 模块移植</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8%E7%A7%BB%E6%A4%8D"><span class="toc-text">内核驱动移植</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%A8%E5%8F%B7%E8%84%9A%E6%9C%AC%E7%A7%BB%E6%A4%8D"><span class="toc-text">拨号脚本移植</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
 </div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+      <img class="post-cover" src="/images/linux_cover.webp" alt="Cover image for Linux USB" />
+    
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Linux USB
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">even629</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-02-16T12:47:00.000Z" class="dt-published" itemprop="datePublished">2026-02-16</time>
+        
+        (Updated: <time datetime="2026-02-16T12:47:00.000Z" class="dt-updated" itemprop="dateModified">2026-02-16</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/tags/Linux/" rel="tag">Linux</a>, <a class="p-category" href="/tags/driver/" rel="tag">driver</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <hr>
+<details class="folding-tag" ><summary> 时间轴 </summary>
+            <div class='content'>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-02-16</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+            </div>
+          </details>
+<blockquote>
+本文介绍了Linux USB驱动的基础知识，详细梳理了USB的技术发展历程、物理接口分类及其与传输协议版本的关系、USB版本命名的演变规则，并结合RK3568处理器阐述了USB Host与Slave的接口配置。
+</blockquote>
 <hr>
 <p><strong>Linux 驱动笔记</strong></p>
 <table>
@@ -185,107 +266,107 @@ if (true) {
 <tbody>
 <tr>
 <td><strong>1. Linux 驱动框架</strong></td>
-<td><div class="tag link"><a class="link-card" title="Linux 驱动框架" href="https://even629.com/posts/2511093/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">Linux 驱动框架</p><p class="url">https://even629.com/posts/2511093/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="Linux 驱动框架" href="https://even629.com/posts/2511093/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">Linux 驱动框架</p><p class="url">https://even629.com/posts/2511093/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>2. Linux 驱动加载逻辑</strong></td>
-<td><div class="tag link"><a class="link-card" title="Linux 驱动加载逻辑" href="https://even629.com/posts/2511100/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">Linux 驱动加载逻辑</p><p class="url">https://even629.com/posts/2511100/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="Linux 驱动加载逻辑" href="https://even629.com/posts/2511100/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">Linux 驱动加载逻辑</p><p class="url">https://even629.com/posts/2511100/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>3. 字符设备基础</strong></td>
-<td><div class="tag link"><a class="link-card" title="字符设备基础" href="https://even629.com/posts/2511113/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">字符设备基础</p><p class="url">https://even629.com/posts/2511113/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="字符设备基础" href="https://even629.com/posts/2511113/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">字符设备基础</p><p class="url">https://even629.com/posts/2511113/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>4. 并发与竞争</strong></td>
-<td><div class="tag link"><a class="link-card" title="并发与竞争" href="https://even629.com/posts/2511123/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">并发与竞争</p><p class="url">https://even629.com/posts/2511123/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="并发与竞争" href="https://even629.com/posts/2511123/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">并发与竞争</p><p class="url">https://even629.com/posts/2511123/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>5. 高级字符设备进阶</strong></td>
-<td><div class="tag link"><a class="link-card" title="高级字符设备进阶" href="https://even629.com/posts/2511133/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">高级字符设备进阶</p><p class="url">https://even629.com/posts/2511133/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="高级字符设备进阶" href="https://even629.com/posts/2511133/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">高级字符设备进阶</p><p class="url">https://even629.com/posts/2511133/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>6. 中断</strong></td>
-<td><div class="tag link"><a class="link-card" title="中断" href="https://even629.com/posts/2511143/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">中断</p><p class="url">https://even629.com/posts/2511143/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="中断" href="https://even629.com/posts/2511143/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">中断</p><p class="url">https://even629.com/posts/2511143/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>7. 平台总线</strong></td>
-<td><div class="tag link"><a class="link-card" title="平台总线" href="https://even629.com/posts/2511153/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">平台总线</p><p class="url">https://even629.com/posts/2511153/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="平台总线" href="https://even629.com/posts/2511153/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">平台总线</p><p class="url">https://even629.com/posts/2511153/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>8. 设备树</strong></td>
-<td><div class="tag link"><a class="link-card" title="设备树" href="https://even629.com/posts/2511300/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">设备树</p><p class="url">https://even629.com/posts/2511300/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="设备树" href="https://even629.com/posts/2511300/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">设备树</p><p class="url">https://even629.com/posts/2511300/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>9. 设备模型</strong></td>
-<td><div class="tag link"><a class="link-card" title="设备模型" href="https://even629.com/posts/2512013/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">设备模型</p><p class="url">https://even629.com/posts/2512013/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="设备模型" href="https://even629.com/posts/2512013/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">设备模型</p><p class="url">https://even629.com/posts/2512013/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>10. 热插拔</strong></td>
-<td><div class="tag link"><a class="link-card" title="热插拔" href="https://even629.com/posts/2512023/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">热插拔</p><p class="url">https://even629.com/posts/2512023/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="热插拔" href="https://even629.com/posts/2512023/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">热插拔</p><p class="url">https://even629.com/posts/2512023/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>11. pinctrl 子系统</strong></td>
-<td><div class="tag link"><a class="link-card" title="pinctrl 子系统" href="https://even629.com/posts/2512160/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">pinctrl 子系统</p><p class="url">https://even629.com/posts/2512160/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="pinctrl 子系统" href="https://even629.com/posts/2512160/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">pinctrl 子系统</p><p class="url">https://even629.com/posts/2512160/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>12. gpio 子系统</strong></td>
-<td><div class="tag link"><a class="link-card" title="gpio 子系统" href="https://even629.com/posts/2512173/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">gpio 子系统</p><p class="url">https://even629.com/posts/2512173/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="gpio 子系统" href="https://even629.com/posts/2512173/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">gpio 子系统</p><p class="url">https://even629.com/posts/2512173/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>13. 输入子系统</strong></td>
-<td><div class="tag link"><a class="link-card" title="输入子系统" href="https://even629.com/posts/2512183/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">输入子系统</p><p class="url">https://even629.com/posts/2512183/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="输入子系统" href="https://even629.com/posts/2512183/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">输入子系统</p><p class="url">https://even629.com/posts/2512183/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>14. 单总线</strong></td>
-<td><div class="tag link"><a class="link-card" title="单总线" href="https://even629.com/posts/2512233/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">单总线</p><p class="url">https://even629.com/posts/2512233/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="单总线" href="https://even629.com/posts/2512233/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">单总线</p><p class="url">https://even629.com/posts/2512233/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>15. I2C</strong></td>
-<td><div class="tag link"><a class="link-card" title="I2C" href="https://even629.com/posts/2512283/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">I2C</p><p class="url">https://even629.com/posts/2512283/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="I2C" href="https://even629.com/posts/2512283/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">I2C</p><p class="url">https://even629.com/posts/2512283/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>16. SPI</strong></td>
-<td><div class="tag link"><a class="link-card" title="SPI" href="https://even629.com/posts/2512303/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">SPI</p><p class="url">https://even629.com/posts/2512303/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="SPI" href="https://even629.com/posts/2512303/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">SPI</p><p class="url">https://even629.com/posts/2512303/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>17. UART</strong></td>
-<td><div class="tag link"><a class="link-card" title="UART" href="https://even629.com/posts/2512313/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">UART</p><p class="url">https://even629.com/posts/2512313/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="UART" href="https://even629.com/posts/2512313/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">UART</p><p class="url">https://even629.com/posts/2512313/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>18. PWM</strong></td>
-<td><div class="tag link"><a class="link-card" title="PWM" href="https://even629.com/posts/2601043/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">PWM</p><p class="url">https://even629.com/posts/2601043/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="PWM" href="https://even629.com/posts/2601043/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">PWM</p><p class="url">https://even629.com/posts/2601043/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>19. RTC</strong></td>
-<td><div class="tag link"><a class="link-card" title="RTC" href="https://even629.com/posts/2601053/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">RTC</p><p class="url">https://even629.com/posts/2601053/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="RTC" href="https://even629.com/posts/2601053/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">RTC</p><p class="url">https://even629.com/posts/2601053/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>20. Watchdog</strong></td>
-<td><div class="tag link"><a class="link-card" title="Watchdog" href="https://even629.com/posts/2601063/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">Watchdog</p><p class="url">https://even629.com/posts/2601063/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="Watchdog" href="https://even629.com/posts/2601063/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">Watchdog</p><p class="url">https://even629.com/posts/2601063/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>21. CAN</strong></td>
-<td><div class="tag link"><a class="link-card" title="CAN" href="https://even629.com/posts/2601093/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">CAN</p><p class="url">https://even629.com/posts/2601093/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="CAN" href="https://even629.com/posts/2601093/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">CAN</p><p class="url">https://even629.com/posts/2601093/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>22. 网络设备</strong></td>
-<td><div class="tag link"><a class="link-card" title="网络设备" href="https://even629.com/posts/2601133/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">网络设备</p><p class="url">https://even629.com/posts/2601133/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="网络设备" href="https://even629.com/posts/2601133/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">网络设备</p><p class="url">https://even629.com/posts/2601133/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>23. ADC</strong></td>
-<td><div class="tag link"><a class="link-card" title="ADC" href="https://even629.com/posts/2601143/"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">ADC</p><p class="url">https://even629.com/posts/2601143/</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="ADC" href="https://even629.com/posts/2601143/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">ADC</p><p class="url">https://even629.com/posts/2601143/</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>24. IIO</strong></td>
-<td><div class="tag link"><a class="link-card" title="IIO" href="https://even629.com/posts/2602153"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">IIO</p><p class="url">https://even629.com/posts/2602153</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="IIO" href="https://even629.com/posts/2602153"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">IIO</p><p class="url">https://even629.com/posts/2602153</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>25. USB</strong></td>
-<td><div class="tag link"><a class="link-card" title="USB" href="https://even629.com/posts/2602163"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">USB</p><p class="url">https://even629.com/posts/2602163</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="USB" href="https://even629.com/posts/2602163"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">USB</p><p class="url">https://even629.com/posts/2602163</p></div></a></div></td>
 </tr>
 <tr>
 <td><strong>26. LCD</strong></td>
-<td><div class="tag link"><a class="link-card" title="LCD" href="https://even629.com/posts/2602173"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png"/></div><div class="right"><p class="text">LCD</p><p class="url">https://even629.com/posts/2602173</p></div></a></div></td>
+<td><div class="tag link"><a class="link-card" title="LCD" href="https://even629.com/posts/2602173"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">LCD</p><p class="url">https://even629.com/posts/2602173</p></div></a></div></td>
 </tr>
 </tbody>
 </table>
@@ -303,41 +384,41 @@ if (true) {
 2014 年，USB Type - C 接口出现，它尺寸小、能正反插、可高功率传输（最高 100W）且能高速传数据，逐渐成主流。2017 年，USB 3.2 定义不同速率标识，丰富速率选择。2019 年，USB4 基于雷电 3 技术，速率最高达 40Gbps，增强多显示器支持等功能，拓展应用场景。</li>
 </ol>
 <p>USB 不断发展，在数据传输、设备兼容、供电能力等方面持续提升，成为现代电子设备必不可少的连接方式，USB 接口有不同种类，接口标准可以参考官网：</p>
-<div class="tag link"><a class="link-card" title="USB-IF" target="_blank" rel="noopener" href="https://www.usb.org/members"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://www.usb.org/sites/default/files/usb-favicon-logo-square.jpg"/></div><div class="right"><p class="text">USB-IF</p><p class="url">https://www.usb.org/members</p></div></a></div>
+<div class="tag link"><a class="link-card" title="USB-IF" target="_blank" rel="noopener" href="https://www.usb.org/members"><div class="left"><img loading="lazy" src="https://www.usb.org/sites/default/files/usb-favicon-logo-square.jpg"/></div><div class="right"><p class="text">USB-IF</p><p class="url">https://www.usb.org/members</p></div></a></div>
 <h2 id="USB-接口分类">USB 接口分类</h2>
 <p>USB 接口粗略地可以分成三种，分别是 A 型，B 型和 C 型接口，分别是 Type-A 接口，Type-B 接口，Mini-USB 接口，Micro-USB 接口，Micro-B SuperSpeed 接口。接下来详细进行介绍。</p>
 <ol>
 <li>Type-A 接口如下图所示，是长方形接口，广泛应用于电脑，充电器等主机设备以及 U 盘，鼠标，键盘等传统外设。</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234052279.png" alt="Type-A"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234052279.png" alt="Type-A"><figcaption>Type-A</figcaption></figure></p>
 <ol start="2">
 <li>Type-B 接口如下图所示，是方正接口，多用于打印机、麦克风、扫描仪等设备</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234155415.png" alt="Type-B"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234155415.png" alt="Type-B"><figcaption>Type-B</figcaption></figure></p>
 <ol start="3">
 <li>Mini-B 接口如下图所示，多用于行车记录仪设备。</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234209500.png" alt="Mini-B"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234209500.png" alt="Mini-B"><figcaption>Mini-B</figcaption></figure></p>
 <ol start="4">
 <li>Micro-USB 接口如下图所示，小型接口，曾用于老款手机、移动电源等便携设备。</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234213586.png" alt="Micro-USB"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234213586.png" alt="Micro-USB"><figcaption>Micro-USB</figcaption></figure></p>
 <ol start="5">
 <li>Micro-B SuperSpeed 接口如下图所示，常用于移动硬盘。</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234217791.png" alt="Micro-B SuperSpeed "></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234217791.png" alt="Micro-B SuperSpeed "><figcaption>Micro-B SuperSpeed </figcaption></figure></p>
 <ol start="6">
 <li>Type-C 接口如下图所示，正反可插，目前 Typec 接口是手机、笔记本电脑、耳机等现代设备的主流接口。</li>
 </ol>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234224429.png" alt="Type-C"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234224429.png" alt="Type-C"><figcaption>Type-C</figcaption></figure></p>
 <p>总结：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234228444.png" alt="接口类别"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234228444.png" alt="接口类别"><figcaption>接口类别</figcaption></figure></p>
 <blockquote>
 <p>图中不同类型的 USB 接口虽然在外观和用途上有所差异，但它们都遵循 USB 标准协议，确保了设备之间的兼容性和互操作性。</p>
 <p>这里要注意的是，不能仅因设备采用 Type - C 接口，就认定其具备高速数据传输能力。Type - C 只是一种外观规格，实际的数据传输速度，取决于所搭载的 USB 协议版本。例如，若采用 USB 2.0 协议，即便接口是 Type - C，其速度也相对有限，而 USB 3.0 及更高版本协议，才能实现高速传输。</p>
 </blockquote>
 <h2 id="USB-版本">USB 版本</h2>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234233495.png" alt="USB 版本"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234233495.png" alt="USB 版本"><figcaption>USB 版本</figcaption></figure></p>
 <blockquote>
 <p>最初，USB 3.0 被命名为 SuperSpeed USB，强调其高速传输的特性。后来 USB 3.1 版本发布，它在传输速率上进一步提升。</p>
 <p>然而，为了简化命名：</p>
@@ -366,7 +447,7 @@ if (true) {
 <li>红色：USB3.1</li>
 </ul>
 <h2 id="RK3568-USB接口">RK3568 USB接口</h2>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234237726.png" alt="topeet RK3568"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234237726.png" alt="topeet RK3568"><figcaption>topeet RK3568</figcaption></figure></p>
 <p>在上图中，我们可以看到 RK3568 处理器有 USB2.0 HOSTx2,一个 USB3.0 HOST 和一个 USB3 OTG。</p>
 <blockquote>
 <p>USB 设备分为 Host（主设备） 和 Slave（从设备），只有当一台 Host 与另一台 Slave 连接时才能实现数据传输。</p>
@@ -397,21 +478,21 @@ if (true) {
 <li>当选择 OHCI 为主控时，OHCI 主机控制器将为所连接的设备提供服务；</li>
 <li>当选择 EHCI 为主控时，EHCI 主机控制器将为所连接的设备提供服务。</li>
 </ul>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234243247.png" alt="USB 2.0 Host Controller Block Diagram"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234243247.png" alt="USB 2.0 Host Controller Block Diagram"><figcaption>USB 2.0 Host Controller Block Diagram</figcaption></figure></p>
 <p>RK3568 芯片有两个 USB3.0 控制器，其中一种可以用作 USB3.0 OTG（On-The-Go）控制器，另一种只能用作 USB3.0 主机控制器。USB3.0 OTG 控制器可以根据 USB2.0 物理层（PHY）的输入 ID 状态，充当静态主机、静态设备、USB2.0/3.0 OTG A 设备或 B 设备。它能够在主机和设备之间以主机或设备的身份进行 SuperSpeed（超高速）、High-Speed(高速)、Full-Speed(全速)或 Low-Speed(低速)的数据传输。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234246588.png" alt="USB 3.0 OTG Block Diagram"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234246588.png" alt="USB 3.0 OTG Block Diagram"><figcaption>USB 3.0 OTG Block Diagram</figcaption></figure></p>
 <p>从上图中可以看出，USB3 OTG 模块通过 HS/FS/LS MAC（高速/全速/低速 MAC）接口连接到下方的 USB2.0 PHY 模块。USB2.0 PHY 模块负责 USB2.0 的物理层功能。USB3 OTG 模块通过 SS MAC（超高速 MAC）接口连接到右侧的 SS PHY 模块。SS PHY 模块负责超高速（SuperSpeed）的物理层功能。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234250588.png" alt="RK3568 USB的复用关系"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234250588.png" alt="RK3568 USB的复用关系"><figcaption>RK3568 USB的复用关系</figcaption></figure></p>
 <p>从上述图示可知，RK3568 芯片配备两个 USB2.0 HOST，其 USB2.0 HOST 引脚不存在复用情况，USB 2.0 Host_2 控制器与 USB 2.0 Host_3 控制器分别使用 USB 2.0 Comb PHY_1 的 port0 和 port1。</p>
 <p>同时，该芯片设有一个 USB3.0 OTG，它能向下兼容 USB2.0 OTG，且此 USB 3.0 OTG 控制器与 SATA_0 控制器复用 USB3/SATA Combo PHY_0。</p>
 <p>另外，RK3568 芯片还有一个 USB3.0 HOST，它向下兼容 USB2.0 HOST，USB 3.0 Host_1 控制器与 SATA_1/QSGMII 控制器复用 USB3/SATA/QSGMII Combo PHY_1。</p>
 <p>USB 3.0 OTG 控制器与 USB 3.0 Host_1 控制器分别使用 USB 2.0 Comb PHY_0 的 port0 和 port1。</p>
 <h2 id="topeet-RK3568-USB">topeet RK3568 USB</h2>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234257348.png" alt="topeet RK3568 USB"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234257348.png" alt="topeet RK3568 USB"><figcaption>topeet RK3568 USB</figcaption></figure></p>
 <p>两个 USB2.0 接口，其中下面的是 RTL8723DU WIFI 模块是复用的</p>
 <p>开发板上还有一个 USB3.0 OTG 接口，原理图如下图所示：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234301779.png" alt="USB3.0 OTG"></p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234308347.png" alt="USB 3.0 OTG"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234301779.png" alt="USB3.0 OTG"><figcaption>USB3.0 OTG</figcaption></figure></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234308347.png" alt="USB 3.0 OTG"><figcaption>USB 3.0 OTG</figcaption></figure></p>
 <p>在上面的原理图中，<code>USB3_OTG0_VBUSDET</code> 是一个高电平有效的检测信号，用于 OTG 和 Device 模式识别。usb3.0 otg 支持三种模式，分别是 otg 模式，device 模式，host 模式</p>
 <ol>
 <li>OTG 模式下：通过检测 ID 引脚电平自动切换工作模式（高电平为 Device 模式，低电平为 Host 模式），同时需要 VBUSDET 为高电平才会拉高 USB3_OTG0DP 开始枚举；</li>
@@ -422,15 +503,15 @@ if (true) {
 <p>系统默认在 uboot 启动前为 Device 模式，进入 uboot 后可根据实际需求配置这三种工作模式。</p>
 </blockquote>
 <p>RK3568 芯片还配备了一个 USB3.0 HOST 接口。通过查看底板原理图可以发现，原理图如下所示，这个 USB3.0 HOST 接口是专门为 5G 模块（RM500U-CN 模块）预留的。在 iTOP-RK3568 开发板上，4G 和 5G 模块共用同一个 U58 座子，通过硬件设计实现了兼容。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319211.png" alt="MiniPCIe2.0 Slot_Support 4G module"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319211.png" alt="MiniPCIe2.0 Slot_Support 4G module"><figcaption>MiniPCIe2.0 Slot_Support 4G module</figcaption></figure></p>
 <h1 id="USB-总线架构与设备交互机制">USB 总线架构与设备交互机制</h1>
 <h2 id="USB-拓扑结构">USB 拓扑结构</h2>
 <p>USB 采用树形拓扑结构，是一种主从结构，即<strong>所有设备通过集线器（hub）连接到主机（host），形成一个树状结构</strong>，如下图所示。USB 只能主机和设备之间进行数据通信，设备和设备之间是不可以通信的</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319244.png" alt="USB 拓扑结构"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319244.png" alt="USB 拓扑结构"><figcaption>USB 拓扑结构</figcaption></figure></p>
 <p>USB 集线器虽然能够扩展接口数量，但其扩展能力受到严格限制。根据 USB2.0 协议规范，整个系统最多支持 7 层级联扩展（从根集线器开始计算），且所有连接的设备总数不得超过 127 个（包括集线器本身，0地址有特殊作用）。这种金字塔形的拓扑结构设计（如下图所示）在保证接口扩展灵活性的同时，通过层级限制避免了信号衰减和系统过载的问题。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319279.png" alt="USB 集线器层级"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319279.png" alt="USB 集线器层级"><figcaption>USB 集线器层级</figcaption></figure></p>
 <h2 id="USB-设备状态迁移">USB 设备状态迁移</h2>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319322.png" alt="USB设备状态"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319322.png" alt="USB设备状态"><figcaption>USB设备状态</figcaption></figure></p>
 <p><strong>从 USB 设备尚未接入，到被 USB Host 完全识别并确保其功能正常</strong>，USB 设备会依次历经以下阶段。</p>
 <ol>
 <li><strong>连接状态(Attached)</strong>: 这是设备物理连接到 USB 主机但还没有通电的阶段。这个阶段主要由硬件来保证。</li>
@@ -447,14 +528,14 @@ if (true) {
 <li><strong>全速设备</strong></li>
 </ul>
 <p>全速设备通过以下的方式连接，如下图所示，左侧是 USB 主机端，右侧是 USB 设备端。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319353.png" alt="Full-speed Device Cable and Resistor Connections"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319353.png" alt="Full-speed Device Cable and Resistor Connections"><figcaption>Full-speed Device Cable and Resistor Connections</figcaption></figure></p>
 <p>如上图所示，在左边 hub 一侧，数据线 D+和 D-都有 15k 阻值的下拉电阻 Rpd (Pull-down Resistors)，在右边设备端一侧，数据线 D+上有一个 1.5k 阻值的上拉电阻 Rpu (Pull-up Resistors)。</p>
 <p><strong>当 D+ 信号线由低电平变成高电平，USB 主机端可以判断全速设备被插入了。</strong></p>
 <ul>
 <li><strong>低速设备</strong></li>
 </ul>
 <p>低速设备通过以下的方式连接，如下图所示，左侧是 USB 主机端，右侧是 USB 设备端。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319387.png" alt="Low-speed Device Cable and Resistor Connections"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319387.png" alt="Low-speed Device Cable and Resistor Connections"><figcaption>Low-speed Device Cable and Resistor Connections</figcaption></figure></p>
 <p>如上图所示，在左边 hub 一侧，数据线 D+和 D-都有 15k 阻值的下拉电阻 Rpd (Pull-down Resistors)，在右边设备端一侧，数据线 D-上有一个 1.5k 阻值的上拉电阻 Rpu (Pull-up Resistors)。</p>
 <p><strong>当 D- 信号线由低电平变成高电平，USB 主机端可以判断低速设备被插入了。</strong></p>
 <ul>
@@ -462,15 +543,15 @@ if (true) {
 </ul>
 <p>高速设备接入系统时，起初会被识别为全速设备。随后，HOST 会对 DEVICE 进行检测，判断其是否为高速设备，在此过程中，HOST 与 DEVICE 需相互确认。确认完成后，系统才会切换到高速模式。在高速模式下采用电流传输模式，此时需要断开 D+ 上的上拉电阻。</p>
 <p>当设备断开连接时，其差分终端电阻随即消失，然而高速数据包仍会继续从原本设备所连端口传输。当这些数据包抵达无负载的路径端点，会产生强烈反射，反射信号返回集线器接口，致使集线器连接端口的差分电压升高。当高速设备 D+ 与 D- 上的差分信号电平大于 625mV 时，便可判定 USB 设备已断开</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319421.png" alt="USB3.0 原理架构图"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319421.png" alt="USB3.0 原理架构图"><figcaption>USB3.0 原理架构图</figcaption></figure></p>
 <p>当 USB 主机和 USB 设备连接之后，会在 USB 主机和设备的 <code>SSRX+/-</code>上产生一个等效下拉电阻 <code>R_Term</code>，其范围在 18~30 欧姆，由 <code>SSRX+/-</code>上各一个 50 欧姆的等效下拉电阻并联组成。</p>
 <p>下图中左边电路为不接设备时的等效电路，右边电路为接入 usb 设备时的等效电路。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319455.png" alt="等效电路"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319455.png" alt="等效电路"><figcaption>等效电路</figcaption></figure></p>
 <p>由上图可知，左边不接设备时，电路模型实际为 RC 串联电路，充放电时间常数 <code>T = R_Detect * C_Parasitic</code>。右边接设备时，此时 <code>R_term</code> 存在，充放电时间常数<code>T=(R_Detect+R_Term)(C_AC+C_Parasitic)</code>。显然，后者远远大于前者，所以是否连接设备可以根据时间常数来进行判断。</p>
 <h2 id="OTG-双角色切换">OTG 双角色切换</h2>
 <p>USB OTG 既能充当 HOST，又能扮演 Device 。</p>
 <p>topeet RK3568  OTG 接口电路原理图如下图所示：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319493.png" alt="topeet RK3568  OTG 接口电路原理图"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319493.png" alt="topeet RK3568  OTG 接口电路原理图"><figcaption>topeet RK3568  OTG 接口电路原理图</figcaption></figure></p>
 <p>从上图可以看出，J48 为 USB 插座，USB OTG 接口中有 5 条线：2 条用来传送数据(D+、D-)、1 条电源线(VBUS)、1 条接地线(GND)、1 条 ID 线。其中 ID 线用于实现 OTG 功能，通过 ID 线来判断当前连接的是主设备(HOST)还是从设备(SLAVE)。</p>
 <ul>
 <li>
@@ -487,8 +568,8 @@ if (true) {
 </li>
 </ul>
 <p>iTOP-RK3399 底板上 typec 接口如下</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319528.png" alt="topeet RK3399 Type-C"></p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319559.png" alt="topeet RK3399 Type-C"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319528.png" alt="topeet RK3399 Type-C"><figcaption>topeet RK3399 Type-C</figcaption></figure></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319559.png" alt="topeet RK3399 Type-C"><figcaption>topeet RK3399 Type-C</figcaption></figure></p>
 <p>上图中 <code>Typec_CC1</code> 和 <code>Typec_CC2</code> 引脚作为 ID 引脚来使用，其工作原理和前文所述相似。U24 芯片在检测到 CC1 和 CC2 的状态后，会向主控发出中断信号，并通过 I2C 引脚读取芯片寄存器的值。随后，主控根据这些信息来控制供电引脚。</p>
 <h1 id="USB-协议">USB 协议</h1>
 <h2 id="USB-描述符">USB 描述符</h2>
@@ -512,9 +593,9 @@ if (true) {
 <p>端点描述符描述接口中的一个端点，端点是数据在设备和主机之间传输的终点。一个具体的端点只能属于四种传输模式中的一种。一个 USB 接口有 0 个或多个端点描述符（不包括端点 0）。在 Linux 内核中，USB 端点使用 <code>usb_host_endpoint</code> 结构体来描述，而 USB 端点描述符定义为 <code>usb_endpoint_descriptor</code> 结构体，端点描述符结构体如下所示：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// include/uapi/linux/usb/ch9.h</span></span><br><span class="line"><span class="comment">/* USB_DT_ENDPOINT: Endpoint descriptor */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">usb_endpoint_descriptor</span> &#123;</span></span><br><span class="line">	__u8  bLength;		<span class="comment">// 描述符长度</span></span><br><span class="line">	__u8  bDescriptorType;	<span class="comment">// 描述符类型</span></span><br><span class="line"></span><br><span class="line">	__u8  bEndpointAddress;	<span class="comment">// 端点地址，位[3:0]是端点号，位 7 是方向位（1 表示 IN，0 表示 OUT）</span></span><br><span class="line">	__u8  bmAttributes;	<span class="comment">// 端点属性，位[1:0]决定传输类型（00=控制，01=等时，10=批量，11=中断）</span></span><br><span class="line">	__le16 wMaxPacketSize;	<span class="comment">// 最大包长度（单位：字节），用于限定此端点一次可以传输的数据量</span></span><br><span class="line">	__u8  bInterval;	<span class="comment">// 轮询间隔</span></span><br><span class="line">    				<span class="comment">// - 对于批量/控制传送的端点，此域忽略</span></span><br><span class="line">    				<span class="comment">// - 对于等时传送的端点，此域必须为 1</span></span><br><span class="line">    				<span class="comment">// - 对于中断传送的端点，此域值范围为 1 到 255</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* <span class="doctag">NOTE:</span>  these two are _only_ in audio endpoints. */</span></span><br><span class="line">	<span class="comment">/* use USB_DT_ENDPOINT*_SIZE in bLength, not sizeof. */</span></span><br><span class="line">	__u8  bRefresh;</span><br><span class="line">	__u8  bSynchAddress;</span><br><span class="line">&#125; __attribute__ ((packed));</span><br></pre></td></tr></table></figure>
 <p>一个 USB 设备有一个设备描述符，设备描述符里面决定了该设备有多少种配置，每种配置对应着配置描述符；而在配置描述符中又定义了该配置里面有多少个接口，每个接口有对应的接口描述符；在接口描述符里面又定义了该接口有多少个端点，每个端点对应一个端点描述符；端点描述符定义了端点的大小，类型等等。由此我们可以看出，USB 的描述符之间的关系是一层一层的，最上一层是设备描述符，下面是配置描述符，再下面是接口描述符，再下面是端点描述符，如下图所示：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319596.png" alt="USB 描述符结构关系"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319596.png" alt="USB 描述符结构关系"><figcaption>USB 描述符结构关系</figcaption></figure></p>
 <p>比如：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319628.png" alt="lsusb -v"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319628.png" alt="lsusb -v"><figcaption>lsusb -v</figcaption></figure></p>
 <p>可以看出 root hub 包含了一个设备描述符，一个配置描述符，一个接口描述符，一个端点描述符。图中的信息内容直接对应于 <code>usb_device_descriptor</code> 、<code>usb_config_descriptor</code> 、<code>usb_interface_descriptor</code>、<code>usb_endpoint_descriptor</code> 结构体。</p>
 <h2 id="USB-通信数据格式">USB 通信数据格式</h2>
 <p>USB 通信数据格式以包(Packet)为基本单位，通过分层结构(域-&gt;包-&gt;事务-&gt;传输)实现设备与主机间的可靠通信。</p>
@@ -579,7 +660,7 @@ if (true) {
 <p>为了让数据不迷路，USB 会先把数据打包成一个个小包裹（数据包），再通过四种不同形状的“快递盒子”（包结构）来区分用途——比如装文件的、传指令的、发数据的等等，确保每个包裹能准确送到目的地。</p>
 <p>这四种不同形状的“快递盒子”相当于四种不同的包结构，分别是<strong>令牌(Token)包</strong>、<strong>数据(Data)包</strong>、<strong>握手(Handshake)包</strong>和<strong>特殊(Special)包</strong>。</p>
 <p>这四种包结构通过标识符 PID 来区分，在 USB 包中，PID 域使用 8 位来表示，格式如下所示：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319657.png" alt="PID Format"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319657.png" alt="PID Format"><figcaption>PID Format</figcaption></figure></p>
 <p>前 4 位表示 PID，后 4 位是对前 4 位的取反。前 4 位 PID 中使用 bit1，bit0 确定分类，使用 bit3，bit2 进一步细分，如下表所示：</p>
 <table>
 <thead>
@@ -748,14 +829,14 @@ if (true) {
 <li>接下来，主机就会获取配置描述符。主机在获取到配置描述符之后，根据里面的配置集合总长度，再获取配置集合。配置集合包括配置描述符，接口描述符，端点描述符等等。如果还有字符串描述符，系统还会获取字符串描述符。</li>
 </ol>
 <h2 id="USB-波形">USB 波形</h2>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319691.png" alt="帧起始包"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319691.png" alt="帧起始包"><figcaption>帧起始包</figcaption></figure></p>
 <p>在上图中，是一个帧起始包。SYNC 域以 0x80（10000000）开头，用于表示时钟同步。PID 域值为 0xA5，图中标记为 SOF，表示这是一个帧起始包。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319727.png" alt="令牌包"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319727.png" alt="令牌包"><figcaption>令牌包</figcaption></figure></p>
 <p>左侧是一个令牌包。SYNC 域以 0x80（10000000）开头，用于表示时钟同步。PID 域值为 0x69，图中标记为 IN，表示通知设备将要输入数据。接下来主机请求端点 2 的数据。</p>
 <p>在上图中，右侧是一个握手包，SYNC 域以 0x80（10000000）开头，用于表示时钟同步。PID 域值为 0x5A，图中标记为 NAK，表示设备暂时无法响应。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319759.png" alt="枚举阶段的控制传输请求"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319759.png" alt="枚举阶段的控制传输请求"><figcaption>枚举阶段的控制传输请求</figcaption></figure></p>
 <p>此波形为枚举阶段的控制传输请求。SYNC 域以 0x80（10000000）开头，用于表示时钟同步。PID 域为 SETUP，表示通知设备将要开始一个控制传输。接下来是地址域 Address=0x11 和端点域 Endpoint=0x00，表示主机向端点 0 发送控制请求。最后是校验域（CRC），包以 EOP 结束。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319791.png" alt="控制传输的数据阶段"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319791.png" alt="控制传输的数据阶段"><figcaption>控制传输的数据阶段</figcaption></figure></p>
 <p>SYNC 域以 0x80（10000000）开头，用于表示时钟同步。PID 域为 DATA0，表示用于控制传输的数据阶段。</p>
 <h1 id="应用编程基础">应用编程基础</h1>
 <h2 id="libusb-库简介">libusb 库简介</h2>
@@ -767,7 +848,7 @@ if (true) {
 </ol>
 <h2 id="libusb-编译">libusb 编译</h2>
 <p>源码：</p>
-<div class="tag link"><a class="link-card" title="libusb" target="_blank" rel="noopener" href="https://github.com/libusb/libusb.git"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://github.githubassets.com/favicons/favicon.svg"/></div><div class="right"><p class="text">libusb</p><p class="url">https://github.com/libusb/libusb.git</p></div></a></div>
+<div class="tag link"><a class="link-card" title="libusb" target="_blank" rel="noopener" href="https://github.com/libusb/libusb.git"><div class="left"><img loading="lazy" src="https://github.githubassets.com/favicons/favicon.svg"/></div><div class="right"><p class="text">libusb</p><p class="url">https://github.com/libusb/libusb.git</p></div></a></div>
 <p><strong>本地编译</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install autoconf automake libtool libudev-dev m4</span><br><span class="line"></span><br><span class="line">./bootstrap.sh</span><br><span class="line">./autogen.sh</span><br><span class="line">make -j$(<span class="built_in">nproc</span>)</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
 <p>在 libusb 源码的 examples 目录下，libusb 提供了一些官方案例，如下所示：</p>
@@ -1302,7 +1383,7 @@ if (true) {
 </li>
 </ul>
 <p>USB 驱动架构如下图所示</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319825.png" alt="Rockchip_Developer_Guide_USB_CN.pdf 5.1 小节"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319825.png" alt="Rockchip_Developer_Guide_USB_CN.pdf 5.1 小节"><figcaption>Rockchip_Developer_Guide_USB_CN.pdf 5.1 小节</figcaption></figure></p>
 <p>Linux USB 协议栈是一个分层的架构，左边是 USB Device 驱动，右边是 USB Host 驱动，最上层是应用层，最底层是 Rockchip 系列芯片不同 USB 控制器和 PHY 的驱动，中间是 USB 核心层。</p>
 <h2 id="USB-键盘驱动示例">USB 键盘驱动示例</h2>
 <p>让 iTOP - RK3568 开发板充当 USB 主机，外接如 USB 键盘之类的 USB 设备。</p>
@@ -1456,7 +1537,7 @@ if (true) {
 <p>第五步，被 USB 主机控制器处理，进行一次到 USB 设备的传送。第四步和第五步由 USB核心和主机控制器完成，不受 USB 设备驱动的控制。</p>
 <p>第六步，当 URB 处理完成，USB 主机控制器驱动通知 USB 设备驱动</p>
 <p>USB 键盘上报的数据为 8 个字节，这 8 个字节的数据是 USB 按键按下又抬起的数据。</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319865.png" alt="USB 键盘上报数据格式"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319865.png" alt="USB 键盘上报数据格式"><figcaption>USB 键盘上报数据格式</figcaption></figure></p>
 <p>格式如下所示：</p>
 <table>
 <thead>
@@ -1576,12 +1657,12 @@ if (true) {
 <li>接下来选中一些网络协议配置</li>
 </ol>
 <p>如图：</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319898.png" alt="USB Gadget Support"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319898.png" alt="USB Gadget Support"><figcaption>USB Gadget Support</figcaption></figure></p>
 <p>接下来找到 USB Gadget precomposed configurations，选中 with CDC Ethernet support,如下图所示</p>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319934.png" alt="USB Gadget precomposed configurations"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319934.png" alt="USB Gadget precomposed configurations"><figcaption>USB Gadget precomposed configurations</figcaption></figure></p>
 <p>配置完成，重新编译内核源码，然后重新烧写内核镜像。在开发板完成重启流程后，执行<code>ifconfig -a</code>命令进行网络配置接口的列举，将能够观察到 usb0 网络接口。</p>
 <h1 id="host-和-phy-驱动">host 和 phy 驱动</h1>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319984.png" alt="host 和 phy 驱动"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234319984.png" alt="host 和 phy 驱动"><figcaption>host 和 phy 驱动</figcaption></figure></p>
 <p>在 Linux 内核源码中，USB host 和 PHY 驱动是默认加载的，USB PHY 模块位于内核的以下路径。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Device Drivers---&gt;</span><br><span class="line">	PHY Subsystem---&gt;</span><br><span class="line">	&lt;*&gt; Rockchip INNO USB2PHY Driver</span><br><span class="line">	&lt;*&gt; Rockchip TYPEC PHY Driver</span><br><span class="line">	&lt;*&gt; Rockchip INNO USB 3.0 PHY Driver</span><br></pre></td></tr></table></figure>
 <ul>
@@ -1607,7 +1688,7 @@ if (true) {
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">&amp;usbhost30</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br><span class="line"></span><br><span class="line"><span class="variable">&amp;usbhost_dwc3</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">phys</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;u2phy0_host</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">phy-names</span> <span class="operator">=</span> <span class="string">&quot;usb2-phy&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">maximum-speed</span> <span class="operator">=</span> <span class="string">&quot;high-speed&quot;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br><span class="line"></span><br><span class="line"><span class="variable">&amp;combphy1_usq</span> <span class="punctuation">&#123;</span></span><br><span class="line">	rockchip,dis-u3otg1-<span class="attr">port</span><span class="punctuation">;</span></span><br><span class="line">	<span class="comment">/*HOST1、SATA1 和 QSGMII 都没有使用 combphy1_usq，则此处 disabled */</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br><span class="line"></span><br><span class="line"><span class="variable">&amp;usb2phy0</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br><span class="line"></span><br><span class="line"><span class="variable">&amp;u2phy0_host</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">phy-supply</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;vcc5v0_host</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>更多详细资料可以查阅瑞芯微官方资料 <code>rk356x_linux/doc/Common/USB/Rockchip_Developer_Guide_USB_CN.pdf</code>。</p>
 <h1 id="4G-模块移植">4G 模块移植</h1>
-<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234320017.png" alt="iTOP-RK3568 底板的原理图 4G 模块接口部分"></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/20260219234320017.png" alt="iTOP-RK3568 底板的原理图 4G 模块接口部分"><figcaption>iTOP-RK3568 底板的原理图 4G 模块接口部分</figcaption></figure></p>
 <p>上图中的 U58 接口兼容了 4G 模块和 5G 模块。在这里是使用 USB 接口与 CPU 进行连接的，目的是 <strong>CPU 通过 USB 接口将 EM05-CE(4G) 模块挂载到系统上，将 EM05-CE 模拟成一个网络设备和 4 个 USB 串口设备</strong></p>
 <ul>
 <li>串口设备的作用是对模块进行一些初始化操作、错误检测、读取定位信息等</li>
@@ -1629,233 +1710,215 @@ if (true) {
 <p>硬件连接好之后，将开发板上电启动。切换成 ECM 拨号，输入命令<code>cat /dev/ttyUSB2 &amp; echo -e “AT+QCFG=\”usbnet\”,1\r\n” &gt; /dev/ttyUSB2</code>，然后重启开发板。</p>
 <p>开发板重启之后会进行自动拨号，接着在调试串口终端输入“ifconfig”命令，可以看到有 usb0 节点，然后输入<code>ping www.baidu.com</code>命令查看是否可以 ping 通网络。</p>
 <p>除了上述所讲的 ECM 拨号，我们也可以使用 quectel-CM 工具进行拨号</p>
-<div class="tag link"><a class="link-card" title="quectel-CM" target="_blank" rel="noopener" href="https://github.com/kmilo17pet/quectel-cm"><div class="left"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://github.githubassets.com/favicons/favicon.svg"/></div><div class="right"><p class="text">quectel-CM</p><p class="url">https://github.com/kmilo17pet/quectel-cm</p></div></a></div>
+<div class="tag link"><a class="link-card" title="quectel-CM" target="_blank" rel="noopener" href="https://github.com/kmilo17pet/quectel-cm"><div class="left"><img loading="lazy" src="https://github.githubassets.com/favicons/favicon.svg"/></div><div class="right"><p class="text">quectel-CM</p><p class="url">https://github.com/kmilo17pet/quectel-cm</p></div></a></div>
 <p>编译完成之后，生成 quectel-CM 可执行程序。我们将此程序拷贝到开发板上进行下面的测试。在之前操作中使用了 ECM 拨号，在使用 quectel-CM 拨号之前，我们需要输入<code>cat /dev/ttyUSB2 &amp; echo -e “AT+QCFG=\”usbnet\”,0\r\n” &gt; /dev/ttyUSB2</code>命令切换成 RmNET 拨号。然后运行 quectel-CM 可执行程序，如下图所示：</p>
 <p>拨号脚本执行之后，在串口终端输入<code>ifconfig</code>命令可以看到多了 wwan0 节点。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://even629.github.io/">even629</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://even629.com/posts/2602163/">https://even629.com/posts/2602163/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://even629.com" target="_blank">常想一二，不思八九</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GNU/">GNU</a><a class="post-meta__tags" href="/tags/driver/">driver</a></div><div class="post-share"><div class="social-share" data-image="/images/linux_cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center liquidGlass-wrapper" id="my-custom-card-author"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="card-info-avatar"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status">🐟<span>认真摸鱼中</span></div></div></div><div><div class="author-info-name">even629</div><div class="author-info-description">常想一二，不思八九</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">98</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">70</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/even629" target="_blank" title="github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="qq"><i class="fa-brands fa-qq" style="color: #000000;"></i></a><a class="social-icon" href="mailto:zhaohang731005515@proton.me" target="_blank" title="email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://space.bilibili.com/519280138" target="_blank" title="bilibili"><i class="fa-brands fa-bilibili" style="color: #000000;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="rss"><i class="fas fa-rss" style="color: #000000;"></i></a></div></div></div><div class="card-widget" id="newYear"><div class="item-headline"><i></i><span></span></div><div class="item-content"> <div class="newYear-slider"> <div class="swiper-wrapper"> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> <div class="swiper-slide"></div> </div> </div> <div id="newYear-main"> <div class="mask"></div> <p class="title"></p> <div class="newYear-time"></div> <p class="today" style="text-align: right;"></p> </div> </div></div><div class="sticky_layout"><div class="card-widget liquidGlass-wrapper" id="card-toc"><div class="liquidGlass-effect"></div><div class="liquidGlass-tint"></div><div class="liquidGlass-shine"></div><div class="liquidGlass-box"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E5%9F%BA%E7%A1%80"><span class="toc-text">USB 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8E%A5%E5%8F%A3%E5%88%86%E7%B1%BB"><span class="toc-text">USB 接口分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E7%89%88%E6%9C%AC"><span class="toc-text">USB 版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RK3568-USB%E6%8E%A5%E5%8F%A3"><span class="toc-text">RK3568 USB接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#topeet-RK3568-USB"><span class="toc-text">topeet RK3568 USB</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E6%80%BB%E7%BA%BF%E6%9E%B6%E6%9E%84%E4%B8%8E%E8%AE%BE%E5%A4%87%E4%BA%A4%E4%BA%92%E6%9C%BA%E5%88%B6"><span class="toc-text">USB 总线架构与设备交互机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8B%93%E6%89%91%E7%BB%93%E6%9E%84"><span class="toc-text">USB 拓扑结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E8%AE%BE%E5%A4%87%E7%8A%B6%E6%80%81%E8%BF%81%E7%A7%BB"><span class="toc-text">USB 设备状态迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E8%AE%BE%E5%A4%87%E7%A1%AC%E4%BB%B6%E8%AF%86%E5%88%AB"><span class="toc-text">USB 设备硬件识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OTG-%E5%8F%8C%E8%A7%92%E8%89%B2%E5%88%87%E6%8D%A2"><span class="toc-text">OTG 双角色切换</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E5%8D%8F%E8%AE%AE"><span class="toc-text">USB 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">USB 描述符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">设备描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">配置描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">接口描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E7%82%B9%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">端点描述符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F"><span class="toc-text">USB 通信数据格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F"><span class="toc-text">域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%85"><span class="toc-text">包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-text">事务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#USB-%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="toc-text">USB 传输方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%9E%9A%E4%B8%BE"><span class="toc-text">USB 枚举</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%B3%A2%E5%BD%A2"><span class="toc-text">USB 波形</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80"><span class="toc-text">应用编程基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-%E5%BA%93%E7%AE%80%E4%BB%8B"><span class="toc-text">libusb 库简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-%E7%BC%96%E8%AF%91"><span class="toc-text">libusb 编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-API"><span class="toc-text">libusb API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-init"><span class="toc-text">libusb_init()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-device-list"><span class="toc-text">libusb_get_device_list()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-device-list"><span class="toc-text">libusb_free_device_list()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-open-device-with-vid-pid"><span class="toc-text">libusb_open_device_with_vid_pid()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-open"><span class="toc-text">libusb_open()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-device-descriptor"><span class="toc-text">libusb_get_device_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-config-descriptor"><span class="toc-text">libusb_get_config_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-config-descriptor"><span class="toc-text">libusb_free_config_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-bulk-transfer"><span class="toc-text">libusb_bulk_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-interrupt-transfer"><span class="toc-text">libusb_interrupt_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-set-auto-detach-kernel-driver"><span class="toc-text">libusb_set_auto_detach_kernel_driver()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-claim-interface"><span class="toc-text">libusb_claim_interface()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-alloc-transfer"><span class="toc-text">libusb_alloc_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-fill-interrupt-transfer"><span class="toc-text">libusb_fill_interrupt_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-submit-transfer"><span class="toc-text">libusb_submit_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-cancel-transfer"><span class="toc-text">libusb_cancel_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-transfer"><span class="toc-text">libusb_free_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-handle-events"><span class="toc-text">libusb_handle_events()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6"><span class="toc-text">USB 驱动开发框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E9%94%AE%E7%9B%98%E9%A9%B1%E5%8A%A8%E7%A4%BA%E4%BE%8B"><span class="toc-text">USB 键盘驱动示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-usb-driver-driver"><span class="toc-text">struct usb_driver *driver</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-usb-device-id"><span class="toc-text">struct usb_device_id</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#usb-register"><span class="toc-text">usb_register()</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-register-driver"><span class="toc-text">usb_register_driver()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-device-match"><span class="toc-text">usb_device_match()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-match-id"><span class="toc-text">usb_match_id()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-match-one-id"><span class="toc-text">usb_match_one_id()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#usb-deregister"><span class="toc-text">usb_deregister()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-Request-Block"><span class="toc-text">USB Request Block</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#USB-%E9%80%9A%E8%AE%AF%E6%AD%A5%E9%AA%A4"><span class="toc-text">USB 通讯步骤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UDC-%E4%B8%8E-Gadget-%E9%A9%B1%E5%8A%A8"><span class="toc-text">UDC 与 Gadget 驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%86-iTOP-RK3568-%E5%BC%80%E5%8F%91%E6%9D%BF%E9%85%8D%E7%BD%AE%E4%B8%BA-USB-%E7%BD%91%E5%8D%A1%E8%AE%BE%E5%A4%87"><span class="toc-text">将 iTOP-RK3568 开发板配置为 USB 网卡设备</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#host-%E5%92%8C-phy-%E9%A9%B1%E5%8A%A8"><span class="toc-text">host 和 phy 驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4G-%E6%A8%A1%E5%9D%97%E7%A7%BB%E6%A4%8D"><span class="toc-text">4G 模块移植</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8%E7%A7%BB%E6%A4%8D"><span class="toc-text">内核驱动移植</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%A8%E5%8F%B7%E8%84%9A%E6%9C%AC%E7%A7%BB%E6%A4%8D"><span class="toc-text">拨号脚本移植</span></a></li></ol></li></ol></div></div></div></div></div></main><footer id="footer" style="background: linear-gradient(135deg, rgba(146, 233, 227, 1) 0%, rgba(0, 0, 0, 0) 70%);;"><div id="footer-wrap"><div class="footer-button"><a target="_blank" rel="noopener" href="https://github.com/even629" title="github"><i class="fab fa-github"></i></a><a href="/img/qq.jpg" title="qq"><i class="fa-brands fa-qq"></i></a><a href="mailto:zhaohang731005515@proton.me" title="email"><i class="fas fa-envelope"></i></a><a target="_blank" rel="noopener" href="https://space.bilibili.com/519280138" title="bilibili"><i class="fa-brands fa-bilibili"></i></a><a href="/atom.xml" title="rss"><i class="fas fa-rss"></i></a></div><div class="copyright">&copy;2024 - 2026 By even629</div><p><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://hexo.io/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Frame-Hexo-blue.svg" title="博客框架为 Hexo"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://butterfly.js.org/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Theme-Butterfly.svg" title="主题采用 butterfly"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="https://github.com/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Source-Github.svg" title="本站项目由 Github 托管"/></a><a style="margin-inline:5px;text-decoration:none;" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/Copyright-BY--NC--SA.4.svg" title="本站采用知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议进行许可"/></a></p></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="中英转换">中</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div class="js-pjax" id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();"><i class="fa fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();"><i class="fa fa-arrow-right"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();"><i class="fa fa-refresh"></i></a><a class="rightMenu-item" href="javascript:rmf.scrollToTop();"><i class="fa fa-arrow-up"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-to"><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="新窗口打开" data-en="Open in New Window"></span></a><a class="rightMenu-item" id="menu-too" href="javascript:rmf.open()"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制链接" data-en="Copy Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();"><i class="fa fa-copy"></i><span data-zh="复制" data-en="Copy"> </span></a><a class="rightMenu-item" href="javascript:window.open(&quot;https://www.google.com/search?q=&quot;+window.getSelection().toString());window.location.reload();"><i class="fa fa-search"></i><span data-zh="谷歌搜索" data-en="Google Search"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-too"><a class="rightMenu-item" href="javascript:window.open(window.getSelection().toString());window.location.reload();"><i class="fa fa-link"></i><span data-zh="转到链接" data-en="Go to Link"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-paste"><a class="rightMenu-item" href="javascript:rmf.paste()"><i class="fa fa-copy"></i><span data-zh="粘贴" data-en="Paste"></span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-post"><a class="rightMenu-item" href="#post-comment"><i class="fas fa-comment"></i><span data-zh="空降评论" data-en="Jump to Comment"></span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();"><i class="fa fa-book"></i><span data-zh="阅读模式" data-en="Reading Mode"> </span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-img"><a class="rightMenu-item" href="javascript:rmf.saveAs()"><i class="fa fa-download"></i><span data-zh="保存图片" data-en="Save Image"></span></a><a class="rightMenu-item" href="javascript:rmf.openWithNewTab()"><i class="fa fa-window-restore"></i><span data-zh="在新窗口打开" data-en="Open in New Tab"></span></a><a class="rightMenu-item" href="javascript:rmf.copyLink()"><i class="fa fa-copy"></i><span data-zh="复制图片链接" data-en="Copy Image Link"></span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkmode();"><i class="fa fa-moon"></i><span data-zh="昼夜切换" data-en="Day/Night Mode"></span></a><a class="rightMenu-item" href="javascript:rmf.fullScreen();"><i class="fas fa-expand"></i><span data-zh="切换全屏" data-en="Toggle Full Screen"></span></a><a class="rightMenu-item" href="javascript:rmf.switchLanguageMode();"><i class="fas fa-language"></i><span data-zh="语言切换" data-en="Language Switch"></span></a><a class="rightMenu-item" href="/"><i class="fa fa-home"></i><span data-zh="回到首页" data-en="Go to Home"></span></a><a class="rightMenu-item" href="javascript:window.print();"><i class="fa-solid fa-print"></i><span data-zh="打印页面" data-en="Print Page"></span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/utils.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(async () => {
-  const showKatex = () => {
-    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
-  }
 
-  if (!window.katex_js_css) {
-    window.katex_js_css = true
-    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
-    if (true) {
-      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
-    }
-  }
+  </div>
+</article>
 
-  showKatex()
-})()</script><script>(() => {
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
 
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
 
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+          <li><a href="/en/">EN</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E5%9F%BA%E7%A1%80"><span class="toc-text">USB 基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8E%A5%E5%8F%A3%E5%88%86%E7%B1%BB"><span class="toc-text">USB 接口分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E7%89%88%E6%9C%AC"><span class="toc-text">USB 版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RK3568-USB%E6%8E%A5%E5%8F%A3"><span class="toc-text">RK3568 USB接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#topeet-RK3568-USB"><span class="toc-text">topeet RK3568 USB</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E6%80%BB%E7%BA%BF%E6%9E%B6%E6%9E%84%E4%B8%8E%E8%AE%BE%E5%A4%87%E4%BA%A4%E4%BA%92%E6%9C%BA%E5%88%B6"><span class="toc-text">USB 总线架构与设备交互机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8B%93%E6%89%91%E7%BB%93%E6%9E%84"><span class="toc-text">USB 拓扑结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E8%AE%BE%E5%A4%87%E7%8A%B6%E6%80%81%E8%BF%81%E7%A7%BB"><span class="toc-text">USB 设备状态迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E8%AE%BE%E5%A4%87%E7%A1%AC%E4%BB%B6%E8%AF%86%E5%88%AB"><span class="toc-text">USB 设备硬件识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OTG-%E5%8F%8C%E8%A7%92%E8%89%B2%E5%88%87%E6%8D%A2"><span class="toc-text">OTG 双角色切换</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E5%8D%8F%E8%AE%AE"><span class="toc-text">USB 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">USB 描述符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">设备描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">配置描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">接口描述符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E7%82%B9%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-text">端点描述符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F"><span class="toc-text">USB 通信数据格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F"><span class="toc-text">域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%85"><span class="toc-text">包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-text">事务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#USB-%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="toc-text">USB 传输方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%9E%9A%E4%B8%BE"><span class="toc-text">USB 枚举</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E6%B3%A2%E5%BD%A2"><span class="toc-text">USB 波形</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80"><span class="toc-text">应用编程基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-%E5%BA%93%E7%AE%80%E4%BB%8B"><span class="toc-text">libusb 库简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-%E7%BC%96%E8%AF%91"><span class="toc-text">libusb 编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#libusb-API"><span class="toc-text">libusb API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-init"><span class="toc-text">libusb_init()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-device-list"><span class="toc-text">libusb_get_device_list()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-device-list"><span class="toc-text">libusb_free_device_list()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-open-device-with-vid-pid"><span class="toc-text">libusb_open_device_with_vid_pid()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-open"><span class="toc-text">libusb_open()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-device-descriptor"><span class="toc-text">libusb_get_device_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-get-config-descriptor"><span class="toc-text">libusb_get_config_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-config-descriptor"><span class="toc-text">libusb_free_config_descriptor()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-bulk-transfer"><span class="toc-text">libusb_bulk_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-interrupt-transfer"><span class="toc-text">libusb_interrupt_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-set-auto-detach-kernel-driver"><span class="toc-text">libusb_set_auto_detach_kernel_driver()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-claim-interface"><span class="toc-text">libusb_claim_interface()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-alloc-transfer"><span class="toc-text">libusb_alloc_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-fill-interrupt-transfer"><span class="toc-text">libusb_fill_interrupt_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-submit-transfer"><span class="toc-text">libusb_submit_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-cancel-transfer"><span class="toc-text">libusb_cancel_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-free-transfer"><span class="toc-text">libusb_free_transfer()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#libusb-handle-events"><span class="toc-text">libusb_handle_events()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#USB-%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6"><span class="toc-text">USB 驱动开发框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E9%94%AE%E7%9B%98%E9%A9%B1%E5%8A%A8%E7%A4%BA%E4%BE%8B"><span class="toc-text">USB 键盘驱动示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct-usb-driver-driver"><span class="toc-text">struct usb_driver *driver</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#struct-usb-device-id"><span class="toc-text">struct usb_device_id</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#usb-register"><span class="toc-text">usb_register()</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-register-driver"><span class="toc-text">usb_register_driver()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-device-match"><span class="toc-text">usb_device_match()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-match-id"><span class="toc-text">usb_match_id()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#usb-match-one-id"><span class="toc-text">usb_match_one_id()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#usb-deregister"><span class="toc-text">usb_deregister()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-Request-Block"><span class="toc-text">USB Request Block</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#USB-%E9%80%9A%E8%AE%AF%E6%AD%A5%E9%AA%A4"><span class="toc-text">USB 通讯步骤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-2"><span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UDC-%E4%B8%8E-Gadget-%E9%A9%B1%E5%8A%A8"><span class="toc-text">UDC 与 Gadget 驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%86-iTOP-RK3568-%E5%BC%80%E5%8F%91%E6%9D%BF%E9%85%8D%E7%BD%AE%E4%B8%BA-USB-%E7%BD%91%E5%8D%A1%E8%AE%BE%E5%A4%87"><span class="toc-text">将 iTOP-RK3568 开发板配置为 USB 网卡设备</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#host-%E5%92%8C-phy-%E9%A9%B1%E5%8A%A8"><span class="toc-text">host 和 phy 驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4G-%E6%A8%A1%E5%9D%97%E7%A7%BB%E6%A4%8D"><span class="toc-text">4G 模块移植</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8%E7%A7%BB%E6%A4%8D"><span class="toc-text">内核驱动移植</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%A8%E5%8F%B7%E8%84%9A%E6%9C%AC%E7%A7%BB%E6%A4%8D"><span class="toc-text">拨号脚本移植</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2602163/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2602163/&text=Linux USB"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2602163/&is_video=false&description=Linux USB"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Linux USB&body=Check out this article: https://even629.com/posts/2602163/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2602163/&title=Linux USB"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2602163/&name=Linux USB&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2602163/&t=Linux USB"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2026
+    even629
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/en/posts/2602163/">EN</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+  
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
       }
-
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
     })
-  }
-
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
-
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
-
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
-
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
-  }
-
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
-  const option = null
-
-  const commentCount = n => {
-    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
-    if (isCommentCount) {
-      isCommentCount.textContent= n
-    }
-  }
-
-  const initGitalk = (el, path) => {
-    if (isShuoshuo) {
-      window.shuoshuoComment.destroyGitalk = () => {
-        if (el.children.length) {
-          el.innerHTML = ''
-          el.classList.add('no-comment')
-        }
-      }
-    }
-
-    const gitalk = new Gitalk({
-      clientID: 'Ov23liyQTymWpBETlDO8',
-      clientSecret: '1512bfe449aac2a5ec3b416df1ce27fb5ddb5db0',
-      repo: 'even629.github.io',
-      owner: 'even629',
-      admin: ['even629'],
-      updateCountCallback: commentCount,
-      ...option,
-      id: isShuoshuo ? path : (option && option.id) || '3e71936a6b97b0bb233d35c2ac350e58'
-    })
-
-    gitalk.render('gitalk-container')
-  }
-
-  const loadGitalk = async(el, path) => {
-    if (typeof Gitalk === 'function') initGitalk(el, path)
-    else {
-      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
-      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
-      initGitalk(el, path)
-    }
-  }
-
-  if (isShuoshuo) {
-    'Gitalk' === 'Gitalk'
-      ? window.shuoshuoComment = { loadComment: loadGitalk }
-      : window.loadOtherComment = loadGitalk
-    return
-  }
-
-  if ('Gitalk' === 'Gitalk' || !false) {
-    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
-    else loadGitalk()
-  } else {
-    window.loadOtherComment = loadGitalk
-  }
-})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script><script defer src="/js/right_menu.js"></script><script async src="/js/fps.js"></script><script src="/js/solarlunar.js"></script><script src="/js/newYear.js"></script><script src="/js/pop-up-window.js"></script><script data-pjax src="/js/nav.js"></script><script>(()=>{let d=document,c='style',s=d.createElement(c);s.textContent="@font-face{font-family:'Dymon-ShouXieTi';font-display:swap;src:url(/font/Dymon-ShouXieTi.otf) format('opentype')}@font-face{font-family:'FiraCode-Regular';font-display:swap;font-variant-ligatures:common-ligatures discretionary-ligatures;font-feature-settings:'liga' on;src:url(/font/FiraCode-Regular.ttf) format('truetype')}";window.addEventListener('load',()=>d.head.appendChild(s))})()</script><script data-pjax src="/js/music.js"></script><script data-pjax src="/js/btf.js"></script><script data-pjax src="/js/ch_en.js"></script><svg style="display: none">
-<filter
-  id="glass-distortion"
-  x="0%"
-  y="0%"
-  width="100%"
-  height="100%"
-  filterUnits="objectBoundingBox"
->
-  <feTurbulence
-    type="fractalNoise"
-    baseFrequency="0.01 0.01"
-    numOctaves="1"
-    seed="5"
-    result="turbulence"
-  />
-  <!-- Seeds: 14, 17,  -->
-
-  <feComponentTransfer in="turbulence" result="mapped">
-    <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
-    <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
-    <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
-  </feComponentTransfer>
-
-  <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
-
-  <feSpecularLighting
-    in="softMap"
-    surfaceScale="5"
-    specularConstant="1"
-    specularExponent="100"
-    lighting-color="white"
-    result="specLight"
-  >
-    <fePointLight x="-200" y="-200" z="300" />
-  </feSpecularLighting>
-
-  <feComposite
-    in="specLight"
-    operator="arithmetic"
-    k1="0"
-    k2="1"
-    k3="1"
-    k4="0"
-    result="litImage"
-  />
-
-  <feDisplacementMap
-    in="SourceGraphic"
-    in2="softMap"
-    scale="20"
-    xChannelSelector="R"
-    yChannelSelector="G"
-  />
-  </filter>
-</svg>
-<script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
-POWERMODE.shake = true;
-POWERMODE.mobile = true;
-document.body.addEventListener('input', POWERMODE);
-</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="/css/APlayer.min.css" media="print" onload="this.media='all'"><script src="/js/APlayer.min.js"></script><script src="/js/meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
-  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
-
-  window.pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: pjaxSelectors,
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
   })
+  </script>
 
-  const triggerPjaxFn = (val) => {
-    if (!val) return
-    Object.values(val).forEach(fn => fn())
-  }
 
-  document.addEventListener('pjax:send', () => {
-    // removeEventListener
-    btf.removeGlobalFnEvent('pjaxSendOnce')
-    btf.removeGlobalFnEvent('themeChange')
+<script src="/js/main.js"></script>
 
-    // reset readmode
-    const $bodyClassList = document.body.classList
-    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
 
-    triggerPjaxFn(window.globalFn.pjaxSend)
-  })
+<script src="/js/tabs.js"></script>
 
-  document.addEventListener('pjax:complete', () => {
-    btf.removeGlobalFnEvent('pjaxCompleteOnce')
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-      const newScript = document.createElement('script')
-      const content = item.text || item.textContent || item.innerHTML || ""
-      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-      newScript.appendChild(document.createTextNode(content))
-      item.parentNode.replaceChild(newScript, item)
-    })
 
-    triggerPjaxFn(window.globalFn.pjaxComplete)
-  })
+  
+<script src="/js/toc.js"></script>
 
-  document.addEventListener('pjax:error', e => {
-    if (e.request.status === 404) {
-      pjax.loadUrl('/404.html')
-    }
-  })
-})()</script><script defer data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="search" type="text"/></div></div><hr class="custom-hr"/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/c/font_4847823_upluhme7cv.js"></script><!-- hexo injector body_end end --></body></html>
+  
+<script src="/js/outdate.js"></script>
+
+
+<!-- Fancybox lightbox (post pages only) -->
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
+  
+  
+<script src="/js/lightbox.js"></script>
+
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'even629/even629.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'github-light';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', utterances_issue_term);
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+</body>
+</html>
