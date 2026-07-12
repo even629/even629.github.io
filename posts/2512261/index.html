@@ -1,40 +1,40 @@
 <!DOCTYPE html>
-<html lang=zh>
+<html lang=en>
 <head>
     <!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="本文介绍了SoC从上电到加载操作系统的完整启动流程，详细阐述了BootROM初始化硬件及通过Bootstrap Pin加载程序到内部SRAM的机制。针对内部SRAM容量有限的问题，文章进一步探讨了uboot重定位与SPL方案，并以Rockchip为例，解析了TPL负责系统硬件初始化、SPL负责加载uboot及trust镜像的职责分工。">
+    <meta name="description" content="This article introduces the complete boot process of an SoC from power-on to loading the operating system, detailing the BootROM&#39;s hardware initialization and the mechanism of loading programs into in">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Soc启动流程">
-<meta property="og:url" content="https://even629.com/posts/2512261/index.html">
+<meta property="og:title" content="SoC Boot Process">
+<meta property="og:url" content="https://even629.com/en/posts/2512261/index.html">
 <meta property="og:site_name" content="even629">
-<meta property="og:description" content="本文介绍了SoC从上电到加载操作系统的完整启动流程，详细阐述了BootROM初始化硬件及通过Bootstrap Pin加载程序到内部SRAM的机制。针对内部SRAM容量有限的问题，文章进一步探讨了uboot重定位与SPL方案，并以Rockchip为例，解析了TPL负责系统硬件初始化、SPL负责加载uboot及trust镜像的职责分工。">
-<meta property="og:locale" content="zh_CN">
+<meta property="og:description" content="This article introduces the complete boot process of an SoC from power-on to loading the operating system, detailing the BootROM&#39;s hardware initialization and the mechanism of loading programs into in">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230510212823113-1918630480.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230514232734556-1467299130.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230510214919955-766557863.png">
 <meta property="article:published_time" content="2025-12-26T07:25:13.000Z">
 <meta property="article:modified_time" content="2025-12-26T06:25:13.000Z">
 <meta property="article:author" content="even629">
-<meta property="article:tag" content="GNU">
 <meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230510212823113-1918630480.png">
     
     
       
         
-          <link rel="shortcut icon" href="/images/favicon.ico">
+          <link rel="shortcut icon" href="/en/images/favicon.ico">
         
       
       
       
     
     <!-- title -->
-    <title>Soc启动流程</title>
+    <title>SoC Boot Process</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -44,14 +44,14 @@
 
     <!-- styles -->
     
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/en/css/style.css">
 
     <!-- persian styles -->
     
     <!-- rss -->
     
     
-      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+      <link rel="alternate" href="/en/atom.xml" title="even629" type="application/atom+xml" />
     
 	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
 	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
@@ -69,52 +69,52 @@
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/2512261/">EN</a></li><!--
+       --><li><a href="/posts/2512261/">Zh-CN</a></li><!--
      -->
       </ul>
     </span>
     <br/>
     <span id="actions">
       <ul>
-        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Go to Bottom" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Back to Top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share Post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
-      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
-      <span id="i-top" class="info" style="display:none;">返回顶部</span>
-      <span id="i-share" class="info" style="display:none;">分享文章</span>
+      <span id="i-bottom" class="info" style="display:none;">Go to Bottom</span>
+      <span id="i-top" class="info" style="display:none;">Back to Top</span>
+      <span id="i-share" class="info" style="display:none;">Share Post</span>
     </span>
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2512261/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2512261/&text=Soc启动流程"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2512261/&is_video=false&description=Soc启动流程"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Soc启动流程&body=Check out this article: https://even629.com/posts/2512261/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2512261/&name=Soc启动流程&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2512261/&t=Soc启动流程"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/2512261/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/2512261/&text=SoC Boot Process"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/2512261/&is_video=false&description=SoC Boot Process"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SoC Boot Process&body=Check out this article: https://even629.com/en/posts/2512261/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/2512261/&name=SoC Boot Process&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/2512261/&t=SoC Boot Process"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -122,7 +122,7 @@
     
       <div id="toc">
         <span class="toc-percentage"></span>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BootROM"><span class="toc-text">BootROM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%A1%AC%E4%BB%B6"><span class="toc-text">初始化硬件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E7%A8%8B%E5%BA%8F%E5%88%B0SRAM"><span class="toc-text">加载程序到SRAM</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPL"><span class="toc-text">SPL</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9Auboot%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="toc-text">方案一：uboot重定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9ASPL"><span class="toc-text">方案二：SPL</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Rockchip%E5%BC%95%E5%AF%BC%E6%B5%81%E7%A8%8B"><span class="toc-text">Rockchip引导流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E9%98%B6%E6%AE%B5"><span class="toc-text">启动阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#idbloader-img"><span class="toc-text">idbloader.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-img"><span class="toc-text">u-boot.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-itb"><span class="toc-text">u-boot.itb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trust-img"><span class="toc-text">trust.img</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BootROM"><span class="toc-text">BootROM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Initialize-Hardware"><span class="toc-text">Initialize Hardware</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Load-Program-into-SRAM"><span class="toc-text">Load Program into SRAM</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPL"><span class="toc-text">SPL</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheme-1-uboot-relocation"><span class="toc-text">Scheme 1: uboot relocation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheme-2-SPL"><span class="toc-text">Scheme 2: SPL</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Rockchip-Boot-Flow"><span class="toc-text">Rockchip Boot Flow</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Boot-stage"><span class="toc-text">Boot stage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#idbloader-img"><span class="toc-text">idbloader.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-img"><span class="toc-text">u-boot.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-itb"><span class="toc-text">u-boot.itb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trust-img"><span class="toc-text">trust.img</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-text">References</span></a></li></ol>
       </div>
     
   </span>
@@ -134,11 +134,11 @@
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header>
     
-      <img class="post-cover" src="/images/linux_cover.webp" alt="Cover image for Soc启动流程" />
+      <img class="post-cover" src="/en/images/linux_cover.webp" alt="Cover image for SoC Boot Process" />
     
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        Soc启动流程
+        SoC Boot Process
     </h1>
 
 
@@ -161,14 +161,14 @@
       
     <div class="article-category">
         <i class="fa-solid fa-archive"></i>
-        <a class="category-link" href="/categories/Linux/">Linux</a>
+        <a class="category-link" href="/en/categories/Linux/">Linux</a>
     </div>
 
 
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/tags/Linux/" rel="tag">Linux</a>
+        <a class="p-category" href="/en/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/en/tags/Linux/" rel="tag">Linux</a>
     </div>
 
 
@@ -180,148 +180,148 @@
 
   <div class="content e-content" itemprop="articleBody">
     <hr>
-<details class="folding-tag" ><summary> 时间轴 </summary>
+<details class="folding-tag" ><summary> Timeline </summary>
             <div class='content'>
-            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-26</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>Timeline</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-26</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
             </div>
           </details>
 <blockquote>
-本文介绍了SoC从上电到加载操作系统的完整启动流程，详细阐述了BootROM初始化硬件及通过Bootstrap Pin加载程序到内部SRAM的机制。针对内部SRAM容量有限的问题，文章进一步探讨了uboot重定位与SPL方案，并以Rockchip为例，解析了TPL负责系统硬件初始化、SPL负责加载uboot及trust镜像的职责分工。
+This article introduces the complete boot process of an SoC from power-on to loading the operating system, detailing the BootROM's hardware initialization and the mechanism of loading programs into internal SRAM via Bootstrap Pins. Addressing the limited capacity of internal SRAM, it further discusses the uboot relocation and SPL scheme, and uses Rockchip as an example to analyze the division of responsibilities where TPL handles system hardware initialization and SPL loads the uboot and trust images.
 </blockquote>
 <hr>
 <h1 id="BootROM">BootROM</h1>
-<p>通常来说，SoC厂家都会做一个ROM在SoC的内部，这个ROM很小，里面固化了上电启动的代码（一经固化，永不能改，是芯片做的时候，做进去的）；这部分代码叫做BootROM，也叫作<strong>一级启动程序</strong>。</p>
-<p>芯片上电后先接管系统的是SoC厂家的BootROM，它要初始化硬件，然后加载程序到SRAM</p>
-<h2 id="初始化硬件">初始化硬件</h2>
+<p>Generally, SoC manufacturers embed a small ROM inside the SoC, which contains the power-on boot code (once solidified, it can never be changed, as it is built into the chip during manufacturing); this code is called BootROM, also known as<strong>Primary Boot Program</strong>。</p>
+<p>After power-on, the SoC manufacturer’s BootROM takes control of the system first. It initializes the hardware and then loads the program into SRAM.</p>
+<h2 id="Initialize-Hardware">Initialize Hardware</h2>
 <ul>
-<li>CPU的配置</li>
-<li>关闭看门狗</li>
-<li>初始化时钟</li>
-<li>初始化一些外设（比如 USB Controller、MMC Controller，Nand Controller等）；</li>
+<li>CPU Configuration</li>
+<li>Disable Watchdog</li>
+<li>Initialize Clock</li>
+<li>Initialize some peripherals (such as USB Controller, MMC Controller, Nand Controller, etc.);</li>
 </ul>
-<h2 id="加载程序到SRAM">加载程序到SRAM</h2>
+<h2 id="Load-Program-into-SRAM">Load Program into SRAM</h2>
 <blockquote>
-<p>一款新的SoC一般会在芯片<strong>外挂一些存储设备</strong>（eMMC、Nand、Nor、SDCard等）和内存（SDRAM、DDR等）。</p>
-<p>然后我们需要烧写程序让CPU执行，烧写程序，其实就是将<strong>可执行的二进制文件</strong>写到<strong>外部的存储设备</strong>上（<strong>eMMC、Nand、SD</strong>等）。系统上电启动的时候，会<strong>将他们读到内存中执行</strong>。</p>
+<p>A new SoC typically has<strong>external storage devices attached</strong>(eMMC, Nand, Nor, SDCard, etc.) and memory (SDRAM, DDR, etc.).</p>
+<p>Then we need to burn a program for the CPU to execute. Burning a program essentially means writing the<strong>executable binary file</strong>to<strong>an external storage device</strong>(such as<strong>eMMC、Nand、SD</strong>etc.). When the system powers on, it will<strong>read them into memory for execution</strong>。</p>
 </blockquote>
-<p>上电后先接管系统的是SoC厂家的BootROM，其它可执行的程序（u-boot、Kernel）都放（烧写）到了外部存储器上；那么BootROM的代码除了去初始化硬件环境以外，还需要去外部存储器上面，将接下来可执行的程序读到内存来执行。</p>
-<div class="tip info"><p>既然是读到内存执行，那么这个内存可以不可以是我们板载的 DDR呢？</p>
+<p>After power-on, the first to take over the system is the SoC manufacturer’s BootROM. Other executable programs (u-boot, Kernel) are placed (burned) onto external storage. Therefore, besides initializing the hardware environment, the BootROM code also needs to read the next executable program from external storage into memory for execution.</p>
+<div class="tip info"><p>Since it is read into memory for execution, can this memory be our onboard DDR?</p>
 </div>
-<p>理论上是可以的，但是，SoC厂家设计的DDR控制器一般会支持很多种类型的DDR设备，并且会提供兼容性列表，SoC厂家怎么可能知道用户PCB上到底用了哪种内存呢？</p>
-<p>所以，直接把外部可执行程序读到DDR显然是不太友好的，因此一般来说，<strong>SoC都会做一个内部的小容量的SRAM</strong> ，<strong>BootROM将外部的可执行程序从外部存储器中读出来，放到SRAM去执行</strong>；</p>
-<div class="tip info"><p>那么 BootROM从具体哪个存储器读出二进制文件呢？</p>
+<p>Theoretically, yes, but the DDR controller designed by the SoC manufacturer generally supports many types of DDR devices and provides a compatibility list. How could the SoC manufacturer possibly know which specific memory is used on the user’s PCB?</p>
+<p>Therefore, directly reading the external executable program into DDR is obviously not very friendly. So generally speaking,<strong>the SoC will have an internal small-capacity SRAM</strong> ，<strong>The BootROM reads the external executable program from external storage and places it into SRAM for execution</strong>；</p>
+<div class="tip info"><p>So, from which specific storage device does the BootROM read the binary file?</p>
 </div>
-<p>SoC厂家一般会支持多种启动方式，比如：</p>
+<p>SoC manufacturers generally support multiple boot methods, such as:</p>
 <ul>
-<li>从eMMC读取</li>
-<li>从SDCard读取</li>
-<li>从Nand Flash读取等等</li>
+<li>Reading from eMMC</li>
+<li>Reading from SDCard</li>
+<li>Reading from Nand Flash, etc.</li>
 </ul>
-<p>上电的时候，需要告诉它，它需要从什么样的外设来读取后面的启动二进制文件；</p>
+<p>When powered on, it needs to be told which peripheral to use to read the subsequent boot binary file;</p>
 <blockquote>
-<p>一般的设计思路是，做一组Bootstrap Pin，上电的时候BootROM去采集这几个IO的电平，来确认要从什么样的外部存储器来加载后续的可执行文件；比如2 个 IO，2’b00 表示从Nand启动，2’b01表示从eMMC启动，2’b10 表示从SDCard启动等等；</p>
-<p>当BootROM读到这些值后，就会去初始化对应的外设，然后来读取后面要执行的代码；这些IO一般来说，会做成板载的拨码开关，用于调整芯片的启动方式；</p>
+<p>The typical design approach is to have a set of Bootstrap Pins. When powered on, the BootROM samples the levels of these IOs to determine which external memory to load the subsequent executable file from. For example, with 2 IOs, 2’b00 indicates booting from Nand, 2’b01 indicates booting from eMMC, 2’b10 indicates booting from SDCard, etc.;</p>
+<p>After the BootROM reads these values, it initializes the corresponding peripheral and then reads the code to be executed later. These IOs are generally implemented as onboard DIP switches to adjust the chip’s boot method;</p>
 </blockquote>
-<div class="tip warning faa-horizontal animated-hover"><p>这里，读取烧写的二进制的时候，需要注意一些细节，比如SoC厂家告诉你，你需要先把SDCard初始化称为某种文件系统，然后把东西放进去才有效之类的；因为<strong>文件系统是组织文件的方式</strong>，并不是裸分区；你<strong>按照A文件系统的方式放进去，然后SoC的BootROM也按照A文件系统的方式读出来，才能够达成一致</strong>；</p>
+<div class="tip warning faa-horizontal animated-hover"><p>Here, when reading the burned binary, some details need attention. For example, the SoC manufacturer tells you that you need to initialize the SDCard as a certain file system and then put the content in for it to work, because<strong>a file system is a way to organize files</strong>, not a raw partition; you<strong>need to put it in according to file system A, and the SoC’s BootROM reads it out according to file system A, so that they can be consistent</strong>；</p>
 </div>
 <h1 id="SPL">SPL</h1>
-<p>芯片上电后BootROM会根据Bootstrap Pin去确定从某个存储器来读可执行的二进制文件到SRAM并执行；理论上来说，这个二进制文件就可以是我们的<code>u-boot.bin</code>文件了；也就是BootROM直接加载<code>u-boot.bin</code>；</p>
-<p>理论上是这样的，但是这里有一个问题，就是SRAM很贵，一般来说，SoC的片上SRAM都不会太大，一般4KB、8KB、16KB…256KB不等；但是呢，u-boot 编译出来却很大，好几百KB，放不下。</p>
-<p>放不下怎么办？有两种办法：</p>
+<p>After the chip is powered on, the BootROM determines from which memory to read an executable binary file into SRAM and execute it based on the Bootstrap Pins. Theoretically, this binary file could be our<code>u-boot.bin</code>file; that is, the BootROM directly loads<code>u-boot.bin</code>；</p>
+<p>Theoretically, this is the case, but there is a problem: SRAM is expensive. Generally, the on-chip SRAM of SoCs is not very large, typically ranging from 4KB, 8KB, 16KB… to 256KB. However, the compiled u-boot is very large, several hundred KB, and cannot fit.</p>
+<p>What to do if it doesn’t fit? There are two methods:</p>
 <ul>
-<li>假设片内SRAM为4KB，<strong>uboot的前4KB程序实现uboot的重定位</strong>，即<strong>将uboot拷贝到SDRAM中运行</strong>；</li>
-<li>做一个小一点的boot程序，<strong>先让BootROM加载这个小的程序，后面再由这个小boot去加载uboot；</strong></li>
+<li>Assume the on-chip SRAM is 4KB,<strong>the first 4KB program of uboot implements the relocation of uboot</strong>, that is,<strong>copy uboot to SDRAM for execution</strong>；</li>
+<li>Create a smaller boot program,<strong>first let BootROM load this small program, and then this small boot loads uboot;</strong></li>
 </ul>
-<h2 id="方案一：uboot重定位">方案一：uboot重定位</h2>
-<p>比如，我们的uboot有400KB，SRAM有4KB，外部SDRAM有64MB；</p>
-<p>如果使用第一种方案的话，uboot的前面4KB被加载进入SRAM执行，uboot被截断，我们就需要<strong>保证在uboot的前4KB代码，把板载的SDRAM初始化好，把整个uboot拷贝到SDRAM，然后跳转到SDRAM执行</strong>；</p>
-<h2 id="方案二：SPL">方案二：SPL</h2>
-<p>第二种方案的话，我们做一个小的uboot ，这个uboot就叫做<strong>SPL</strong>（<strong>Secondary Program Loader</strong>），它很小很小（小于SRAM大小），它<strong>先被BootROM加载到SRAM运行</strong>，SPL做的事情最主要的就是要<strong>初始化内存控制器，然后将真正的大u-boot从外部存储器读取到SDRAM中，然后跳转到大uboot</strong>。</p>
-<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230510212823113-1918630480.png" alt="启动流程"><figcaption>启动流程</figcaption></figure></p>
-<p>如上图所示：</p>
+<h2 id="Scheme-1-uboot-relocation">Scheme 1: uboot relocation</h2>
+<p>For example, our uboot is 400KB, SRAM is 4KB, and external SDRAM is 64MB;</p>
+<p>If using the first scheme, the first 4KB of uboot is loaded into SRAM for execution, and uboot is truncated, we need to<strong>ensure that within the first 4KB code of uboot, the onboard SDRAM is initialized, the entire uboot is copied to SDRAM, and then jump to SDRAM for execution</strong>；</p>
+<h2 id="Scheme-2-SPL">Scheme 2: SPL</h2>
+<p>For the second scheme, we make a small uboot, which is called<strong>SPL</strong>（<strong>Secondary Program Loader</strong>), it is very very small (smaller than SRAM size), it<strong>is first loaded into SRAM by BootROM for execution</strong>, and the main thing SPL does is to<strong>Initialize the memory controller, then read the actual large u-boot from external storage into SDRAM, and then jump to the large u-boot.</strong>。</p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230510212823113-1918630480.png" alt="Boot Process"><figcaption>Boot Process</figcaption></figure></p>
+<p>As shown in the figure above:</p>
 <ol start="0">
-<li>上电后，BootROM开始执行，初始化时钟，关闭看门狗，关Cache，关中断等等，根据Bootstrap Pin来确定启动设备，初始化外设；</li>
-<li>使用外设驱动，从存储器读取SPL；</li>
+<li>After power-on, BootROM starts executing, initializes the clock, disables the watchdog, disables cache, disables interrupts, etc., determines the boot device based on the Bootstrap Pin, and initializes peripherals;</li>
+<li>Use the peripheral driver to read the SPL from memory;</li>
 </ol>
-<p>---------------- 以上部分是SoC厂家的事情，下面是用户要做的事情 ----------------</p>
+<p>---------------- The above part is the responsibility of the SoC manufacturer, the following is what the user needs to do ----------------</p>
 <ol start="2">
-<li>SPL被读到SRAM 执行，此刻，控制权以及移交到我们的SPL 了；</li>
-<li>SPL初始化外部SDRAM；</li>
-<li>SPL使用驱动从外部存储器读取uboot并放到SDRAM；</li>
-<li>跳转到SDRAM中的uboot执行；</li>
-<li>加载内核；</li>
+<li>The SPL is read into SRAM for execution; at this point, control has been transferred to our SPL;</li>
+<li>The SPL initializes the external SDRAM;</li>
+<li>The SPL uses the driver to read u-boot from external storage and place it into SDRAM;</li>
+<li>Jump to the u-boot in SDRAM for execution;</li>
+<li>Load the kernel;</li>
 </ol>
 <blockquote>
-<p>实际情况中，还需注意很多问题：</p>
+<p>In practice, many issues need to be considered:</p>
 <ul>
-<li>编译阶段的链接地址，是否需要地址无关？</li>
-<li>SPL的代码和uboot的代码是否有重合的地方？如果有，是否意味着SPL执行过的，跳转到uboot又要在执行一次？</li>
-<li>具体情况下，需要配置哪些硬件？怎么配置？</li>
+<li>Does the link address during compilation need to be position-independent?</li>
+<li>Is there any overlap between the SPL code and the u-boot code? If so, does it mean that what the SPL has executed will be executed again when jumping to u-boot?</li>
+<li>In specific cases, which hardware needs to be configured? How to configure it?</li>
 </ul>
 </blockquote>
-<h1 id="Rockchip引导流程">Rockchip引导流程</h1>
-<p>针对不同的解决方案，Rockchip提供了两种不同的启动加载程序方法，其步骤和生成的镜像文件也是完全不同的。</p>
+<h1 id="Rockchip-Boot-Flow">Rockchip Boot Flow</h1>
+<p>For different solutions, Rockchip provides two different bootloader methods, with completely different steps and generated image files.</p>
 <ul>
-<li><strong>TPL/SPL加载</strong>：使用Rockchip官方提供的TPL/SPL就是我们上面说的小的uboot），该方式完全开源；</li>
-<li><strong>官方固件加载</strong>：使用Rockchip idbLoader，它由<code>Rockchip rkbin project</code>的<code>Rockchip ddr init bin</code>和<code>miniloader bin</code>组合而成，该方式不开源；</li>
+<li><strong>TPL/SPL Loading</strong>: Using the TPL/SPL provided by Rockchip (the small U-Boot mentioned above), this method is fully open-source;</li>
+<li><strong>Official Firmware Loading</strong>: Using Rockchip idbLoader, which consists of<code>Rockchip rkbin project</code>’s<code>Rockchip ddr init bin</code>and<code>miniloader bin</code>combined, this method is not open-source;</li>
 </ul>
-<p>上面我们介绍了SPL，那什么是TPL？实际上将我们上面所说的<strong>SPL初始化SDRAM等硬件工作的部分独立出去，就是TPL</strong>。那么我们总结一下：</p>
+<p>We introduced SPL above, so what is TPL? Actually, it separates the part of<strong>the SPL that initializes hardware like SDRAM, and that independent part is TPL</strong>. So let’s summarize:</p>
 <ul>
-<li><strong>TPL</strong>是<strong>Targer Program Loader</strong>，就是<strong>芯片级的初始化过程</strong>，这个时候的代码都是基于芯片平台的部分，它在启动过程中进行DDR初始化和一些其他的系统配置，以便后续的SPL能够正确地运行；</li>
-<li><strong>SPL</strong>是<strong>Secondary Program Loader</strong>，它从存储设备中<strong>读取trust（如ATF/OP-TEE）和uboot二进制文件，将它们加载到系统内存中并运行它们，进而启动完整的操作系统</strong>；</li>
+<li><strong>TPL</strong>is<strong>Targer Program Loader</strong>, that is<strong>the chip-level initialization process</strong>At this point, the code is all based on the chip platform part. It performs DDR initialization and some other system configurations during the boot process, so that the subsequent SPL can run correctly;</li>
+<li><strong>SPL</strong>is<strong>Secondary Program Loader</strong>, it reads from the storage device<strong>reads the trust (such as ATF/OP-TEE) and uboot binary files, loads them into system memory, and runs them, thereby booting the complete operating system</strong>；</li>
 </ul>
 <blockquote>
-<p>TPL和SPL的区别在于它们的职责不同。TPL主要负责初始化系统硬件，而SPL负责加载和运行其它软件组件，如trust和uboot。</p>
-<p>此外，在一些特殊情况下，如加密启动或安全启动模式下，TPL还可能执行其他额外的任务。</p>
+<p>The difference between TPL and SPL lies in their different responsibilities. TPL is mainly responsible for initializing system hardware, while SPL is responsible for loading and running other software components, such as trust and uboot.</p>
+<p>In addition, in some special cases, such as encrypted boot or secure boot mode, TPL may also perform other additional tasks.</p>
 </blockquote>
-<h2 id="启动阶段">启动阶段</h2>
+<h2 id="Boot-stage">Boot stage</h2>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">+--------+----------------+----------+-------------+---------+</span><br><span class="line">| Boot   | Terminology #1 | Actual   | Rockchip    | Image   |</span><br><span class="line">| stage  |                | program  |  Image      | Location|</span><br><span class="line">| number |                | name     |   Name      | (sector)|</span><br><span class="line">+--------+----------------+----------+-------------+---------+</span><br><span class="line">| 1      |  Primary       | ROM code | BootROM     |         |</span><br><span class="line">|        |  Program       |          |             |         |</span><br><span class="line">|        |  Loader        |          |             |         |</span><br><span class="line">|        |                |          |             |         |</span><br><span class="line">| 2      |  Secondary     | U-Boot   |idbloader.img| 0x40    | pre-loader</span><br><span class="line">|        |  Program       | TPL/SPL  |             |         |</span><br><span class="line">|        |  Loader (SPL)  |          |             |         |</span><br><span class="line">|        |                |          |             |         |</span><br><span class="line">| 3      |  -             | U-Boot   | u-boot.itb  | 0x4000  | including u-boot and atf</span><br><span class="line">|        |                |          | uboot.img   |         | only used with miniloader</span><br><span class="line">|        |                |          |             |         |</span><br><span class="line">|        |                | ATF/TEE  | trust.img   | 0x6000  | only used with miniloader</span><br><span class="line">|        |                |          |             |         |</span><br><span class="line">| 4      |  -             | kernel   | boot.img    | 0x8000  |</span><br><span class="line">|        |                |          |             |         |</span><br><span class="line">| 5      |  -             | rootfs   | rootfs.img  | 0x40000 |</span><br><span class="line">+--------+----------------+----------+-------------+---------+</span><br></pre></td></tr></table></figure>
-<p>启动阶段涉及到了多个镜像文件：</p>
+<p>The boot stage involves multiple image files:</p>
 <ul>
-<li>阶段一中的BootROM这个是SoC厂商提供的；</li>
-<li>阶段二方式需要提供一个<code>idbloader.img</code>；</li>
-<li>阶段三实际上就是uboot的镜像文件了，这里有两种: <strong>uboot.img（还需要搭配trust.img）<strong>和</strong>u-boot.itb（这个是因为它已经把ATF打包进去了）</strong>；这两个文件里面除了都包含u-boot.bin原始二进制文件，又放了点其他东西，可以被<code>idbloader.img</code>识别，然后加载；</li>
-<li>阶段四和阶段五是内核镜像和根文件系统；</li>
+<li>The BootROM in stage one is provided by the SoC manufacturer;</li>
+<li>Stage two method requires providing a<code>idbloader.img</code>；</li>
+<li>Stage three is actually the uboot image file. There are two types here:<strong>uboot.img (also needs to be paired with trust.img)<strong>and</strong>u-boot.itb (this is because it has already packaged ATF into it)</strong>; besides both containing the original u-boot.bin binary file, these two files also contain some other things, which can be<code>idbloader.img</code>Identify, then load;</li>
+<li>Stage four and stage five are the kernel image and root filesystem;</li>
 </ul>
 <blockquote>
-<p>当我们讨论从eMMC/SD/U盘/网络启动时，它们涉及到不同的概念：</p>
+<p>When we discuss booting from eMMC/SD/USB drive/network, they involve different concepts:</p>
 <ul>
-<li>第一阶段始终在BootROM中，它加载第二阶段并可能加载第三阶段（当启用SPL_BACK_TO_BROM选项时）；</li>
-<li>从SPI闪存启动意味着第二阶段和第三阶段固件（仅限SPL和U-Boot）在SPI闪存中，第四/五阶段在其他位置；</li>
-<li>从eMMC启动意味着所有固件（包括第二、三、四、五阶段）都在eMMC中；</li>
-<li>从SD Card启动意味着所有固件（包括第二、三、四、五阶段）都在SD Card中；</li>
-<li>从U盘启动意味着第四和第五阶段的固件（不包括SPL和U-Boot）在磁盘中，可选地仅包括第五阶段；</li>
-<li>从Net/TFTP启动意味着第四和第五阶段的固件（不包括SPL和U-Boot）在网络上。</li>
+<li>The first stage is always in BootROM, which loads the second stage and may load the third stage (when the SPL_BACK_TO_BROM option is enabled);</li>
+<li>Booting from SPI flash means the second and third stage firmware (only SPL and U-Boot) are in SPI flash, while the fourth/fifth stages are elsewhere;</li>
+<li>Booting from eMMC means all firmware (including stages two, three, four, and five) are in eMMC;</li>
+<li>Booting from SD Card means all firmware (including stages two, three, four, and five) are in the SD Card;</li>
+<li>Booting from USB drive means the fourth and fifth stage firmware (excluding SPL and U-Boot) are on the disk, optionally including only the fifth stage;</li>
+<li>Booting from Net/TFTP means the fourth and fifth stage firmware (excluding SPL and U-Boot) are on the network.</li>
 </ul>
 </blockquote>
 <h3 id="idbloader-img">idbloader.img</h3>
-<p>idbloader.img文件是一个Rockchip格式的预加载程序，在SoC启动时工作，它包含：</p>
+<p>The idbloader.img file is a Rockchip-format preloader that works when the SoC boots, and it contains:</p>
 <ul>
-<li>由Rockchip BootROM知道的IDBlock 头；</li>
-<li>DDR初始化程序，由BootROM加载到SRAM，运行在SRAM内部；</li>
-<li>下一级加载程序，由BootROM加载并运行在DDR上；</li>
+<li>The IDBlock header known by the Rockchip BootROM;</li>
+<li>The DDR initialization program, loaded into SRAM by BootROM and running inside SRAM;</li>
+<li>The next-stage loader, loaded by BootROM and running on DDR;</li>
 </ul>
 <h3 id="u-boot-img">u-boot.img</h3>
-<p>u-boot.bin是uboot源码编译后生成的原始二进制映像，可以直接烧录到设备的闪存中。而u-boot.img则是通过<code>mkimage</code>工具在u-boot.bin基础上增加了一个头部信息，这个头部信息可能也包括一些额外的数据，例如启动参数和内核映像地址等。</p>
-<p>因此，通过<strong>使用u-boot.img而不是u-boot.bin</strong>，可以使引导ROM更容易地识别uboot映像，并更好地指导uboot在设备上正确启动。</p>
+<p>u-boot.bin is the raw binary image generated after compiling the U-Boot source code, which can be directly flashed into the device’s flash memory. Meanwhile, u-boot.img is generated by<code>mkimage</code>The tool adds a header to the u-boot.bin, which may also include additional data such as boot parameters and kernel image addresses.</p>
+<p>Therefore, by<strong>using u-boot.img instead of u-boot.bin</strong>, the boot ROM can more easily recognize the U-Boot image and better guide U-Boot to boot correctly on the device.</p>
 <h3 id="u-boot-itb">u-boot.itb</h3>
-<p>u-boot.itb实际上是u-boot.img的另一个变种，也是通过mkimage构建出来的，里面除了u-boot.dtb和u-boot-nodtb.bin这两个uboot源码编译出来的文件之外，还包含了bl31.elf、bl32.bin、tee.bin等ARM trust固件。其中bl31.elf是必须要有的，bl32.bin、tee.bin是可选的，可以没有。</p>
+<p>u-boot.itb is actually another variant of u-boot.img, also built with mkimage. In addition to the two files compiled from U-Boot source code, u-boot.dtb and u-boot-nodtb.bin, it also includes ARM Trusted Firmware such as bl31.elf, bl32.bin, and tee.bin. Among these, bl31.elf is mandatory, while bl32.bin and tee.bin are optional and can be omitted.</p>
 <h3 id="trust-img">trust.img</h3>
-<p>ARM64的SOC还需要编译<strong>ATF (ARM Trust Firmware)</strong>，<strong>ATF主要负责在启动uboot之前把CPU从安全的EL3切换到EL2</strong>，<strong>然后跳转到uboot，并且在内核启动后负责启动其他的CPU</strong>。</p>
-<p>ATF将系统启动从最底层进行了完整的统一划分，将secure monitor的功能放到了bl31中进行，这样当系统完全启动之后，在CA或者TEE OS中触发了smc或者是其他的中断之后，首先是遍历注册到bl31中的对应的service来判定具体的handle，这样可以对系统所有的关键smc或者是中断操作做统一的管理和分配。ATF的code boot整个启动过程框图如下：</p>
+<p>ARM64 SoCs also need to compile<strong>ATF (ARM Trust Firmware)</strong>，<strong>ATF is mainly responsible for switching the CPU from secure EL3 to EL2 before booting U-Boot</strong>，<strong>then jumping to U-Boot, and after the kernel starts, it is responsible for booting other CPUs</strong>。</p>
+<p>ATF completely and uniformly divides the system boot from the lowest level, placing the secure monitor functionality in bl31. Thus, after the system fully boots, when an SMC or other interrupt is triggered in the CA or TEE OS, it first traverses the services registered in bl31 to determine the specific handler. This allows unified management and allocation of all critical SMC or interrupt operations in the system. The block diagram of the entire ATF code boot process is as follows:</p>
 <p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230514232734556-1467299130.png" alt="ATF"><figcaption>ATF</figcaption></figure></p>
-<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230510214919955-766557863.png" alt="Rockchip提供的外部uboot加载的流程图"><figcaption>Rockchip提供的外部uboot加载的流程图</figcaption></figure></p>
-<p>如上图所示：</p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/1328274-20230510214919955-766557863.png" alt="Flowchart of external U-Boot loading provided by Rockchip"><figcaption>Flowchart of external U-Boot loading provided by Rockchip</figcaption></figure></p>
+<p>As shown in the figure above:</p>
 <ul>
-<li>引导流程1是典型的使用Rockchip miniloader的Rockchip引导流程；</li>
-<li>引导流程2用于大多数SoC，使用U-Boot TPL进行DDR初始化，使用SPL加载加载u-boot.itb文件；</li>
+<li>Boot flow 1 is the typical Rockchip boot flow using the Rockchip miniloader;</li>
+<li>Boot flow 2 is used for most SoCs, using U-Boot TPL for DDR initialization and SPL to load the u-boot.itb file;</li>
 </ul>
-<p>注1：如果loader1具有多个阶段，则程序将返回到BootROM，BootROM将载入并运行到下一个阶段。例如，如果loader1是TPL和SPL，则BootROM将首先运行到TPL，TPL初始化DDR并返回到BootROM，BootROM然后将加载并运行到SPL。</p>
-<p>注2：如果启用了trust，在安全模式（armv8中的EL3）下，loader1需要同时加载trust和U-Boot，然后运行到trust中，trust在非安全模式（armv8中的EL2）下进行初始化，并运行到U-Boot。</p>
-<p>注3：对于trust（在trust.img或u-boot.itb中），armv7仅有一个带或不带TA的tee.bin，armv8具有bl31.elf并且可选包含bl32。</p>
-<p>注4：在boot.img中，内容可以是Linux的zImage和其dtb，可以选择grub.efi，也可以是AOSP boot.img，ramdisk可选。</p>
-<h1 id="参考文献">参考文献</h1>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="Rockchip RK3399 - 引导流程和准备工作 " target="_blank" rel="noopener" href="https://www.cnblogs.com/zyly/p/17380243.html">Rockchip RK3399 - 引导流程和准备工作 </a></div>
+<p>Note 1: If loader1 has multiple stages, the program returns to BootROM, which loads and runs the next stage. For example, if loader1 is TPL and SPL, BootROM first runs to TPL, TPL initializes DDR and returns to BootROM, then BootROM loads and runs SPL.</p>
+<p>Note 2: If trust is enabled, in secure mode (EL3 in ARMv8), loader1 needs to load both trust and U-Boot, then run to trust. Trust initializes in non-secure mode (EL2 in ARMv8) and runs to U-Boot.</p>
+<p>Note 3: For trust (in trust.img or u-boot.itb), armv7 only has a tee.bin with or without TA, while armv8 has bl31.elf and optionally includes bl32.</p>
+<p>Note 4: In boot.img, the content can be Linux’s zImage and its dtb, optionally grub.efi, or it can be an AOSP boot.img, with ramdisk optional.</p>
+<h1 id="References">References</h1>
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="Rockchip RK3399 - Boot Flow and Preparation " target="_blank" rel="noopener" href="https://www.cnblogs.com/zyly/p/17380243.html">Rockchip RK3399 - Boot Flow and Preparation </a></div>
 
   </div>
 </article>
@@ -329,7 +329,7 @@
 
     <div class="blog-post-comments">
         <div id="utterances_thread">
-            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
         </div>
     </div>
 
@@ -341,17 +341,17 @@
     <div id="nav-footer" style="display: none">
       <ul>
         
-          <li><a href="/">首页</a></li>
+          <li><a href="/en/">Home</a></li>
         
-          <li><a href="/archives/">归档</a></li>
+          <li><a href="/en/archives/">Archives</a></li>
         
-          <li><a href="/tags/">标签</a></li>
+          <li><a href="/en/tags/">Tags</a></li>
         
-          <li><a href="/categories/">分类</a></li>
+          <li><a href="/en/categories/">Categories</a></li>
         
-          <li><a href="/search/">搜索</a></li>
+          <li><a href="/en/search/">Search</a></li>
         
-          <li><a href="/en/">EN</a></li>
+          <li><a href="/en/">Zh-CN</a></li>
         
       </ul>
     </div>
@@ -359,34 +359,34 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BootROM"><span class="toc-text">BootROM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%A1%AC%E4%BB%B6"><span class="toc-text">初始化硬件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E7%A8%8B%E5%BA%8F%E5%88%B0SRAM"><span class="toc-text">加载程序到SRAM</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPL"><span class="toc-text">SPL</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9Auboot%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="toc-text">方案一：uboot重定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9ASPL"><span class="toc-text">方案二：SPL</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Rockchip%E5%BC%95%E5%AF%BC%E6%B5%81%E7%A8%8B"><span class="toc-text">Rockchip引导流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E9%98%B6%E6%AE%B5"><span class="toc-text">启动阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#idbloader-img"><span class="toc-text">idbloader.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-img"><span class="toc-text">u-boot.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-itb"><span class="toc-text">u-boot.itb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trust-img"><span class="toc-text">trust.img</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BootROM"><span class="toc-text">BootROM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Initialize-Hardware"><span class="toc-text">Initialize Hardware</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Load-Program-into-SRAM"><span class="toc-text">Load Program into SRAM</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SPL"><span class="toc-text">SPL</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheme-1-uboot-relocation"><span class="toc-text">Scheme 1: uboot relocation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheme-2-SPL"><span class="toc-text">Scheme 2: SPL</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Rockchip-Boot-Flow"><span class="toc-text">Rockchip Boot Flow</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Boot-stage"><span class="toc-text">Boot stage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#idbloader-img"><span class="toc-text">idbloader.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-img"><span class="toc-text">u-boot.img</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#u-boot-itb"><span class="toc-text">u-boot.itb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trust-img"><span class="toc-text">trust.img</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-text">References</span></a></li></ol>
       </div>
     
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2512261/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2512261/&text=Soc启动流程"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2512261/&is_video=false&description=Soc启动流程"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Soc启动流程&body=Check out this article: https://even629.com/posts/2512261/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2512261/&title=Soc启动流程"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2512261/&name=Soc启动流程&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2512261/&t=Soc启动流程"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/2512261/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/2512261/&text=SoC Boot Process"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/2512261/&is_video=false&description=SoC Boot Process"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SoC Boot Process&body=Check out this article: https://even629.com/en/posts/2512261/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/2512261/&title=SoC Boot Process"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/2512261/&name=SoC Boot Process&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/2512261/&t=SoC Boot Process"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
 
     <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
         
-          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
         
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
     </div>
 
   </div>
@@ -405,17 +405,17 @@
     <nav>
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/2512261/">EN</a></li><!--
+       --><li><a href="/posts/2512261/">Zh-CN</a></li><!--
      -->
       </ul>
     </nav>
@@ -429,21 +429,21 @@
  
   <link
     rel="preload"
-    href="/lib/font-awesome/css/all.min.css"
+    href="/en/lib/font-awesome/css/all.min.css"
     as="style"
     onload="this.onload=null;this.rel='stylesheet'"
   />
   <noscript
     ><link
       rel="stylesheet"
-      href="/lib/font-awesome/css/all.min.css"
+      href="/en/lib/font-awesome/css/all.min.css"
   /></noscript>
 
 
     <!-- jquery -->
 
   
-<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/en/lib/jquery/jquery.min.js"></script>
 
 
 
@@ -453,13 +453,13 @@
 
   
     
-<script src="/lib/clipboard/clipboard.min.js"></script>
+<script src="/en/lib/clipboard/clipboard.min.js"></script>
 
   
   <script type="text/javascript">
   $(function() {
     // copy-btn HTML
-    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
     btn += '<i class="fa-regular fa-clone"></i>';
     btn += '</span>';
     // mount it!
@@ -470,24 +470,24 @@
       }
     });
     clip.on('success', function(e) {
-      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.trigger.setAttribute('aria-label', "Copied!");
       e.clearSelection();
     })
   })
   </script>
 
 
-<script src="/js/main.js"></script>
+<script src="/en/js/main.js"></script>
 
 
-<script src="/js/tabs.js"></script>
+<script src="/en/js/tabs.js"></script>
 
 
   
-<script src="/js/toc.js"></script>
+<script src="/en/js/toc.js"></script>
 
   
-<script src="/js/outdate.js"></script>
+<script src="/en/js/outdate.js"></script>
 
 
 <!-- Fancybox lightbox (post pages only) -->
@@ -496,7 +496,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
   
   
-<script src="/js/lightbox.js"></script>
+<script src="/en/js/lightbox.js"></script>
 
 
 <!-- search -->

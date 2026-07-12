@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang=zh>
+<html lang=en>
 <head>
     <!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="本文介绍了PMOS和NMOS的基本概念、物理结构及工作特性，详细说明了源极、漏极和栅极的定义，并对比了NMOS与PMOS在电压控制方式、电流流向、适用开关类型以及半导体衬底与掺杂结构上的差异。">
+    <meta name="description" content="This article introduces the basic concepts, physical structures, and operating characteristics of PMOS and NMOS, details the definitions of source, drain, and gate, and compares the differences betwee">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PMOS和NMOS">
-<meta property="og:url" content="https://even629.com/posts/2512263/index.html">
+<meta property="og:title" content="PMOS and NMOS">
+<meta property="og:url" content="https://even629.com/en/posts/2512263/index.html">
 <meta property="og:site_name" content="even629">
-<meta property="og:description" content="本文介绍了PMOS和NMOS的基本概念、物理结构及工作特性，详细说明了源极、漏极和栅极的定义，并对比了NMOS与PMOS在电压控制方式、电流流向、适用开关类型以及半导体衬底与掺杂结构上的差异。">
-<meta property="og:locale" content="zh_CN">
+<meta property="og:description" content="This article introduces the basic concepts, physical structures, and operating characteristics of PMOS and NMOS, details the definitions of source, drain, and gate, and compares the differences betwee">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/B68BA58240AACE9D805F6CD54DCD1DC9.jpg">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/2C840CC504D1205278CB5DA4E33DD8D2.jpg">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/wKgZO2fROIaAOEqeAABoCh39dwE236.jpg">
@@ -27,14 +27,14 @@
     
       
         
-          <link rel="shortcut icon" href="/images/favicon.ico">
+          <link rel="shortcut icon" href="/en/images/favicon.ico">
         
       
       
       
     
     <!-- title -->
-    <title>PMOS和NMOS</title>
+    <title>PMOS and NMOS</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -44,14 +44,14 @@
 
     <!-- styles -->
     
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/en/css/style.css">
 
     <!-- persian styles -->
     
     <!-- rss -->
     
     
-      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+      <link rel="alternate" href="/en/atom.xml" title="even629" type="application/atom+xml" />
     
 	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
 	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
@@ -69,52 +69,52 @@
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/2512263/">EN</a></li><!--
+       --><li><a href="/posts/2512263/">Zh-CN</a></li><!--
      -->
       </ul>
     </span>
     <br/>
     <span id="actions">
       <ul>
-        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Go to Bottom" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Back to Top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share Post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
-      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
-      <span id="i-top" class="info" style="display:none;">返回顶部</span>
-      <span id="i-share" class="info" style="display:none;">分享文章</span>
+      <span id="i-bottom" class="info" style="display:none;">Go to Bottom</span>
+      <span id="i-top" class="info" style="display:none;">Back to Top</span>
+      <span id="i-share" class="info" style="display:none;">Share Post</span>
     </span>
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2512263/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2512263/&text=PMOS和NMOS"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2512263/&is_video=false&description=PMOS和NMOS"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=PMOS和NMOS&body=Check out this article: https://even629.com/posts/2512263/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2512263/&name=PMOS和NMOS&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2512263/&t=PMOS和NMOS"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/2512263/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/2512263/&text=PMOS and NMOS"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/2512263/&is_video=false&description=PMOS and NMOS"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=PMOS and NMOS&body=Check out this article: https://even629.com/en/posts/2512263/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/2512263/&name=PMOS and NMOS&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/2512263/&t=PMOS and NMOS"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -122,7 +122,7 @@
     
       <div id="toc">
         <span class="toc-percentage"></span>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PMOS-%E4%B8%8E-NMOS"><span class="toc-text">PMOS 与 NMOS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PMOS-and-NMOS"><span class="toc-text">PMOS and NMOS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-text">Reference</span></a></li></ol>
       </div>
     
   </span>
@@ -136,7 +136,7 @@
     
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        PMOS和NMOS
+        PMOS and NMOS
     </h1>
 
 
@@ -159,14 +159,14 @@
       
     <div class="article-category">
         <i class="fa-solid fa-archive"></i>
-        <a class="category-link" href="/categories/Hardware/">Hardware</a>
+        <a class="category-link" href="/en/categories/Hardware/">Hardware</a>
     </div>
 
 
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/tags/Hardware/" rel="tag">Hardware</a>
+        <a class="p-category" href="/en/tags/Hardware/" rel="tag">Hardware</a>
     </div>
 
 
@@ -178,42 +178,42 @@
 
   <div class="content e-content" itemprop="articleBody">
     <hr>
-<details class="folding-tag" ><summary> 时间轴 </summary>
+<details class="folding-tag" ><summary> Timeline </summary>
             <div class='content'>
-            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-26</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>Timeline</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-12-26</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
             </div>
           </details>
 <blockquote>
-本文介绍了PMOS和NMOS的基本概念、物理结构及工作特性，详细说明了源极、漏极和栅极的定义，并对比了NMOS与PMOS在电压控制方式、电流流向、适用开关类型以及半导体衬底与掺杂结构上的差异。
+This article introduces the basic concepts, physical structures, and operating characteristics of PMOS and NMOS, details the definitions of source, drain, and gate, and compares the differences between NMOS and PMOS in terms of voltage control methods, current flow directions, applicable switch types, and semiconductor substrate and doping structures.
 </blockquote>
-<h2 id="PMOS-与-NMOS">PMOS 与 NMOS</h2>
+<h2 id="PMOS-and-NMOS">PMOS and NMOS</h2>
 <ul>
 <li>
-<p><strong>S: Source 源级</strong></p>
+<p><strong>S: Source</strong></p>
 </li>
 <li>
-<p><strong>D: Drain   漏极</strong></p>
+<p><strong>D: Drain</strong></p>
 </li>
 <li>
-<p><strong>G: Gate     栅极</strong></p>
+<p><strong>G: Gate</strong></p>
 </li>
 <li>
-<p><strong>NMOS</strong>：用<strong>正电压</strong>控制导通，电流从<strong>漏极（D）→源极（S）</strong>，适合<strong>低边开关</strong>。</p>
+<p><strong>NMOS</strong>: Use<strong>positive voltage</strong>to control conduction, current flows from<strong>drain (D) to source (S)</strong>, suitable for<strong>low-side switch</strong>。</p>
 </li>
 <li>
-<p><strong>PMOS</strong>：用<strong>负电压</strong>控制导通，电流从<strong>源极（S）→漏极（D）</strong>，适合<strong>高边开关</strong>。</p>
+<p><strong>PMOS</strong>: Use<strong>Negative voltage</strong>Controls conduction, current flows from<strong>Source (S) → Drain (D)</strong>, suitable for<strong>high-side switch</strong>。</p>
 </li>
 </ul>
-<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/B68BA58240AACE9D805F6CD54DCD1DC9.jpg" alt="NMOS管"><figcaption>NMOS管</figcaption></figure></p>
-<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/2C840CC504D1205278CB5DA4E33DD8D2.jpg" alt="NMOS管"><figcaption>NMOS管</figcaption></figure></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/B68BA58240AACE9D805F6CD54DCD1DC9.jpg" alt="NMOS transistor"><figcaption>NMOS transistor</figcaption></figure></p>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/2C840CC504D1205278CB5DA4E33DD8D2.jpg" alt="NMOS transistor"><figcaption>NMOS transistor</figcaption></figure></p>
 <p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/wKgZO2fROIaAOEqeAABoCh39dwE236.jpg" alt="d1ea90de-fe61-11ef-9310-92fbcf53809c.jpg"><figcaption>d1ea90de-fe61-11ef-9310-92fbcf53809c.jpg</figcaption></figure></p>
-<p>上图为PMOS的示意图，衬底为N型半导体，源极 (Source) 和漏极 (Drain)掺杂了P型杂质 (如硼B)，形成P+区。N型硅多电子</p>
+<p>The above figure is a schematic of PMOS. The substrate is N-type semiconductor, and the source and drain are doped with P-type impurities (such as boron B) to form P+ regions. N-type silicon has many electrons.</p>
 <p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/wKgZPGfROIaAOM9tAAHVloCmPeM927.png" alt="d1ee6380-fe61-11ef-9310-92fbcf53809c.png"><figcaption>d1ee6380-fe61-11ef-9310-92fbcf53809c.png</figcaption></figure></p>
-<p>上图为NMOS的示意图，衬底为P型硅，衬底源极 (Source) 和漏极 (Drain)掺杂了N型杂质 (如磷P)，形成 N+区。P型硅多空穴。</p>
-<h2 id="参考">参考</h2>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="PMOS与NMOS的工作原理" target="_blank" rel="noopener" href="https://www.elecfans.com/d/6484053.html">PMOS与NMOS的工作原理</a></div>
-<div class="reference-source"><span class="hidden-anchor" id="referfrom_[2]"></span><a class="reference-anchor" href="#referto_[2]">[2]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="NMOS 和 PMOS 的区别（通俗易懂）" target="_blank" rel="noopener" href="https://blog.csdn.net/he30837993/article/details/149138870">NMOS 和 PMOS 的区别（通俗易懂）</a></div>
-<p>参考B站视频：</p>
+<p>The above figure is a schematic of NMOS. The substrate is P-type silicon, and the source and drain are doped with N-type impurities (such as phosphorus P) to form N+ regions. P-type silicon has many holes.</p>
+<h2 id="Reference">Reference</h2>
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[1]"></span><a class="reference-anchor" href="#referto_[1]">[1]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="PMOSandNMOSworking principle of" target="_blank" rel="noopener" href="https://www.elecfans.com/d/6484053.html">PMOSandNMOSworking principle of</a></div>
+<div class="reference-source"><span class="hidden-anchor" id="referfrom_[2]"></span><a class="reference-anchor" href="#referto_[2]">[2]<div class="reference-anchor-up fa-solid fa-angles-up"></div></a><a class="reference-link" title="NMOS and PMOS difference between（Easy to understand）" target="_blank" rel="noopener" href="https://blog.csdn.net/he30837993/article/details/149138870">NMOS and PMOS difference between（Easy to understand）</a></div>
+<p>Reference Bilibili video:</p>
 <div class="bilibili">
 <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=1055906685&bvid=BV12n4y1X7Cd&cid=1601023905&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
 <div>
@@ -224,7 +224,7 @@
 
     <div class="blog-post-comments">
         <div id="utterances_thread">
-            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
         </div>
     </div>
 
@@ -236,17 +236,17 @@
     <div id="nav-footer" style="display: none">
       <ul>
         
-          <li><a href="/">首页</a></li>
+          <li><a href="/en/">Home</a></li>
         
-          <li><a href="/archives/">归档</a></li>
+          <li><a href="/en/archives/">Archives</a></li>
         
-          <li><a href="/tags/">标签</a></li>
+          <li><a href="/en/tags/">Tags</a></li>
         
-          <li><a href="/categories/">分类</a></li>
+          <li><a href="/en/categories/">Categories</a></li>
         
-          <li><a href="/search/">搜索</a></li>
+          <li><a href="/en/search/">Search</a></li>
         
-          <li><a href="/en/">EN</a></li>
+          <li><a href="/en/">Zh-CN</a></li>
         
       </ul>
     </div>
@@ -254,34 +254,34 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PMOS-%E4%B8%8E-NMOS"><span class="toc-text">PMOS 与 NMOS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PMOS-and-NMOS"><span class="toc-text">PMOS and NMOS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-text">Reference</span></a></li></ol>
       </div>
     
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/2512263/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/2512263/&text=PMOS和NMOS"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/2512263/&is_video=false&description=PMOS和NMOS"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=PMOS和NMOS&body=Check out this article: https://even629.com/posts/2512263/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/2512263/&title=PMOS和NMOS"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/2512263/&name=PMOS和NMOS&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/2512263/&t=PMOS和NMOS"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/2512263/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/2512263/&text=PMOS and NMOS"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/2512263/&is_video=false&description=PMOS and NMOS"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=PMOS and NMOS&body=Check out this article: https://even629.com/en/posts/2512263/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/2512263/&title=PMOS and NMOS"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/2512263/&name=PMOS and NMOS&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/2512263/&t=PMOS and NMOS"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
 
     <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
         
-          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
         
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
     </div>
 
   </div>
@@ -300,17 +300,17 @@
     <nav>
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/2512263/">EN</a></li><!--
+       --><li><a href="/posts/2512263/">Zh-CN</a></li><!--
      -->
       </ul>
     </nav>
@@ -324,21 +324,21 @@
  
   <link
     rel="preload"
-    href="/lib/font-awesome/css/all.min.css"
+    href="/en/lib/font-awesome/css/all.min.css"
     as="style"
     onload="this.onload=null;this.rel='stylesheet'"
   />
   <noscript
     ><link
       rel="stylesheet"
-      href="/lib/font-awesome/css/all.min.css"
+      href="/en/lib/font-awesome/css/all.min.css"
   /></noscript>
 
 
     <!-- jquery -->
 
   
-<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/en/lib/jquery/jquery.min.js"></script>
 
 
 
@@ -348,13 +348,13 @@
 
   
     
-<script src="/lib/clipboard/clipboard.min.js"></script>
+<script src="/en/lib/clipboard/clipboard.min.js"></script>
 
   
   <script type="text/javascript">
   $(function() {
     // copy-btn HTML
-    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
     btn += '<i class="fa-regular fa-clone"></i>';
     btn += '</span>';
     // mount it!
@@ -365,24 +365,24 @@
       }
     });
     clip.on('success', function(e) {
-      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.trigger.setAttribute('aria-label', "Copied!");
       e.clearSelection();
     })
   })
   </script>
 
 
-<script src="/js/main.js"></script>
+<script src="/en/js/main.js"></script>
 
 
-<script src="/js/tabs.js"></script>
+<script src="/en/js/tabs.js"></script>
 
 
   
-<script src="/js/toc.js"></script>
+<script src="/en/js/toc.js"></script>
 
   
-<script src="/js/outdate.js"></script>
+<script src="/en/js/outdate.js"></script>
 
 
 <!-- Fancybox lightbox (post pages only) -->
@@ -391,7 +391,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
   
   
-<script src="/js/lightbox.js"></script>
+<script src="/en/js/lightbox.js"></script>
 
 
 <!-- search -->

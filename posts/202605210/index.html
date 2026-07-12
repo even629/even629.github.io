@@ -1,36 +1,36 @@
 <!DOCTYPE html>
-<html lang=zh>
+<html lang=en>
 <head>
     <!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="本文介绍了如何查询内核特定API最早引入的版本，并通过具体示例说明了查询方法。">
+    <meta name="description" content="This article describes how to query the earliest version where a specific kernel API was introduced, and illustrates the query method with concrete examples.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="查询内核API最早引入版本">
-<meta property="og:url" content="https://even629.com/posts/202605210/index.html">
+<meta property="og:title" content="Query the earliest version where a kernel API was introduced">
+<meta property="og:url" content="https://even629.com/en/posts/202605210/index.html">
 <meta property="og:site_name" content="even629">
-<meta property="og:description" content="本文介绍了如何查询内核特定API最早引入的版本，并通过具体示例说明了查询方法。">
-<meta property="og:locale" content="zh_CN">
+<meta property="og:description" content="This article describes how to query the earliest version where a specific kernel API was introduced, and illustrates the query method with concrete examples.">
+<meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-05-21T15:08:13.000Z">
 <meta property="article:modified_time" content="2026-05-21T15:08:13.000Z">
 <meta property="article:author" content="even629">
-<meta property="article:tag" content="GNU">
 <meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
 <meta name="twitter:card" content="summary">
     
     
       
         
-          <link rel="shortcut icon" href="/images/favicon.ico">
+          <link rel="shortcut icon" href="/en/images/favicon.ico">
         
       
       
       
     
     <!-- title -->
-    <title>查询内核API最早引入版本</title>
+    <title>Query the earliest version where a kernel API was introduced</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -40,14 +40,14 @@
 
     <!-- styles -->
     
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/en/css/style.css">
 
     <!-- persian styles -->
     
     <!-- rss -->
     
     
-      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+      <link rel="alternate" href="/en/atom.xml" title="even629" type="application/atom+xml" />
     
 	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
 	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
@@ -65,52 +65,52 @@
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/202605210/">EN</a></li><!--
+       --><li><a href="/posts/202605210/">Zh-CN</a></li><!--
      -->
       </ul>
     </span>
     <br/>
     <span id="actions">
       <ul>
-        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Go to Bottom" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Back to Top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share Post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
-      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
-      <span id="i-top" class="info" style="display:none;">返回顶部</span>
-      <span id="i-share" class="info" style="display:none;">分享文章</span>
+      <span id="i-bottom" class="info" style="display:none;">Go to Bottom</span>
+      <span id="i-top" class="info" style="display:none;">Back to Top</span>
+      <span id="i-share" class="info" style="display:none;">Share Post</span>
     </span>
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/202605210/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/202605210/&text=查询内核API最早引入版本"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/202605210/&is_video=false&description=查询内核API最早引入版本"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=查询内核API最早引入版本&body=Check out this article: https://even629.com/posts/202605210/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/202605210/&name=查询内核API最早引入版本&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/202605210/&t=查询内核API最早引入版本"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/202605210/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/202605210/&text=Query the earliest version where a kernel API was introduced"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/202605210/&is_video=false&description=Query the earliest version where a kernel API was introduced"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Query the earliest version where a kernel API was introduced&body=Check out this article: https://even629.com/en/posts/202605210/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/202605210/&name=Query the earliest version where a kernel API was introduced&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/202605210/&t=Query the earliest version where a kernel API was introduced"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -125,11 +125,11 @@
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header>
     
-      <img class="post-cover" src="/images/linux_cover.webp" alt="Cover image for 查询内核API最早引入版本" />
+      <img class="post-cover" src="/en/images/linux_cover.webp" alt="Cover image for Query the earliest version where a kernel API was introduced" />
     
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        查询内核API最早引入版本
+        Query the earliest version where a kernel API was introduced
     </h1>
 
 
@@ -152,14 +152,14 @@
       
     <div class="article-category">
         <i class="fa-solid fa-archive"></i>
-        <a class="category-link" href="/categories/Linux/">Linux</a>
+        <a class="category-link" href="/en/categories/Linux/">Linux</a>
     </div>
 
 
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/tags/Linux/" rel="tag">Linux</a>
+        <a class="p-category" href="/en/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/en/tags/Linux/" rel="tag">Linux</a>
     </div>
 
 
@@ -171,17 +171,17 @@
 
   <div class="content e-content" itemprop="articleBody">
     <hr>
-<details class="folding-tag" ><summary> 时间轴 </summary>
+<details class="folding-tag" ><summary> Timeline </summary>
             <div class='content'>
-            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-05-21</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>Timeline</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-05-21</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
             </div>
           </details>
 <blockquote>
-本文介绍了如何查询内核特定API最早引入的版本，并通过具体示例说明了查询方法。
+This article describes how to query the earliest version where a specific kernel API was introduced, and illustrates the query method with concrete examples.
 </blockquote>
 <hr>
-<p>如何查看内核某个API是在哪个版本引入的呢？以 <code>array_index_nospec</code> 为例</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/torvalds/linux.git</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到其定义在include/linux/nospec</span></span><br><span class="line">git blame include/linux/nospec.h</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到commit id号</span></span><br><span class="line">git show f3804203306e0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看包含这个commit id的所有tag</span></span><br><span class="line">git tag contains f3804203306e0</span><br></pre></td></tr></table></figure>
+<p>How to check which version introduced a certain kernel API? Take<code>array_index_nospec</code>as an example</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/torvalds/linux.git</span><br><span class="line"></span><br><span class="line"><span class="comment"># Find its definition in include/linux/nospec</span></span><br><span class="line">git blame include/linux/nospec.h</span><br><span class="line"></span><br><span class="line"><span class="comment"># Find the commit ID</span></span><br><span class="line">git show f3804203306e0</span><br><span class="line"></span><br><span class="line"><span class="comment"># Check all tags containing this commit ID</span></span><br><span class="line">git tag contains f3804203306e0</span><br></pre></td></tr></table></figure>
 
   </div>
 </article>
@@ -189,7 +189,7 @@
 
     <div class="blog-post-comments">
         <div id="utterances_thread">
-            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
         </div>
     </div>
 
@@ -201,17 +201,17 @@
     <div id="nav-footer" style="display: none">
       <ul>
         
-          <li><a href="/">首页</a></li>
+          <li><a href="/en/">Home</a></li>
         
-          <li><a href="/archives/">归档</a></li>
+          <li><a href="/en/archives/">Archives</a></li>
         
-          <li><a href="/tags/">标签</a></li>
+          <li><a href="/en/tags/">Tags</a></li>
         
-          <li><a href="/categories/">分类</a></li>
+          <li><a href="/en/categories/">Categories</a></li>
         
-          <li><a href="/search/">搜索</a></li>
+          <li><a href="/en/search/">Search</a></li>
         
-          <li><a href="/en/">EN</a></li>
+          <li><a href="/en/">Zh-CN</a></li>
         
       </ul>
     </div>
@@ -221,26 +221,26 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/202605210/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/202605210/&text=查询内核API最早引入版本"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/202605210/&is_video=false&description=查询内核API最早引入版本"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=查询内核API最早引入版本&body=Check out this article: https://even629.com/posts/202605210/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/202605210/&title=查询内核API最早引入版本"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/202605210/&name=查询内核API最早引入版本&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/202605210/&t=查询内核API最早引入版本"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/202605210/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/202605210/&text=Query the earliest version where a kernel API was introduced"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/202605210/&is_video=false&description=Query the earliest version where a kernel API was introduced"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Query the earliest version where a kernel API was introduced&body=Check out this article: https://even629.com/en/posts/202605210/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/202605210/&title=Query the earliest version where a kernel API was introduced"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/202605210/&name=Query the earliest version where a kernel API was introduced&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/202605210/&t=Query the earliest version where a kernel API was introduced"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
 
     <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
         
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
     </div>
 
   </div>
@@ -259,17 +259,17 @@
     <nav>
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/202605210/">EN</a></li><!--
+       --><li><a href="/posts/202605210/">Zh-CN</a></li><!--
      -->
       </ul>
     </nav>
@@ -283,21 +283,21 @@
  
   <link
     rel="preload"
-    href="/lib/font-awesome/css/all.min.css"
+    href="/en/lib/font-awesome/css/all.min.css"
     as="style"
     onload="this.onload=null;this.rel='stylesheet'"
   />
   <noscript
     ><link
       rel="stylesheet"
-      href="/lib/font-awesome/css/all.min.css"
+      href="/en/lib/font-awesome/css/all.min.css"
   /></noscript>
 
 
     <!-- jquery -->
 
   
-<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/en/lib/jquery/jquery.min.js"></script>
 
 
 
@@ -307,13 +307,13 @@
 
   
     
-<script src="/lib/clipboard/clipboard.min.js"></script>
+<script src="/en/lib/clipboard/clipboard.min.js"></script>
 
   
   <script type="text/javascript">
   $(function() {
     // copy-btn HTML
-    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
     btn += '<i class="fa-regular fa-clone"></i>';
     btn += '</span>';
     // mount it!
@@ -324,24 +324,24 @@
       }
     });
     clip.on('success', function(e) {
-      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.trigger.setAttribute('aria-label', "Copied!");
       e.clearSelection();
     })
   })
   </script>
 
 
-<script src="/js/main.js"></script>
+<script src="/en/js/main.js"></script>
 
 
-<script src="/js/tabs.js"></script>
+<script src="/en/js/tabs.js"></script>
 
 
   
-<script src="/js/toc.js"></script>
+<script src="/en/js/toc.js"></script>
 
   
-<script src="/js/outdate.js"></script>
+<script src="/en/js/outdate.js"></script>
 
 
 <!-- Fancybox lightbox (post pages only) -->
@@ -350,7 +350,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
   
   
-<script src="/js/lightbox.js"></script>
+<script src="/en/js/lightbox.js"></script>
 
 
 <!-- search -->

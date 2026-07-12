@@ -1,39 +1,39 @@
 <!DOCTYPE html>
-<html lang=zh>
+<html lang=en>
 <head>
     <!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="双指针">
+    <meta name="description" content="two pointers">
 <meta property="og:type" content="article">
-<meta property="og:title" content="leetcode热题100 P31 下一个排列">
-<meta property="og:url" content="https://even629.com/posts/31/index.html">
+<meta property="og:title" content="LeetCode Hot 100 P31 Next Permutation">
+<meta property="og:url" content="https://even629.com/en/posts/31/index.html">
 <meta property="og:site_name" content="even629">
-<meta property="og:description" content="双指针">
-<meta property="og:locale" content="zh_CN">
+<meta property="og:description" content="two pointers">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://leetcode.cn/favicon.ico">
 <meta property="article:published_time" content="2026-03-17T11:11:13.000Z">
 <meta property="article:modified_time" content="2026-03-17T11:11:13.000Z">
 <meta property="article:author" content="even629">
 <meta property="article:tag" content="algorithm">
-<meta property="article:tag" content="leetcode热题100">
-<meta property="article:tag" content="双指针">
+<meta property="article:tag" content="Two Pointers">
+<meta property="article:tag" content="LeetCode Hot 100">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://leetcode.cn/favicon.ico">
     
     
       
         
-          <link rel="shortcut icon" href="/images/favicon.ico">
+          <link rel="shortcut icon" href="/en/images/favicon.ico">
         
       
       
       
     
     <!-- title -->
-    <title>leetcode热题100 P31 下一个排列</title><meta name="robots" content="noindex">
+    <title>LeetCode Hot 100 P31 Next Permutation</title><meta name="robots" content="noindex">
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -43,14 +43,14 @@
 
     <!-- styles -->
     
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/en/css/style.css">
 
     <!-- persian styles -->
     
     <!-- rss -->
     
     
-      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+      <link rel="alternate" href="/en/atom.xml" title="even629" type="application/atom+xml" />
     
 	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
 	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
@@ -68,52 +68,52 @@
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/31/">EN</a></li><!--
+       --><li><a href="/posts/31/">Zh-CN</a></li><!--
      -->
       </ul>
     </span>
     <br/>
     <span id="actions">
       <ul>
-        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Go to Bottom" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Back to Top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share Post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
-      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
-      <span id="i-top" class="info" style="display:none;">返回顶部</span>
-      <span id="i-share" class="info" style="display:none;">分享文章</span>
+      <span id="i-bottom" class="info" style="display:none;">Go to Bottom</span>
+      <span id="i-top" class="info" style="display:none;">Back to Top</span>
+      <span id="i-share" class="info" style="display:none;">Share Post</span>
     </span>
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/31/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/31/&text=leetcode热题100 P31 下一个排列"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/31/&is_video=false&description=leetcode热题100 P31 下一个排列"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=leetcode热题100 P31 下一个排列&body=Check out this article: https://even629.com/posts/31/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/31/&name=leetcode热题100 P31 下一个排列&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/31/&t=leetcode热题100 P31 下一个排列"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/31/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/31/&text=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/31/&is_video=false&description=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=LeetCode Hot 100 P31 Next Permutation&body=Check out this article: https://even629.com/en/posts/31/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/31/&name=LeetCode Hot 100 P31 Next Permutation&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/31/&t=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -128,11 +128,11 @@
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header>
     
-      <img class="post-cover" src="/images/leetcode_cover.png" alt="Cover image for leetcode热题100 P31 下一个排列" />
+      <img class="post-cover" src="/en/images/leetcode_cover.png" alt="Cover image for LeetCode Hot 100 P31 Next Permutation" />
     
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        leetcode热题100 P31 下一个排列
+        LeetCode Hot 100 P31 Next Permutation
     </h1>
 
 
@@ -155,14 +155,14 @@
       
     <div class="article-category">
         <i class="fa-solid fa-archive"></i>
-        <a class="category-link" href="/categories/algorithm/">algorithm</a>
+        <a class="category-link" href="/en/categories/algorithm/">algorithm</a>
     </div>
 
 
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/tags/algorithm/" rel="tag">algorithm</a>, <a class="p-category" href="/tags/leetcode%E7%83%AD%E9%A2%98100/" rel="tag">leetcode热题100</a>, <a class="p-category" href="/tags/%E5%8F%8C%E6%8C%87%E9%92%88/" rel="tag">双指针</a>
+        <a class="p-category" href="/en/tags/LeetCode-Hot-100/" rel="tag">LeetCode Hot 100</a>, <a class="p-category" href="/en/tags/Two-Pointers/" rel="tag">Two Pointers</a>, <a class="p-category" href="/en/tags/algorithm/" rel="tag">algorithm</a>
     </div>
 
 
@@ -174,29 +174,29 @@
 
   <div class="content e-content" itemprop="articleBody">
     <hr>
-<details class="folding-tag" ><summary> 时间轴 </summary>
+<details class="folding-tag" ><summary> Timeline </summary>
             <div class='content'>
-            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-03-17</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>timeline</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2026-03-17</p></div></div><div class='timeline-item-content'><p>init</p></div></div></div>
             </div>
           </details>
 <blockquote>
-双指针
+two pointers
 </blockquote>
 <hr>
-<p>题目：</p>
-<div class="tag link"><a class="link-card" title="P31 下一个排列" target="_blank" rel="noopener" href="https://leetcode.cn/problems/next-permutation/description/?envType=study-plan-v2&envId=top-100-liked"><div class="left"><img loading="lazy" src="https://leetcode.cn/favicon.ico"/></div><div class="right"><p class="text">P31 下一个排列</p><p class="url">https://leetcode.cn/problems/next-permutation/description/?envType=study-plan-v2&envId=top-100-liked</p></div></a></div>
-<p>例如 2, 6, 3, 5, 4, 1 这个排列， 我们想要找到下一个刚好比他大的排列，于是可以从后往前看, 我们先看后两位 4, 1 能否组成更大的排列，答案是不可以，同理 5, 4, 1也不可以, 直到3, 5, 4, 1这个排列，因为 3 &lt; 5， 我们可以通过重新排列这一段数字，来得到下一个排列</p>
-<p>因为我们需要使得新的排列尽量小，所以我们从后往前找第一个比3更大的数字，发现是4</p>
-<p>然后，我们调换3和4的位置，得到4, 5, 3, 1这个数列, 因为我们需要使得新生成的数列尽量小，于是我们可以对5, 3, 1进行排序，可以发现在这个算法中，我们得到的末尾数字一定是倒序排列的，于是我们只需要把它反转即可</p>
-<p>最终，我们得到了4, 1, 3, 5这个数列, 完整的数列则是2, 6, 4, 1, 3, 5</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> std::vector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">nextPermutation</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;nums)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">                <span class="type">int</span> i, n = nums.<span class="built_in">size</span>();</span><br><span class="line">                <span class="type">int</span> pos = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (i = n - <span class="number">2</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (nums[i] &lt; nums[i + <span class="number">1</span>]) &#123;</span><br><span class="line">                                pos = i;</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">                <span class="keyword">if</span> (pos != <span class="number">-1</span>) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">                                <span class="keyword">if</span> (nums[i] &gt; nums[pos]) &#123; <span class="comment">// 找到第一个大于nums[pos]的数并交换</span></span><br><span class="line">                                        std::<span class="built_in">swap</span>(nums[i], nums[pos]);</span><br><span class="line">                                        <span class="keyword">break</span>;</span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                std::<span class="built_in">reverse</span>(nums.<span class="built_in">begin</span>() + pos + <span class="number">1</span>, nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><!-- flag of hidden posts -->
+<p>Problem:</p>
+<div class="tag link"><a class="link-card" title="P31 Next Permutation" target="_blank" rel="noopener" href="https://leetcode.cn/problems/next-permutation/description/?envType=study-plan-v2&envId=top-100-liked"><div class="left"><img loading="lazy" src="https://leetcode.cn/favicon.ico"/></div><div class="right"><p class="text">P31 Next Permutation</p><p class="url">https://leetcode.cn/problems/next-permutation/description/?envType=study-plan-v2&envId=top-100-liked</p></div></a></div>
+<p>For example, the permutation 2, 6, 3, 5, 4, 1. We want to find the next permutation that is just larger than it. So we can look from the back. First, we check the last two digits 4, 1 to see if they can form a larger permutation. The answer is no. Similarly, 5, 4, 1 also cannot. Until we reach the permutation 3, 5, 4, 1, because 3 &lt; 5, we can rearrange this segment of numbers to get the next permutation.</p>
+<p>Because we need the new permutation to be as small as possible, we look from the back for the first number greater than 3, and we find 4.</p>
+<p>Then, we swap the positions of 3 and 4, obtaining the sequence 4, 5, 3, 1. Because we need the newly generated sequence to be as small as possible, we can sort 5, 3, 1. It can be seen that in this algorithm, the trailing digits we get are always in descending order, so we only need to reverse them.</p>
+<p>Finally, we get the sequence 4, 1, 3, 5, and the complete sequence is 2, 6, 4, 1, 3, 5.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> std::vector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">nextPermutation</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;nums)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">                <span class="type">int</span> i, n = nums.<span class="built_in">size</span>();</span><br><span class="line">                <span class="type">int</span> pos = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (i = n - <span class="number">2</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (nums[i] &lt; nums[i + <span class="number">1</span>]) &#123;</span><br><span class="line">                                pos = i;</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">                <span class="keyword">if</span> (pos != <span class="number">-1</span>) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">                                <span class="keyword">if</span> (nums[i] &gt; nums[pos]) &#123; <span class="comment">// Find the first number greater than nums[pos] and swap.</span></span><br><span class="line">                                        std::<span class="built_in">swap</span>(nums[i], nums[pos]);</span><br><span class="line">                                        <span class="keyword">break</span>;</span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                std::<span class="built_in">reverse</span>(nums.<span class="built_in">begin</span>() + pos + <span class="number">1</span>, nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><!-- flag of hidden posts -->
   </div>
 </article>
 
 
     <div class="blog-post-comments">
         <div id="utterances_thread">
-            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
         </div>
     </div>
 
@@ -208,17 +208,17 @@
     <div id="nav-footer" style="display: none">
       <ul>
         
-          <li><a href="/">首页</a></li>
+          <li><a href="/en/">Home</a></li>
         
-          <li><a href="/archives/">归档</a></li>
+          <li><a href="/en/archives/">Archives</a></li>
         
-          <li><a href="/tags/">标签</a></li>
+          <li><a href="/en/tags/">Tags</a></li>
         
-          <li><a href="/categories/">分类</a></li>
+          <li><a href="/en/categories/">Categories</a></li>
         
-          <li><a href="/search/">搜索</a></li>
+          <li><a href="/en/search/">Search</a></li>
         
-          <li><a href="/en/">EN</a></li>
+          <li><a href="/en/">Zh-CN</a></li>
         
       </ul>
     </div>
@@ -228,26 +228,26 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/31/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/31/&text=leetcode热题100 P31 下一个排列"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/31/&is_video=false&description=leetcode热题100 P31 下一个排列"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=leetcode热题100 P31 下一个排列&body=Check out this article: https://even629.com/posts/31/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/31/&title=leetcode热题100 P31 下一个排列"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/31/&name=leetcode热题100 P31 下一个排列&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/31/&t=leetcode热题100 P31 下一个排列"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/31/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/31/&text=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/31/&is_video=false&description=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=LeetCode Hot 100 P31 Next Permutation&body=Check out this article: https://even629.com/en/posts/31/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/31/&title=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/31/&name=LeetCode Hot 100 P31 Next Permutation&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/31/&t=LeetCode Hot 100 P31 Next Permutation"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
 
     <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
         
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
     </div>
 
   </div>
@@ -266,17 +266,17 @@
     <nav>
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/31/">EN</a></li><!--
+       --><li><a href="/posts/31/">Zh-CN</a></li><!--
      -->
       </ul>
     </nav>
@@ -290,21 +290,21 @@
  
   <link
     rel="preload"
-    href="/lib/font-awesome/css/all.min.css"
+    href="/en/lib/font-awesome/css/all.min.css"
     as="style"
     onload="this.onload=null;this.rel='stylesheet'"
   />
   <noscript
     ><link
       rel="stylesheet"
-      href="/lib/font-awesome/css/all.min.css"
+      href="/en/lib/font-awesome/css/all.min.css"
   /></noscript>
 
 
     <!-- jquery -->
 
   
-<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/en/lib/jquery/jquery.min.js"></script>
 
 
 
@@ -314,13 +314,13 @@
 
   
     
-<script src="/lib/clipboard/clipboard.min.js"></script>
+<script src="/en/lib/clipboard/clipboard.min.js"></script>
 
   
   <script type="text/javascript">
   $(function() {
     // copy-btn HTML
-    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
     btn += '<i class="fa-regular fa-clone"></i>';
     btn += '</span>';
     // mount it!
@@ -331,24 +331,24 @@
       }
     });
     clip.on('success', function(e) {
-      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.trigger.setAttribute('aria-label', "Copied!");
       e.clearSelection();
     })
   })
   </script>
 
 
-<script src="/js/main.js"></script>
+<script src="/en/js/main.js"></script>
 
 
-<script src="/js/tabs.js"></script>
+<script src="/en/js/tabs.js"></script>
 
 
   
-<script src="/js/toc.js"></script>
+<script src="/en/js/toc.js"></script>
 
   
-<script src="/js/outdate.js"></script>
+<script src="/en/js/outdate.js"></script>
 
 
 <!-- Fancybox lightbox (post pages only) -->
@@ -357,7 +357,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
   
   
-<script src="/js/lightbox.js"></script>
+<script src="/en/js/lightbox.js"></script>
 
 
 <!-- search -->

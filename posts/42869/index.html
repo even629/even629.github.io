@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang=zh>
+<html lang=en>
 <head>
     <!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="本文介绍了最小Linux系统的编译与运行过程，详细讨论了在特定环境下编译Busybox时的报错处理与补丁应用、根文件系统配置文件的创建与打包，以及Linux内核的编译步骤。此外，本文还总结了使用Emacs结合clangd和dts-lsp阅读源码与设备树的配置方法，并展示了通过QEMU运行系统的最终结果。">
+    <meta name="description" content="This article introduces the compilation and running process of a minimal Linux system, detailing error handling and patch application when compiling Busybox in a specific environment, the creation and">
 <meta property="og:type" content="article">
-<meta property="og:title" content="最小Linux系统编译与运行">
-<meta property="og:url" content="https://even629.com/posts/42869/index.html">
+<meta property="og:title" content="Compilation and Running of a Minimal Linux System">
+<meta property="og:url" content="https://even629.com/en/posts/42869/index.html">
 <meta property="og:site_name" content="even629">
-<meta property="og:description" content="本文介绍了最小Linux系统的编译与运行过程，详细讨论了在特定环境下编译Busybox时的报错处理与补丁应用、根文件系统配置文件的创建与打包，以及Linux内核的编译步骤。此外，本文还总结了使用Emacs结合clangd和dts-lsp阅读源码与设备树的配置方法，并展示了通过QEMU运行系统的最终结果。">
-<meta property="og:locale" content="zh_CN">
+<meta property="og:description" content="This article introduces the compilation and running process of a minimal Linux system, detailing error handling and patch application when compiling Busybox in a specific environment, the creation and">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/CCECAA6776058E5E7B3BD5CD47C415D9.png">
 <meta property="og:image" content="https://www.busybox.net/favicon.ico">
 <meta property="og:image" content="https://stackoverflow.com/Content/Sites/stackoverflow/Img/favicon.ico">
@@ -23,22 +23,22 @@
 <meta property="article:published_time" content="2025-06-22T16:25:13.000Z">
 <meta property="article:modified_time" content="2025-11-04T16:25:13.000Z">
 <meta property="article:author" content="even629">
-<meta property="article:tag" content="GNU">
 <meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GNU">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/even629/myPicGo/CCECAA6776058E5E7B3BD5CD47C415D9.png">
     
     
       
         
-          <link rel="shortcut icon" href="/images/favicon.ico">
+          <link rel="shortcut icon" href="/en/images/favicon.ico">
         
       
       
       
     
     <!-- title -->
-    <title>最小Linux系统编译与运行</title>
+    <title>Compilation and Running of a Minimal Linux System</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -48,14 +48,14 @@
 
     <!-- styles -->
     
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/en/css/style.css">
 
     <!-- persian styles -->
     
     <!-- rss -->
     
     
-      <link rel="alternate" href="/atom.xml" title="even629" type="application/atom+xml" />
+      <link rel="alternate" href="/en/atom.xml" title="even629" type="application/atom+xml" />
     
 	<!-- KaTeX stylesheet — loaded from CDN, required for markdown-it-katex rendering -->
 	<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/katex@0.16.40/dist/katex.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
@@ -73,52 +73,52 @@
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/42869/">EN</a></li><!--
+       --><li><a href="/posts/42869/">Zh-CN</a></li><!--
      -->
       </ul>
     </span>
     <br/>
     <span id="actions">
       <ul>
-        <li><a class="icon" aria-label="直达底部" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Go to Bottom" href="#" onclick="$('html, body').animate({ scrollTop: document.documentElement.scrollHeight }, 'fast');return false;"><i class="fa-solid fa-chevron-down" aria-hidden="true" onmouseover="$('#i-bottom').toggle();" onmouseout="$('#i-bottom').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Back to Top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share Post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
-      <span id="i-bottom" class="info" style="display:none;">直达底部</span>
-      <span id="i-top" class="info" style="display:none;">返回顶部</span>
-      <span id="i-share" class="info" style="display:none;">分享文章</span>
+      <span id="i-bottom" class="info" style="display:none;">Go to Bottom</span>
+      <span id="i-top" class="info" style="display:none;">Back to Top</span>
+      <span id="i-share" class="info" style="display:none;">Share Post</span>
     </span>
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/42869/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/42869/&text=最小Linux系统编译与运行"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/42869/&is_video=false&description=最小Linux系统编译与运行"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=最小Linux系统编译与运行&body=Check out this article: https://even629.com/posts/42869/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/42869/&name=最小Linux系统编译与运行&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/42869/&t=最小Linux系统编译与运行"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/42869/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/42869/&text=Compilation and Running of a Minimal Linux System"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/42869/&is_video=false&description=Compilation and Running of a Minimal Linux System"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Compilation and Running of a Minimal Linux System&body=Check out this article: https://even629.com/en/posts/42869/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/42869/&name=Compilation and Running of a Minimal Linux System&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/42869/&t=Compilation and Running of a Minimal Linux System"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -126,7 +126,7 @@
     
       <div id="toc">
         <span class="toc-percentage"></span>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#busybox%E7%BC%96%E8%AF%91"><span class="toc-text">busybox编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Patch"><span class="toc-text">Patch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91"><span class="toc-text">编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#make-menuconfig-%E5%A4%B1%E8%B4%A5"><span class="toc-text">make menuconfig 失败</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tc-build-error"><span class="toc-text">tc build error</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAinittab-rcS%E5%92%8Cfstab%E6%96%87%E4%BB%B6"><span class="toc-text">创建inittab,rcS和fstab文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E8%AE%BE%E5%A4%87%E6%96%87%E4%BB%B6"><span class="toc-text">添加设备文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E5%BA%93%E6%96%87%E4%BB%B6"><span class="toc-text">添加库文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%8C%85"><span class="toc-text">打包</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E5%86%85%E6%A0%B8%E7%BC%96%E8%AF%91"><span class="toc-text">Linux 内核编译</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-clangd-%E9%98%85%E8%AF%BBLinux%E6%BA%90%E7%A0%81"><span class="toc-text">Emacs + clangd 阅读Linux源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-dts-lsp-%E9%98%85%E8%AF%BB%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">Emacs + dts-lsp 阅读设备树</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#qemu%E8%BF%90%E8%A1%8C"><span class="toc-text">qemu运行</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Environment"><span class="toc-text">Environment</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Busybox-Compilation"><span class="toc-text">Busybox Compilation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Patch"><span class="toc-text">Patch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compilation"><span class="toc-text">Compilation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#make-menuconfig-Failed"><span class="toc-text">make menuconfig Failed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tc-build-error"><span class="toc-text">tc build error</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Create-inittab-rcS-and-fstab-files"><span class="toc-text">Create inittab, rcS, and fstab files</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Add-device-file"><span class="toc-text">Add device file</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Add-library-file"><span class="toc-text">Add library file</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Package"><span class="toc-text">Package</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-kernel-compilation"><span class="toc-text">Linux kernel compilation</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-clangd-for-reading-Linux-source-code"><span class="toc-text">Emacs + clangd for reading Linux source code</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-dts-lsp-for-reading-device-tree"><span class="toc-text">Emacs + dts-lsp for reading device tree</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#QEMU-running"><span class="toc-text">QEMU running</span></a></li></ol>
       </div>
     
   </span>
@@ -138,11 +138,11 @@
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header>
     
-      <img class="post-cover" src="/images/linux_cover.webp" alt="Cover image for 最小Linux系统编译与运行" />
+      <img class="post-cover" src="/en/images/linux_cover.webp" alt="Cover image for Compilation and Running of a Minimal Linux System" />
     
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        最小Linux系统编译与运行
+        Compilation and Running of a Minimal Linux System
     </h1>
 
 
@@ -165,14 +165,14 @@
       
     <div class="article-category">
         <i class="fa-solid fa-archive"></i>
-        <a class="category-link" href="/categories/Linux/">Linux</a>
+        <a class="category-link" href="/en/categories/Linux/">Linux</a>
     </div>
 
 
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/tags/Linux/" rel="tag">Linux</a>
+        <a class="p-category" href="/en/tags/GNU/" rel="tag">GNU</a>, <a class="p-category" href="/en/tags/Linux/" rel="tag">Linux</a>
     </div>
 
 
@@ -184,93 +184,93 @@
 
   <div class="content e-content" itemprop="articleBody">
     <hr>
-<details class="folding-tag" ><summary> 时间轴 </summary>
+<details class="folding-tag" ><summary> Timeline </summary>
             <div class='content'>
-            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>时间轴</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-06-23</p></div></div><div class='timeline-item-content'><p>init</p></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-05</p></div></div><div class='timeline-item-content'><p>busybox build error in archlinux</p></div></div></div>
+            <div class="timeline blue"><div class='timeline-item headline'><div class='timeline-item-title'><div class='item-circle'><p>Timeline</p></div></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-06-23</p></div></div><div class='timeline-item-content'><p>init</p></div></div><div class='timeline-item'><div class='timeline-item-title'><div class='item-circle'><p>2025-11-05</p></div></div><div class='timeline-item-content'><p>busybox build error in archlinux</p></div></div></div>
             </div>
           </details>
 <blockquote>
-本文介绍了最小Linux系统的编译与运行过程，详细讨论了在特定环境下编译Busybox时的报错处理与补丁应用、根文件系统配置文件的创建与打包，以及Linux内核的编译步骤。此外，本文还总结了使用Emacs结合clangd和dts-lsp阅读源码与设备树的配置方法，并展示了通过QEMU运行系统的最终结果。
+This article introduces the compilation and running process of a minimal Linux system, detailing error handling and patch application when compiling Busybox in a specific environment, the creation and packaging of root filesystem configuration files, and the steps for compiling the Linux kernel. Additionally, it summarizes the configuration method for reading source code and device trees using Emacs with clangd and dts-lsp, and presents the final result of running the system via QEMU.
 </blockquote>
 <hr>
-<h1 id="环境">环境</h1>
+<h1 id="Environment">Environment</h1>
 <p>win11 WSL2：</p>
-<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/CCECAA6776058E5E7B3BD5CD47C415D9.png" alt="环境"><figcaption>环境</figcaption></figure></p>
-<h1 id="busybox编译">busybox编译</h1>
+<p><figure class="image-caption"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/even629/myPicGo/CCECAA6776058E5E7B3BD5CD47C415D9.png" alt="Environment"><figcaption>Environment</figcaption></figure></p>
+<h1 id="Busybox-Compilation">Busybox Compilation</h1>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://www.busybox.net/downloads/busybox-1.37.0.tar.bz2</span><br><span class="line">bzip2 -d busybox-1.37.0.tar.bz2</span><br><span class="line">tar xvf busybox-1.37.0.tar</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> busybox-1.37.0</span><br></pre></td></tr></table></figure>
 <h2 id="Patch">Patch</h2>
-<p>这个版本直接编译aarch64有点问题，需要打一个补丁：</p>
+<p>There is an issue compiling aarch64 directly with this version; a patch is needed:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emacs libbb-sha-add-missing-shaNI-guard.patch</span><br></pre></td></tr></table></figure>
-<p>参考：</p>
+<p>Reference:</p>
 <div class="tag link"><a class="link-card" title="libbb/sha: add missing sha-NI guard" target="_blank" rel="noopener" href="https://lists.busybox.net/pipermail/busybox/2024-September/090899.html"><div class="left"><img loading="lazy" src="https://www.busybox.net/favicon.ico"/></div><div class="right"><p class="text">libbb/sha: add missing sha-NI guard</p><p class="url">https://lists.busybox.net/pipermail/busybox/2024-September/090899.html</p></div></a></div>
-<p>patch如下</p>
+<p>The patch is as follows:</p>
 <figure class="highlight patch"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">---</span></span><br><span class="line"> libbb/hash_md5_sha.c | 2 ++</span><br><span class="line"> 1 file changed, 2 insertions(+)</span><br><span class="line"></span><br><span class="line"><span class="comment">diff --git a/libbb/hash_md5_sha.c b/libbb/hash_md5_sha.c</span></span><br><span class="line"><span class="comment">index 57a801459..75a61c32c 100644</span></span><br><span class="line"><span class="comment">--- a/libbb/hash_md5_sha.c</span></span><br><span class="line"><span class="comment">+++ b/libbb/hash_md5_sha.c</span></span><br><span class="line"><span class="meta">@@ -1313,7 +1313,9 @@</span> unsigned FAST_FUNC sha1_end(sha1_ctx_t *ctx, void *resbuf)</span><br><span class="line"> 	hash_size = 8;</span><br><span class="line"> 	if (ctx-&gt;process_block == sha1_process_block64</span><br><span class="line"> #if ENABLE_SHA1_HWACCEL</span><br><span class="line"><span class="addition">+# if defined(__GNUC__) &amp;&amp; (defined(__i386__) || defined(__x86_64__))</span></span><br><span class="line"> 	 || ctx-&gt;process_block == sha1_process_block64_shaNI</span><br><span class="line"><span class="addition">+# endif</span></span><br><span class="line"> #endif</span><br><span class="line"> 	) &#123;</span><br><span class="line"> 		hash_size = 5;</span><br><span class="line"><span class="deletion">--</span></span><br><span class="line">2.25.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>进入busybox源码目录执行：</p>
+<p>Enter the Busybox source directory and execute:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">patch -p1 &lt; libbb-sha-add-missing-shaNI-guard.patch</span><br></pre></td></tr></table></figure>
-<h2 id="编译">编译</h2>
+<h2 id="Compilation">Compilation</h2>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- distclean</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig</span><br><span class="line"><span class="comment"># Settings</span></span><br><span class="line"><span class="comment"># --- Build Option</span></span><br><span class="line"><span class="comment">#   [*] Build static binary (no shared libs)</span></span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(<span class="built_in">nproc</span>)</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- install</span><br></pre></td></tr></table></figure>
-<h3 id="make-menuconfig-失败">make menuconfig 失败</h3>
-<p>make menuconfig这一步，如果是在Arch Linux下编译，或使用了高版本gcc，可能会报错：</p>
+<h3 id="make-menuconfig-Failed">make menuconfig Failed</h3>
+<p>During the make menuconfig step, if compiling under Arch Linux or using a high-version gcc, an error may occur:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[zhaohang@cyberboy busybox-1.37.0]$ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig</span><br><span class="line"> *** Unable to find the ncurses libraries or the</span><br><span class="line"> *** required header files.</span><br><span class="line"> *** <span class="string">&#x27;make menuconfig&#x27;</span> requires the ncurses libraries.</span><br><span class="line"> ***</span><br><span class="line"> *** Install ncurses (ncurses-devel) and try again.</span><br><span class="line"> ***</span><br><span class="line">make[2]: *** [/home/zhaohang/repository/linux/busybox-1.37.0/scripts/kconfig/lxdialog/Makefile:15: scripts/kconfig/lxdialog/dochecklxdialog] Error 1</span><br><span class="line">make[1]: *** [/home/zhaohang/repository/linux/busybox-1.37.0/scripts/kconfig/Makefile:14: menuconfig] Error 2</span><br><span class="line">make: *** [Makefile:444: menuconfig] Error 2</span><br></pre></td></tr></table></figure>
-<p>即便已经安装了ncurses也会报错</p>
+<p>Even if ncurses is already installed, an error will still be reported</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> pacman -S ncurses</span><br></pre></td></tr></table></figure>
-<p>参考解决方案：</p>
+<p>Reference solution:</p>
 <div class="tag link"><a class="link-card" title="Busybox build fails with ncurses header not found in archlinux" target="_blank" rel="noopener" href="https://stackoverflow.com/questions/78491346/busybox-build-fails-with-ncurses-header-not-found-in-archlinux-spoiler-i-alrea"><div class="left"><img loading="lazy" src="https://stackoverflow.com/Content/Sites/stackoverflow/Img/favicon.ico"/></div><div class="right"><p class="text">Busybox build fails with ncurses header not found in archlinux</p><p class="url">https://stackoverflow.com/questions/78491346/busybox-build-fails-with-ncurses-header-not-found-in-archlinux-spoiler-i-alrea</p></div></a></div>
-<p>上面讨论说高版本gcc有一个break change, 即main函数必须有返回类型</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">emacs scripts/kconfig/lxdialog/check-lxdialog.sh</span><br><span class="line"><span class="comment"># 把 第50行 main() &#123;&#125; 改成</span></span><br><span class="line"><span class="comment"># int main() &#123;return 0;&#125;</span></span><br></pre></td></tr></table></figure>
+<p>The discussion above says that a higher version of GCC has a breaking change, i.e., the main function must have a return type</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">emacs scripts/kconfig/lxdialog/check-lxdialog.sh</span><br><span class="line"><span class="comment"># Change line 50 main() &#123;&#125; to</span></span><br><span class="line"><span class="comment"># int main() &#123;return 0;&#125;</span></span><br></pre></td></tr></table></figure>
 <h3 id="tc-build-error">tc build error</h3>
-<p>如果使用高版本的Linux内核，需要禁用tc，参考</p>
+<p>If using a higher version of the Linux kernel, you need to disable tc, refer to</p>
 <div class="tag link"><a class="link-card" title="[Bug 15934] New: Busybox fails to build with linux kernels >= 6.8" href="https://lists.busybox.net/pipermail/busybox-cvs/2024-January/041752.html"><div class="left"><img loading="lazy" src="https://www.busybox.net/favicon.ico"/></div><div class="right"><p class="text">[Bug 15934] New: Busybox fails to build with linux kernels >= 6.8</p><p class="url">https://lists.busybox.net/pipermail/busybox-cvs/2024-January/041752.html</p></div></a></div>
-<p>在make menuconfig中禁用它</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Networking Utilities  ---&gt;</span><br><span class="line">    [ ] TC        <span class="comment"># 禁用</span></span><br></pre></td></tr></table></figure>
-<h2 id="创建inittab-rcS和fstab文件">创建inittab,rcS和fstab文件</h2>
+<p>Disable it in make menuconfig</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Networking Utilities  ---&gt;</span><br><span class="line">    [ ] TC        <span class="comment"># Disable</span></span><br></pre></td></tr></table></figure>
+<h2 id="Create-inittab-rcS-and-fstab-files">Create inittab, rcS, and fstab files</h2>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> _install</span><br><span class="line"></span><br><span class="line"><span class="built_in">mkdir</span> -p dev etc home lib/modules lib64 mnt proc root sys tmp var</span><br><span class="line"></span><br><span class="line"><span class="built_in">touch</span> etc/inittab</span><br><span class="line"></span><br><span class="line"><span class="built_in">mkdir</span> -p etc/init.d/</span><br><span class="line"><span class="built_in">touch</span> etc/init.d/rcS</span><br><span class="line"></span><br><span class="line"><span class="built_in">touch</span> etc/fstab</span><br><span class="line"></span><br><span class="line"><span class="built_in">chmod</span> 755 etc/inittab</span><br><span class="line"><span class="built_in">chmod</span> 755 etc/init.d/rcS</span><br></pre></td></tr></table></figure>
-<p>inittab语法：</p>
+<p>inittab syntax:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;id&gt;:&lt;runlevels&gt;:&lt;action&gt;:&lt;process&gt;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>id : /dev/id</li>
-<li>runlevels : 忽略</li>
-<li>action : 何时执行，有以下选项 sysinit, respawn, askfirst, wait, once,restart, ctrlaltdel, and shutdown</li>
-<li>process : 应用程序或脚本</li>
+<li>runlevels: ignore</li>
+<li>action: when to execute, with the following options: sysinit, respawn, askfirst, wait, once, restart, ctrlaltdel, and shutdown</li>
+<li>process: application or script</li>
 </ul>
-<p><code>etc/inittab</code>写入以下内容</p>
+<p><code>etc/inittab</code>Write the following content</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">::sysinit:/etc/init.d/rcS</span><br><span class="line">::respawn:-/bin/sh</span><br><span class="line">::askfirst:-/bin/sh</span><br><span class="line">::ctrlaltdel:/bin/umount -a -r</span><br></pre></td></tr></table></figure>
-<p><code>etc/init.d/rcS</code>写入如下内容：</p>
+<p><code>etc/init.d/rcS</code>Write the following content:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/bin/mount -a</span><br><span class="line"><span class="built_in">mkdir</span> -p /dev/pts</span><br><span class="line">mount -t devpts devpts /dev/pts</span><br><span class="line">mount -t configfs none /sys/kernel/config</span><br><span class="line"><span class="keyword">if</span> [ -e /proc/sys/kernel/hotplug ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> /sbin/mdev &gt; /proc/sys/kernel/hotplug</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line">mdev -s</span><br></pre></td></tr></table></figure>
-<p><code>etc/fstab</code>写入如下内容:</p>
+<p><code>etc/fstab</code>Write the following content:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#device mount-point type option dump fsck</span></span><br><span class="line">proc  /proc proc  defaults 0 0</span><br><span class="line">tmpfs /tmp tmpfs defaults 0 0</span><br><span class="line">none  /tmp  ramfs defaults 0 0</span><br><span class="line">sysfs /sys  sysfs defaults 0 0</span><br><span class="line">mdev  /dev  ramfs defaults 0 0</span><br></pre></td></tr></table></figure>
-<h2 id="添加设备文件">添加设备文件</h2>
+<h2 id="Add-device-file">Add device file</h2>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> dev</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">mknod</span> console c 5 1</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">mknod</span> null c 1 3</span><br></pre></td></tr></table></figure>
-<h2 id="添加库文件">添加库文件</h2>
-<p>这一步是可选的</p>
+<h2 id="Add-library-file">Add library file</h2>
+<p>This step is optional</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> _install</span><br><span class="line"><span class="built_in">cp</span> /usr/aarch64-linux-gnu/lib/ld-linux-aarch64.so.1 lib/</span><br><span class="line"><span class="built_in">cp</span> /usr/aarch64-linux-gnu/lib/libc.so.6 lib/</span><br><span class="line"><span class="built_in">cp</span> /usr/aarch64-linux-gnu/lib/libm.so.6 lib/</span><br></pre></td></tr></table></figure>
-<h2 id="打包">打包</h2>
+<h2 id="Package">Package</h2>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> busybox-1.37.0/_install</span><br><span class="line">find . | cpio -o -H newc | gzip -c &gt; ../initramfs.cpio.gz</span><br><span class="line"><span class="built_in">cp</span> ../initramfs.cpio.gz ~/tftp</span><br></pre></td></tr></table></figure>
-<h1 id="Linux-内核编译">Linux 内核编译</h1>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install gcc-aarch64-linux-gnu</span><br><span class="line"><span class="built_in">sudo</span> apt install libssl-dev</span><br><span class="line"></span><br><span class="line">wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.10.238.tar.xz</span><br><span class="line">tar xvf linux-5.10.238.tar.xz</span><br><span class="line"><span class="built_in">cd</span> linux-5.10.238</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- clean</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig</span><br><span class="line"><span class="comment"># 这一步是开发内核模块需要的，可选</span></span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_prepare</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image -j$(<span class="built_in">nproc</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">cp</span> <span class="built_in">arch</span>/arm64/boot/Image ~/tftp</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h1 id="Emacs-clangd-阅读Linux源码">Emacs + clangd 阅读Linux源码</h1>
-<p>在Linux源码根路径下添加.clangd</p>
+<h1 id="Linux-kernel-compilation">Linux kernel compilation</h1>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install gcc-aarch64-linux-gnu</span><br><span class="line"><span class="built_in">sudo</span> apt install libssl-dev</span><br><span class="line"></span><br><span class="line">wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.10.238.tar.xz</span><br><span class="line">tar xvf linux-5.10.238.tar.xz</span><br><span class="line"><span class="built_in">cd</span> linux-5.10.238</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- clean</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig</span><br><span class="line"><span class="comment"># This step is required for developing kernel modules, optional</span></span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_prepare</span><br><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image -j$(<span class="built_in">nproc</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">cp</span> <span class="built_in">arch</span>/arm64/boot/Image ~/tftp</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="Emacs-clangd-for-reading-Linux-source-code">Emacs + clangd for reading Linux source code</h1>
+<p>Add .clangd in the root path of Linux source code</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CompileFlags:</span><br><span class="line">  Add: -Wno-unknown-warning-option</span><br><span class="line">  Remove: <span class="section">[-m*, -f*]</span></span><br></pre></td></tr></table></figure>
-<p>生成compile_command.json(需要python3)</p>
+<p>Generate compile_command.json (requires python3)</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./scripts/clang-tools/gen_compile_commands.py</span><br></pre></td></tr></table></figure>
-<p>emacs 配置参考</p>
-<div class="tag link"><a class="link-card" title="我的Emacs配置" href="https://even629.com/posts/28521/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">我的Emacs配置</p><p class="url">https://even629.com/posts/28521/</p></div></a></div>
-<h1 id="Emacs-dts-lsp-阅读设备树">Emacs + dts-lsp 阅读设备树</h1>
-<p>使用的是<a target="_blank" rel="noopener" href="https://github.com/kylebonnici/dts-lsp">dts-lsp</a>：</p>
+<p>Emacs configuration reference</p>
+<div class="tag link"><a class="link-card" title="MyEmacsConfiguration" href="https://even629.com/posts/28521/"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">MyEmacsConfiguration</p><p class="url">https://even629.com/posts/28521/</p></div></a></div>
+<h1 id="Emacs-dts-lsp-for-reading-device-tree">Emacs + dts-lsp for reading device tree</h1>
+<p>Using<a target="_blank" rel="noopener" href="https://github.com/kylebonnici/dts-lsp">dts-lsp</a>：</p>
 <div class="tag link"><a class="link-card" title="dts-lsp" target="_blank" rel="noopener" href="https://github.com/kylebonnici/dts-lsp"><div class="left"><img loading="lazy" src="https://github.githubassets.com/favicons/favicon.svg"/></div><div class="right"><p class="text">dts-lsp</p><p class="url">https://github.com/kylebonnici/dts-lsp</p></div></a></div>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm i -g devicetree-language-server</span><br></pre></td></tr></table></figure>
-<p>在内核根目录下创建<code>.dir-locals.el</code>，内容如下</p>
+<p>Create in the kernel root directory<code>.dir-locals.el</code>, the content is as follows</p>
 <figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">((<span class="name">dts-mode</span></span><br><span class="line">  . ((<span class="name">eglot-workspace-configuration</span></span><br><span class="line">      . ((<span class="name">devicetree</span></span><br><span class="line">          (<span class="name">cwd</span> . <span class="string">&quot;/home/zhaohang/repository/linux/rk3568_linux_5.10/kernel&quot;</span>)          </span><br><span class="line">          (<span class="name">defaultIncludePaths</span> . [<span class="string">&quot;include&quot;</span>])</span><br><span class="line">          (<span class="name">defaultBindingType</span> . <span class="string">&quot;DevicetreeOrg&quot;</span>)</span><br><span class="line">          (<span class="name">defaultDeviceOrgBindingsMetaSchema</span> . [<span class="string">&quot;/home/zhaohang/repository/dt-schema/dtschema/meta-schemas&quot;</span>])</span><br><span class="line">          (<span class="name">defaultDeviceOrgTreeBindings</span> . [</span><br><span class="line">                                           <span class="comment">;; &quot;/home/zhaohang/repository/dt-schema/dtschema/schemas&quot;</span></span><br><span class="line">                                           <span class="string">&quot;/home/zhaohang/repository/linux/rk3568_linux_5.10/kernel/Documentation/devicetree/bindings&quot;</span></span><br><span class="line">                                           ])</span><br><span class="line">          (<span class="name">defaultShowFormattingErrorAsDiagnostics</span> . <span class="symbol">:json-false</span>)</span><br><span class="line">          ))))))</span><br></pre></td></tr></table></figure>
-<p>其中<a target="_blank" rel="noopener" href="https://github.com/devicetree-org/dt-schema">dt-schema</a>来自：</p>
+<p>among which<a target="_blank" rel="noopener" href="https://github.com/devicetree-org/dt-schema">dt-schema</a>from:</p>
 <p align="center"><div class="tag link"><a class="link-card" title="dt-schema" target="_blank" rel="noopener" href="https://github.com/devicetree-org/dt-schema"><div class="left"><img loading="lazy" src="/images/logo.png"/></div><div class="right"><p class="text">dt-schema</p><p class="url">https://github.com/devicetree-org/dt-schema</p></div></a></div></p>
-<p>emacs中eglot配置如下：</p>
+<p>The eglot configuration in Emacs is as follows:</p>
 <figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">use-package</span> dts-mode</span><br><span class="line">  <span class="symbol">:ensure</span> <span class="literal">t</span></span><br><span class="line">  <span class="symbol">:defer</span> <span class="literal">t</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="comment">;; lsp语言服务器配置</span></span><br><span class="line">(<span class="name">use-package</span> eglot</span><br><span class="line">  <span class="symbol">:ensure</span> <span class="literal">t</span></span><br><span class="line">  <span class="symbol">:defer</span> <span class="number">1</span></span><br><span class="line">  <span class="symbol">:config</span></span><br><span class="line">  (<span class="name">setq</span> eglot-server-programs</span><br><span class="line">        &#x27;(((c-mode-hook c++-mode-hook c++-ts-mode c-ts-mode)</span><br><span class="line">                                                       . (<span class="string">&quot;clangd&quot;</span></span><br><span class="line">                                                          <span class="string">&quot;--enable-config&quot;</span></span><br><span class="line">                                                          <span class="string">&quot;--background-index&quot;</span></span><br><span class="line">                                                          ;; <span class="string">&quot;--background-index-priority=low&quot;</span></span><br><span class="line">                                                          <span class="string">&quot;--clang-tidy&quot;</span></span><br><span class="line">                                                          <span class="string">&quot;--completion-style=detailed&quot;</span></span><br><span class="line">                                                          <span class="string">&quot;--header-insertion=never&quot;</span></span><br><span class="line">                                                          <span class="string">&quot;--pretty&quot;</span></span><br><span class="line">                                                          ))</span><br><span class="line">          ((dts-mode)                                  . (<span class="string">&quot;devicetree-language-server&quot;</span> <span class="string">&quot;--stdio&quot;</span>))</span><br><span class="line">          ((rust-mode rust-ts-mode)                    . (<span class="string">&quot;rust-analyzer&quot;</span> :initializationOptions</span><br><span class="line">                                                          (:cargo (:buildScripts (:enable <span class="literal">t</span>))</span><br><span class="line">                                                                  :procMacro (:enable <span class="literal">t</span>))))</span><br><span class="line">          ((python-mode python-ts-mode)                . (<span class="string">&quot;pyright-langserver&quot;</span> <span class="string">&quot;--stdio&quot;</span>))</span><br><span class="line"></span><br><span class="line">          ))</span><br><span class="line"></span><br><span class="line">  <span class="comment">;; 关闭lsp自动格式化</span></span><br><span class="line">  (<span class="name">setq</span> eglot-ignored-server-capabilities &#x27;(<span class="symbol">:documentOnTypeFormattingProvider</span>))</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="comment">;;自动打开eglot</span></span><br><span class="line">(<span class="name">dolist</span> (<span class="name">hook</span> &#x27;(c-mode-hook c-ts-mode-hook c++-mode-hook c++-ts-mode-hook</span><br><span class="line">                            dts-mode-hook</span><br><span class="line">                            rust-mode-hook rust-ts-mode-hook</span><br><span class="line">                            python-mode-hook python-ts-mode-hook</span><br><span class="line">			    ))</span><br><span class="line">  (<span class="name">add-hook</span> hook &#x27;eglot-ensure))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h1 id="qemu运行">qemu运行</h1>
+<h1 id="QEMU-running">QEMU running</h1>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-aarch64 \</span><br><span class="line">  -cpu cortex-a57 \</span><br><span class="line">  -m 512M \</span><br><span class="line">  -machine <span class="built_in">type</span>=virt \</span><br><span class="line">  -nographic \</span><br><span class="line">  -smp 2 \</span><br><span class="line">  -kernel ~/tftp/Image  \</span><br><span class="line">  -initrd ~/tftp/initramfs.cpio.gz   \</span><br><span class="line">  -append <span class="string">&quot;rdinit=/linuxrc console=ttyAMA0&quot;</span> \</span><br><span class="line">  -device virtio-scsi-device</span><br></pre></td></tr></table></figure>
-<p>结果：</p>
+<p>Result:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br></pre></td><td class="code"><pre><span class="line">zhaohang@ZhaoHang:~/kernel/my_arm64_programming$ qemu-system-aarch64 \</span><br><span class="line">  -cpu cortex-a57 \</span><br><span class="line">  -m 512M \</span><br><span class="line">  -machine <span class="built_in">type</span>=virt \</span><br><span class="line">  -nographic \</span><br><span class="line">  -smp 2 \</span><br><span class="line">  -kernel ~/tftp/Image  \</span><br><span class="line">  -initrd ~/tftp/initramfs.cpio.gz   \</span><br><span class="line">  -append <span class="string">&quot;rdinit=/linuxrc console=ttyAMA0&quot;</span> \</span><br><span class="line">  -device virtio-scsi-device</span><br><span class="line">[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x411fd070]</span><br><span class="line">[    0.000000] Linux version 5.10.238 (zhaohang@ZhaoHang) (aarch64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0, GNU ld (GNU Binutils <span class="keyword">for</span> Ubuntu) 2.38) <span class="comment">#2 SMP PREEMPT Mon Jun 23 13:01:18 CST 2025</span></span><br><span class="line">[    0.000000] random: crng init <span class="keyword">done</span></span><br><span class="line">[    0.000000] Machine model: linux,dummy-virt</span><br><span class="line">[    0.000000] efi: UEFI not found.</span><br><span class="line">[    0.000000] NUMA: No NUMA configuration found</span><br><span class="line">[    0.000000] NUMA: Faking a node at [mem 0x0000000040000000-0x000000005fffffff]</span><br><span class="line">[    0.000000] NUMA: NODE_DATA [mem 0x5fef4b00-0x5fef6fff]</span><br><span class="line">[    0.000000] Zone ranges:</span><br><span class="line">[    0.000000]   DMA      [mem 0x0000000040000000-0x000000005fffffff]</span><br><span class="line">[    0.000000]   DMA32    empty</span><br><span class="line">[    0.000000]   Normal   empty</span><br><span class="line">[    0.000000] Movable zone start <span class="keyword">for</span> each node</span><br><span class="line">[    0.000000] Early memory node ranges</span><br><span class="line">[    0.000000]   node   0: [mem 0x0000000040000000-0x000000005fffffff]</span><br><span class="line">[    0.000000] Initmem setup node 0 [mem 0x0000000040000000-0x000000005fffffff]</span><br><span class="line">[    0.000000] cma: Reserved 32 MiB at 0x000000005c000000</span><br><span class="line">[    0.000000] psci: probing <span class="keyword">for</span> conduit method from DT.</span><br><span class="line">[    0.000000] psci: PSCIv1.1 detected <span class="keyword">in</span> firmware.</span><br><span class="line">[    0.000000] psci: Using standard PSCI v0.2 <span class="keyword">function</span> IDs</span><br><span class="line">[    0.000000] psci: Trusted OS migration not required</span><br><span class="line">[    0.000000] psci: SMC Calling Convention v1.0</span><br><span class="line">[    0.000000] percpu: Embedded 23 pages/cpu s56664 r8192 d29352 u94208</span><br><span class="line">[    0.000000] Detected PIPT I-cache on CPU0</span><br><span class="line">[    0.000000] CPU features: detected: ARM erratum 832075</span><br><span class="line">[    0.000000] CPU features: detected: ARM erratum 834220</span><br><span class="line">[    0.000000] CPU features: detected: EL2 vector hardening</span><br><span class="line">[    0.000000] CPU features: kernel page table isolation forced ON by KASLR</span><br><span class="line">[    0.000000] CPU features: detected: Kernel page table isolation (KPTI)</span><br><span class="line">[    0.000000] CPU features: detected: Spectre-v2</span><br><span class="line">[    0.000000] CPU features: detected: Spectre-v4</span><br><span class="line">[    0.000000] CPU features: detected: ARM errata 1165522, 1319367, or 1530923</span><br><span class="line">[    0.000000] CPU features: detected: Spectre-BHB</span><br><span class="line">[    0.000000] CPU features: detected: ARM erratum 1742098</span><br><span class="line">[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 129024</span><br><span class="line">[    0.000000] Policy zone: DMA</span><br><span class="line">[    0.000000] Kernel <span class="built_in">command</span> line: rdinit=/linuxrc console=ttyAMA0</span><br><span class="line">[    0.000000] Dentry cache <span class="built_in">hash</span> table entries: 65536 (order: 7, 524288 bytes, linear)</span><br><span class="line">[    0.000000] Inode-cache <span class="built_in">hash</span> table entries: 32768 (order: 6, 262144 bytes, linear)</span><br><span class="line">[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off</span><br><span class="line">[    0.000000] Memory: 439372K/524288K available (14464K kernel code, 2810K rwdata, 7632K rodata, 5952K init, 512K bss, 52148K reserved, 32768K cma-reserved)</span><br><span class="line">[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1</span><br><span class="line">[    0.000000] rcu: Preemptible hierarchical RCU implementation.</span><br><span class="line">[    0.000000] rcu:     RCU event tracing is enabled.</span><br><span class="line">[    0.000000] rcu:     RCU restricting CPUs from NR_CPUS=256 to nr_cpu_ids=2.</span><br><span class="line">[    0.000000]  Trampoline variant of Tasks RCU enabled.</span><br><span class="line">[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.</span><br><span class="line">[    0.000000] rcu: Adjusting geometry <span class="keyword">for</span> rcu_fanout_leaf=16, nr_cpu_ids=2</span><br><span class="line">[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0</span><br><span class="line">[    0.000000] GICv2m: range[mem 0x08020000-0x08020fff], SPI[80:143]</span><br><span class="line">[    0.000000] arch_timer: cp15 timer(s) running at 62.50MHz (virt).</span><br><span class="line">[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x1cd42e208c, max_idle_ns: 881590405314 ns</span><br><span class="line">[    0.000135] sched_clock: 56 bits at 62MHz, resolution 16ns, wraps every 4398046511096ns</span><br><span class="line">[    0.005145] Console: colour dummy device 80x25</span><br><span class="line">[    0.006576] Calibrating delay loop (skipped), value calculated using timer frequency.. 125.00 BogoMIPS (lpj=250000)</span><br><span class="line">[    0.006668] pid_max: default: 32768 minimum: 301</span><br><span class="line">[    0.007333] LSM: Security Framework initializing</span><br><span class="line">[    0.008050] Mount-cache <span class="built_in">hash</span> table entries: 1024 (order: 1, 8192 bytes, linear)</span><br><span class="line">[    0.008075] Mountpoint-cache <span class="built_in">hash</span> table entries: 1024 (order: 1, 8192 bytes, linear)</span><br><span class="line">[    0.025711] /cpus/cpu-map: empty cluster</span><br><span class="line">[    0.030337] rcu: Hierarchical SRCU implementation.</span><br><span class="line">[    0.032757] EFI services will not be available.</span><br><span class="line">[    0.033350] smp: Bringing up secondary CPUs ...</span><br><span class="line">[    0.036124] Detected PIPT I-cache on CPU1</span><br><span class="line">[    0.036589] CPU1: Booted secondary processor 0x0000000001 [0x411fd070]</span><br><span class="line">[    0.038611] smp: Brought up 1 node, 2 CPUs</span><br><span class="line">[    0.038641] SMP: Total of 2 processors activated.</span><br><span class="line">[    0.038684] CPU features: detected: 32-bit EL0 Support</span><br><span class="line">[    0.038732] CPU features: detected: CRC32 instructions</span><br><span class="line">[    0.038761] CPU features: detected: 32-bit EL1 Support</span><br><span class="line">[    0.087011] CPU: All CPU(s) started at EL1</span><br><span class="line">[    0.087320] alternatives: patching kernel code</span><br><span class="line">[    0.100786] devtmpfs: initialized</span><br><span class="line">[    0.106839] KASLR enabled</span><br><span class="line">[    0.107566] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns</span><br><span class="line">[    0.107783] futex <span class="built_in">hash</span> table entries: 512 (order: 3, 32768 bytes, linear)</span><br><span class="line">[    0.110482] pinctrl core: initialized pinctrl subsystem</span><br><span class="line">[    0.117149] DMI not present or invalid.</span><br><span class="line">[    0.123022] NET: Registered protocol family 16</span><br><span class="line">[    0.130687] DMA: preallocated 128 KiB GFP_KERNEL pool <span class="keyword">for</span> atomic allocations</span><br><span class="line">[    0.130888] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool <span class="keyword">for</span> atomic allocations</span><br><span class="line">[    0.131032] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool <span class="keyword">for</span> atomic allocations</span><br><span class="line">[    0.131170] audit: initializing netlink subsys (disabled)</span><br><span class="line">[    0.132726] audit: <span class="built_in">type</span>=2000 audit(0.124:1): state=initialized audit_enabled=0 res=1</span><br><span class="line">[    0.135229] thermal_sys: Registered thermal governor <span class="string">&#x27;step_wise&#x27;</span></span><br><span class="line">[    0.135284] thermal_sys: Registered thermal governor <span class="string">&#x27;power_allocator&#x27;</span></span><br><span class="line">[    0.135718] cpuidle: using governor menu</span><br><span class="line">[    0.136329] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.</span><br><span class="line">[    0.136815] ASID allocator initialised with 32768 entries</span><br><span class="line">[    0.139125] Serial: AMBA PL011 UART driver</span><br><span class="line">[    0.165966] 9000000.pl011: ttyAMA0 at MMIO 0x9000000 (irq = 47, base_baud = 0) is a PL011 rev1</span><br><span class="line">[    0.256055] printk: console [ttyAMA0] enabled</span><br><span class="line">[    0.275753] HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages</span><br><span class="line">[    0.276425] HugeTLB registered 32.0 MiB page size, pre-allocated 0 pages</span><br><span class="line">[    0.278075] HugeTLB registered 2.00 MiB page size, pre-allocated 0 pages</span><br><span class="line">[    0.279114] HugeTLB registered 64.0 KiB page size, pre-allocated 0 pages</span><br><span class="line">[    0.287377] cryptd: max_cpu_qlen <span class="built_in">set</span> to 1000</span><br><span class="line">[    0.295509] ACPI: Interpreter disabled.</span><br><span class="line">[    0.298412] iommu: Default domain <span class="built_in">type</span>: Translated</span><br><span class="line">[    0.299715] vgaarb: loaded</span><br><span class="line">[    0.300806] SCSI subsystem initialized</span><br><span class="line">[    0.302702] usbcore: registered new interface driver usbfs</span><br><span class="line">[    0.303416] usbcore: registered new interface driver hub</span><br><span class="line">[    0.303948] usbcore: registered new device driver usb</span><br><span class="line">[    0.305361] pps_core: LinuxPPS API ver. 1 registered</span><br><span class="line">[    0.305774] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti &lt;giometti@linux.it&gt;</span><br><span class="line">[    0.306671] PTP clock support registered</span><br><span class="line">[    0.307422] EDAC MC: Ver: 3.0.0</span><br><span class="line">[    0.311302] FPGA manager framework</span><br><span class="line">[    0.312553] Advanced Linux Sound Architecture Driver Initialized.</span><br><span class="line">[    0.320481] clocksource: Switched to clocksource arch_sys_counter</span><br><span class="line">[    0.321721] VFS: Disk quotas dquot_6.6.0</span><br><span class="line">[    0.322248] VFS: Dquot-cache <span class="built_in">hash</span> table entries: 512 (order 0, 4096 bytes)</span><br><span class="line">[    0.325830] pnp: PnP ACPI: disabled</span><br><span class="line">[    0.352101] NET: Registered protocol family 2</span><br><span class="line">[    0.353501] IP idents <span class="built_in">hash</span> table entries: 8192 (order: 4, 65536 bytes, linear)</span><br><span class="line">[    0.357091] tcp_listen_portaddr_hash <span class="built_in">hash</span> table entries: 256 (order: 0, 4096 bytes, linear)</span><br><span class="line">[    0.357844] TCP established <span class="built_in">hash</span> table entries: 4096 (order: 3, 32768 bytes, linear)</span><br><span class="line">[    0.358536] TCP <span class="built_in">bind</span> <span class="built_in">hash</span> table entries: 4096 (order: 4, 65536 bytes, linear)</span><br><span class="line">[    0.359240] TCP: Hash tables configured (established 4096 <span class="built_in">bind</span> 4096)</span><br><span class="line">[    0.360804] UDP <span class="built_in">hash</span> table entries: 256 (order: 1, 8192 bytes, linear)</span><br><span class="line">[    0.361461] UDP-Lite <span class="built_in">hash</span> table entries: 256 (order: 1, 8192 bytes, linear)</span><br><span class="line">[    0.362658] NET: Registered protocol family 1</span><br><span class="line">[    0.366482] RPC: Registered named UNIX socket transport module.</span><br><span class="line">[    0.366894] RPC: Registered udp transport module.</span><br><span class="line">[    0.367151] RPC: Registered tcp transport module.</span><br><span class="line">[    0.367596] RPC: Registered tcp NFSv4.1 backchannel transport module.</span><br><span class="line">[    0.368532] PCI: CLS 0 bytes, default 64</span><br><span class="line">[    0.371336] Unpacking initramfs...</span><br><span class="line">[    0.423234] Freeing initrd memory: 1156K</span><br><span class="line">[    0.425734] hw perfevents: enabled with armv8_pmuv3 PMU driver, 7 counters available</span><br><span class="line">[    0.426386] kvm [1]: HYP mode not available</span><br><span class="line">[    0.438866] Initialise system trusted keyrings</span><br><span class="line">[    0.441323] workingset: timestamp_bits=42 max_order=17 bucket_order=0</span><br><span class="line">[    0.449648] squashfs: version 4.0 (2009/01/31) Phillip Lougher</span><br><span class="line">[    0.451781] NFS: Registering the id_resolver key <span class="built_in">type</span></span><br><span class="line">[    0.452635] Key <span class="built_in">type</span> id_resolver registered</span><br><span class="line">[    0.452872] Key <span class="built_in">type</span> id_legacy registered</span><br><span class="line">[    0.453347] nfs4filelayout_init: NFSv4 File Layout Driver Registering...</span><br><span class="line">[    0.453801] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...</span><br><span class="line">[    0.454953] 9p: Installing v9fs 9p2000 file system support</span><br><span class="line">[    0.485329] Key <span class="built_in">type</span> asymmetric registered</span><br><span class="line">[    0.486010] Asymmetric key parser <span class="string">&#x27;x509&#x27;</span> registered</span><br><span class="line">[    0.486459] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 245)</span><br><span class="line">[    0.486881] io scheduler mq-deadline registered</span><br><span class="line">[    0.487275] io scheduler kyber registered</span><br><span class="line">[    0.498447] pl061_gpio 9030000.pl061: PL061 GPIO chip registered</span><br><span class="line">[    0.501854] pci-host-generic 4010000000.pcie: host bridge /pcie@10000000 ranges:</span><br><span class="line">[    0.502917] pci-host-generic 4010000000.pcie:       IO 0x003eff0000..0x003effffff -&gt; 0x0000000000</span><br><span class="line">[    0.503846] pci-host-generic 4010000000.pcie:      MEM 0x0010000000..0x003efeffff -&gt; 0x0010000000</span><br><span class="line">[    0.504662] pci-host-generic 4010000000.pcie:      MEM 0x8000000000..0xffffffffff -&gt; 0x8000000000</span><br><span class="line">[    0.505854] pci-host-generic 4010000000.pcie: ECAM at [mem 0x4010000000-0x401fffffff] <span class="keyword">for</span> [bus 00-ff]</span><br><span class="line">[    0.507028] pci-host-generic 4010000000.pcie: PCI host bridge to bus 0000:00</span><br><span class="line">[    0.507648] pci_bus 0000:00: root bus resource [bus 00-ff]</span><br><span class="line">[    0.508176] pci_bus 0000:00: root bus resource [io  0x0000-0xffff]</span><br><span class="line">[    0.509569] pci_bus 0000:00: root bus resource [mem 0x10000000-0x3efeffff]</span><br><span class="line">[    0.511529] pci_bus 0000:00: root bus resource [mem 0x8000000000-0xffffffffff]</span><br><span class="line">[    0.513307] pci 0000:00:00.0: [1b36:0008] <span class="built_in">type</span> 00 class 0x060000</span><br><span class="line">[    0.515919] pci 0000:00:01.0: [1af4:1000] <span class="built_in">type</span> 00 class 0x020000</span><br><span class="line">[    0.517340] pci 0000:00:01.0: reg 0x10: [io  0x0000-0x001f]</span><br><span class="line">[    0.517754] pci 0000:00:01.0: reg 0x14: [mem 0x00000000-0x00000fff]</span><br><span class="line">[    0.518388] pci 0000:00:01.0: reg 0x20: [mem 0x00000000-0x00003fff 64bit pref]</span><br><span class="line">[    0.518923] pci 0000:00:01.0: reg 0x30: [mem 0x00000000-0x0003ffff pref]</span><br><span class="line">[    0.521212] pci 0000:00:01.0: BAR 6: assigned [mem 0x10000000-0x1003ffff pref]</span><br><span class="line">[    0.522137] pci 0000:00:01.0: BAR 4: assigned [mem 0x8000000000-0x8000003fff 64bit pref]</span><br><span class="line">[    0.523076] pci 0000:00:01.0: BAR 1: assigned [mem 0x10040000-0x10040fff]</span><br><span class="line">[    0.523801] pci 0000:00:01.0: BAR 0: assigned [io  0x1000-0x101f]</span><br><span class="line">[    0.528448] EINJ: ACPI disabled.</span><br><span class="line">[    0.542283] virtio-pci 0000:00:01.0: enabling device (0000 -&gt; 0003)</span><br><span class="line">[    0.554485] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled</span><br><span class="line">[    0.558302] SuperH (H)SCI(F) driver initialized</span><br><span class="line">[    0.559486] msm_serial: driver initialized</span><br><span class="line">[    0.561993] cacheinfo: Unable to detect cache hierarchy <span class="keyword">for</span> CPU 0</span><br><span class="line">[    0.575536] loop: module loaded</span><br><span class="line">[    0.577188] megasas: 07.714.04.00-rc1</span><br><span class="line">[    0.581247] physmap-flash 0.flash: physmap platform flash device: [mem 0x00000000-0x03ffffff]</span><br><span class="line">[    0.583156] 0.flash: Found 2 x16 devices at 0x0 <span class="keyword">in</span> 32-bit bank. Manufacturer ID 0x000000 Chip ID 0x000000</span><br><span class="line">[    0.584568] Intel/Sharp Extended Query Table at 0x0031</span><br><span class="line">[    0.585746] Using buffer write method</span><br><span class="line">[    0.586466] physmap-flash 0.flash: physmap platform flash device: [mem 0x04000000-0x07ffffff]</span><br><span class="line">[    0.587833] 0.flash: Found 2 x16 devices at 0x0 <span class="keyword">in</span> 32-bit bank. Manufacturer ID 0x000000 Chip ID 0x000000</span><br><span class="line">[    0.589950] Intel/Sharp Extended Query Table at 0x0031</span><br><span class="line">[    0.590679] Using buffer write method</span><br><span class="line">[    0.591154] Concatenating MTD devices:</span><br><span class="line">[    0.591566] (0): <span class="string">&quot;0.flash&quot;</span></span><br><span class="line">[    0.591870] (1): <span class="string">&quot;0.flash&quot;</span></span><br><span class="line">[    0.592172] into device <span class="string">&quot;0.flash&quot;</span></span><br><span class="line">[    0.639324] tun: Universal TUN/TAP device driver, 1.6</span><br><span class="line">[    0.648697] thunder_xcv, ver 1.0</span><br><span class="line">[    0.649091] thunder_bgx, ver 1.0</span><br><span class="line">[    0.649532] nicpf, ver 1.0</span><br><span class="line">[    0.651118] hclge is initializing</span><br><span class="line">[    0.651699] hns3: Hisilicon Ethernet Network Driver <span class="keyword">for</span> Hip08 Family - version</span><br><span class="line">[    0.652969] hns3: Copyright (c) 2017 Huawei Corporation.</span><br><span class="line">[    0.654822] e1000: Intel(R) PRO/1000 Network Driver</span><br><span class="line">[    0.655566] e1000: Copyright (c) 1999-2006 Intel Corporation.</span><br><span class="line">[    0.656421] e1000e: Intel(R) PRO/1000 Network Driver</span><br><span class="line">[    0.657100] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.</span><br><span class="line">[    0.657828] igb: Intel(R) Gigabit Ethernet Network Driver</span><br><span class="line">[    0.658543] igb: Copyright (c) 2007-2014 Intel Corporation.</span><br><span class="line">[    0.659076] igbvf: Intel(R) Gigabit Virtual Function Network Driver</span><br><span class="line">[    0.659905] igbvf: Copyright (c) 2009 - 2012 Intel Corporation.</span><br><span class="line">[    0.661636] sky2: driver version 1.30</span><br><span class="line">[    0.663482] VFIO - User Level meta-driver version: 0.3</span><br><span class="line">[    0.666363] ehci_hcd: USB 2.0 <span class="string">&#x27;Enhanced&#x27;</span> Host Controller (EHCI) Driver</span><br><span class="line">[    0.666801] ehci-pci: EHCI PCI platform driver</span><br><span class="line">[    0.667200] ehci-platform: EHCI generic platform driver</span><br><span class="line">[    0.667555] ehci-orion: EHCI orion driver</span><br><span class="line">[    0.668162] ehci-exynos: EHCI Exynos driver</span><br><span class="line">[    0.669422] ohci_hcd: USB 1.1 <span class="string">&#x27;Open&#x27;</span> Host Controller (OHCI) Driver</span><br><span class="line">[    0.670008] ohci-pci: OHCI PCI platform driver</span><br><span class="line">[    0.670583] ohci-platform: OHCI generic platform driver</span><br><span class="line">[    0.671027] ohci-exynos: OHCI Exynos driver</span><br><span class="line">[    0.672066] usbcore: registered new interface driver usb-storage</span><br><span class="line">[    0.678548] rtc-pl031 9010000.pl031: registered as rtc0</span><br><span class="line">[    0.679438] rtc-pl031 9010000.pl031: setting system clock to 2025-06-23T05:12:11 UTC (1750655531)</span><br><span class="line">[    0.680812] i2c /dev entries driver</span><br><span class="line">[    0.687138] sdhci: Secure Digital Host Controller Interface driver</span><br><span class="line">[    0.687486] sdhci: Copyright(c) Pierre Ossman</span><br><span class="line">[    0.688175] Synopsys Designware Multimedia Card Interface Driver</span><br><span class="line">[    0.689770] sdhci-pltfm: SDHCI platform and OF driver helper</span><br><span class="line">[    0.691932] ledtrig-cpu: registered to indicate activity on CPUs</span><br><span class="line">[    0.694429] usbcore: registered new interface driver usbhid</span><br><span class="line">[    0.694654] usbhid: USB HID core driver</span><br><span class="line">[    0.700987] NET: Registered protocol family 17</span><br><span class="line">[    0.702090] 9pnet: Installing 9P2000 support</span><br><span class="line">[    0.702525] Key <span class="built_in">type</span> dns_resolver registered</span><br><span class="line">[    0.703492] registered taskstats version 1</span><br><span class="line">[    0.703776] Loading compiled-in X.509 certificates</span><br><span class="line">[    0.710892] input: gpio-keys as /devices/platform/gpio-keys/input/input0</span><br><span class="line">[    0.714806] clk: Disabling unused clocks</span><br><span class="line">[    0.715339] ALSA device list:</span><br><span class="line">[    0.715654]   No soundcards found.</span><br><span class="line">[    0.718941] uart-pl011 9000000.pl011: no DMA platform data</span><br><span class="line">[    0.752373] Freeing unused kernel memory: 5952K</span><br><span class="line">[    0.753454] Run /linuxrc as init process</span><br><span class="line"></span><br><span class="line">Please press Enter to activate this console.</span><br><span class="line">~ <span class="comment">#</span></span><br><span class="line">~ <span class="comment"># ls</span></span><br><span class="line">bin      etc      lib      mnt      root     sys      usr</span><br><span class="line">dev      home     linuxrc  proc     sbin     tmp      var</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>按<kbd>command</kbd> + <kbd>a</kbd>, 然后按 <kbd>x</kbd> 可以退出qemu</p>
+<p>Press<kbd>command</kbd> + <kbd>a</kbd>, then press<kbd>x</kbd>to exit QEMU</p>
 </blockquote>
 
   </div>
@@ -279,7 +279,7 @@
 
     <div class="blog-post-comments">
         <div id="utterances_thread">
-            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
         </div>
     </div>
 
@@ -291,17 +291,17 @@
     <div id="nav-footer" style="display: none">
       <ul>
         
-          <li><a href="/">首页</a></li>
+          <li><a href="/en/">Home</a></li>
         
-          <li><a href="/archives/">归档</a></li>
+          <li><a href="/en/archives/">Archives</a></li>
         
-          <li><a href="/tags/">标签</a></li>
+          <li><a href="/en/tags/">Tags</a></li>
         
-          <li><a href="/categories/">分类</a></li>
+          <li><a href="/en/categories/">Categories</a></li>
         
-          <li><a href="/search/">搜索</a></li>
+          <li><a href="/en/search/">Search</a></li>
         
-          <li><a href="/en/">EN</a></li>
+          <li><a href="/en/">Zh-CN</a></li>
         
       </ul>
     </div>
@@ -309,34 +309,34 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#busybox%E7%BC%96%E8%AF%91"><span class="toc-text">busybox编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Patch"><span class="toc-text">Patch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91"><span class="toc-text">编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#make-menuconfig-%E5%A4%B1%E8%B4%A5"><span class="toc-text">make menuconfig 失败</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tc-build-error"><span class="toc-text">tc build error</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAinittab-rcS%E5%92%8Cfstab%E6%96%87%E4%BB%B6"><span class="toc-text">创建inittab,rcS和fstab文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E8%AE%BE%E5%A4%87%E6%96%87%E4%BB%B6"><span class="toc-text">添加设备文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E5%BA%93%E6%96%87%E4%BB%B6"><span class="toc-text">添加库文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%8C%85"><span class="toc-text">打包</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E5%86%85%E6%A0%B8%E7%BC%96%E8%AF%91"><span class="toc-text">Linux 内核编译</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-clangd-%E9%98%85%E8%AF%BBLinux%E6%BA%90%E7%A0%81"><span class="toc-text">Emacs + clangd 阅读Linux源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-dts-lsp-%E9%98%85%E8%AF%BB%E8%AE%BE%E5%A4%87%E6%A0%91"><span class="toc-text">Emacs + dts-lsp 阅读设备树</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#qemu%E8%BF%90%E8%A1%8C"><span class="toc-text">qemu运行</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Environment"><span class="toc-text">Environment</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Busybox-Compilation"><span class="toc-text">Busybox Compilation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Patch"><span class="toc-text">Patch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compilation"><span class="toc-text">Compilation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#make-menuconfig-Failed"><span class="toc-text">make menuconfig Failed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tc-build-error"><span class="toc-text">tc build error</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Create-inittab-rcS-and-fstab-files"><span class="toc-text">Create inittab, rcS, and fstab files</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Add-device-file"><span class="toc-text">Add device file</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Add-library-file"><span class="toc-text">Add library file</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Package"><span class="toc-text">Package</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-kernel-compilation"><span class="toc-text">Linux kernel compilation</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-clangd-for-reading-Linux-source-code"><span class="toc-text">Emacs + clangd for reading Linux source code</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Emacs-dts-lsp-for-reading-device-tree"><span class="toc-text">Emacs + dts-lsp for reading device tree</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#QEMU-running"><span class="toc-text">QEMU running</span></a></li></ol>
       </div>
     
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/posts/42869/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/posts/42869/&text=最小Linux系统编译与运行"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/posts/42869/&is_video=false&description=最小Linux系统编译与运行"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=最小Linux系统编译与运行&body=Check out this article: https://even629.com/posts/42869/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/posts/42869/&title=最小Linux系统编译与运行"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/posts/42869/&name=最小Linux系统编译与运行&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/posts/42869/&t=最小Linux系统编译与运行"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://even629.com/en/posts/42869/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://even629.com/en/posts/42869/&text=Compilation and Running of a Minimal Linux System"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://even629.com/en/posts/42869/&is_video=false&description=Compilation and Running of a Minimal Linux System"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Compilation and Running of a Minimal Linux System&body=Check out this article: https://even629.com/en/posts/42869/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://even629.com/en/posts/42869/&title=Compilation and Running of a Minimal Linux System"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://even629.com/en/posts/42869/&name=Compilation and Running of a Minimal Linux System&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://even629.com/en/posts/42869/&t=Compilation and Running of a Minimal Linux System"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
 
     <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
         
-          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
         
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
     </div>
 
   </div>
@@ -355,17 +355,17 @@
     <nav>
       <ul>
         <!--
-       --><li><a href="/">首页</a></li><!--
+       --><li><a href="/en/">Home</a></li><!--
      --><!--
-       --><li><a href="/archives/">归档</a></li><!--
+       --><li><a href="/en/archives/">Archives</a></li><!--
      --><!--
-       --><li><a href="/tags/">标签</a></li><!--
+       --><li><a href="/en/tags/">Tags</a></li><!--
      --><!--
-       --><li><a href="/categories/">分类</a></li><!--
+       --><li><a href="/en/categories/">Categories</a></li><!--
      --><!--
-       --><li><a href="/search/">搜索</a></li><!--
+       --><li><a href="/en/search/">Search</a></li><!--
      --><!--
-       --><li><a href="/en/posts/42869/">EN</a></li><!--
+       --><li><a href="/posts/42869/">Zh-CN</a></li><!--
      -->
       </ul>
     </nav>
@@ -379,21 +379,21 @@
  
   <link
     rel="preload"
-    href="/lib/font-awesome/css/all.min.css"
+    href="/en/lib/font-awesome/css/all.min.css"
     as="style"
     onload="this.onload=null;this.rel='stylesheet'"
   />
   <noscript
     ><link
       rel="stylesheet"
-      href="/lib/font-awesome/css/all.min.css"
+      href="/en/lib/font-awesome/css/all.min.css"
   /></noscript>
 
 
     <!-- jquery -->
 
   
-<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/en/lib/jquery/jquery.min.js"></script>
 
 
 
@@ -403,13 +403,13 @@
 
   
     
-<script src="/lib/clipboard/clipboard.min.js"></script>
+<script src="/en/lib/clipboard/clipboard.min.js"></script>
 
   
   <script type="text/javascript">
   $(function() {
     // copy-btn HTML
-    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
     btn += '<i class="fa-regular fa-clone"></i>';
     btn += '</span>';
     // mount it!
@@ -420,24 +420,24 @@
       }
     });
     clip.on('success', function(e) {
-      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.trigger.setAttribute('aria-label', "Copied!");
       e.clearSelection();
     })
   })
   </script>
 
 
-<script src="/js/main.js"></script>
+<script src="/en/js/main.js"></script>
 
 
-<script src="/js/tabs.js"></script>
+<script src="/en/js/tabs.js"></script>
 
 
   
-<script src="/js/toc.js"></script>
+<script src="/en/js/toc.js"></script>
 
   
-<script src="/js/outdate.js"></script>
+<script src="/en/js/outdate.js"></script>
 
 
 <!-- Fancybox lightbox (post pages only) -->
@@ -446,7 +446,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.js" crossorigin="anonymous"></script>
   
   
-<script src="/js/lightbox.js"></script>
+<script src="/en/js/lightbox.js"></script>
 
 
 <!-- search -->
