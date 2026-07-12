@@ -1,18 +1,1 @@
-document.addEventListener('DOMContentLoaded', function () {
-  var ele = document.getElementById('post-outdate-notice');
-  if (!ele) return;
-
-  var limitDay = parseInt(ele.getAttribute('data-limit-day'), 10);
-  var messagePrev = ele.getAttribute('data-message-prev');
-  var messageNext = ele.getAttribute('data-message-next');
-  var postUpdate = ele.getAttribute('data-post-update');
-
-  var updateDate = new Date(postUpdate);
-  var now = new Date();
-  var diffDay = Math.floor((now - updateDate) / (1000 * 60 * 60 * 24));
-
-  if (diffDay >= limitDay) {
-    ele.textContent = messagePrev + ' ' + diffDay + ' ' + messageNext;
-    ele.hidden = false;
-  }
-});
+document.addEventListener("DOMContentLoaded",function(){var t,e,a,n,d,o=document.getElementById("post-outdate-notice");o&&(d=parseInt(o.getAttribute("data-limit-day"),10),t=o.getAttribute("data-message-prev"),e=o.getAttribute("data-message-next"),a=o.getAttribute("data-post-update"),a=new Date(a),n=new Date,d<=(d=Math.floor((n-a)/864e5)))&&(o.textContent=t+" "+d+" "+e,o.hidden=!1)});
