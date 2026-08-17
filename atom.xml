@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>even629</title>
-  <icon>https://even629.com/en/icon.png</icon>
+  <icon>https://even629.com/images/favicon.ico</icon>
   <subtitle>blog</subtitle>
-  <link href="https://even629.com/en/atom.xml" rel="self"/>
+  <link href="https://even629.com/atom.xml" rel="self"/>
   
-  <link href="https://even629.com/en/"/>
-  <updated>2026-07-22T12:25:13.000Z</updated>
-  <id>https://even629.com/en/</id>
+  <link href="https://even629.com/"/>
+  <updated>2026-08-15T13:30:00.000Z</updated>
+  <id>https://even629.com/</id>
   
   <author>
     <name>even629</name>
@@ -17,452 +17,434 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>virtqueue</title>
-    <link href="https://even629.com/en/posts/2607221/"/>
-    <id>https://even629.com/en/posts/2607221/</id>
+    <title>VirtIO</title>
+    <link href="https://even629.com/posts/2607221/"/>
+    <id>https://even629.com/posts/2607221/</id>
     <published>2026-07-22T12:25:13.000Z</published>
-    <updated>2026-07-22T12:25:13.000Z</updated>
+    <updated>2026-08-15T13:30:00.000Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;hr&gt;
-&lt;details class=&quot;folding-tag&quot; &gt;&lt;summary&gt; Timeline &lt;/summary&gt;
-            &lt;div class=&#39;content&#39;&gt;
-            &lt;div class=&quot;timeline blue&quot;&gt;&lt;div class=&#39;timeline-item headline&#39;&gt;&lt;div class=&#39;timeline-item-title&#39;&gt;&lt;div class=&#39;item-circle&#39;&gt;&lt;p&gt;Timeline&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#39;timeline-item&#39;&gt;&lt;div class=&#39;timeline-item-title&#39;&gt;&lt;div class=&#39;item-circle&#39;&gt;&lt;p&gt;2026-07-22&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div</summary>
-        
-      
+    <summary type="html">本文介绍了VirtIO（虚拟输入输出）的基本概念与核心架构。VirtIO是虚拟机与主机设备之间的抽象层，通过极简的VirtIO设备实现数据传输，将大部分硬件处理工作卸载给主机，从而提升效率。文章详细阐述了VirtIO架构中的三个关键部分：前端驱动（Guest内核中的内核模块）、后端设备（如QEMU中的VirtIO设备）以及VirtQueues/VRings。其中，VRing是实际的数据结构，经典布局为split ring，由描述符表、可用环和已用环三块连续内存区域组成，采用无锁SPSC机制实现驱动与设备间的数据共享与通知。文章还提及了VirtIO规范的标准化意义，以及不同实现（如Linux内核与OpenAMP）中的灵活性。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
-    <title>open-gpu-kernel-modules compilation</title>
-    <link href="https://even629.com/en/posts/2607181/"/>
-    <id>https://even629.com/en/posts/2607181/</id>
+    <title>open-gpu-kernel-modules 编译</title>
+    <link href="https://even629.com/posts/2607181/"/>
+    <id>https://even629.com/posts/2607181/</id>
     <published>2026-07-18T07:25:13.000Z</published>
     <updated>2026-07-18T06:25:13.000Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;hr&gt;
-&lt;details class=&quot;folding-tag&quot; &gt;&lt;summary&gt; Timeline &lt;/summary&gt;
-            &lt;div class=&#39;content&#39;&gt;
-            &lt;div class=&quot;timeline blue&quot;&gt;&lt;div class=&#39;timeline-item headline&#39;&gt;&lt;div class=&#39;timeline-item-title&#39;&gt;&lt;div class=&#39;item-circle&#39;&gt;&lt;p&gt;Timeline&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#39;timeline-item&#39;&gt;&lt;div class=&#39;timeline-item-title&#39;&gt;&lt;div class=&#39;item-circle&#39;&gt;&lt;p&gt;2026-07-18&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div</summary>
-        
-      
+    <summary type="html">本文介绍了NVIDIA open-gpu-kernel-modules的编译方法，重点说明了使用ARM GNU工具链进行交叉编译的步骤与关键参数，包括ARCH=arm64与TARGET_ARCH=aarch64的区分、工具链路径设置及清理方式。文章还总结了该仓库的两层构建模型：由OS无关核心（src）与Linux内核适配层（kernel-open）拼装组合，最终生成5个内核模块，并概述了各模块的功能、代码量分布及GSP固件在架构演进中的核心作用。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
   </entry>
   
   <entry>
-    <title>OpenSSL 1.0.0s aarch64 cross-compilation</title>
-    <link href="https://even629.com/en/posts/2607160/"/>
-    <id>https://even629.com/en/posts/2607160/</id>
+    <title>OpenSSL 1.0.0s aarch64交叉编译</title>
+    <link href="https://even629.com/posts/2607160/"/>
+    <id>https://even629.com/posts/2607160/</id>
     <published>2026-07-16T13:20:13.000Z</published>
     <updated>2026-07-16T13:20:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the process on x86_Complete process of compiling aarch64 shared libraries of OpenSSL 1.0.0s using ARM cross-toolchain on a 64-bit host, including environment preparation, Configure configuration (requires using linux-generic64 target and passing CROSS environment variable_COMPILE), modifying the ARFLAGS and AR definitions in three Makefiles to resolve thin archive and parameter ordering issues, as well as compilation, installation, and common troubleshooting methods.</summary>
+    <summary type="html">本文介绍了在x86_64主机上使用Arm GNU Toolchain 11.2交叉编译OpenSSL 1.0.0s，生成aarch64共享库（.so）的完整流程。文章首先说明了环境准备，包括源码选择与交叉工具链配置，并指出OpenSSL 1.0.0没有专门的aarch64 target，必须使用通用64位target并通过环境变量指定工具链前缀。随后详细解析了Configure参数，包括禁用IDEA、MD2、MDC2、RC5算法及SSL 2.0/3.0协议，并解释了相关安全考量。文章重点解决了构建中的关键问题：由于交叉工具链的ar在ARFLAGS为空时默认创建瘦归档，且AR参数顺序错误，导致链接失败，需同时修改顶层、Makefile和Makefile.shared三个Makefile中的ARFLAGS与AR定义。最后总结了编译、验证、安装步骤，并提供了常见问题排查表。本文为在ARM64平台</summary>
     
     
     
-    <category term="Misc" scheme="https://even629.com/en/categories/Misc/"/>
+    <category term="Misc" scheme="https://even629.com/categories/Misc/"/>
     
     
-    <category term="Misc" scheme="https://even629.com/en/tags/Misc/"/>
+    <category term="Misc" scheme="https://even629.com/tags/Misc/"/>
     
-    <category term="Crypto" scheme="https://even629.com/en/tags/Crypto/"/>
+    <category term="Crypto" scheme="https://even629.com/tags/Crypto/"/>
     
   </entry>
   
   <entry>
-    <title>Tag Plugin Plus External Tags Overview</title>
-    <link href="https://even629.com/en/posts/50013/"/>
-    <id>https://even629.com/en/posts/50013/</id>
+    <title>Tag Plugin Plus 外挂标签全览</title>
+    <link href="https://even629.com/posts/50013/"/>
+    <id>https://even629.com/posts/50013/</id>
     <published>2026-07-11T12:00:00.000Z</published>
     <updated>2026-07-11T16:00:00.000Z</updated>
     
     
-    <summary type="html">This article provides an overview of Tag Plugin Plus external tags, showcasing various external tags ported from the Butterfly theme to the Cactus theme, including link cards, inline images, inline text tags, colored paragraphs, note boxes, collapse boxes, timelines, tabs, etc., and provides syntax and effect examples, while also testing the rendering support for standard Markdown and extended syntax.</summary>
+    <summary type="html">本文介绍了Tag Plugin Plus外挂标签的全面功能，通过系统测试当前主题对标准Markdown及扩展语法的渲染支持情况。文章涵盖了标题层级、行内格式（粗体、斜体、删除线、高亮、上下标）、链接、图片、列表（无序、有序、任务列表）、引用、代码块、表格（包括单元格合并）、分割线、脚注、Emoji、转义字符、数学公式（KaTeX）以及Mermaid图表等丰富内容。重点展示了表格的水平和垂直合并、组合合并及边界情况，并验证了数学公式和Mermaid图表的实际渲染效果，帮助用户全面了解该主题对Markdown语法的支持程度。</summary>
     
     
     
-    <category term="tools" scheme="https://even629.com/en/categories/tools/"/>
+    <category term="tools" scheme="https://even629.com/categories/tools/"/>
     
     
-    <category term="hexo" scheme="https://even629.com/en/tags/hexo/"/>
+    <category term="hexo" scheme="https://even629.com/tags/hexo/"/>
     
   </entry>
   
   <entry>
     <title>Remoteproc resource table</title>
-    <link href="https://even629.com/en/posts/202607041/"/>
-    <id>https://even629.com/en/posts/202607041/</id>
+    <link href="https://even629.com/posts/202607041/"/>
+    <id>https://even629.com/posts/202607041/</id>
     <published>2026-07-04T09:42:13.000Z</published>
     <updated>2026-07-04T09:42:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the structure and function of the resource table in the remote processor firmware image, and elaborates in detail on how the main processor allocates system resources such as physical memory, configures Virtio devices, and creates RPMsg channels to achieve inter-core communication by decoding the resource table after loading the firmware. At the same time, combined with the reference code of STM32MP15C, this article summarizes the specific definition of resource entries under the Remoteproc framework and the implementation of dynamic resource management based on OpenAMP.</summary>
+    <summary type="html">本文介绍了Remoteproc资源表（resource table）的概念与实现。远程处理器固件映像通常包含资源表、用户应用程序、RTOS或裸机代码以及OpenAMP库。资源表用于描述远程处理器所需的系统资源（如连续物理内存、外设）以及其支持的Virtio设备配置（如vring地址、大小等）。文章详细解析了Linux内核中struct resource_table结构及资源条目标头fw_rsc_hdr，并说明了Remoteproc框架如何通过资源表查找并注册Virtio设备。最后以STM32MP15C为例，介绍了rsc_table的具体实现，包括资源表的定义、初始化过程及其与设备树中reserved-memory节点的配合。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
     <title>OpenAMP</title>
-    <link href="https://even629.com/en/posts/202607040/"/>
-    <id>https://even629.com/en/posts/202607040/</id>
+    <link href="https://even629.com/posts/202607040/"/>
+    <id>https://even629.com/posts/202607040/</id>
     <published>2026-07-04T08:17:13.000Z</published>
     <updated>2026-07-04T08:17:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the background of the OpenAMP open asymmetric multiprocessing software framework and its application in multi-core heterogeneous systems. It discusses in detail the three core components: Virtio, RPMsg, and Remoteproc, and summarizes the specific working mechanisms for lifecycle management and message communication between the Linux main processor and bare-metal or RTOS coprocessors based on shared memory and inter-core interrupts.</summary>
+    <summary type="html">本文介绍了OpenAMP（开放非对称多处理）软件框架，该框架由Mentor Graphics与Xilinx开发，用于解决AMP系统中RTOS或裸机程序与Linux之间的通信问题。文章详细阐述了OpenAMP的核心组件：Virtio提供共享内存管理的虚拟设备框架，通过vring环形缓冲区实现数据传递；RPMsg作为基于Virtio的消息总线，负责核间消息通信；Remoteproc则用于远程处理器的生命周期管理，包括固件加载、启动关闭及资源解析。文中以STM32MP157为例，说明了Cortex-A7与Cortex-M4之间通过OpenAMP实现通信的机制，并对比了Linux侧与裸机侧底层驱动的差异。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
     <title>IPCC</title>
-    <link href="https://even629.com/en/posts/202607020/"/>
-    <id>https://even629.com/en/posts/202607020/</id>
+    <link href="https://even629.com/posts/202607020/"/>
+    <id>https://even629.com/posts/202607020/</id>
     <published>2026-07-02T15:17:13.000Z</published>
     <updated>2026-07-02T15:17:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the working principle of the IPCC (Inter-Processor Communication Controller) hardware module in STM32MP157, discusses the process of realizing signal notification between Cortex-A7 and Cortex-M4 cores through shared memory and hardware interrupt mechanisms, and summarizes the channel allocation, software framework application, and related register configuration of IPCC.</summary>
+    <summary type="html">本文介绍了进程间通信（IPC）及其硬件控制器IPCC，重点以STM32MP157为例，阐述了IPCC的6个双向通道（12个子通道）的工作模式（单工、半双工、全双工）及在ST官方配置中的具体用途，包括通道1和2用于RPMsg框架实现A7与M4之间的消息传输，通道3用于RemoteProc框架控制协处理器生命周期。文章还说明了IPCC仅提供中断通知机制，实际数据通过共享内存传输，并介绍了相关的8个寄存器和两个处理器各自的中断控制。此外，提及了Linux端和M4端OpenAMP框架的对接。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
     <title>Rpmsg Char Driver</title>
-    <link href="https://even629.com/en/posts/202606290/"/>
-    <id>https://even629.com/en/posts/202606290/</id>
+    <link href="https://even629.com/posts/202606290/"/>
+    <id>https://even629.com/posts/202606290/</id>
     <published>2026-06-29T14:00:13.000Z</published>
     <updated>2026-06-29T14:00:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the implementation mechanism of the Rpmsg Char Driver character device driver based on Linux 5.10.x. It discusses in detail its classic architecture design that separates control devices from endpoint devices, and summarizes the specific processes and key code logic of driver registration, deferred endpoint creation, lock and wait queue synchronization mechanisms, and user-space message sending and receiving.</summary>
+    <summary type="html">本文介绍了Linux 5.10.x中Rpmsg字符设备驱动的设计与实现。该驱动注册到Rpmsg总线，采用控制设备与端点设备分离的模式：控制节点通过ioctl创建端点，端点设备负责用户态读写消息。文章分析了关键数据结构、锁与等待队列的使用、probe/remove流程、端点的延迟创建机制，以及读写路径中的阻塞唤醒、内存拷贝等细节，并指出了缓冲区大小等注意事项。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
     <title>Rpmsg Core</title>
-    <link href="https://even629.com/en/posts/202606270/"/>
-    <id>https://even629.com/en/posts/202606270/</id>
+    <link href="https://even629.com/posts/202606270/"/>
+    <id>https://even629.com/posts/202606270/</id>
     <published>2026-06-27T07:17:13.000Z</published>
     <updated>2026-06-27T07:17:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the bus abstraction mechanism of Rpmsg Core in Linux 5.10.23 and its backend access methods, and discusses in detail the device-driver matching scoring rules and device probe process. This article summarizes the core logic in the probe process, such as power domain association, automatic Endpoint creation, and dynamic address allocation, revealing the implementation details of the rpmsg framework in hardware power management and endpoint communication.</summary>
+    <summary type="html">本文介绍了Linux内核中rpmsg core的设计与实现。rpmsg作为一种总线抽象，不绑定任何具体传输，可支持基于共享内存、mailbox中断或PCIe doorbell等多种后端实现，每个后端只需提供相应操作即可接入核心。文章详细阐述了rpmsg设备匹配机制（rpmsg_dev_match）的优先级评分规则，通过比较specific/general驱动约束、compat匹配及of_node匹配等条件计算分数，以确定最优驱动。同时，文章总结了rpmsg设备探测流程（rpmsg_dev_probe），包括电源域关联（genpd）、自动创建端点（endpoint）以及调用驱动probe函数等关键步骤，并说明了端点地址动态分配与回调绑定的机制。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
     <title>Virtio Rpmsg Bus</title>
-    <link href="https://even629.com/en/posts/202606230/"/>
-    <id>https://even629.com/en/posts/202606230/</id>
+    <link href="https://even629.com/posts/202606230/"/>
+    <id>https://even629.com/posts/202606230/</id>
     <published>2026-06-22T14:17:13.000Z</published>
     <updated>2026-06-22T14:17:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the implementation principles and core data structures of the virtio-based rpmsg bus driver in the Linux kernel. It discusses the basic communication model of rpmsg and provides a detailed analysis of rpmsg_device、rpmsg_endpoint creation and destruction logic, as well as the underlying transmission mechanisms in the virtproc_info private state, including virtqueue send/receive channels, buffer management, DMA mapping, and concurrency control.</summary>
+    <summary type="html">本文介绍了Linux内核中基于virtio的rpmsg总线驱动（virtio_rpmsg_bus），阐述了其作为rpmsg总线的virtio传输实现，负责在Linux主核与远端处理器之间通过vring收发消息，并将远端服务抽象为rpmsg_device供上层驱动绑定。文章详细分析了rpmsg的三层结构、通信模型，以及核心数据结构如rpmsg_device、rpmsg_endpoint和virtproc_info，并说明了endpoint的创建与销毁、缓冲区管理、发送同步和名字服务等关键机制。最后指出rpmsg实际是基于地址的消息分发机制。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
-    <title>Commonly Used Data Structures in the Linux Kernel</title>
-    <link href="https://even629.com/en/posts/202605243/"/>
-    <id>https://even629.com/en/posts/202605243/</id>
+    <title>Linux 内核常用数据结构</title>
+    <link href="https://even629.com/posts/202605243/"/>
+    <id>https://even629.com/posts/202605243/</id>
     <published>2026-05-24T15:08:13.000Z</published>
-    <updated>2026-05-25T15:08:13.000Z</updated>
+    <updated>2026-08-15T14:30:00.000Z</updated>
     
     
-    <summary type="html">This article introduces the core data structures with high practical usage frequency in the Linux 6.x kernel, detailing the definitions, core APIs, and typical use cases of structures such as doubly linked circular lists, hash linked lists, red-black trees, radix trees, extensible arrays, and priority linked lists.</summary>
+    <summary type="html">本文介绍了Linux内核中常用的通用数据结构，按实际使用频率从高到低梳理了双向循环链表list_head、哈希链表hlist、红黑树rbtree、基数树radix_tree等核心结构，涵盖其数据结构定义、核心API及典型使用场景。文章基于Linux 6.x内核，并同步更新了各数据结构的可加载模块示例，便于开发者理解和应用。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
     <title>ClaudeCode</title>
-    <link href="https://even629.com/en/posts/202605241/"/>
-    <id>https://even629.com/en/posts/202605241/</id>
+    <link href="https://even629.com/posts/202605241/"/>
+    <id>https://even629.com/posts/202605241/</id>
     <published>2026-05-24T02:10:13.000Z</published>
     <updated>2026-05-24T02:10:13.000Z</updated>
     
     
-    <summary type="html">This article introduces the download, installation, and editor integration methods for Claude Code, detailing how to configure and use it with the DeepSeek API in VSCode and Emacs. Additionally, the article discusses Claude Code&#39;s Skill extension mechanism, the MCP (Model Context Protocol), and the installation of related Skills along with recommended plugins.</summary>
+    <summary type="html">本文介绍了 Claude Code 的安装与配置方法，包括 Node.js 环境要求、选择 DeepSeek 作为 API 提供商的原因及申请流程，以及 VSCode 和 Emacs 编辑器的集成步骤与环境变量设置方法。文章还详细说明了 Skill 扩展机制，即 Anthropic 于 2025 年 10 月推出的技能包，本质为 Markdown 文件，分为项目级目录和用户级目录两种存放位置，并介绍了 MCP（模型上下文协议）的概念及其作用。最后，文章推荐了若干实用 Skill，如 Karpathy-Inspired Claude Code Guidelines、codegraph、draw.io 和 CC-Switch 等，并说明了安装 Skill 的两种方式。</summary>
     
     
     
-    <category term="tools" scheme="https://even629.com/en/categories/tools/"/>
+    <category term="tools" scheme="https://even629.com/categories/tools/"/>
     
     
-    <category term="AI" scheme="https://even629.com/en/tags/AI/"/>
+    <category term="tools" scheme="https://even629.com/tags/tools/"/>
     
-    <category term="tools" scheme="https://even629.com/en/tags/tools/"/>
+    <category term="AI" scheme="https://even629.com/tags/AI/"/>
     
   </entry>
   
   <entry>
     <title>smatch</title>
-    <link href="https://even629.com/en/posts/202605211/"/>
-    <id>https://even629.com/en/posts/202605211/</id>
+    <link href="https://even629.com/posts/202605211/"/>
+    <id>https://even629.com/posts/202605211/</id>
     <published>2026-05-21T15:10:13.000Z</published>
     <updated>2026-05-21T15:10:13.000Z</updated>
     
     
-    <summary type="html">This article introduces Smatch, a static analysis tool specifically designed for the Linux kernel, detailing its compilation method, database construction process, and its ability to discover hidden bugs through cross-file analysis. Furthermore, this article summarizes the specific steps for running Smatch to perform static analysis on kernel and non-kernel projects, as well as the configuration methods for related script parameters.</summary>
+    <summary type="html">本文介绍了 Smatch，一个专为 Linux 内核设计的静态分析工具，能够深入追踪代码执行路径，发现空指针解引用、锁使用错误、资源泄漏等深层缺陷。文章详细说明了 Smatch 的编译方法、数据库构建流程及其跨文件漏洞侦测能力，并给出了运行 Smatch 检查整个内核或指定文件/文件夹的脚本参数与输出文件说明，同时提及了 out-of-tree module 的分析方式及 smatch_data 规则目录的配置。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
-    <title>Query the earliest introduced version of a kernel API</title>
-    <link href="https://even629.com/en/posts/202605210/"/>
-    <id>https://even629.com/en/posts/202605210/</id>
+    <title>查询内核API最早引入版本</title>
+    <link href="https://even629.com/posts/202605210/"/>
+    <id>https://even629.com/posts/202605210/</id>
     <published>2026-05-21T15:08:13.000Z</published>
     <updated>2026-05-21T15:08:13.000Z</updated>
     
     
-    <summary type="html">This article introduces how to query the earliest introduced version of a specific kernel API, and illustrates the query method with specific examples.</summary>
+    <summary type="html">本文介绍了查询内核API最早引入版本的方法，并以具体API为例进行说明。</summary>
     
     
     
-    <category term="Linux" scheme="https://even629.com/en/categories/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/categories/Linux/"/>
     
     
-    <category term="Linux" scheme="https://even629.com/en/tags/Linux/"/>
+    <category term="Linux" scheme="https://even629.com/tags/Linux/"/>
     
-    <category term="GNU" scheme="https://even629.com/en/tags/GNU/"/>
+    <category term="GNU" scheme="https://even629.com/tags/GNU/"/>
     
   </entry>
   
   <entry>
-    <title>LeetCode Daily Problem P3546 Equal Sum Matrix Partition I</title>
-    <link href="https://even629.com/en/posts/3546/"/>
-    <id>https://even629.com/en/posts/3546/</id>
+    <title>leetcode每日一题 P3546 等和矩阵分割 I</title>
+    <link href="https://even629.com/posts/3546/"/>
+    <id>https://even629.com/posts/3546/</id>
     <published>2026-03-25T02:28:13.000Z</published>
     <updated>2026-03-25T02:28:13.000Z</updated>
     
     
-    <summary type="html">Prefix Sum</summary>
+    <summary type="html">前缀和</summary>
     
     
     
-    <category term="algorithm" scheme="https://even629.com/en/categories/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
     
     
-    <category term="algorithm" scheme="https://even629.com/en/tags/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="Prefix Sum" scheme="https://even629.com/en/tags/Prefix-Sum/"/>
+    <category term="前缀和" scheme="https://even629.com/tags/%E5%89%8D%E7%BC%80%E5%92%8C/"/>
     
-    <category term="leetcode Daily Problem" scheme="https://even629.com/en/tags/leetcode-Daily-Problem/"/>
+    <category term="leetcode每日一题" scheme="https://even629.com/tags/leetcode%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/"/>
     
   </entry>
   
   <entry>
-    <title>LeetCode Daily Problem P2906 Construct Product Matrix</title>
-    <link href="https://even629.com/en/posts/2906/"/>
-    <id>https://even629.com/en/posts/2906/</id>
+    <title>leetcode每日一题 P2906 构造乘积矩阵</title>
+    <link href="https://even629.com/posts/2906/"/>
+    <id>https://even629.com/posts/2906/</id>
     <published>2026-03-24T09:01:13.000Z</published>
     <updated>2026-03-24T09:01:13.000Z</updated>
     
     
-    <summary type="html">Prefix Sum</summary>
+    <summary type="html">前缀和</summary>
     
     
     
-    <category term="algorithm" scheme="https://even629.com/en/categories/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
     
     
-    <category term="algorithm" scheme="https://even629.com/en/tags/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="Prefix Sum" scheme="https://even629.com/en/tags/Prefix-Sum/"/>
+    <category term="前缀和" scheme="https://even629.com/tags/%E5%89%8D%E7%BC%80%E5%92%8C/"/>
     
-    <category term="leetcode Daily Problem" scheme="https://even629.com/en/tags/leetcode-Daily-Problem/"/>
+    <category term="leetcode每日一题" scheme="https://even629.com/tags/leetcode%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/"/>
     
   </entry>
   
   <entry>
-    <title>LeetCode Hot 100 P1143 Longest Common Subsequence</title>
-    <link href="https://even629.com/en/posts/1143/"/>
-    <id>https://even629.com/en/posts/1143/</id>
+    <title>leetcode热题100 P1143 最长公共子序列</title>
+    <link href="https://even629.com/posts/1143/"/>
+    <id>https://even629.com/posts/1143/</id>
     <published>2026-03-21T09:09:13.000Z</published>
     <updated>2026-03-21T09:09:13.000Z</updated>
     
     
-    <summary type="html">Dynamic Programming</summary>
+    <summary type="html">动态规划</summary>
     
     
     
-    <category term="algorithm" scheme="https://even629.com/en/categories/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
     
     
-    <category term="algorithm" scheme="https://even629.com/en/tags/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="leetcode Hot 100" scheme="https://even629.com/en/tags/leetcode-Hot-100/"/>
+    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
-    <category term="Dynamic Programming" scheme="https://even629.com/en/tags/Dynamic-Programming/"/>
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
   </entry>
   
   <entry>
-    <title>LeetCode Hot 100 P62 Unique Paths</title>
-    <link href="https://even629.com/en/posts/62/"/>
-    <id>https://even629.com/en/posts/62/</id>
+    <title>leetcode热题100 P62 不同路径</title>
+    <link href="https://even629.com/posts/62/"/>
+    <id>https://even629.com/posts/62/</id>
     <published>2026-03-21T07:15:13.000Z</published>
     <updated>2026-03-21T07:15:13.000Z</updated>
     
     
-    <summary type="html">Dynamic Programming</summary>
+    <summary type="html">动态规划</summary>
     
     
     
-    <category term="algorithm" scheme="https://even629.com/en/categories/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
     
     
-    <category term="algorithm" scheme="https://even629.com/en/tags/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="leetcode Hot 100" scheme="https://even629.com/en/tags/leetcode-Hot-100/"/>
+    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
-    <category term="Dynamic Programming" scheme="https://even629.com/en/tags/Dynamic-Programming/"/>
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
   </entry>
   
   <entry>
-    <title>LeetCode Hot 100 P32 Longest Valid Parentheses</title>
-    <link href="https://even629.com/en/posts/32/"/>
-    <id>https://even629.com/en/posts/32/</id>
+    <title>leetcode热题100 P32 最长有效括号</title>
+    <link href="https://even629.com/posts/32/"/>
+    <id>https://even629.com/posts/32/</id>
     <published>2026-03-21T06:22:13.000Z</published>
     <updated>2026-03-21T06:22:13.000Z</updated>
     
     
-    <summary type="html">Dynamic Programming, Stack</summary>
+    <summary type="html">动态规划，栈</summary>
     
     
     
-    <category term="algorithm" scheme="https://even629.com/en/categories/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
     
     
-    <category term="algorithm" scheme="https://even629.com/en/tags/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="leetcode Hot 100" scheme="https://even629.com/en/tags/leetcode-Hot-100/"/>
+    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
-    <category term="Dynamic Programming" scheme="https://even629.com/en/tags/Dynamic-Programming/"/>
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
-    <category term="Stack" scheme="https://even629.com/en/tags/Stack/"/>
+    <category term="栈" scheme="https://even629.com/tags/%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>LeetCode Top 100 P416 Partition Equal Subset Sum</title>
-    <link href="https://even629.com/en/posts/416/"/>
-    <id>https://even629.com/en/posts/416/</id>
+    <title>leetcode热题100 P416 分割等和子集</title>
+    <link href="https://even629.com/posts/416/"/>
+    <id>https://even629.com/posts/416/</id>
     <published>2026-03-21T04:06:13.000Z</published>
     <updated>2026-03-21T04:06:13.000Z</updated>
     
     
-    <summary type="html">Dynamic Programming</summary>
+    <summary type="html">动态规划</summary>
     
     
     
-    <category term="algorithm" scheme="https://even629.com/en/categories/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/categories/algorithm/"/>
     
     
-    <category term="algorithm" scheme="https://even629.com/en/tags/algorithm/"/>
+    <category term="algorithm" scheme="https://even629.com/tags/algorithm/"/>
     
-    <category term="leetcode Hot 100" scheme="https://even629.com/en/tags/leetcode-Hot-100/"/>
+    <category term="leetcode热题100" scheme="https://even629.com/tags/leetcode%E7%83%AD%E9%A2%98100/"/>
     
-    <category term="Dynamic Programming" scheme="https://even629.com/en/tags/Dynamic-Programming/"/>
+    <category term="动态规划" scheme="https://even629.com/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
-    <category term="0-1 Knapsack Problem" scheme="https://even629.com/en/tags/0-1-Knapsack-Problem/"/>
+    <category term="0-1背包问题" scheme="https://even629.com/tags/0-1%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/"/>
     
   </entry>
   
