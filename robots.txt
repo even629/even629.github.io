@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://even629.com/static/sitemap.xml
-Sitemap: https://even629.com/en/static/sitemap.xml
